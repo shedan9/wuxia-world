@@ -1,0 +1,79 @@
+{
+  "set": "m0_simple",
+  "tier": "simple",
+  "model": "sdxl",
+  "size": [
+    1024,
+    1024
+  ],
+  "steps": 30,
+  "cfg": 6.0,
+  "seeds": [
+    11,
+    23,
+    37,
+    41
+  ],
+  "style": {
+    "icon": "single centered object on plain rice paper, Chinese gongbi painting, fine ink outline, muted mineral pigments, game item icon",
+    "texture": "seamless flat texture, even lighting, no objects",
+    "negative": "text, letters, calligraphy, watermark, signature, red seal stamp, frame, border, photo, 3d render, plastic, blurry, lowres, jpeg artifacts, deformed, multiple objects, hands, people, anime, manga, japanese style"
+  },
+  "jobs": [
+    {
+      "name": "icon_green_steel_sword",
+      "style": "icon",
+      "prompt": "a Chinese straight double-edged jian sword with green-tinted steel blade and plain bronze guard, lying diagonally"
+    },
+    {
+      "name": "icon_ferry_pole",
+      "style": "icon",
+      "prompt": "a long bamboo boat pole wrapped with hemp rope at the grip, lying diagonally"
+    },
+    {
+      "name": "icon_plain_jacket",
+      "style": "icon",
+      "prompt": "a folded coarse undyed hemp short jacket worn by ferrymen, Song dynasty commoner clothing"
+    },
+    {
+      "name": "icon_straw_cape",
+      "style": "icon",
+      "prompt": "a traditional Chinese straw rain cape made of palm fiber, folded"
+    },
+    {
+      "name": "icon_wound_powder",
+      "style": "icon",
+      "prompt": "a small glazed ceramic medicine bottle with cloth stopper for wound powder"
+    },
+    {
+      "name": "icon_breath_pill",
+      "style": "icon",
+      "prompt": "three dark round herbal pills on a small lacquered dish"
+    },
+    {
+      "name": "icon_dry_rations",
+      "style": "icon",
+      "prompt": "flat baked wheat cakes wrapped in an oiled paper bundle tied with string"
+    },
+    {
+      "name": "icon_plea_letter",
+      "style": "icon",
+      "prompt": "a folded old paper letter with an envelope, blank paper without writing"
+    },
+    {
+      "name": "icon_ferry_tag",
+      "style": "icon",
+      "prompt": "a weathered rectangular wooden ferry boat tag with a hole and cord, blank surface"
+    },
+    {
+      "name": "tex_rice_paper",
+      "style": "texture",
+      "prompt": "aged warm cream Chinese xuan rice paper with subtle fibers and faint mottling"
+    },
+    {
+      "name": "tex_ink_wash",
+      "style": "texture",
+      "prompt": "very dark green-grey ink wash on paper, soft gradients, subtle grain"
+    }
+  ]
+}

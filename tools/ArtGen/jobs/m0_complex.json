@@ -1,0 +1,66 @@
+{
+  "set": "m0_complex",
+  "tier": "complex",
+  "model": "sdxl",
+  "size": [
+    1344,
+    768
+  ],
+  "steps": 40,
+  "cfg": 6.0,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505,
+    606
+  ],
+  "style": {
+    "scene": "2D game environment art, Chinese gongbi painting, ink wash distant mountains, muted celadon, grey tiles, aged wood, Song dynasty Jiangnan",
+    "iso": "high oblique top-down view, clear walkable paths",
+    "side": "side view, flat ground in lower third, empty stage",
+    "character": "full body concept, Chinese gongbi figure painting, seven heads tall, fine ink outline, muted pigments, plain rice paper background, front view",
+    "negative": "text, letters, calligraphy, watermark, signature, red seal stamp, frame, photo, photorealistic, 3d render, plastic, blurry, lowres, jpeg artifacts, deformed, extra limbs, bad hands, cropped, anime, manga, chibi, japanese style, japanese architecture, torii, modern objects"
+  },
+  "jobs": [
+    {
+      "name": "scene_town_street",
+      "style": "scene",
+      "extra": "iso",
+      "prompt": "Jiangnan water town canal street after rain, stone slab road, wooden shopfronts, stone arch bridge, willows"
+    },
+    {
+      "name": "scene_inn_interior",
+      "style": "scene",
+      "extra": "iso",
+      "prompt": "riverside inn interior, wooden tables and benches, counter with wine jars, staircase, lattice windows, rainy daylight"
+    },
+    {
+      "name": "scene_mountain_path",
+      "style": "scene",
+      "extra": "iso",
+      "prompt": "a narrow mountain path of stone steps winding through pine trees and rocks, mist in the valley, a small wayside pavilion"
+    },
+    {
+      "name": "battle_old_ferry",
+      "style": "scene",
+      "extra": "side",
+      "prompt": "an old wooden ferry landing at a misty river bank at dusk, moored boats with chains, a stone water gate mechanism, reeds"
+    },
+    {
+      "name": "menu_river_mist",
+      "style": "scene",
+      "prompt": "wide panoramic Jiangnan river landscape in morning mist, distant layered mountains in ink wash, a small ferry boat, empty sky on the left for a title"
+    },
+    {
+      "name": "char_lu_qinghe",
+      "style": "character",
+      "size": [
+        832,
+        1216
+      ],
+      "prompt": "young adult Chinese woman, ferry apprentice, undyed hemp jacket and trousers, rolled sleeves, straw sandals, hair in cloth band, holding bamboo boat pole"
+    }
+  ]
+}

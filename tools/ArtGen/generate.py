@@ -1,0 +1,124 @@
+"""按任务文件批量生成 AI 美术草图（SDXL）。
+
+用法：
+    .venv/Scripts/python generate.py jobs/m0_simple.json [--only 名称前缀] [--dry-run]
+
+每张图输出到 out/<任务集>/<名称>_<种子>.png，并写同名 .json 记录模型、种子、
+提示词与图像哈希，供资产台账（docs/art/ASSET_LEDGER.md）引用与复现。
+选用的图片再由人工挑选、修整后放入 art_source/，本目录输出不入库。
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import sys
+import time
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+
+# 模型均需允许商用；更换模型须同步 README 与资产台账。
+MODELS = {
+    "sdxl": "stabilityai/stable-diffusion-xl-base-1.0",  # CreativeML Open RAIL++-M
+}
+FP16_VAE = "madebyollin/sdxl-vae-fp16-fix"  # MIT
+
+
+def load_pipeline(model_key: str):
+    import torch
+    from diffusers import AutoencoderKL, StableDiffusionXLPipeline
+
+    vae = AutoencoderKL.from_pretrained(FP16_VAE, torch_dtype=torch.float16)
+    pipe = StableDiffusionXLPipeline.from_pretrained(
+        MODELS[model_key], vae=vae, torch_dtype=torch.float16, variant="fp16", use_safetensors=True
+    )
+    vram_gb = torch.cuda.get_device_properties(0).total_memory / 2**30
+    if vram_gb < 12:
+        # 8GB 显卡（本机 RTX 4060）：按需搬运子模型，速度较慢但不爆显存。
+        pipe.enable_model_cpu_offload()
+    else:
+        pipe.to("cuda")
+    pipe.vae.enable_tiling()
+    return pipe, vram_gb
+
+
+def build_prompt(style: dict, job: dict) -> tuple[str, str]:
+    parts = [job["prompt"], style.get(job.get("style", "default"), ""), style.get(job.get("extra", ""), "")]
+    positive = ", ".join(p for p in parts if p)
+    negative = ", ".join(p for p in (style.get("negative", ""), job.get("negative", "")) if p)
+    return positive, negative
+
+
+def main() -> int:
+    sys.stdout.reconfigure(encoding="utf-8")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("jobfile")
+    parser.add_argument("--only", help="只生成名称以此开头的任务")
+    parser.add_argument("--dry-run", action="store_true", help="只打印提示词，不加载模型")
+    args = parser.parse_args()
+
+    spec = json.loads(Path(args.jobfile).read_text(encoding="utf-8"))
+    jobs = [j for j in spec["jobs"] if not args.only or j["name"].startswith(args.only)]
+    out_dir = ROOT / "out" / spec["set"]
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    if args.dry_run:
+        # SDXL 文本编码器只读前 77 个 token，超出部分被静默截断。
+        from transformers import CLIPTokenizer
+
+        tokenizer = CLIPTokenizer.from_pretrained(MODELS[spec.get("model", "sdxl")], subfolder="tokenizer")
+        over = 0
+        for job in jobs:
+            positive, negative = build_prompt(spec["style"], job)
+            counts = [len(tokenizer(t).input_ids) for t in (positive, negative)]
+            flag = "  超长！" if max(counts) > 77 else ""
+            over += bool(flag)
+            print(f"{job['name']}  正向 {counts[0]} / 负向 {counts[1]} token{flag}")
+        return 1 if over else 0
+
+    import torch
+
+    pipe, vram_gb = load_pipeline(spec.get("model", "sdxl"))
+    print(f"GPU {torch.cuda.get_device_name(0)} {vram_gb:.1f} GiB")
+    if spec.get("tier") == "complex" and vram_gb < 12:
+        print("提示：复杂资源约定在家用台式机（16 GB）生成；本机可跑但很慢，建议只做小批量试图。")
+
+    for job in jobs:
+        positive, negative = build_prompt(spec["style"], job)
+        width, height = job.get("size", spec.get("size", [1024, 1024]))
+        for seed in job.get("seeds", spec.get("seeds", [1])):
+            started = time.time()
+            image = pipe(
+                prompt=positive,
+                negative_prompt=negative,
+                width=width,
+                height=height,
+                num_inference_steps=job.get("steps", spec.get("steps", 30)),
+                guidance_scale=job.get("cfg", spec.get("cfg", 6.0)),
+                generator=torch.Generator("cpu").manual_seed(seed),
+            ).images[0]
+            path = out_dir / f"{job['name']}_{seed}.png"
+            image.save(path)
+            meta = {
+                "name": job["name"],
+                "seed": seed,
+                "model": MODELS[spec.get("model", "sdxl")],
+                "vae": FP16_VAE,
+                "size": [width, height],
+                "steps": job.get("steps", spec.get("steps", 30)),
+                "cfg": job.get("cfg", spec.get("cfg", 6.0)),
+                "prompt": positive,
+                "negative": negative,
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "seconds": round(time.time() - started, 1),
+                "gpu": torch.cuda.get_device_name(0),
+            }
+            path.with_suffix(".json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+            print(f"{path.name}  {meta['seconds']}s")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

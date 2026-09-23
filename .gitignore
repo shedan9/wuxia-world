@@ -27,3 +27,8 @@ voice_source/secrets/
 .DS_Store
 Thumbs.db
 .idea/
+
+# AI 美术生成环境与模型缓存（tools/ArtGen）
+tools/ArtGen/.venv/
+tools/ArtGen/out/
+__pycache__/

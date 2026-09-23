@@ -1,6 +1,7 @@
 using Godot;
 using WuxiaWorld.Game.Presentation;
 using WuxiaWorld.Game.Presentation.App;
+using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Preview;
 
@@ -59,6 +60,7 @@ public partial class PreviewCatalog : Control
             CustomMinimumSize = new Vector2(800, 88),
             Alignment = HorizontalAlignment.Left,
             TooltipText = page.Id,
+            ThemeTypeVariation = UiTheme.DarkButton,
         };
         button.AddThemeFontSizeOverride("font_size", UiPalette.FontSecondary);
         if (ready)
@@ -71,7 +73,7 @@ public partial class PreviewCatalog : Control
 
     private static Label MakeLabel(string text, int size, Color color)
     {
-        var label = new Label { Text = text };
+        var label = new Label { Text = text, ThemeTypeVariation = UiTheme.DarkLabel };
         label.AddThemeFontSizeOverride("font_size", size);
         label.AddThemeColorOverride("font_color", color);
         return label;

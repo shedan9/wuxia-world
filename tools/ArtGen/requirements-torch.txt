@@ -1,0 +1,2 @@
+# 由 setup.ps1 从 https://download.pytorch.org/whl/cu128 安装
+torch==2.11.0+cu128

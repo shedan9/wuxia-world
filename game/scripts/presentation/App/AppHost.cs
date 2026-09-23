@@ -1,4 +1,5 @@
 using Godot;
+using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Presentation.App;
 
@@ -15,7 +16,9 @@ public partial class AppHost : Node
     public override void _EnterTree()
     {
         Instance = this;
+        DevCapture.Parse();
         Router = new SceneRouter(GetTree());
+        GetTree().Root.Theme = UiTheme.Build();
     }
 
     public override void _UnhandledInput(InputEvent @event)

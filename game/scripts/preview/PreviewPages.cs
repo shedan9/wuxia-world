@@ -15,9 +15,9 @@ public static class PreviewPages
         new("preview.explore_wild", "山路 / 野外探索", "植被、山石、前后层次与路径辨识"),
         new("preview.dialogue", "人物对话", "跨作品人物同场、立绘、姓名、文本、选项"),
         new("preview.battle", "回合战斗", "独立侧视、站位、行动条、技能栏、状态"),
-        new("preview.character", "角色 / 武学 / 成长", "属性层级、招式说明、装配和升级反馈"),
-        new("preview.inventory", "背包 / 装备 / 商店", "道具图标、分类、装备对比、交易面板"),
-        new("preview.journal", "任务 / 关系 / 见闻", "目标说明、人物关系与已知信息层级"),
-        new("preview.settings", "暂停 / 设置", "文字大小、音量、分辨率选项与返回路径"),
+        new("preview.character", "角色 / 武学 / 成长", "属性层级、招式说明、装配和升级反馈", "res://scenes/preview/Character.tscn"),
+        new("preview.inventory", "背包 / 装备 / 商店", "道具图标、分类、装备对比、交易面板", "res://scenes/preview/Inventory.tscn"),
+        new("preview.journal", "任务 / 关系 / 见闻", "目标说明、人物关系与已知信息层级", "res://scenes/preview/Journal.tscn"),
+        new("preview.settings", "暂停 / 设置", "文字大小、音量、分辨率选项与返回路径", "res://scenes/preview/Settings.tscn"),
     ];
 }

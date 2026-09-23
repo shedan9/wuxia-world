@@ -3,6 +3,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <RootNamespace>WuxiaWorld.Game</RootNamespace>
+    <!-- UI 工厂统一返回 Control 便于组合；界面数字不涉及区域格式。 -->
+    <NoWarn>$(NoWarn);CA1859;CA1305</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\WuxiaWorld.Domain\WuxiaWorld.Domain.csproj" />

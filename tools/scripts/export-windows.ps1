@@ -23,4 +23,10 @@ New-Item -ItemType Directory -Force (Join-Path $root 'build/windows') | Out-Null
 & $Godot --headless --path (Join-Path $root 'game') "--export-$Mode" 'Windows Desktop'
 if ($LASTEXITCODE -ne 0) { throw 'Godot 导出失败' }
 
+# OFL 等许可要求随发行包附带许可文本。
+$licenses = Join-Path $root 'build/windows/licenses'
+New-Item -ItemType Directory -Force $licenses | Out-Null
+Copy-Item (Join-Path $root 'game/assets/fonts/*.txt') $licenses -Force
+Copy-Item (Join-Path $root 'docs/art/ASSET_LEDGER.md') $licenses -Force
+
 Write-Host "已导出：$(Join-Path $root 'build/windows/WuxiaWorld.exe')"

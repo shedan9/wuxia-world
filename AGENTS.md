@@ -31,4 +31,6 @@
 
 ## 验证与报告
 
+每次开发任务完成后同步更新 [DEVELOPMENT_PLAN.md](./docs/DEVELOPMENT_PLAN.md)（任务进度、状态与验收记录）和 [ARCHITECTURE.md](./docs/ARCHITECTURE.md)（实际采用的结构、接口与规格）；若涉及剧情、人物或任务变动，同步更新 [STORY.md](./docs/STORY.md)。
+
 文档修改后检查章节、任务数量、ID、内部链接与里程碑范围是否一致。实现任务按开发计划对应阶段执行适当验证；只有实际运行过的构建和测试才能报告为通过。只有实际执行过的 `dotnet build` 与 `tools/scripts/export-windows.ps1` 才能报告为通过；文档检查或文件创建不能称为 Windows 导出或玩法验收。M0 样例数据只放在 `game/scripts/preview`，不得混入 `src/` 规则类库。
