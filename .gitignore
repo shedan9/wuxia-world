@@ -1,0 +1,29 @@
+# Godot
+.godot/
+game/.godot/
+*.translation
+export_credentials.cfg
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+
+# 构建输出
+build/
+
+# 生成内容（由 ContentCompiler 产出，禁止手改）
+game/generated/content/*
+!game/generated/content/.gitkeep
+
+# 语音供应商密钥等本地配置
+*.env
+.env*
+voice_source/secrets/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+.idea/

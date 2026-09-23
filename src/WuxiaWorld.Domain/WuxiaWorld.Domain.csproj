@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 规则与可序列化状态。禁止引用 Godot、文件系统或系统时间（架构文档 5.1）。 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>WuxiaWorld.Domain</RootNamespace>
+  </PropertyGroup>
+</Project>

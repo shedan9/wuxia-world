@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 纯文件与 JSON 适配；引擎相关适配留在 game/scripts/adapters。 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>WuxiaWorld.Infrastructure</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WuxiaWorld.Application\WuxiaWorld.Application.csproj" />
+  </ItemGroup>
+</Project>

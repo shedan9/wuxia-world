@@ -1,0 +1,52 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WuxiaWorld.Game", "game\WuxiaWorld.Game.csproj", "{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WuxiaWorld.Domain", "src\WuxiaWorld.Domain\WuxiaWorld.Domain.csproj", "{1D3AF333-01D1-5474-B30E-96A001DD32DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WuxiaWorld.Application", "src\WuxiaWorld.Application\WuxiaWorld.Application.csproj", "{94DBA2EE-AFFA-50D4-8239-108B009F27E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WuxiaWorld.Infrastructure", "src\WuxiaWorld.Infrastructure\WuxiaWorld.Infrastructure.csproj", "{C1CD3777-4A81-54EC-9552-1E14305AB39D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{FA37C0FB-4ABF-509C-A70A-665196C88214}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		ExportDebug|Any CPU = ExportDebug|Any CPU
+		ExportRelease|Any CPU = ExportRelease|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}.ExportDebug|Any CPU.ActiveCfg = ExportDebug|Any CPU
+		{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
+		{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
+		{617AF021-DE0A-5C58-BEFF-F9FCAAF0E7F7}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1D3AF333-01D1-5474-B30E-96A001DD32DD} = {FA37C0FB-4ABF-509C-A70A-665196C88214}
+		{94DBA2EE-AFFA-50D4-8239-108B009F27E1} = {FA37C0FB-4ABF-509C-A70A-665196C88214}
+		{C1CD3777-4A81-54EC-9552-1E14305AB39D} = {FA37C0FB-4ABF-509C-A70A-665196C88214}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 流程编排、命令与事务；通过领域端口访问存档、内容、随机与日志。 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>WuxiaWorld.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WuxiaWorld.Domain\WuxiaWorld.Domain.csproj" />
+  </ItemGroup>
+</Project>
