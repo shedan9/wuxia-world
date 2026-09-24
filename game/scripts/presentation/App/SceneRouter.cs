@@ -4,7 +4,7 @@ using WuxiaWorld.Game.Presentation.Ui;
 namespace WuxiaWorld.Game.Presentation.App;
 
 /// <summary>
-/// 场景切换入口，本身是最上层的幕布层：切换时经玄潭色幕淡出淡入（docs/art/UI_DESIGN.md 第 6 节）。
+/// 场景切换入口，本身是最上层的幕布层：切换时经玄黛色幕淡出淡入（docs/art/UI_DESIGN.md 第 6 节）。
 /// M0 直接切换场景；M2 起改为 ResourceLoader.LoadThreadedRequest
 /// 异步加载并接入旅行事务（架构文档 6.3），调用方接口保持不变。
 /// </summary>

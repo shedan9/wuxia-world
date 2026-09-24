@@ -109,9 +109,9 @@ public partial class ExploreHudPreview : Control
         var frame = new PanelContainer();
         frame.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.8f }, Chamfer = 14,
-            Border = UiPalette.Trim with { A = 0.7f }, BorderWidth = 1.5f,
-            Corners = CornerStyle.Hook, CornerSize = 22, CornerWidth = 2,
+            FillA = UiPalette.PanelDark with { A = 0.85f }, FillB = UiPalette.Abyss with { A = 0.85f }, Ragged = 1.8f, Seed = 63,
+            Grain = Colors.White with { A = 0.04f }, Border = UiPalette.Gilt with { A = 0.6f }, BorderWidth = 1.4f, Brush = true,
+            Corners = CornerStyle.Cloud, CornerSize = 34, CornerWidth = 2,
         }.Margins(8, 8));
         var caption = Ui.Row(UiPalette.SpaceS, Ui.Text("芦湾", UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint("M", "大地图"));
         frame.AddChild(Ui.Column(UiPalette.SpaceS, map, caption));
@@ -174,8 +174,8 @@ public partial class ExploreHudPreview : Control
         var prompt = new PanelContainer();
         prompt.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.85f }, FillB = UiPalette.PanelDark with { A = 0.85f }, Horizontal = true,
-            Chamfer = 8, Border = UiPalette.Gilt with { A = 0.8f }, BorderWidth = 1.5f,
+            FillA = UiPalette.Abyss with { A = 0.88f }, FillB = UiPalette.PanelDark with { A = 0.85f }, Horizontal = true,
+            Ragged = 1.6f, Seed = 65, Border = UiPalette.Gilt with { A = 0.75f }, BorderWidth = 1.3f, Brush = true, Overshoot = 0.6f,
             Corners = CornerStyle.Bracket, CornerSize = 10, CornerWidth = 2, CornerOutset = 4,
         }.Margins(20, 10));
         prompt.AddChild(Ui.Row(UiPalette.SpaceM, Ui.KeyHint("E", ""),
@@ -199,8 +199,8 @@ public partial class ExploreHudPreview : Control
         var toast = new PanelContainer();
         toast.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.9f }, FillB = UiPalette.Abyss with { A = 0.55f }, Horizontal = true,
-            Marker = UiPalette.Gilt, MarkerWidth = 3,
+            FillA = UiPalette.Abyss with { A = 0.9f }, FillB = UiPalette.Abyss with { A = 0.5f }, Horizontal = true,
+            Ragged = 1.4f, Seed = 67, Marker = UiPalette.Cinnabar.Lightened(0.1f), MarkerWidth = 4,
         }.Margins(22, 10));
         toast.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Text(kind, UiTheme.GiltLabel, 18), Ui.Text(text, UiTheme.DarkLabel, 22),
             Ui.Spacer(), Ui.Text(where, UiTheme.DarkMutedLabel, 16)));

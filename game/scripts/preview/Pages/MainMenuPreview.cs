@@ -19,8 +19,10 @@ public partial class MainMenuPreview : Control
     private Control _pressStart = null!;
     private Control _menu = null!;
     private Control _portrait = null!;
+    private Control _footer = null!;
     private Control? _saves;
     private Button _first = null!;
+    private Vector2 _parallax;
 
     public override void _Ready()
     {
@@ -36,7 +38,8 @@ public partial class MainMenuPreview : Control
 
         _pressStart = BuildPressStart();
         AddChild(_pressStart);
-        AddChild(BuildFooter());
+        _footer = BuildFooter();
+        AddChild(_footer);
 
         switch (DevCapture.Tab)
         {
@@ -50,6 +53,20 @@ public partial class MainMenuPreview : Control
                 ShowMenu();
                 break;
         }
+    }
+
+    public override void _Process(double delta)
+    {
+        if (!Motion.Enabled || Size.X <= 0)
+        {
+            return;
+        }
+
+        // 立绘视差：比背景山水移得多，人物站在景前。
+        var mouse = (GetLocalMousePosition() / Size - new Vector2(0.5f, 0.5f)).Clamp(new Vector2(-0.5f, -0.5f), new Vector2(0.5f, 0.5f));
+        var target = -mouse * new Vector2(28, 12);
+        _parallax = _parallax.Lerp(target, (float)Mathf.Min(1, delta * 4));
+        _portrait.Position = _parallax;
     }
 
     public override void _UnhandledInput(InputEvent @event)
@@ -120,14 +137,8 @@ public partial class MainMenuPreview : Control
 
         if (Motion.Enabled)
         {
-            // 呼吸：以脚下为轴极轻微的纵向起伏。
-            art.Ready += () =>
-            {
-                art.PivotOffset = new Vector2(art.Size.X / 2, art.Size.Y);
-                var breathe = art.CreateTween().SetLoops().SetTrans(Tween.TransitionType.Sine);
-                breathe.TweenProperty(art, "scale", new Vector2(1, 1.006f), 2.4f);
-                breathe.TweenProperty(art, "scale", Vector2.One, 2.4f);
-            };
+            // 不做缩放“呼吸”：极慢的亚像素纵向缩放会让线稿逐像素爬动、看起来一顿一顿，还会拉伸五官。
+            // 改为随鼠标的整体视差（_Process），人物只在玩家移动鼠标时轻移。
             Motion.Enter(art, 0.1f, 0.9f, rise: 0, fromX: 40);
             Motion.Enter(plate, 0.6f, Motion.Normal, rise: 20);
         }
@@ -150,7 +161,11 @@ public partial class MainMenuPreview : Control
 
         var rule = Ui.MinSize(new DiamondRule { Lead = true }, 220);
         rule.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        var logo = Ui.Column(0, title, Ui.Row(UiPalette.SpaceM, Ui.MinSize(new Control(), 8), arc, rule));
+        // 标题后压一方朱砂印，是整页最亮的一点暖色。
+        var seal = Ui.SquareSeal("江湖", 34);
+        seal.Rotation = Mathf.DegToRad(-3);
+        var logo = Ui.Column(0, Ui.Row(UiPalette.SpaceL, title, seal),
+            Ui.Row(UiPalette.SpaceM, Ui.MinSize(new Control(), 8), arc, rule));
         Ui.Place(logo, 0, 0, 128, 72, 1100, 330);
         Motion.Enter(logo, 0.15f, 0.8f, rise: 24);
         return logo;
@@ -241,7 +256,7 @@ public partial class MainMenuPreview : Control
         Motion.Enter(panel, 0, Motion.Normal, rise: 0, fromX: 60);
 
         var group = new ButtonGroup();
-        var cards = Ui.Column(14);
+        var cards = Ui.Column(12);
         Button? firstCard = null;
         foreach (var save in SaveSamples.Slots)
         {
@@ -267,17 +282,30 @@ public partial class MainMenuPreview : Control
             Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "读取"), ("Esc", "关闭")),
             Ui.Spacer(), remove, load);
 
-        panel.AddChild(Ui.Column(UiPalette.SpaceL, header, Ui.Rule(dark: true), Ui.Expand(cards, vertical: true), footer));
+        // 存档卡放进滚动区：存档位最多 20 个，面板高度固定在 72–972，内容再多也不会撑出面板、压到标题页底栏。
+        // 内缩一圈留给卡片的焦点折角与投影，免得被滚动区裁掉。
+        var inset = new MarginContainer();
+        foreach (var side in new[] { "left", "right", "top", "bottom" })
+        {
+            inset.AddThemeConstantOverride($"margin_{side}", 10);
+        }
+
+        inset.AddChild(Ui.Expand(cards));
+        var scroll = new ScrollContainer
+        {
+            HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, FollowFocus = true,
+            SizeFlagsVertical = SizeFlags.ExpandFill,
+        };
+        scroll.AddChild(Ui.Expand(inset));
+        panel.AddChild(Ui.Column(UiPalette.SpaceM, header, Ui.Rule(dark: true), scroll, footer));
         AddChild(layer);
         _saves = layer;
 
         firstCard!.ButtonPressed = true;
         firstCard.GrabFocus();
-        _portrait.CreateTween().TweenProperty(_portrait, "modulate:a", 0.25f, Motion.Normal);
-        if (!Motion.Enabled)
-        {
-            _portrait.Modulate = _portrait.Modulate with { A = 0.25f };
-        }
+        // 弹层打开时立绘淡到 25%，标题页底栏（声明、键帽、版本号）隐去，由弹层自己的键帽栏接替。
+        FadeTo(_portrait, 0.25f);
+        FadeTo(_footer, 0);
     }
 
     private void CloseSaves()
@@ -289,7 +317,8 @@ public partial class MainMenuPreview : Control
 
         _saves = null;
         Motion.FadeOut(layer, Motion.Quick, layer.QueueFree);
-        _portrait.CreateTween().TweenProperty(_portrait, "modulate:a", 1f, Motion.Normal);
+        FadeTo(_portrait, 1);
+        FadeTo(_footer, 1);
         _first.GrabFocus();
     }
 
@@ -298,7 +327,7 @@ public partial class MainMenuPreview : Control
         var card = new Button
         {
             ThemeTypeVariation = UiTheme.CardButton, ToggleMode = true, ButtonGroup = group,
-            CustomMinimumSize = new Vector2(0, 176), FocusMode = FocusModeEnum.All,
+            CustomMinimumSize = new Vector2(0, 156), FocusMode = FocusModeEnum.All,
         };
         card.MouseEntered += card.GrabFocus;
         card.FocusEntered += () => card.ButtonPressed = true;
@@ -319,17 +348,17 @@ public partial class MainMenuPreview : Control
             empty.VerticalAlignment = VerticalAlignment.Center;
             content.AddChild(empty);
             Ui.IgnoreMouse(content);
-            card.CustomMinimumSize = new Vector2(0, 96);
+            card.CustomMinimumSize = new Vector2(0, 84);
             return card;
         }
 
-        var thumbFrame = new PanelContainer { CustomMinimumSize = new Vector2(250, 141) };
+        var thumbFrame = new PanelContainer { CustomMinimumSize = new Vector2(224, 126) };
         thumbFrame.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            Border = UiPalette.Trim with { A = 0.8f }, BorderWidth = 1, Chamfer = 5,
-            Corners = CornerStyle.Bracket, CornerSize = 10, CornerWidth = 1.5f,
+            Border = UiPalette.Gilt with { A = 0.75f }, BorderWidth = 1.1f, Brush = true, Overshoot = 0.4f, Seed = 69,
+            Corners = CornerStyle.Bracket, CornerSize = 12, CornerWidth = 1.6f,
         }.Margins(3, 3));
-        var thumb = Backdrop.Still(save.SunX, save.SunX * 7);
+        var thumb = Backdrop.Still(save.SunX, save.SunX * 7, save.Mood);
         thumb.ClipContents = true;
         thumbFrame.AddChild(thumb);
         thumbFrame.SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -406,6 +435,18 @@ public partial class MainMenuPreview : Control
     }
 
     // ── 工具 ─────────────────────────────────────────────
+
+    private static void FadeTo(CanvasItem item, float alpha)
+    {
+        if (Motion.Enabled)
+        {
+            item.CreateTween().TweenProperty(item, "modulate:a", alpha, Motion.Normal);
+        }
+        else
+        {
+            item.Modulate = item.Modulate with { A = alpha };
+        }
+    }
 
     private static MarginContainer Indent(Control child, int left, int bottom)
     {

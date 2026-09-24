@@ -298,16 +298,17 @@ public partial class CharacterPreview : PreviewScreen
     };
 
     /// <summary>
-    /// 立绘框：玉版上一方深潭画框，立绘自下而上铺满、底部渐隐；没有立绘的人物以竖排姓名占位并标注待制作。
+    /// 立绘框：绢本上一方石青到黛的画框，立绘自下而上铺满、底部渐隐；没有立绘的人物以竖排姓名占位并标注待制作。
     /// </summary>
     private static Control Portrait(SampleMember m)
     {
         var frame = new PanelContainer { ClipContents = true };
         frame.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Accent.Lightened(0.35f), FillB = UiPalette.PanelDark, Chamfer = 10,
-            Border = UiPalette.Trim, BorderWidth = 1.5f, Inner = UiPalette.Surface with { A = 0.25f }, InnerInset = 6,
-            Corners = CornerStyle.Hook, CornerSize = 20, CornerWidth = 2, CornerColor = UiPalette.Gilt,
+            FillA = UiPalette.Accent.Lightened(0.25f), FillB = UiPalette.PanelDark, Ragged = 1.8f, Seed = 55,
+            Grain = Colors.White with { A = 0.06f }, Wash = UiPalette.Surface with { A = 0.18f },
+            Border = UiPalette.Ochre, BorderWidth = 1.6f, Brush = true, Inner = UiPalette.Gilt with { A = 0.45f }, InnerInset = 7,
+            Corners = CornerStyle.Cloud, CornerSize = 34, CornerWidth = 2, CornerColor = UiPalette.Gilt,
         }.Margins(0, 0));
 
         var stage = new Control { ClipContents = true, MouseFilter = MouseFilterEnum.Ignore };

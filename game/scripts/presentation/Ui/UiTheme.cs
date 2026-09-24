@@ -4,8 +4,9 @@ namespace WuxiaWorld.Game.Presentation.Ui;
 
 /// <summary>
 /// 全局 UI 主题（架构文档 10.4，视觉规范见 docs/art/UI_DESIGN.md）。
-/// 两种面：浅色“玉版”（阅读与表单）与深色“潭影”（菜单外框、HUD、对话、战斗）。
-/// 基础类型按玉版配色；深色面上的控件使用 Dark* 等类型变体。由 AppHost 挂到根窗口。
+/// “绢本青绿”：浅色“绢本”（阅读与表单）与深色“黛本”（存档、对话、战斗），外加薄墨 HUD 与朱砂印章。
+/// 框线、选中与角饰均为笔触（<see cref="Brushwork"/>），不用规整细线。
+/// 基础类型按绢面配色；深色面上的控件使用 Dark* 等类型变体。由 AppHost 挂到根窗口。
 /// </summary>
 public static class UiTheme
 {
@@ -93,65 +94,67 @@ public static class UiTheme
 
     private static void BuildButtons(Theme t)
     {
-        // 键盘焦点：控件外侧四角的金泥折线，所有按钮共用，不只靠颜色。
-        OrnateBox Focus(float outset = 4) => new()
+        // 键盘焦点：控件外侧四角的泥金折角，两笔出锋；所有按钮共用，不只靠颜色。
+        OrnateBox Focus(float outset = 5) => new()
         {
-            Corners = CornerStyle.Bracket, CornerColor = UiPalette.Gilt, CornerSize = 12, CornerWidth = 2,
+            Corners = CornerStyle.Bracket, CornerColor = UiPalette.Gilt, CornerSize = 13, CornerWidth = 2.2f,
             CornerOutset = outset,
         };
 
-        // 基础按钮：玉版上的次要操作，切角细框。
-        OrnateBox Plain(Color fill, Color border, float width = 1) =>
-            new OrnateBox { FillA = fill, Border = border, BorderWidth = width, Chamfer = 5 }.Margins(22, 10);
+        // 基础按钮：绢面上的次要操作，四边手绘墨线。
+        OrnateBox Plain(Color fill, Color border, float width = 1.3f) => new OrnateBox
+        {
+            FillA = fill, Ragged = 1.2f, Border = border, BorderWidth = width, Brush = true, Seed = 3, Overshoot = 0.45f,
+        }.Margins(24, 10);
         States(t, "Button",
-            Plain(UiPalette.Surface with { A = 0.6f }, UiPalette.Text with { A = 0.7f }),
-            Plain(UiPalette.SurfaceShade, UiPalette.Accent, 1.5f),
+            Plain(UiPalette.Surface with { A = 0.55f }, UiPalette.Text with { A = 0.75f }),
+            Plain(UiPalette.SurfaceShade, UiPalette.Accent, 1.6f),
             Plain(UiPalette.Text, UiPalette.Text),
             Plain(Colors.Transparent, UiPalette.TextMuted with { A = 0.35f }),
             Focus());
         Fonts(t, "Button", UiPalette.Text, UiPalette.Accent, UiPalette.Surface, UiPalette.TextMuted with { A = 0.6f });
         t.SetFont("font", "Button", UiFonts.BodyMedium);
 
-        // 主按钮：石青玉面，上亮下暗，内衬一道浅线与底部反光。
+        // 主按钮：一块刷出来的石青色，毛边、上亮下暗，内衬一道泥金细笔。
         OrnateBox Jade(float light) => new OrnateBox
         {
-            FillA = UiPalette.Accent.Lightened(0.14f + light), FillB = UiPalette.Accent.Darkened(0.18f - light),
-            Chamfer = 7, Border = UiPalette.Abyss with { A = 0.35f }, BorderWidth = 1,
-            Inner = UiPalette.Surface with { A = 0.28f }, InnerInset = 3,
-            Sheen = UiPalette.Surface with { A = 0.35f }, SheenAtTop = true, SheenInset = 0.08f,
-            Shadow = UiPalette.Abyss with { A = 0.28f }, ShadowSize = 4, ShadowOffset = new Vector2(0, 3),
-        }.Margins(28, 12);
+            FillA = UiPalette.Accent.Lightened(0.12f + light), FillB = UiPalette.Accent.Darkened(0.22f - light),
+            Ragged = 1.8f, Seed = 5, Brush = true,
+            Inner = UiPalette.Gilt with { A = 0.75f }, InnerInset = 4,
+            Grain = Colors.White with { A = 0.08f },
+            Shadow = UiPalette.Abyss with { A = 0.3f }, ShadowSize = 6, ShadowOffset = new Vector2(0, 4),
+        }.Margins(30, 12);
         Variation(t, PrimaryButton, "Button");
         States(t, PrimaryButton, Jade(0), Jade(0.08f), Jade(-0.14f),
-            new OrnateBox { FillA = UiPalette.TextMuted with { A = 0.22f }, Chamfer = 7 }.Margins(28, 12), Focus());
-        Fonts(t, PrimaryButton, UiPalette.Surface, UiPalette.Surface, UiPalette.Surface, UiPalette.TextMuted);
+            new OrnateBox { FillA = UiPalette.TextMuted with { A = 0.22f }, Ragged = 1.8f, Seed = 5 }.Margins(30, 12), Focus());
+        Fonts(t, PrimaryButton, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextMuted);
 
-        // 列表行：悬停淡入底色；选中为自左渐隐的选中底加石青竖条，不只靠颜色区分。
-        OrnateBox Row(Color fill, float marker) => new OrnateBox
+        // 列表行：悬停一道淡刷痕；选中为石青刷痕加左侧朱砂竖笔，不只靠颜色区分。
+        OrnateBox Row(Color swipe, float marker) => new OrnateBox
         {
-            FillA = fill, FillB = fill with { A = 0 }, Horizontal = true,
-            Marker = UiPalette.Accent, MarkerWidth = marker,
-            Sheen = UiPalette.Trim with { A = 0.28f },
+            Swipe = swipe, SwipeReach = 1, Seed = 7,
+            Marker = UiPalette.Cinnabar, MarkerWidth = marker,
+            Sheen = UiPalette.Ochre with { A = 0.22f }, Brush = true,
         }.Margins(12, 12);
         Variation(t, RowButton, "Button");
         States(t, RowButton,
             Row(Colors.Transparent, 0),
-            Row(UiPalette.SurfaceShade with { A = 0.7f }, 0),
-            Row(UiPalette.SurfaceShade, 5),
+            Row(UiPalette.SurfaceShade with { A = 0.9f }, 0),
+            Row(UiPalette.Accent with { A = 0.2f }, 5),
             Row(Colors.Transparent, 0),
             Focus(0));
         Fonts(t, RowButton, UiPalette.Text, UiPalette.Text, UiPalette.Text, UiPalette.TextMuted);
         t.SetFont("font", RowButton, UiFonts.Body);
 
-        // 分类签：小切角签；选中为深色实底加金泥角点。
+        // 分类签：小墨框签；选中为浓墨实底加泥金折角。
         OrnateBox Chip(Color fill, Color border, bool corners = false) => new OrnateBox
         {
-            FillA = fill, Border = border, BorderWidth = 1, Chamfer = 4,
-            Corners = corners ? CornerStyle.Bracket : CornerStyle.None, CornerSize = 6, CornerWidth = 1.5f,
+            FillA = fill, Ragged = 1, Seed = 9, Border = border, BorderWidth = 1.1f, Brush = true, Overshoot = 0.35f,
+            Corners = corners ? CornerStyle.Bracket : CornerStyle.None, CornerSize = 7, CornerWidth = 1.6f,
         }.Margins(18, 5);
         Variation(t, ChipButton, "Button");
         States(t, ChipButton,
-            Chip(UiPalette.Surface with { A = 0.5f }, UiPalette.Trim),
+            Chip(UiPalette.Surface with { A = 0.5f }, UiPalette.Ochre with { A = 0.7f }),
             Chip(UiPalette.SurfaceShade, UiPalette.Accent),
             Chip(UiPalette.Text, UiPalette.Text, true),
             Chip(Colors.Transparent, UiPalette.TextMuted with { A = 0.3f }),
@@ -159,11 +162,11 @@ public static class UiTheme
         Fonts(t, ChipButton, UiPalette.Text, UiPalette.Accent, UiPalette.Surface, UiPalette.TextMuted);
         t.SetFontSize("font_size", ChipButton, UiPalette.FontSecondary);
 
-        // 顶部分区签（深色面）：选中项自下而上泛起石青光，底边一道金泥线。
+        // 顶部分区签（深色面）：选中项自下泛起石青光，底边一笔泥金。
         OrnateBox Nav(float glow, bool line) => new OrnateBox
         {
             FillA = UiPalette.Accent with { A = 0 }, FillB = UiPalette.Accent with { A = glow },
-            Sheen = line ? UiPalette.Gilt : Colors.Transparent, SheenWidth = 3, SheenInset = 0.18f,
+            Sheen = line ? UiPalette.Gilt : Colors.Transparent, SheenWidth = 3, SheenInset = 0.14f, Brush = true, Seed = 11,
         }.Margins(26, 14);
         Variation(t, NavTab, "Button");
         States(t, NavTab, Nav(0, false), Nav(0.25f, false), Nav(0.55f, true), Nav(0, false), Focus(0));
@@ -171,75 +174,79 @@ public static class UiTheme
         t.SetFont("font", NavTab, UiFonts.Title);
         t.SetFontSize("font_size", NavTab, 30);
 
-        // 页内子签（玉版）：文字签，选中加石青下划线。
+        // 页内子签（绢面）：文字签，选中在字下补一笔朱砂。
         OrnateBox Sub(Color line, Color fill) => new OrnateBox
         {
-            FillA = fill, Sheen = line, SheenWidth = 3, SheenInset = 0.12f,
+            FillA = fill, Ragged = 1, Sheen = line, SheenWidth = 3.2f, SheenInset = 0.1f, Brush = true, Seed = 13,
         }.Margins(20, 10);
         Variation(t, SubTab, "Button");
         States(t, SubTab,
             Sub(Colors.Transparent, Colors.Transparent),
-            Sub(UiPalette.Trim with { A = 0.6f }, Colors.Transparent),
-            Sub(UiPalette.Accent, UiPalette.SurfaceShade with { A = 0.5f }),
+            Sub(UiPalette.Ochre with { A = 0.55f }, Colors.Transparent),
+            Sub(UiPalette.Cinnabar, UiPalette.SurfaceShade with { A = 0.6f }),
             Sub(Colors.Transparent, Colors.Transparent),
             Focus(0));
-        Fonts(t, SubTab, UiPalette.TextMuted, UiPalette.Text, UiPalette.Accent, UiPalette.TextMuted with { A = 0.5f });
+        Fonts(t, SubTab, UiPalette.TextMuted, UiPalette.Text, UiPalette.Text, UiPalette.TextMuted with { A = 0.5f });
         t.SetFont("font", SubTab, UiFonts.Title);
         t.SetFontSize("font_size", SubTab, 26);
 
-        // 深色面按钮。
-        OrnateBox DarkBox(Color fill, Color border) =>
-            new OrnateBox { FillA = fill, Border = border, BorderWidth = 1, Chamfer = 5 }.Margins(22, 10);
+        // 深色面按钮：黛底毛边，旧绢色笔线；按下为石青实底。
+        OrnateBox DarkBox(Color fill, Color border) => new OrnateBox
+        {
+            FillA = fill, Ragged = 1.3f, Seed = 15, Border = border, BorderWidth = 1.2f, Brush = true, Overshoot = 0.45f,
+        }.Margins(22, 10);
         Variation(t, DarkButton, "Button");
         States(t, DarkButton,
-            DarkBox(UiPalette.Abyss with { A = 0.35f }, UiPalette.Trim with { A = 0.55f }),
-            DarkBox(UiPalette.Accent with { A = 0.45f }, UiPalette.Trim),
-            DarkBox(UiPalette.Trim, UiPalette.Trim),
-            DarkBox(UiPalette.Abyss with { A = 0.3f }, UiPalette.TextOnDarkMuted with { A = 0.25f }),
+            DarkBox(UiPalette.Abyss with { A = 0.4f }, UiPalette.TextOnDarkMuted with { A = 0.5f }),
+            DarkBox(UiPalette.Accent with { A = 0.55f }, UiPalette.Gilt with { A = 0.85f }),
+            DarkBox(UiPalette.Accent, UiPalette.Gilt),
+            DarkBox(UiPalette.Abyss with { A = 0.3f }, UiPalette.TextOnDarkMuted with { A = 0.2f }),
             Focus());
-        Fonts(t, DarkButton, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.Abyss, UiPalette.TextOnDarkMuted with { A = 0.65f });
+        Fonts(t, DarkButton, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDarkMuted with { A = 0.6f });
 
-        // 标题菜单项：无框大字；悬停与键盘选中时，石青墨痕自左铺开，左端一粒金泥菱形。
+        // 标题菜单项：无框大字；悬停与键盘选中时，一笔石青自左刷开，左端点一粒朱砂。
         OrnateBox Streak(float a) => new OrnateBox
         {
-            FillA = UiPalette.Accent with { A = a }, FillB = UiPalette.Accent with { A = 0 }, Horizontal = true,
-            Diamond = a > 0, CornerColor = UiPalette.Gilt,
-        }.Margins(44, 8);
+            Swipe = UiPalette.Accent with { A = a }, SwipeReach = 1, Seed = 17,
+            Diamond = a > 0, CornerColor = UiPalette.Cinnabar.Lightened(0.08f),
+        }.Margins(48, 8);
         Variation(t, MenuItem, "Button");
-        States(t, MenuItem, Streak(0), Streak(0.9f), Streak(1f), Streak(0), Streak(0.9f));
-        Fonts(t, MenuItem, UiPalette.Text, UiPalette.Surface, UiPalette.Surface, UiPalette.TextMuted with { A = 0.5f });
-        t.SetColor("font_focus_color", MenuItem, UiPalette.Surface);
+        States(t, MenuItem, Streak(0), Streak(0.92f), Streak(1f), Streak(0), Streak(0.92f));
+        Fonts(t, MenuItem, UiPalette.Text, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextMuted with { A = 0.5f });
+        t.SetColor("font_focus_color", MenuItem, UiPalette.TextOnDark);
         t.SetFont("font", MenuItem, UiFonts.Title);
         t.SetFontSize("font_size", MenuItem, 40);
-        t.SetColor("font_outline_color", MenuItem, UiPalette.Surface with { A = 0.6f });
+        t.SetColor("font_outline_color", MenuItem, UiPalette.Surface with { A = 0.55f });
         t.SetConstant("outline_size", MenuItem, 4);
 
-        // 卡片按钮（存档卡、人物卡）：深色玻璃底，悬停/选中出金泥回纹角。
-        OrnateBox Card(Color fill, Color border, bool corners) => new OrnateBox
+        // 卡片按钮（存档卡、目录卡、招式格）：黛底绢纹；悬停、选中出泥金笔框与卷云角。
+        OrnateBox Card(Color fill, Color border, bool corners, float swipe = 0) => new OrnateBox
         {
-            FillA = fill, FillB = UiPalette.Abyss with { A = 0.9f }, Chamfer = 8,
-            Border = border, BorderWidth = 1,
-            Corners = corners ? CornerStyle.Hook : CornerStyle.None, CornerSize = 16,
-            Shadow = UiPalette.Abyss with { A = 0.35f }, ShadowSize = 8, ShadowOffset = new Vector2(0, 4),
+            FillA = fill, FillB = UiPalette.Abyss with { A = 0.92f }, Ragged = 1.4f, Seed = 19,
+            Grain = Colors.White with { A = 0.05f }, Swipe = UiPalette.Accent with { A = swipe }, SwipeReach = 0.8f,
+            Border = border, BorderWidth = 1.1f, Brush = true, Overshoot = 0.35f,
+            Corners = corners ? CornerStyle.Cloud : CornerStyle.None, CornerSize = 30, CornerWidth = 1.8f,
+            Shadow = UiPalette.Abyss with { A = 0.35f }, ShadowSize = 10, ShadowOffset = new Vector2(0, 5),
         }.Margins(20, 16);
         Variation(t, CardButton, "Button");
         States(t, CardButton,
-            Card(UiPalette.PanelDark with { A = 0.85f }, UiPalette.Trim with { A = 0.35f }, false),
-            Card(UiPalette.Accent with { A = 0.7f }, UiPalette.Trim, true),
-            Card(UiPalette.Accent, UiPalette.Gilt, true),
-            Card(UiPalette.PanelDark with { A = 0.5f }, UiPalette.Trim with { A = 0.15f }, false),
-            Focus(5));
+            Card(UiPalette.PanelDark with { A = 0.88f }, UiPalette.TextOnDarkMuted with { A = 0.28f }, false),
+            Card(UiPalette.PanelDark.Lightened(0.06f), UiPalette.Gilt with { A = 0.7f }, true, 0.35f),
+            Card(UiPalette.PanelDark.Lightened(0.08f), UiPalette.Gilt, true, 0.6f),
+            Card(UiPalette.PanelDark with { A = 0.5f }, UiPalette.TextOnDarkMuted with { A = 0.12f }, false),
+            Focus(6));
         Fonts(t, CardButton, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDarkMuted);
 
-        // 对话选项：深色长条，悬停/选中时左端石青条与金泥菱形。
+        // 对话选项：黛色长条，悬停/选中时石青一笔刷开、左端朱点。
         OrnateBox Choice(float a, bool mark) => new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.72f }, FillB = UiPalette.Accent with { A = a }, Horizontal = true,
-            Chamfer = 6, Border = UiPalette.Trim with { A = mark ? 0.9f : 0.35f }, BorderWidth = 1,
-            Marker = UiPalette.Trim, MarkerWidth = mark ? 4 : 0, Diamond = mark, CornerColor = UiPalette.Gilt,
-        }.Margins(44, 12);
+            FillA = UiPalette.Abyss with { A = 0.78f }, FillB = UiPalette.PanelDark with { A = 0.55f }, Horizontal = true,
+            Ragged = 1.5f, Seed = 21, Swipe = UiPalette.Accent with { A = a }, SwipeReach = 0.9f,
+            Border = UiPalette.Gilt with { A = mark ? 0.8f : 0.25f }, BorderWidth = 1.1f, Brush = true,
+            Diamond = mark, CornerColor = UiPalette.Cinnabar.Lightened(0.1f),
+        }.Margins(48, 12);
         Variation(t, ChoiceButton, "Button");
-        States(t, ChoiceButton, Choice(0.2f, false), Choice(0.6f, true), Choice(0.85f, true), Choice(0.05f, false), Choice(0.6f, true));
+        States(t, ChoiceButton, Choice(0, false), Choice(0.75f, true), Choice(0.95f, true), Choice(0, false), Choice(0.75f, true));
         Fonts(t, ChoiceButton, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDarkMuted with { A = 0.6f });
         t.SetColor("font_focus_color", ChoiceButton, UiPalette.TextOnDark);
         t.SetConstant("h_separation", ChoiceButton, 16);
@@ -249,77 +256,84 @@ public static class UiTheme
     {
         t.SetStylebox("panel", "PanelContainer", new StyleBoxEmpty());
 
-        // 玉版：主内容纸面，双线框、金泥回纹角、投影。
+        // 绢本：主阅读面。暖绢底加绢纹，毛边；赭石手绘双线界格，四角泥金卷云，下落投影。
         Variation(t, SheetPanel, "PanelContainer");
         t.SetStylebox("panel", SheetPanel, new OrnateBox
         {
-            FillA = UiPalette.Surface with { A = 0.97f }, FillB = UiPalette.SurfaceShade with { A = 0.97f },
-            Chamfer = 12, Border = UiPalette.Trim, BorderWidth = 1.5f,
-            Inner = UiPalette.Trim with { A = 0.45f }, InnerInset = 7,
-            Corners = CornerStyle.Hook, CornerSize = 30, CornerWidth = 2.5f, CornerColor = UiPalette.Gilt.Darkened(0.12f),
-            Shadow = UiPalette.Abyss with { A = 0.55f }, ShadowSize = 22, ShadowOffset = new Vector2(0, 10),
+            FillA = UiPalette.Surface with { A = 0.98f }, FillB = UiPalette.SurfaceShade with { A = 0.98f },
+            Ragged = 2.2f, Seed = 23, Grain = UiPalette.Ochre with { A = 0.09f },
+            Border = UiPalette.Ochre with { A = 0.85f }, BorderWidth = 1.6f, Brush = true,
+            Inner = UiPalette.Ochre with { A = 0.4f }, InnerInset = 9,
+            Wash = UiPalette.Trim with { A = 0.1f },
+            Corners = CornerStyle.Cloud, CornerSize = 64, CornerWidth = 2.4f, CornerColor = UiPalette.Gilt.Darkened(0.22f),
+            CornerOutset = -2,
+            Shadow = UiPalette.Abyss with { A = 0.6f }, ShadowSize = 26, ShadowOffset = new Vector2(0, 12),
         }.Margins(40, 22));
 
         Variation(t, InsetPanel, "PanelContainer");
         t.SetStylebox("panel", InsetPanel, new OrnateBox
         {
-            FillA = UiPalette.Surface with { A = 0.7f }, FillB = UiPalette.SurfaceShade with { A = 0.85f },
-            Chamfer = 8, Border = UiPalette.Trim with { A = 0.7f }, BorderWidth = 1,
-            Corners = CornerStyle.Bracket, CornerSize = 10, CornerWidth = 1.5f, CornerColor = UiPalette.Trim.Darkened(0.2f),
+            FillA = UiPalette.SurfaceShade with { A = 0.45f }, FillB = UiPalette.SurfaceShade with { A = 0.8f },
+            Ragged = 1.5f, Seed = 25, Border = UiPalette.Ochre with { A = 0.5f }, BorderWidth = 1.1f, Brush = true,
+            Corners = CornerStyle.Bracket, CornerSize = 12, CornerWidth = 1.6f, CornerColor = UiPalette.Ochre,
         }.Margins(26, 22));
 
+        // 印章：朱砂印泥，毛边与缺墨，内框一笔绢色。
         Variation(t, SealPanel, "PanelContainer");
         t.SetStylebox("panel", SealPanel, new OrnateBox
         {
-            FillA = UiPalette.Accent.Lightened(0.08f), FillB = UiPalette.Accent.Darkened(0.2f), Chamfer = 4,
-            Border = UiPalette.Gilt, BorderWidth = 1.5f, Inner = UiPalette.Surface with { A = 0.35f }, InnerInset = 4,
-        }.Margins(14, 12));
+            FillA = UiPalette.Cinnabar.Lightened(0.06f), FillB = UiPalette.Cinnabar.Darkened(0.12f),
+            Ragged = 2, Seed = 27, Grain = UiPalette.Surface with { A = 0.28f }, GrainScale = 0.5f,
+            Inner = UiPalette.Surface with { A = 0.65f }, InnerInset = 5, Brush = true,
+            Shadow = UiPalette.Abyss with { A = 0.2f }, ShadowSize = 3, ShadowOffset = new Vector2(0, 2),
+        }.Margins(15, 12));
 
-        // 潭影：深色面板（菜单弹层、存档、对话框）。
+        // 黛本：深色面板（存档、对话框、战斗指令区、结算）。黛底绢纹，泥金笔框与卷云角。
         Variation(t, DarkPanel, "PanelContainer");
         t.SetStylebox("panel", DarkPanel, new OrnateBox
         {
-            FillA = UiPalette.PanelDark with { A = 0.94f }, FillB = UiPalette.Abyss with { A = 0.96f },
-            Chamfer = 12, Border = UiPalette.Trim with { A = 0.55f }, BorderWidth = 1.5f,
-            Inner = UiPalette.Trim with { A = 0.18f }, InnerInset = 7,
-            Corners = CornerStyle.Hook, CornerSize = 26, CornerWidth = 2, CornerColor = UiPalette.Gilt with { A = 0.9f },
-            Shadow = UiPalette.Abyss with { A = 0.5f }, ShadowSize = 20, ShadowOffset = new Vector2(0, 8),
-        }.Margins(32, 28));
+            FillA = UiPalette.PanelDark with { A = 0.95f }, FillB = UiPalette.Abyss with { A = 0.97f },
+            Ragged = 2, Seed = 29, Grain = Colors.White with { A = 0.045f },
+            Border = UiPalette.Gilt with { A = 0.7f }, BorderWidth = 1.5f, Brush = true,
+            Inner = UiPalette.Gilt with { A = 0.22f }, InnerInset = 9,
+            Wash = UiPalette.Accent with { A = 0.16f },
+            Corners = CornerStyle.Cloud, CornerSize = 58, CornerWidth = 2.2f, CornerColor = UiPalette.Gilt,
+            CornerOutset = -2,
+            Shadow = UiPalette.Abyss with { A = 0.55f }, ShadowSize = 24, ShadowOffset = new Vector2(0, 10),
+        }.Margins(34, 28));
 
-        // 薄玻璃：HUD 与提示条，不加角饰，避免抢画面。
+        // 薄墨：HUD 与提示条。一片淡墨色块，毛边，无框无角饰，不抢画面。
         Variation(t, GlassPanel, "PanelContainer");
         t.SetStylebox("panel", GlassPanel, new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.62f }, FillB = UiPalette.Abyss with { A = 0.78f }, Chamfer = 6,
-            Border = UiPalette.Trim with { A = 0.35f }, BorderWidth = 1,
+            FillA = UiPalette.Abyss with { A = 0.6f }, FillB = UiPalette.PanelDark with { A = 0.74f },
+            Ragged = 1.8f, Seed = 31, Grain = Colors.White with { A = 0.04f },
+            Sheen = UiPalette.Gilt with { A = 0.35f }, SheenAtTop = true, SheenInset = 0.04f, SheenWidth = 1.2f, Brush = true,
         }.Margins(18, 12));
 
         Variation(t, KeyCapPanel, "PanelContainer");
         t.SetStylebox("panel", KeyCapPanel, new OrnateBox
         {
-            FillA = UiPalette.TextOnDark with { A = 0.95f }, FillB = UiPalette.TextOnDarkMuted, Chamfer = 3,
-            Border = UiPalette.Abyss with { A = 0.5f }, BorderWidth = 1,
-            Sheen = UiPalette.Abyss with { A = 0.35f }, SheenWidth = 2,
+            FillA = UiPalette.Surface, FillB = UiPalette.SurfaceShade, Ragged = 0.8f, Seed = 33,
+            Sheen = UiPalette.Ochre with { A = 0.6f }, SheenWidth = 2, Brush = true,
         }.Margins(9, 1));
 
         t.SetStylebox("panel", "TooltipPanel", new OrnateBox
         {
-            FillA = UiPalette.PanelDark, FillB = UiPalette.Abyss, Chamfer = 5,
-            Border = UiPalette.Trim with { A = 0.7f }, BorderWidth = 1,
-            Corners = CornerStyle.Bracket, CornerSize = 8, CornerWidth = 1.5f,
+            FillA = UiPalette.PanelDark, FillB = UiPalette.Abyss, Ragged = 1.2f, Seed = 35,
+            Border = UiPalette.Gilt with { A = 0.6f }, BorderWidth = 1.1f, Brush = true,
         }.Margins(14, 9));
         t.SetColor("font_color", "TooltipLabel", UiPalette.TextOnDark);
         t.SetFontSize("font_size", "TooltipLabel", UiPalette.FontSecondary);
 
         t.SetStylebox("panel", "PopupMenu", new OrnateBox
         {
-            FillA = UiPalette.PanelDark, FillB = UiPalette.Abyss, Chamfer = 5,
-            Border = UiPalette.Trim with { A = 0.7f }, BorderWidth = 1,
+            FillA = UiPalette.PanelDark, FillB = UiPalette.Abyss, Ragged = 1.2f, Seed = 37,
+            Border = UiPalette.Gilt with { A = 0.6f }, BorderWidth = 1.1f, Brush = true,
         }.Margins(8, 8));
         t.SetStylebox("hover", "PopupMenu", new OrnateBox
         {
-            FillA = UiPalette.Accent, FillB = UiPalette.Accent with { A = 0.2f }, Horizontal = true,
-            Marker = UiPalette.Gilt, MarkerWidth = 3,
+            Swipe = UiPalette.Accent, Seed = 39, Marker = UiPalette.Cinnabar, MarkerWidth = 3,
         });
         t.SetColor("font_color", "PopupMenu", UiPalette.TextOnDark);
         t.SetColor("font_hover_color", "PopupMenu", UiPalette.TextOnDark);
@@ -327,15 +341,14 @@ public static class UiTheme
         t.SetFontSize("font_size", "PopupMenu", UiPalette.FontSecondary);
         t.SetConstant("v_separation", "PopupMenu", 14);
 
-        // 分隔线：两端渐隐、正中一粒菱形（Ui.Rule 负责菱形）。
-        t.SetStylebox("separator", "HSeparator", new StyleBoxLine { Color = UiPalette.Trim with { A = 0.6f }, Thickness = 1, GrowBegin = -8, GrowEnd = -8 });
+        t.SetStylebox("separator", "HSeparator", new StyleBoxLine { Color = UiPalette.Ochre with { A = 0.5f }, Thickness = 2, GrowBegin = -8, GrowEnd = -8 });
         t.SetConstant("separation", "HSeparator", UiPalette.SpaceM);
 
         var track = new OrnateBox { FillA = UiPalette.Text with { A = 0.07f } };
         t.SetStylebox("scroll", "VScrollBar", track.Margins(3, 0));
-        t.SetStylebox("grabber", "VScrollBar", new OrnateBox { FillA = UiPalette.Trim, Chamfer = 2 });
-        t.SetStylebox("grabber_highlight", "VScrollBar", new OrnateBox { FillA = UiPalette.Accent, Chamfer = 2 });
-        t.SetStylebox("grabber_pressed", "VScrollBar", new OrnateBox { FillA = UiPalette.Text, Chamfer = 2 });
+        t.SetStylebox("grabber", "VScrollBar", new OrnateBox { FillA = UiPalette.Ochre with { A = 0.6f }, Ragged = 0.8f });
+        t.SetStylebox("grabber_highlight", "VScrollBar", new OrnateBox { FillA = UiPalette.Accent, Ragged = 0.8f });
+        t.SetStylebox("grabber_pressed", "VScrollBar", new OrnateBox { FillA = UiPalette.Text, Ragged = 0.8f });
     }
 
     private static void BuildInputs(Theme t)
@@ -375,8 +388,7 @@ public static class UiTheme
         // 进度条：暗槽加内框，填充为横向渐变并在顶边带一道高光。
         t.SetStylebox("background", "ProgressBar", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.22f }, FillB = UiPalette.Abyss with { A = 0.12f },
-            Border = UiPalette.Abyss with { A = 0.3f }, BorderWidth = 1, Chamfer = 2,
+            FillA = UiPalette.Abyss with { A = 0.24f }, FillB = UiPalette.Abyss with { A = 0.14f }, Ragged = 0.8f, Seed = 43,
         });
         t.SetStylebox("fill", "ProgressBar", BarFill(UiPalette.TextMuted));
         t.SetColor("font_color", "ProgressBar", UiPalette.Text);
@@ -392,7 +404,7 @@ public static class UiTheme
 
     private static OrnateBox BarFill(Color c) => new()
     {
-        FillA = c.Darkened(0.12f), FillB = c.Lightened(0.18f), Horizontal = true, Chamfer = 2,
+        FillA = c.Darkened(0.12f), FillB = c.Lightened(0.18f), Horizontal = true, Ragged = 0.8f, Seed = 41,
         Sheen = Colors.White with { A = 0.35f }, SheenAtTop = true,
     };
 

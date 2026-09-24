@@ -10,6 +10,8 @@ public enum CornerStyle
     Bracket,
     /// <summary>回纹钩角，用于面板与卡片。</summary>
     Hook,
+    /// <summary>卷云角：金泥笔触入角打卷，用于主要面板。</summary>
+    Cloud,
 }
 
 /// <summary>
@@ -58,6 +60,23 @@ public partial class OrnateBox : StyleBox
     /// <summary>高光线两端内缩比例，0 为通长；页签下划线用 0.2 左右。</summary>
     public float SheenInset { get; set; }
 
+    /// <summary>true 时外框与内衬线用笔触画（四边各一笔，出角略有余锋），否则为规整细线。</summary>
+    public bool Brush { get; set; }
+    /// <summary>底色轮廓的毛边幅度（像素）；0 为齐边。</summary>
+    public float Ragged { get; set; }
+    /// <summary>纸纹着色；透明为不加纸纹。</summary>
+    public Color Grain { get; set; } = Colors.Transparent;
+    public float GrainScale { get; set; } = 1;
+    /// <summary>刷痕色：不为透明时在底色之上自左刷出一道色带（菜单项、选项的选中态）。</summary>
+    public Color Swipe { get; set; } = Colors.Transparent;
+    public float SwipeReach { get; set; } = 1;
+    /// <summary>笔框出角的余锋比例；上下紧挨的卡片取小值，免得笔锋伸进邻卡。</summary>
+    public float Overshoot { get; set; } = 1;
+    /// <summary>晕染：左上与右下各一团淡墨（或淡彩），打破整齐的矩形；透明为不加。</summary>
+    public Color Wash { get; set; } = Colors.Transparent;
+    /// <summary>笔触与毛边的随机种子；同一类控件取同一值，形状只随尺寸变化。</summary>
+    public float Seed { get; set; } = 1;
+
     /// <summary>绘制区外扩，不影响布局。</summary>
     public float Expand { get; set; }
 
@@ -77,19 +96,23 @@ public partial class OrnateBox : StyleBox
             return;
         }
 
+        // 种子只随尺寸变，入场位移时笔触不跳。
+        var seed = Seed * 7.3f + Mathf.Round(rect.Size.X) * 0.013f + Mathf.Round(rect.Size.Y) * 0.029f;
+
         if (Shadow.A > 0 && ShadowSize > 0)
         {
-            // 由外到内叠几层半透明切角框，近似柔和投影。
-            const int layers = 5;
+            // 由外到内叠几层半透明框，近似柔和投影；层数多、每层淡，边缘不出台阶。
+            const int layers = 8;
             for (var i = layers; i >= 1; i--)
             {
                 var grow = ShadowSize * i / layers;
-                var shape = Shape(new Rect2(rect.Position + ShadowOffset, rect.Size).Grow(grow), Chamfer + grow * 0.6f);
+                var shape = Brushwork.Octagon(new Rect2(rect.Position + ShadowOffset, rect.Size).Grow(grow - ShadowSize * 0.3f),
+                    Chamfer + grow * 0.6f);
                 RenderingServer.CanvasItemAddPolygon(item, shape, [Shadow with { A = Shadow.A / layers }]);
             }
         }
 
-        var outline = Shape(rect, Chamfer);
+        var outline = Ragged > 0 ? Brushwork.RaggedRect(rect, Ragged, seed, Chamfer) : Brushwork.Octagon(rect, Chamfer);
         if (FillA.A > 0 || FillB is { A: > 0 })
         {
             var colors = new Color[outline.Length];
@@ -104,44 +127,104 @@ public partial class OrnateBox : StyleBox
             RenderingServer.CanvasItemAddPolygon(item, outline, colors);
         }
 
+        if (Wash.A > 0)
+        {
+            var radius = Mathf.Min(rect.Size.X, rect.Size.Y) * 0.55f;
+            Brushwork.Blot(item, rect.Position + new Vector2(radius * 1.1f, radius * 0.9f), radius, Wash, seed);
+            Brushwork.Blot(item, rect.End - new Vector2(radius * 1.2f, radius * 0.95f), radius * 0.8f, Wash with { A = Wash.A * 0.7f }, seed + 5);
+        }
+
+        Brushwork.GrainFill(item, outline, Grain, GrainScale);
+
+        if (Swipe.A > 0)
+        {
+            Brushwork.Swipe(item, rect, Swipe, seed, SwipeReach);
+        }
+
         if (Sheen.A > 0)
         {
             var y = SheenAtTop ? rect.Position.Y + SheenWidth / 2 + 1 : rect.End.Y - SheenWidth / 2 - 1;
             var inset = Mathf.Max(Chamfer, rect.Size.X * SheenInset);
-            RenderingServer.CanvasItemAddLine(item, new Vector2(rect.Position.X + inset, y),
-                new Vector2(rect.End.X - inset, y), Sheen, SheenWidth);
+            var from = new Vector2(rect.Position.X + inset, y);
+            var to = new Vector2(rect.End.X - inset, y);
+            if (Brush)
+            {
+                Brushwork.Stroke(item, [from, to], SheenWidth * 1.3f, Sheen, seed + 4, 0.4f, 0.1f, 0.4f);
+            }
+            else
+            {
+                RenderingServer.CanvasItemAddLine(item, from, to, Sheen, SheenWidth);
+            }
         }
 
         if (MarkerWidth > 0 && Marker.A > 0)
         {
-            RenderingServer.CanvasItemAddRect(item,
-                new Rect2(rect.Position.X, rect.Position.Y + 6, MarkerWidth, rect.Size.Y - 12), Marker);
+            var top = new Vector2(rect.Position.X + MarkerWidth / 2, rect.Position.Y + 4);
+            var bottom = new Vector2(rect.Position.X + MarkerWidth / 2, rect.End.Y - 4);
+            Brushwork.Stroke(item, [top, bottom], MarkerWidth, Marker, seed + 2, 0, 0.1f, 0.3f);
         }
 
         if (Diamond)
         {
-            var c = new Vector2(rect.Position.X + MarkerWidth + 12, rect.GetCenter().Y);
-            DrawDiamond(item, c, 5, CornerColor);
+            var c = new Vector2(rect.Position.X + MarkerWidth + 14, rect.GetCenter().Y);
+            DrawDiamond(item, c, 6, CornerColor);
+            DrawDiamond(item, c, 2.2f, CornerColor.Darkened(0.5f));
         }
 
         if (BorderWidth > 0 && Border.A > 0)
         {
-            Loop(item, outline, Border, BorderWidth);
+            if (Brush)
+            {
+                BrushFrame(item, rect, Border, BorderWidth, seed, Overshoot);
+            }
+            else
+            {
+                Loop(item, outline, Border, BorderWidth);
+            }
         }
 
         if (Inner.A > 0)
         {
             var inner = rect.Grow(-InnerInset);
-            Loop(item, Shape(inner, Mathf.Max(0, Chamfer - InnerInset * 0.4f)), Inner, 1);
+            if (Brush)
+            {
+                BrushFrame(item, inner, Inner, 1.1f, seed + 11, Overshoot * 0.5f);
+            }
+            else
+            {
+                Loop(item, Brushwork.Octagon(inner, Mathf.Max(0, Chamfer - InnerInset * 0.4f)), Inner, 1);
+            }
         }
 
         if (Corners != CornerStyle.None)
         {
-            DrawCorners(item, rect.Grow(CornerOutset));
+            DrawCorners(item, rect.Grow(CornerOutset), seed);
         }
     }
 
-    private void DrawCorners(Rid item, Rect2 r)
+    /// <summary>四边各一笔：起笔在角外少许，收笔越过下一个角，略带弧度，像手绘的界格。</summary>
+    private static void BrushFrame(Rid item, Rect2 r, Color color, float width, float seed, float overshoot)
+    {
+        var over = Mathf.Min(14, Mathf.Min(r.Size.X, r.Size.Y) * 0.1f) * overshoot;
+        var (x0, y0, x1, y1) = (r.Position.X, r.Position.Y, r.End.X, r.End.Y);
+        Side(new Vector2(x0 - over, y0), new Vector2(x1 + over * 0.4f, y0), 0);
+        Side(new Vector2(x1, y0 - over * 0.4f), new Vector2(x1, y1 + over), 1);
+        Side(new Vector2(x1 + over, y1), new Vector2(x0 - over * 0.4f, y1), 2);
+        Side(new Vector2(x0, y1 + over * 0.4f), new Vector2(x0, y0 - over), 3);
+        return;
+
+        void Side(Vector2 a, Vector2 b, int k)
+        {
+            var s = seed + k * 3.7f;
+            var dir = (b - a).Normalized();
+            var normal = new Vector2(-dir.Y, dir.X);
+            var bow = (Brushwork.Hash(s) - 0.5f) * Mathf.Min(3f, a.DistanceTo(b) * 0.006f);
+            var mid = a.Lerp(b, 0.5f) + normal * bow;
+            Brushwork.Stroke(item, [a, mid, b], width * (1.6f + 0.5f * Brushwork.Hash(s + 1)), color, s, 1f, 0.05f, 0.35f);
+        }
+    }
+
+    private void DrawCorners(Rid item, Rect2 r, float seed)
     {
         var s = Mathf.Min(CornerSize, Mathf.Min(r.Size.X, r.Size.Y) * 0.45f);
         Span<(Vector2 Origin, Vector2 X, Vector2 Y)> corners =
@@ -152,9 +235,19 @@ public partial class OrnateBox : StyleBox
             (r.End, Vector2.Left, Vector2.Up),
         ];
 
+        var index = 0;
         foreach (var (o, x, y) in corners)
         {
-            RenderingServer.CanvasItemAddPolyline(item, [o + x * s, o, o + y * s], [CornerColor], CornerWidth, true);
+            index++;
+            if (Corners == CornerStyle.Cloud)
+            {
+                Brushwork.CloudCorner(item, o, x, y, s, CornerWidth * 1.6f, CornerColor, seed + index);
+                continue;
+            }
+
+            // 折角：两笔自角点向外出锋，比细线更有分量，缩放后也不发虚。
+            Brushwork.Stroke(item, [o, o + x * s], CornerWidth * 1.5f, CornerColor, seed + index, 0, 0.02f, 0.55f);
+            Brushwork.Stroke(item, [o, o + y * s], CornerWidth * 1.5f, CornerColor, seed + index + 0.5f, 0, 0.02f, 0.55f);
             if (Corners == CornerStyle.Hook)
             {
                 // 回纹：角内一道内折的小钩，再点一粒菱形。
@@ -162,9 +255,9 @@ public partial class OrnateBox : StyleBox
                 var inset = CornerWidth + 3;
                 RenderingServer.CanvasItemAddPolyline(item,
                     [o + x * inset + y * (k + inset), o + x * inset + y * inset, o + x * (k + inset) + y * inset],
-                    [CornerColor with { A = CornerColor.A * 0.8f }], Mathf.Max(1, CornerWidth - 0.5f), true);
-                DrawDiamond(item, o + x * (s + 7), 2.5f, CornerColor);
-                DrawDiamond(item, o + y * (s + 7), 2.5f, CornerColor);
+                    [CornerColor with { A = CornerColor.A * 0.8f }], Mathf.Max(1.5f, CornerWidth - 0.5f));
+                DrawDiamond(item, o + x * (s + 7), 3f, CornerColor);
+                DrawDiamond(item, o + y * (s + 7), 3f, CornerColor);
             }
         }
     }
@@ -178,23 +271,6 @@ public partial class OrnateBox : StyleBox
         var closed = new Vector2[points.Length + 1];
         points.CopyTo(closed, 0);
         closed[^1] = points[0];
-        RenderingServer.CanvasItemAddPolyline(item, closed, new[] { color }, width, true);
-    }
-
-    /// <summary>切角矩形轮廓（顺时针）。</summary>
-    private static Vector2[] Shape(Rect2 r, float c)
-    {
-        c = Mathf.Min(c, Mathf.Min(r.Size.X, r.Size.Y) * 0.5f);
-        if (c <= 0.5f)
-        {
-            return [r.Position, new Vector2(r.End.X, r.Position.Y), r.End, new Vector2(r.Position.X, r.End.Y)];
-        }
-
-        var (x0, y0, x1, y1) = (r.Position.X, r.Position.Y, r.End.X, r.End.Y);
-        return
-        [
-            new(x0 + c, y0), new(x1 - c, y0), new(x1, y0 + c), new(x1, y1 - c),
-            new(x1 - c, y1), new(x0 + c, y1), new(x0, y1 - c), new(x0, y0 + c),
-        ];
+        RenderingServer.CanvasItemAddPolyline(item, closed, new[] { color }, Mathf.Max(1.5f, width));
     }
 }

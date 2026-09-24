@@ -9,7 +9,7 @@ namespace WuxiaWorld.Game.Preview;
 
 /// <summary>
 /// 游戏菜单外框（docs/art/UI_DESIGN.md 第 5.2 节）：虚化山水暗底；顶栏左侧页名章与标题、
-/// 中间分区签（Q / E 切换）、右侧地点与铜钱；中间玉版页面，顶部子页签（PageUp / PageDown）；
+/// 中间分区签（Q / E 切换）、右侧地点与铜钱；中间绢本页面，顶部子页签（PageUp / PageDown）；
 /// 底栏按键提示。Esc 回标题（AppHost）。
 /// </summary>
 public abstract partial class PreviewScreen : Control

@@ -1,6 +1,6 @@
 // 青绿山水程序化背景（docs/art/UI_DESIGN.md 第 4 节）。
 // 用途：主菜单背景、菜单与暂停界面的虚化底；正式场景美术完成前也作占位远景。
-// 分层：天空渐变 → 日轮与流云 → 四重远近山（石青山顶、石绿山腰、硬边明暗与山脊描线）
+// 分层：天空渐变 → 日轮与流云 → 四重远近山（石青山顶、石绿山腰、赭石山脚，硬边明暗与山脊描线）
 // → 山间流雾 → 江面倒影与波光 → 近岸剪影 → 遮罩与暗角。
 shader_type canvas_item;
 
@@ -10,7 +10,9 @@ uniform float defocus : hint_range(0.0, 1.0) = 0.0;
 // 视差偏移，由鼠标位置驱动，单位为画面宽度比例。
 uniform vec2 parallax = vec2(0.0);
 uniform float speed = 1.0;
-uniform vec4 veil_color : source_color = vec4(0.043, 0.165, 0.188, 1.0);
+uniform vec4 veil_color : source_color = vec4(0.059, 0.106, 0.153, 1.0);
+// 时辰：0 晨昼（暖白天际、石青天顶），1 黄昏（琥珀天际、黛蓝天顶，山色压暗偏紫）。战斗用黄昏。
+uniform float mood : hint_range(0.0, 1.0) = 0.0;
 uniform float veil : hint_range(0.0, 1.0) = 0.0;
 // 左侧提亮：为深色文字在背景上留出可读区域。
 uniform float left_wash : hint_range(0.0, 1.0) = 0.0;
@@ -18,14 +20,24 @@ uniform vec2 sun_pos = vec2(0.74, 0.20);
 // 山形种子：不同画面（如存档缩略图）取不同值。
 uniform float world_seed = 0.0;
 
-const vec3 SKY_TOP = vec3(0.56, 0.80, 0.82);
-const vec3 SKY_LOW = vec3(0.91, 0.96, 0.93);
-const vec3 MIST = vec3(0.88, 0.95, 0.93);
-const vec3 STONE_BLUE = vec3(0.16, 0.45, 0.58);
-const vec3 STONE_GREEN = vec3(0.33, 0.62, 0.50);
-const vec3 DEEP = vec3(0.08, 0.27, 0.30);
-const vec3 WATER = vec3(0.50, 0.76, 0.76);
-const vec3 SUN = vec3(1.0, 0.98, 0.90);
+// 青绿山水的颜料：石青、石绿、赭石，天际是暖绢色，不再整幅同一青绿。
+const vec3 SKY_TOP_DAY = vec3(0.42, 0.68, 0.80);
+const vec3 SKY_LOW_DAY = vec3(0.98, 0.93, 0.82);
+const vec3 SKY_TOP_DUSK = vec3(0.22, 0.28, 0.45);
+const vec3 SKY_LOW_DUSK = vec3(0.99, 0.70, 0.45);
+const vec3 STONE_BLUE = vec3(0.13, 0.42, 0.58);
+const vec3 STONE_GREEN = vec3(0.30, 0.60, 0.46);
+const vec3 OCHRE = vec3(0.66, 0.46, 0.27);
+const vec3 DEEP_DAY = vec3(0.08, 0.22, 0.30);
+const vec3 DEEP_DUSK = vec3(0.12, 0.12, 0.24);
+const vec3 WATER = vec3(0.48, 0.72, 0.76);
+
+// 随时辰变化的颜色；着色语言不允许可写的全局变量，用宏展开为按 mood 插值。
+#define SKY_TOP mix(SKY_TOP_DAY, SKY_TOP_DUSK, mood)
+#define SKY_LOW mix(SKY_LOW_DAY, SKY_LOW_DUSK, mood)
+#define MIST mix(vec3(0.90, 0.94, 0.90), vec3(0.86, 0.72, 0.68), mood)
+#define DEEP mix(DEEP_DAY, DEEP_DUSK, mood)
+#define SUN mix(vec3(1.0, 0.94, 0.80), vec3(1.0, 0.62, 0.36), mood)
 
 float hash(float n) { return fract(sin(n) * 43758.5453123); }
 
@@ -91,8 +103,13 @@ vec4 mountain(vec2 p, float base, float amp, float freq, float seed, float depth
 	float cover = smoothstep(top - aa, top + aa, p.y);
 
 	float below = clamp((p.y - top) / (0.16 + amp * 0.3), 0.0, 1.0);
-	vec3 col = mix(STONE_BLUE, STONE_GREEN, smoothstep(0.05, 0.75, below));
-	col = mix(col, DEEP, depth * 0.35);
+	vec3 col = mix(STONE_BLUE, STONE_GREEN, smoothstep(0.05, 0.6, below));
+	// 山脚染赭石：青绿山水“以赭石打底、石青石绿罩染”，越近的山赭石越显。
+	float warm_foot = smoothstep(0.45, 0.95, below) * (0.25 + 0.55 * depth);
+	col = mix(col, OCHRE, warm_foot * (1.0 - defocus * 0.4));
+	col = mix(col, DEEP, depth * 0.3);
+	// 黄昏：山色压暗、偏紫，迎光坡留一点琥珀。
+	col = mix(col, col * vec3(0.62, 0.55, 0.72), mood * 0.8);
 
 	// 大块坡面明暗：日轮在右，右坡迎光、左坡背光；只在山脊下一段内明显，向下渐隐。
 	float e = 0.04;
@@ -103,7 +120,7 @@ vec4 mountain(vec2 p, float base, float amp, float freq, float seed, float depth
 
 	// 山脊高光：迎光坡紧贴山脊的一道亮边。
 	float rim = (1.0 - smoothstep(0.0, 0.012, p.y - top)) * lit;
-	col = mix(col, MIST, rim * 0.35 * (1.0 - defocus));
+	col = mix(col, mix(MIST, SUN, 0.5), rim * (0.35 + mood * 0.3) * (1.0 - defocus));
 
 	// 山脊描线（赛璐璐线稿）。
 	float line = 1.0 - smoothstep(0.0, 0.0028 + defocus * 0.004, p.y - top);
@@ -121,7 +138,7 @@ void fragment() {
 	vec2 p = vec2(uv.x * aspect, uv.y);
 
 	// 天空与日轮。
-	vec3 col = mix(SKY_TOP, SKY_LOW, smoothstep(0.0, 0.62, uv.y));
+	vec3 col = mix(SKY_TOP, SKY_LOW, smoothstep(0.0, 0.6, uv.y));
 	vec2 sp = vec2(sun_pos.x * aspect, sun_pos.y) + parallax * 0.05;
 	float d = length(p - sp);
 	col += SUN * exp(-d * 5.5) * 0.35;
@@ -129,7 +146,8 @@ void fragment() {
 
 	// 流云：横向拉长的噪声带，缓慢右移。
 	float cloud = fbm2(vec2(p.x * 1.4 - t * 0.012 + parallax.x * 0.3, uv.y * 7.0));
-	col = mix(col, vec3(1.0), smoothstep(0.52, 0.78, cloud) * (1.0 - smoothstep(0.12, 0.5, uv.y)) * 0.55);
+	vec3 cloud_col = mix(vec3(1.0, 0.98, 0.94), vec3(1.0, 0.78, 0.62), mood);
+	col = mix(col, cloud_col, smoothstep(0.52, 0.78, cloud) * (1.0 - smoothstep(0.12, 0.5, uv.y)) * 0.55);
 
 	// 四重山，由远及近。
 	vec4 m;

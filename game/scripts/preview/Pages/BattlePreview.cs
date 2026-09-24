@@ -35,7 +35,7 @@ public partial class BattlePreview : Control
     public override void _Ready()
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        AddChild(new Backdrop { Defocus = 0.35f, Veil = 0.12f, Leaves = 12 });
+        AddChild(new Backdrop { Mood = 1, SunX = 0.8f, Defocus = 0.3f, Veil = 0.08f, Leaves = 14 });
 
         _field = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _field.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -45,7 +45,7 @@ public partial class BattlePreview : Control
         _reticle = new PanelContainer { MouseFilter = MouseFilterEnum.Ignore };
         _reticle.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            Corners = CornerStyle.Bracket, CornerColor = UiPalette.Gilt, CornerSize = 26, CornerWidth = 3,
+            Corners = CornerStyle.Bracket, CornerColor = UiPalette.Gilt, CornerSize = 28, CornerWidth = 3.2f,
         });
         _field.AddChild(_reticle);
         Motion.Pulse(_reticle, 0.55f, 1.2f);
@@ -191,7 +191,8 @@ public partial class BattlePreview : Control
         var panel = new PanelContainer { MouseFilter = MouseFilterEnum.Ignore };
         panel.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.72f }, Chamfer = 4, Border = UiPalette.Trim with { A = 0.3f }, BorderWidth = 1,
+            FillA = UiPalette.Abyss with { A = 0.72f }, FillB = UiPalette.PanelDark with { A = 0.8f }, Ragged = 1.4f, Seed = 57,
+            Sheen = UiPalette.Gilt with { A = 0.4f }, SheenAtTop = true, SheenWidth = 1.2f, Brush = true,
         }.Margins(10, 6));
         panel.AddChild(column);
         return panel;
@@ -203,9 +204,9 @@ public partial class BattlePreview : Control
         var intent = new PanelContainer();
         intent.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.85f }, Chamfer = 5,
-            Border = UiPalette.Warm.Lightened(0.2f), BorderWidth = 1.5f,
-            Marker = UiPalette.Warm, MarkerWidth = 4,
+            FillA = UiPalette.Abyss with { A = 0.88f }, FillB = UiPalette.Warm.Darkened(0.45f) with { A = 0.9f }, Horizontal = true,
+            Ragged = 1.4f, Seed = 59, Border = UiPalette.Warm.Lightened(0.25f), BorderWidth = 1.3f, Brush = true, Overshoot = 0.5f,
+            Marker = UiPalette.Warm.Lightened(0.1f), MarkerWidth = 5,
         }.Margins(14, 6));
         intent.AddChild(Ui.Text($"⚠ 意图　{text}", UiTheme.DarkLabel, 17));
         return intent;
@@ -222,8 +223,8 @@ public partial class BattlePreview : Control
             var pip = new Panel { CustomMinimumSize = new Vector2(10, 8), SizeFlagsVertical = SizeFlags.ShrinkCenter, TooltipText = "架势" };
             pip.AddThemeStyleboxOverride("panel", new OrnateBox
             {
-                FillA = i < filled ? UiPalette.Gilt : Colors.Transparent,
-                Border = UiPalette.Gilt with { A = 0.7f }, BorderWidth = 1,
+                FillA = i < filled ? UiPalette.Gilt : Colors.Transparent, Ragged = 0.6f, Seed = 61 + i,
+                Border = UiPalette.Gilt with { A = 0.7f }, BorderWidth = 1.5f,
             });
             row.AddChild(pip);
         }

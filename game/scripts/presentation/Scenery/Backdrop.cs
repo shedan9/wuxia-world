@@ -21,6 +21,8 @@ public partial class Backdrop : Control
     public bool Motion { get; init; } = true;
     /// <summary>日轮横向位置（0–1），存档缩略图用来区分不同地点。</summary>
     public float SunX { get; init; } = 0.74f;
+    /// <summary>时辰：0 晨昼，1 黄昏（战斗）。</summary>
+    public float Mood { get; init; }
     /// <summary>山形种子，不同值得到不同山势。</summary>
     public float Seed { get; init; }
 
@@ -28,8 +30,12 @@ public partial class Backdrop : Control
 
     public static Backdrop Veiled() => new() { Defocus = 1, Veil = 0.72f, Leaves = 10 };
 
+    /// <summary>黄昏山水：战斗场面，天际琥珀、天顶黛蓝，与白昼探索区分。</summary>
+    public static Backdrop Dusk() => new() { Mood = 1, SunX = 0.8f, Leaves = 16 };
+
     /// <summary>静止小图：存档卡缩略图等，不飘叶、不随鼠标。</summary>
-    public static Backdrop Still(float sunX, float seed) => new() { Leaves = 0, Motion = false, SunX = sunX, Seed = seed };
+    public static Backdrop Still(float sunX, float seed, float mood = 0) =>
+        new() { Leaves = 0, Motion = false, SunX = sunX, Seed = seed, Mood = mood };
 
     public override void _Ready()
     {
@@ -46,10 +52,11 @@ public partial class Backdrop : Control
         _material.SetShaderParameter("speed", Motion ? 1f : 0f);
         _material.SetShaderParameter("sun_pos", new Vector2(SunX, 0.2f));
         _material.SetShaderParameter("world_seed", Seed);
+        _material.SetShaderParameter("mood", Mood);
 
         if (Leaves > 0 && Motion)
         {
-            AddChild(LeafFall(Leaves, Defocus > 0.5f ? 0.35f : 0.85f));
+            AddChild(LeafFall(Leaves, Defocus > 0.5f ? 0.35f : 0.85f, Mood));
         }
 
         Resized += UpdateAspect;
@@ -77,7 +84,7 @@ public partial class Backdrop : Control
         }
     }
 
-    private static CpuParticles2D LeafFall(int amount, float alpha)
+    private static CpuParticles2D LeafFall(int amount, float alpha, float mood)
     {
         var particles = new CpuParticles2D
         {
@@ -103,7 +110,9 @@ public partial class Backdrop : Control
             ColorInitialRamp = new Gradient
             {
                 Offsets = [0, 0.5f, 1],
-                Colors = [UiPalette.Surface, UiPalette.Trim.Lightened(0.35f), UiPalette.Trim],
+                // 柳叶里夹几片赭黄，黄昏时更多。
+                Colors = [UiPalette.Surface, UiPalette.Trim.Lightened(0.35f).Lerp(UiPalette.Gilt, mood * 0.6f),
+                    UiPalette.Trim.Lerp(UiPalette.Ochre.Lightened(0.2f), 0.25f + mood * 0.5f)],
             },
         };
         // 摆动：切向加速度正负交替，让叶子左右飘。

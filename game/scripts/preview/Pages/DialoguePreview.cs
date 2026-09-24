@@ -44,7 +44,7 @@ public partial class DialoguePreview : Control
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         _lines = DialogueSamples.Load(DialogueSamples.Chapter01);
 
-        AddChild(new Backdrop());
+        AddChild(new Backdrop { Mood = 0.3f });
         _portrait = new TextureRect
         {
             ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
@@ -295,11 +295,11 @@ public partial class DialoguePreview : Control
         var box = new PanelContainer();
         box.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Abyss with { A = 0.88f }, FillB = UiPalette.PanelDark with { A = 0.96f },
-            Chamfer = 14, Border = UiPalette.Trim with { A = 0.6f }, BorderWidth = 1.5f,
-            Inner = UiPalette.Trim with { A = 0.18f }, InnerInset = 8,
-            Corners = CornerStyle.Hook, CornerSize = 28, CornerWidth = 2,
-            Sheen = UiPalette.Gilt with { A = 0.55f }, SheenAtTop = true, SheenInset = 0.3f,
+            FillA = UiPalette.PanelDark with { A = 0.9f }, FillB = UiPalette.Abyss with { A = 0.96f },
+            Ragged = 2.2f, Seed = 51, Grain = Colors.White with { A = 0.045f }, Wash = UiPalette.Accent with { A = 0.18f },
+            Border = UiPalette.Gilt with { A = 0.7f }, BorderWidth = 1.5f, Brush = true,
+            Inner = UiPalette.Gilt with { A = 0.2f }, InnerInset = 9,
+            Corners = CornerStyle.Cloud, CornerSize = 56, CornerWidth = 2.2f, CornerOutset = -2,
         }.Margins(64, 44));
         box.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         box.OffsetLeft = 140;
@@ -322,16 +322,17 @@ public partial class DialoguePreview : Control
         Motion.Pulse(_next, 0.2f, 1.0f);
         box.AddChild(Ui.Column(UiPalette.SpaceS, _text, Ui.Row(UiPalette.SpaceM, _lineId, Ui.Spacer(), _next)));
 
-        // 姓名牌：压在对话框左上沿，石青底、金泥边，下挂身份。
+        // 姓名牌：压在对话框左上沿的一方朱砂印，毛边缺墨，内框一笔绢色。
         _name = Ui.Text("", UiTheme.DarkTitleLabel, 34);
         _role = Ui.Text("", UiTheme.DarkMutedLabel, 18);
         _role.SizeFlagsVertical = SizeFlags.ShrinkEnd;
+        _role.AddThemeColorOverride("font_color", UiPalette.TextOnDark);
         _plate = new PanelContainer();
         _plate.AddThemeStyleboxOverride("panel", new OrnateBox
         {
-            FillA = UiPalette.Accent.Lightened(0.05f), FillB = UiPalette.Accent.Darkened(0.25f), Horizontal = true,
-            Chamfer = 8, Border = UiPalette.Gilt, BorderWidth = 1.5f,
-            Inner = UiPalette.Surface with { A = 0.25f }, InnerInset = 4,
+            FillA = UiPalette.Cinnabar.Lightened(0.05f), FillB = UiPalette.Cinnabar.Darkened(0.15f), Horizontal = true,
+            Ragged = 2, Seed = 53, Grain = UiPalette.Surface with { A = 0.22f }, GrainScale = 0.5f,
+            Inner = UiPalette.Surface with { A = 0.6f }, InnerInset = 5, Brush = true,
             Shadow = UiPalette.Abyss with { A = 0.4f }, ShadowSize = 6, ShadowOffset = new Vector2(0, 3),
         }.Margins(30, 8));
         _plate.AddChild(Ui.Row(UiPalette.SpaceM, _name, _role));

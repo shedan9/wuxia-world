@@ -179,7 +179,20 @@ public static class Ui
         return button;
     }
 
-    /// <summary>石青页名章，竖排标题。</summary>
+    /// <summary>方印：四字两行的朱砂印，标题旁的落款。</summary>
+    public static PanelContainer SquareSeal(string text, int size = 30)
+    {
+        var chars = text.EnumerateRunes().Select(r => r.ToString()).ToArray();
+        var half = (chars.Length + 1) / 2;
+        var label = Text(string.Concat(chars[..half]) + '\n' + string.Concat(chars[half..]), UiTheme.SealLabel, size);
+        label.HorizontalAlignment = HorizontalAlignment.Center;
+        label.AddThemeConstantOverride("line_spacing", -6);
+        var seal = Panel(UiTheme.SealPanel, label);
+        seal.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+        return seal;
+    }
+
+    /// <summary>朱砂页名章，竖排标题。</summary>
     public static PanelContainer Seal(string text)
     {
         var label = Text(Vertical(text), UiTheme.SealLabel);
@@ -195,9 +208,10 @@ public static class Ui
     {
         var box = new OrnateBox
         {
-            FillA = UiPalette.Surface, FillB = tone.Lerp(UiPalette.Surface, 0.78f), Chamfer = size / 7f,
-            Border = tone, BorderWidth = size >= 72 ? 2 : 1.5f,
-            Inner = tone with { A = 0.35f }, InnerInset = size / 14f,
+            FillA = UiPalette.Surface, FillB = tone.Lerp(UiPalette.Surface, 0.72f), Chamfer = size / 9f,
+            Ragged = size >= 72 ? 1.4f : 0.9f, Seed = glyph[0] % 97, Grain = tone with { A = 0.12f }, GrainScale = 0.5f,
+            Border = tone, BorderWidth = size >= 72 ? 1.8f : 1.3f, Brush = true, Overshoot = 0.3f,
+            Inner = tone with { A = 0.3f }, InnerInset = size / 12f,
         };
         var panel = new PanelContainer { CustomMinimumSize = new Vector2(size, size) };
         panel.AddThemeStyleboxOverride("panel", box);
