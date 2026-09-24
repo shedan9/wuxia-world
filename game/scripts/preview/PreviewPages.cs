@@ -9,7 +9,7 @@ public static class PreviewPages
     public static readonly IReadOnlyList<PreviewPage> All =
     [
         new("preview.main_menu", "主菜单与存档页", "标题、背景、菜单层级、存档卡片", "res://scenes/preview/MainMenu.tscn"),
-        new("preview.world_map", "江湖大地图与交通面板", "山川城镇、路线、标记、坐骑/载具信息"),
+        new("preview.world_map", "江湖大地图与交通面板", "山川城镇、路线、标记、坐骑/载具信息", "res://scenes/preview/WorldMap.tscn"),
         new("preview.explore_town", "城镇 / 街道探索", "斜俯视、建筑比例、人物大小、探索 HUD"),
         new("preview.explore_inn", "客栈 / 室内探索", "遮挡、室内构图、近景材质与灯光"),
         new("preview.explore_hud", "探索 HUD（界面层）", "地点、目标追踪、小地图、交互提示与通知", "res://scenes/preview/ExploreHud.tscn"),
