@@ -20,8 +20,13 @@ dotnet build (Join-Path $root 'WuxiaWorld.sln') -c Debug
 if ($LASTEXITCODE -ne 0) { throw 'dotnet build 失败' }
 
 New-Item -ItemType Directory -Force (Join-Path $root 'build/windows') | Out-Null
-& $Godot --headless --path (Join-Path $root 'game') "--export-$Mode" 'Windows Desktop'
-if ($LASTEXITCODE -ne 0) { throw 'Godot 导出失败' }
+# GODOT_BIN 常指向 GUI 版编辑器：PowerShell 直接调用 GUI 程序不会等它退出，脚本会在导出写完之前就结束，
+# 紧接着启动的导出包会读到上一版文件。因此优先用同目录的 _console 版，并显式等待进程退出、检查退出码。
+$console = [IO.Path]::Combine((Split-Path $Godot), [IO.Path]::GetFileNameWithoutExtension($Godot) + '_console.exe')
+if (Test-Path $console) { $Godot = $console }
+$export = Start-Process -FilePath $Godot -NoNewWindow -Wait -PassThru `
+    -ArgumentList '--headless', '--path', "`"$(Join-Path $root 'game')`"", "--export-$Mode", '"Windows Desktop"'
+if ($export.ExitCode -ne 0) { throw "Godot 导出失败（退出码 $($export.ExitCode)）" }
 
 # OFL 等许可要求随发行包附带许可文本。
 $licenses = Join-Path $root 'build/windows/licenses'

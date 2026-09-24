@@ -144,7 +144,7 @@
 
 人物页立绘框为石青到黛的画框（赭石笔框、泥金卷云角、淡彩晕染），立绘自下而上铺满、底部玻璃名牌；无立绘的人物显示竖排姓名水印与“立绘待制作”。
 
-### 5.3 探索 HUD——已实现 `ExploreHud.tscn`（界面层，场景为占位）
+### 5.3 探索 HUD——已实现 `ExploreHud.tscn`（界面层）并叠加到城镇探索页 `ExploreTown.tscn`
 
 | 区域 | 内容 |
 |---|---|
@@ -155,6 +155,8 @@
 | 世界内 | 可交互物头顶泥金菱形上下浮动；靠近时中下出现交互提示（E + 动作 + 对象，泥金折角，缓慢呼吸） |
 | 左下 | 队伍：印鉴头像 + 气血 / 内力细条，不写数值 |
 | 右下 | 快捷键：C 人物、I 行囊、J 札记、M 地图、Esc 菜单 |
+
+HUD 部件集中在 `preview/Pages/ExploreHudKit.cs`（地点、小地图框、目标追踪、队伍、快捷键、交互提示 `InteractPrompt`、通知列 `ToastColumn`），界面层页与各探索布景页共用。城镇页的小地图由布局数据绘制，以主角为中心取 1600×1600 窗口；交互提示只在进入可交互范围（120 逻辑像素）时出现，可交互物头顶的泥金菱形靠近时变亮。
 
 HUD 只放“现在要知道的”：大段属性进人物页，完整任务进札记（架构文档 10.4）。对话、过场与战斗开始时整组 HUD 淡出。
 
@@ -262,7 +264,8 @@ HUD 只放“现在要知道的”：大段属性进人物页，完整任务进�
 | `preview/Pages/WorldMapCanvas.cs`、`assets/shaders/world_relief.gdshader` | 大地图占位：高度图与赛璐璐地形着色 |
 | `presentation/App/SceneRouter.cs` | 色幕转场 |
 | `preview/PreviewScreen.cs` | 游戏菜单外框 |
-| `preview/Pages/*` | 标题、对话、战斗、探索 HUD、大地图（`WorldMapPreview`、舆图占位 `WorldMapCanvas`）与各菜单页 |
+| `preview/Pages/ExploreTownPreview.cs`、`TownView.cs`、`TownPieces.cs`、`assets/shaders/town_ground.gdshader` | 城镇探索布局样板：斜 45° 正交投影（镜头在西南，街道自左下向右上）、面剔除与分阶明暗、占地拓扑排序、地面反投影着色、行走与遮挡淡出 |
+| `preview/Pages/*` | 标题、对话、战斗、探索 HUD、城镇探索、大地图（`WorldMapPreview`、舆图占位 `WorldMapCanvas`）与各菜单页 |
 
 截图：`Godot --path game --resolution 1920x1080 -- --scene=res://scenes/preview/<页>.tscn --tab=<状态> --capture=<png>`；各页 `--tab` 含义写在页面类注释中。
 
@@ -270,6 +273,6 @@ HUD 只放“现在要知道的”：大段属性进人物页，完整任务进�
 
 - 物品、招式与队伍头像用字形印鉴；正式图标按架构文档 10.2（128/256 px、统一描边）制作后替换 `Ui.Glyph`。
 - 立绘只有陆青禾一张；主角与经典人物待制作与档案核对。
-- 探索与战斗场景用程序化山水代替，战斗与探索形象为剪影。
+- 城镇探索页的地面、房屋与树为程序化赛璐璐占位（布局样板），客栈室内、山路野外两类布景未做；战斗场景用程序化山水代替，战斗与探索形象为剪影。
 - 大地图舆图为程序化占位，地标与路线为样例数据；弹层确认框、加载与章节标题卡只有规格。
 - 声音挂点未接入音频。
