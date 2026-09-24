@@ -8,13 +8,14 @@ public static class PreviewPages
 {
     public static readonly IReadOnlyList<PreviewPage> All =
     [
-        new("preview.main_menu", "主菜单与存档页", "标题、背景、菜单层级、存档卡片"),
+        new("preview.main_menu", "主菜单与存档页", "标题、背景、菜单层级、存档卡片", "res://scenes/preview/MainMenu.tscn"),
         new("preview.world_map", "江湖大地图与交通面板", "山川城镇、路线、标记、坐骑/载具信息"),
         new("preview.explore_town", "城镇 / 街道探索", "斜俯视、建筑比例、人物大小、探索 HUD"),
         new("preview.explore_inn", "客栈 / 室内探索", "遮挡、室内构图、近景材质与灯光"),
+        new("preview.explore_hud", "探索 HUD（界面层）", "地点、目标追踪、小地图、交互提示与通知", "res://scenes/preview/ExploreHud.tscn"),
         new("preview.explore_wild", "山路 / 野外探索", "植被、山石、前后层次与路径辨识"),
-        new("preview.dialogue", "人物对话", "跨作品人物同场、立绘、姓名、文本、选项"),
-        new("preview.battle", "回合战斗", "独立侧视、站位、行动条、技能栏、状态"),
+        new("preview.dialogue", "人物对话", "跨作品人物同场、立绘、姓名、文本、选项", "res://scenes/preview/Dialogue.tscn"),
+        new("preview.battle", "回合战斗", "独立侧视、站位、行动条、技能栏、状态", "res://scenes/preview/Battle.tscn"),
         new("preview.character", "角色 / 武学 / 成长", "属性层级、招式说明、装配和升级反馈", "res://scenes/preview/Character.tscn"),
         new("preview.inventory", "背包 / 装备 / 商店", "道具图标、分类、装备对比、交易面板", "res://scenes/preview/Inventory.tscn"),
         new("preview.journal", "任务 / 关系 / 见闻", "目标说明、人物关系与已知信息层级", "res://scenes/preview/Journal.tscn"),

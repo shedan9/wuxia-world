@@ -1,0 +1,202 @@
+{
+  "set": "m0_portrait",
+  "tier": "complex",
+  "model": "animagine4",
+  "size": [
+    832,
+    1216
+  ],
+  "steps": 28,
+  "cfg": 5.0,
+  "seeds": [
+    101,
+    202,
+    303,
+    404,
+    505,
+    606,
+    707,
+    808
+  ],
+  "style": {
+    "portrait": "semi-realistic, cel shading, detailed shading, teal and celadon palette, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, missing fingers, text, watermark, signature, logo, chibi, loli, child, big head, blurry, jpeg artifacts, sketch, ink wash, paper texture, sepia, nsfw, cleavage, japanese clothes, kimono, modern clothes",
+    "portrait_v2": "wuxia, semi-realistic, cel shading, detailed shading, pale teal background, masterpiece, high score, absurdres",
+    "negative_v2": "lowres, bad anatomy, bad hands, extra digits, text, watermark, signature, chibi, loli, child, old woman, wrinkles, denim, jeans, zipper, pockets, buttons, hood, modern clothes, kimono, ink wash, paper texture, nsfw, cleavage, blurry",
+    "portrait_v3": "semi-realistic, thick lineart, cel shading, high contrast, pale teal background, masterpiece, high score, absurdres",
+    "portrait_v4": "semi-realistic, thick lineart, cel shading, simple background, masterpiece, high score, absurdres",
+    "negative_v4": "lowres, bad anatomy, bad hands, extra digits, text, watermark, signature, chibi, loli, child, old woman, denim, zipper, modern clothes, kimono, wide sleeves, bamboo forest, scenery, cropped, ink wash, nsfw, cleavage, blurry",
+    "portrait_v5": "semi-realistic, thick lineart, cel shading, pale teal background, masterpiece, high score, absurdres",
+    "portrait_final": "semi-realistic, cel shading, detailed shading, pale teal background, masterpiece, high score, absurdres"
+  },
+  "jobs": [
+    {
+      "name": "lu_qinghe_cowboy",
+      "style": "portrait",
+      "prompt": "1girl, solo, mature female, chinese ferrywoman, tanned skin, black hair bun, teal headband, patched hemp jacket, narrow sleeves, rolled trousers, holding bamboo pole, light smile, cowboy shot"
+    },
+    {
+      "name": "lu_qinghe_full",
+      "style": "portrait",
+      "prompt": "1girl, solo, mature female, chinese ferrywoman, tanned skin, black hair bun, teal headband, patched hemp jacket, narrow sleeves, rolled trousers, holding bamboo pole, knee boots, standing, full body"
+    },
+    {
+      "name": "lu_qinghe_v2_cowboy",
+      "style": "portrait_v2",
+      "negative_style": "negative_v2",
+      "prompt": "1girl, solo, young woman, hanfu, cross-collar hemp jacket, beige linen, dark sash, rolled trousers, tanned skin, black hair bun, teal headband, holding bamboo pole, smile"
+    },
+    {
+      "name": "lu_qinghe_v2_full",
+      "style": "portrait_v2",
+      "negative_style": "negative_v2",
+      "prompt": "1girl, solo, young woman, hanfu, cross-collar hemp jacket, beige linen, dark sash, rolled trousers, tanned skin, black hair bun, teal headband, holding bamboo pole, boots, full body"
+    },
+    {
+      "name": "lu_qinghe_v3_from505",
+      "style": "portrait_v3",
+      "negative_style": "negative_v2",
+      "init_image": "out/m0_portrait/lu_qinghe_v2_cowboy_505.png",
+      "strength": 0.6,
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "prompt": "1girl, young woman, light tan skin, black hair bun, teal headband, layered hanfu, white collar, indigo short jacket, wave pattern trim, narrow sleeves, orange sash, bronze pendant, red bracelet, bamboo pole, cowboy shot"
+    },
+    {
+      "name": "lu_qinghe_v3_upper",
+      "style": "portrait_v3",
+      "negative_style": "negative_v2",
+      "prompt": "1girl, young woman, light tan skin, black hair bun, teal headband, layered hanfu, white collar, indigo short jacket, wave pattern trim, narrow sleeves, orange sash, bronze pendant, red bracelet, bamboo pole, upper body"
+    },
+    {
+      "name": "lu_qinghe_v4_full",
+      "style": "portrait_v4",
+      "negative_style": "negative_v4",
+      "size": [
+        768,
+        1344
+      ],
+      "seeds": [
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909,
+        1010,
+        1111,
+        1212
+      ],
+      "prompt": "1girl, young woman, tan skin, long black hair, hair bun, teal headband, hanfu, white collar, teal short jacket, wave pattern trim, tight sleeves, orange sash, bronze pendant, rolled trousers, knee boots, bamboo pole, full body"
+    },
+    {
+      "name": "lu_qinghe_v5_full",
+      "style": "portrait_v5",
+      "negative_style": "negative_v4",
+      "size": [
+        768,
+        1344
+      ],
+      "seeds": [
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808,
+        909,
+        1010,
+        1111,
+        1212
+      ],
+      "prompt": "1girl, young woman, light tan skin, long black hair, hair bun, teal headband, white collar, teal short jacket, wave pattern trim, tight sleeves, orange sash, bronze pendant, rolled trousers, knee boots, bamboo pole, full body"
+    },
+    {
+      "name": "lu_qinghe_final_half_s35",
+      "style": "portrait_final",
+      "negative_style": "negative_v2",
+      "init_image": "out/m0_portrait/lu_qinghe_v3_from505_7.png",
+      "strength": 0.35,
+      "seeds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "prompt": "1girl, young woman, black hair bun, hairpin, teal headband, beige linen hanfu, dark brown cross collar, embroidered trim, patterned waist cincher, teal sash, dark bracers, red bracelet, holding bamboo pole, smile"
+    },
+    {
+      "name": "lu_qinghe_final_half_s45",
+      "style": "portrait_final",
+      "negative_style": "negative_v2",
+      "init_image": "out/m0_portrait/lu_qinghe_v3_from505_7.png",
+      "strength": 0.45,
+      "seeds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "prompt": "1girl, young woman, black hair bun, hairpin, teal headband, beige linen hanfu, dark brown cross collar, embroidered trim, patterned waist cincher, teal sash, dark bracers, red bracelet, holding bamboo pole, smile"
+    },
+    {
+      "name": "lu_qinghe_final_half_s55",
+      "style": "portrait_final",
+      "negative_style": "negative_v2",
+      "init_image": "out/m0_portrait/lu_qinghe_v3_from505_7.png",
+      "strength": 0.55,
+      "seeds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "prompt": "1girl, young woman, black hair bun, hairpin, teal headband, beige linen hanfu, dark brown cross collar, embroidered trim, patterned waist cincher, teal sash, dark bracers, red bracelet, holding bamboo pole, smile"
+    },
+    {
+      "name": "lu_qinghe_final_relit_s40",
+      "style": "portrait_final",
+      "negative_style": "negative_v2",
+      "init_image": "out/m0_portrait/lu7_relit.png",
+      "strength": 0.4,
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "prompt": "1girl, young woman, black hair bun, teal headband, beige linen hanfu, dark brown cross collar, embroidered trim, patterned waist cincher, teal sash, dark bracers, red bracelet, holding bamboo pole, smile, rim light"
+    },
+    {
+      "name": "lu_qinghe_final_relit_s50",
+      "style": "portrait_final",
+      "negative_style": "negative_v2",
+      "init_image": "out/m0_portrait/lu7_relit.png",
+      "strength": 0.5,
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "prompt": "1girl, young woman, black hair bun, teal headband, beige linen hanfu, dark brown cross collar, embroidered trim, patterned waist cincher, teal sash, dark bracers, red bracelet, holding bamboo pole, smile, rim light"
+    }
+  ]
+}

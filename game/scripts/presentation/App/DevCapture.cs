@@ -1,11 +1,12 @@
 using Godot;
+using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Presentation.App;
 
 /// <summary>
 /// 截图命令行：<c>Godot --path game -- --scene=res://… --tab=2 --capture=out.png</c>。
 /// 进入指定场景，等待布局稳定后按逻辑画布保存截图并退出；用于 M0 交付截图和界面自查。
-/// 未传参数时不做任何事。
+/// 截图模式关闭界面动效（<see cref="Motion.Enabled"/>），画面直接落到终态。未传参数时不做任何事。
 /// </summary>
 public static class DevCapture
 {
@@ -37,6 +38,8 @@ public static class DevCapture
                     break;
             }
         }
+
+        Motion.Enabled = Output is null;
     }
 
     public static async void CaptureAndQuit(SceneTree tree)

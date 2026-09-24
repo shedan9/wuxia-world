@@ -115,7 +115,7 @@ public partial class CharacterPreview : PreviewScreen
         foreach (var id in CharacterSamples.EquippedActive)
         {
             var skill = CharacterSamples.HeroSkills.FirstOrDefault(s => s.Id == id);
-            var tile = skill is null ? Ui.Glyph("空", UiPalette.InkMuted with { A = 0.5f }, 72) : SkillGlyph(skill, 72);
+            var tile = skill is null ? Ui.Glyph("空", UiPalette.TextMuted with { A = 0.5f }, 72) : SkillGlyph(skill, 72);
             var caption = Ui.Text(skill?.Name ?? "空槽", skill is null ? UiTheme.MutedLabel : null, UiPalette.FontSecondary);
             caption.HorizontalAlignment = HorizontalAlignment.Center;
             slots.AddChild(Ui.Column(UiPalette.SpaceS, tile, caption));
@@ -213,7 +213,7 @@ public partial class CharacterPreview : PreviewScreen
                 var line = StatLine(name, delta > 0 ? $"{before[name]}  →  {value}　▲ {delta}" : value.ToString());
                 if (delta > 0)
                 {
-                    line.GetChild<Label>(1).AddThemeColorOverride("font_color", UiPalette.Mountain);
+                    line.GetChild<Label>(1).AddThemeColorOverride("font_color", UiPalette.Boost);
                 }
 
                 compare.AddChild(line);
@@ -291,24 +291,64 @@ public partial class CharacterPreview : PreviewScreen
         Ui.Text(m.Pending ?? "", wrap: true),
         Ui.Text("经典人物的实力由角色模板与剧情表现体现；核对完成前不展示数值，避免被读作实力排名。", UiTheme.MutedLabel, wrap: true)));
 
-    /// <summary>立绘框：正式立绘完成前以竖排姓名占位，并明确标注待制作。</summary>
+    /// <summary>已有立绘的人物（资产台账已登记）。</summary>
+    private static readonly Dictionary<string, string> Portraits = new()
+    {
+        ["char.lu_qinghe"] = "res://assets/portraits/lu_qinghe_v1.png",
+    };
+
+    /// <summary>
+    /// 立绘框：玉版上一方深潭画框，立绘自下而上铺满、底部渐隐；没有立绘的人物以竖排姓名占位并标注待制作。
+    /// </summary>
     private static Control Portrait(SampleMember m)
     {
-        var name = Ui.Text(Ui.Vertical(m.Name), UiTheme.TitleLabel, 64);
-        name.AddThemeColorOverride("font_color", UiPalette.Ink with { A = 0.35f });
-        name.HorizontalAlignment = HorizontalAlignment.Center;
-        name.SizeFlagsVertical = SizeFlags.ExpandFill;
-        name.VerticalAlignment = VerticalAlignment.Center;
-        var frame = Ui.Panel(UiTheme.InsetPanel, Ui.Column(UiPalette.SpaceS, name,
-            Ui.Text("立绘待制作", UiTheme.MutedLabel)));
-        return Ui.MinSize(frame, 300, 620);
+        var frame = new PanelContainer { ClipContents = true };
+        frame.AddThemeStyleboxOverride("panel", new OrnateBox
+        {
+            FillA = UiPalette.Accent.Lightened(0.35f), FillB = UiPalette.PanelDark, Chamfer = 10,
+            Border = UiPalette.Trim, BorderWidth = 1.5f, Inner = UiPalette.Surface with { A = 0.25f }, InnerInset = 6,
+            Corners = CornerStyle.Hook, CornerSize = 20, CornerWidth = 2, CornerColor = UiPalette.Gilt,
+        }.Margins(0, 0));
+
+        var stage = new Control { ClipContents = true, MouseFilter = MouseFilterEnum.Ignore };
+        frame.AddChild(stage);
+        if (Portraits.TryGetValue(m.Id, out var path))
+        {
+            var art = new TextureRect
+            {
+                Texture = GD.Load<Texture2D>(path),
+                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCovered,
+                MouseFilter = MouseFilterEnum.Ignore,
+            };
+            art.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+            art.OffsetLeft = -60;
+            art.OffsetRight = 60;
+            art.OffsetBottom = 180;
+            stage.AddChild(art);
+        }
+        else
+        {
+            var name = Ui.Text(Ui.Vertical(m.Name), UiTheme.DarkTitleLabel, 72);
+            name.AddThemeColorOverride("font_color", UiPalette.TextOnDark with { A = 0.35f });
+            name.HorizontalAlignment = HorizontalAlignment.Center;
+            name.VerticalAlignment = VerticalAlignment.Center;
+            name.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+            stage.AddChild(name);
+        }
+
+        var caption = Ui.Panel(UiTheme.GlassPanel, Ui.Column(2,
+            Ui.Text(m.Name, UiTheme.DarkTitleLabel, 28),
+            Ui.Text(Portraits.ContainsKey(m.Id) ? m.Role : "立绘待制作", UiTheme.DarkMutedLabel, 16)));
+        stage.AddChild(Ui.Place(caption, 0, 1, 14, -86, 272, -14));
+        return Ui.MinSize(frame, 300, 580);
     }
 
     private static PanelContainer SkillGlyph(SampleSkill skill, int size) => Ui.Glyph(skill.Glyph, skill.School switch
     {
-        "剑" => UiPalette.Ink,
-        "拳掌" => UiPalette.Cinnabar,
-        "内功" => UiPalette.Mountain,
-        _ => UiPalette.InkMuted,
+        "剑" => UiPalette.Text,
+        "拳掌" => UiPalette.Warm,
+        "内功" => UiPalette.Boost,
+        _ => UiPalette.TextMuted,
     }, size);
 }

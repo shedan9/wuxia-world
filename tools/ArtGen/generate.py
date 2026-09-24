@@ -22,18 +22,30 @@ ROOT = Path(__file__).resolve().parent
 # 模型均需允许商用；更换模型须同步 README 与资产台账。
 MODELS = {
     "sdxl": "stabilityai/stable-diffusion-xl-base-1.0",  # CreativeML Open RAIL++-M
+    # 赛璐璐/厚涂人物立绘（2026-09-24 用户改定画风）；同为 CreativeML Open RAIL++-M。
+    "animagine4": "cagliostrolab/animagine-xl-4.0",
 }
+# 仓库带 fp16 变体文件的模型；其余按全精度文件读取后转 fp16。
+FP16_VARIANT = {"sdxl"}
+# 模型卡推荐 Euler Ancestral 采样。
+EULER_A = {"animagine4"}
 FP16_VAE = "madebyollin/sdxl-vae-fp16-fix"  # MIT
 
 
 def load_pipeline(model_key: str):
     import torch
-    from diffusers import AutoencoderKL, StableDiffusionXLPipeline
+    from diffusers import AutoencoderKL, EulerAncestralDiscreteScheduler, StableDiffusionXLPipeline
 
     vae = AutoencoderKL.from_pretrained(FP16_VAE, torch_dtype=torch.float16)
     pipe = StableDiffusionXLPipeline.from_pretrained(
-        MODELS[model_key], vae=vae, torch_dtype=torch.float16, variant="fp16", use_safetensors=True
+        MODELS[model_key],
+        vae=vae,
+        torch_dtype=torch.float16,
+        variant="fp16" if model_key in FP16_VARIANT else None,
+        use_safetensors=True,
     )
+    if model_key in EULER_A:
+        pipe.scheduler = EulerAncestralDiscreteScheduler.from_config(pipe.scheduler.config)
     vram_gb = torch.cuda.get_device_properties(0).total_memory / 2**30
     if vram_gb < 12:
         # 8GB 显卡（本机 RTX 4060）：按需搬运子模型，速度较慢但不爆显存。
@@ -47,7 +59,9 @@ def load_pipeline(model_key: str):
 def build_prompt(style: dict, job: dict) -> tuple[str, str]:
     parts = [job["prompt"], style.get(job.get("style", "default"), ""), style.get(job.get("extra", ""), "")]
     positive = ", ".join(p for p in parts if p)
-    negative = ", ".join(p for p in (style.get("negative", ""), job.get("negative", "")) if p)
+    # 共享负面词已接近 77 token 上限；人物等需要专门排除项时用 negative_style 换一套预设。
+    base_negative = style.get(job.get("negative_style", "negative"), "")
+    negative = ", ".join(p for p in (base_negative, job.get("negative", "")) if p)
     return positive, negative
 
 
@@ -85,16 +99,28 @@ def main() -> int:
     if spec.get("tier") == "complex" and vram_gb < 12:
         print("提示：复杂资源约定在家用台式机（16 GB）生成；本机可跑但很慢，建议只做小批量试图。")
 
+    img2img = None
     for job in jobs:
         positive, negative = build_prompt(spec["style"], job)
         width, height = job.get("size", spec.get("size", [1024, 1024]))
+        # init_image：以已选图为底重绘（图生图），保留构图与脸，strength 越大改动越多。
+        init = None
+        if "init_image" in job:
+            from diffusers import StableDiffusionXLImg2ImgPipeline
+            from PIL import Image
+
+            if img2img is None:
+                # 共用子模型，不另占显存（同 inpaint.py 的约定）。
+                img2img = StableDiffusionXLImg2ImgPipeline(**pipe.components)
+            init_path = ROOT / job["init_image"]
+            init = Image.open(init_path).convert("RGB").resize((width, height))
         for seed in job.get("seeds", spec.get("seeds", [1])):
             started = time.time()
-            image = pipe(
+            extra = {"image": init, "strength": job.get("strength", 0.6)} if init else {"width": width, "height": height}
+            image = (img2img if init else pipe)(
                 prompt=positive,
                 negative_prompt=negative,
-                width=width,
-                height=height,
+                **extra,
                 num_inference_steps=job.get("steps", spec.get("steps", 30)),
                 guidance_scale=job.get("cfg", spec.get("cfg", 6.0)),
                 generator=torch.Generator("cpu").manual_seed(seed),
@@ -106,12 +132,22 @@ def main() -> int:
                 "seed": seed,
                 "model": MODELS[spec.get("model", "sdxl")],
                 "vae": FP16_VAE,
+                "sampler": "euler_a" if spec.get("model", "sdxl") in EULER_A else "default",
                 "size": [width, height],
                 "steps": job.get("steps", spec.get("steps", 30)),
                 "cfg": job.get("cfg", spec.get("cfg", 6.0)),
                 "prompt": positive,
                 "negative": negative,
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                **(
+                    {
+                        "init_image": job["init_image"],
+                        "init_sha256": hashlib.sha256(init_path.read_bytes()).hexdigest(),
+                        "strength": job.get("strength", 0.6),
+                    }
+                    if init
+                    else {}
+                ),
                 "seconds": round(time.time() - started, 1),
                 "gpu": torch.cuda.get_device_name(0),
             }

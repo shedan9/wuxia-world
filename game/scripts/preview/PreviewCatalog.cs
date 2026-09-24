@@ -1,81 +1,107 @@
 using Godot;
 using WuxiaWorld.Game.Presentation;
 using WuxiaWorld.Game.Presentation.App;
+using WuxiaWorld.Game.Presentation.Scenery;
 using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Preview;
 
-/// <summary>M0 场景目录：列出全部展示页，可直接进入；按 Esc 从任意页返回。</summary>
+/// <summary>M0 场景目录：以卡片列出全部展示页，可直接进入；Esc 从任意页回标题。</summary>
 public partial class PreviewCatalog : Control
 {
     public override void _Ready()
     {
-        var background = new ColorRect { Color = UiPalette.PanelDark };
-        background.SetAnchorsPreset(LayoutPreset.FullRect);
-        AddChild(background);
+        SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        AddChild(Backdrop.Veiled());
 
         var margin = new MarginContainer();
-        margin.SetAnchorsPreset(LayoutPreset.FullRect);
-        foreach (var side in new[] { "left", "right", "top", "bottom" })
-        {
-            margin.AddThemeConstantOverride($"margin_{side}", UiPalette.SpaceXxl);
-        }
+        margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        margin.AddThemeConstantOverride("margin_left", 96);
+        margin.AddThemeConstantOverride("margin_right", 96);
+        margin.AddThemeConstantOverride("margin_top", 56);
+        margin.AddThemeConstantOverride("margin_bottom", 28);
         AddChild(margin);
 
-        var column = new VBoxContainer();
-        column.AddThemeConstantOverride("separation", UiPalette.SpaceM);
-        margin.AddChild(column);
+        var ready = PreviewPages.All.Count(p => p.ScenePath is not null && SceneRouter.CanGoTo(p.ScenePath));
+        var heading = Ui.Column(4,
+            Ui.Text("场景目录", UiTheme.DarkTitleLabel, 44),
+            Ui.Text("M0 视觉 Demo：每页可直接进入与返回，内容为固定样例数据，不代表玩法已实现。", UiTheme.DarkMutedLabel));
+        heading.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        var count = Ui.Text($"已完成 {ready} / {PreviewPages.All.Count}", UiTheme.GiltLabel, 24);
+        count.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        var header = Ui.Row(UiPalette.SpaceL, Ui.Seal("目录"), heading, Ui.Spacer(), count);
 
-        column.AddChild(MakeLabel("武侠世界 · 场景目录", UiPalette.FontTitle, UiPalette.TextOnDark));
-        column.AddChild(MakeLabel("M0 视觉 Demo：固定样例数据，不代表玩法已实现。Esc 返回目录。",
-            UiPalette.FontSecondary, UiPalette.OldGold));
-
-        var grid = new GridContainer { Columns = 2 };
+        var grid = new GridContainer { Columns = 3 };
         grid.AddThemeConstantOverride("h_separation", UiPalette.SpaceL);
-        grid.AddThemeConstantOverride("v_separation", UiPalette.SpaceM);
-        column.AddChild(grid);
+        grid.AddThemeConstantOverride("v_separation", UiPalette.SpaceL);
 
         Button? first = null;
         foreach (var page in PreviewPages.All)
         {
-            var button = MakePageButton(page);
-            grid.AddChild(button);
-            if (!button.Disabled)
+            var card = PageCard(page);
+            grid.AddChild(card);
+            if (!card.Disabled)
             {
-                first ??= button;
+                first ??= card;
             }
         }
 
+        Motion.Stagger(grid.GetChildren().OfType<Control>(), 0.05f, 0.03f);
+
+        var footer = Ui.Row(UiPalette.SpaceL, Ui.Spacer(),
+            Ui.KeyHints(true, ("方向键", "选择"), ("Enter", "进入"), ("Esc", "返回标题")));
+
+        margin.AddChild(Ui.Column(UiPalette.SpaceXl, header, Ui.Rule(dark: true), Ui.Expand(grid, vertical: true), footer));
         first?.GrabFocus();
     }
 
-    private static Button MakePageButton(PreviewPage page)
+    private static Button PageCard(PreviewPage page)
     {
         var router = AppHost.Instance.Router;
         var ready = page.ScenePath is not null && SceneRouter.CanGoTo(page.ScenePath);
-        var button = new Button
+        var card = new Button
         {
-            Text = ready ? $"{page.Title}\n{page.Focus}" : $"{page.Title}（待制作）\n{page.Focus}",
+            ThemeTypeVariation = UiTheme.CardButton,
             Disabled = !ready,
-            CustomMinimumSize = new Vector2(800, 88),
-            Alignment = HorizontalAlignment.Left,
+            CustomMinimumSize = new Vector2(0, 136),
+            SizeFlagsHorizontal = SizeFlags.ExpandFill,
             TooltipText = page.Id,
-            ThemeTypeVariation = UiTheme.DarkButton,
+            FocusMode = FocusModeEnum.All,
         };
-        button.AddThemeFontSizeOverride("font_size", UiPalette.FontSecondary);
+        card.MouseEntered += () =>
+        {
+            if (!card.Disabled)
+            {
+                card.GrabFocus();
+            }
+        };
         if (ready)
         {
-            button.Pressed += () => router.GoTo(page.ScenePath!);
+            card.Pressed += () => router.GoTo(page.ScenePath!);
         }
 
-        return button;
-    }
+        var title = Ui.Text(page.Title, UiTheme.DarkTitleLabel, 28);
+        var state = Ui.Text(ready ? "可进入" : "待制作", ready ? UiTheme.GiltLabel : UiTheme.DarkMutedLabel, 17);
+        state.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        var focus = Ui.Text(page.Focus, UiTheme.DarkMutedLabel, 18, wrap: true);
+        var body = Ui.Column(6, Ui.Row(UiPalette.SpaceM, Ui.Expand(title), state), focus);
 
-    private static Label MakeLabel(string text, int size, Color color)
-    {
-        var label = new Label { Text = text, ThemeTypeVariation = UiTheme.DarkLabel };
-        label.AddThemeFontSizeOverride("font_size", size);
-        label.AddThemeColorOverride("font_color", color);
-        return label;
+        var margin = new MarginContainer();
+        margin.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        foreach (var side in new[] { "left", "right", "top", "bottom" })
+        {
+            margin.AddThemeConstantOverride($"margin_{side}", 22);
+        }
+
+        margin.AddChild(body);
+        Ui.IgnoreMouse(margin);
+
+        if (!ready)
+        {
+            margin.Modulate = new Color(1, 1, 1, 0.55f);
+        }
+
+        card.AddChild(margin);
+        return card;
     }
 }

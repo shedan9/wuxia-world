@@ -159,9 +159,9 @@ public partial class InventoryPreview : PreviewScreen
             var change = Ui.Text(delta switch { > 0 => $"▲ {delta}", < 0 => $"▼ {-delta}", _ => "—" });
             change.AddThemeColorOverride("font_color", delta switch
             {
-                > 0 => UiPalette.Mountain,
-                < 0 => UiPalette.Cinnabar,
-                _ => UiPalette.InkMuted,
+                > 0 => UiPalette.Boost,
+                < 0 => UiPalette.Warm,
+                _ => UiPalette.TextMuted,
             });
             grid.AddChild(change);
         }
@@ -259,10 +259,10 @@ public partial class InventoryPreview : PreviewScreen
 
     private static PanelContainer Glyph(SampleItem item, int size = 56) => Ui.Glyph(item.Glyph, item.Kind switch
     {
-        SampleItemKind.Weapon => UiPalette.Ink,
-        SampleItemKind.Armor => UiPalette.Mountain,
-        SampleItemKind.Medicine => UiPalette.Cinnabar,
-        SampleItemKind.Quest => UiPalette.OldGold.Darkened(0.4f),
-        _ => UiPalette.InkMuted,
+        SampleItemKind.Weapon => UiPalette.Text,
+        SampleItemKind.Armor => UiPalette.Boost,
+        SampleItemKind.Medicine => UiPalette.Warm,
+        SampleItemKind.Quest => UiPalette.Trim.Darkened(0.4f),
+        _ => UiPalette.TextMuted,
     }, size);
 }

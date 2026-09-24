@@ -1,0 +1,220 @@
+{
+  "set": "m0_fix",
+  "tier": "complex",
+  "model": "sdxl",
+  "steps": 40,
+  "cfg": 6.0,
+  "jobs": [
+    {
+      "name": "lu303_pole",
+      "source": "out/m0_complex/char_lu_qinghe_v2_303.png",
+      "keep": [
+        {
+          "ellipse": [
+            242,
+            447,
+            40,
+            31
+          ]
+        }
+      ],
+      "erase": [
+        {
+          "line": [
+            120,
+            172,
+            334,
+            792
+          ],
+          "width": 38
+        },
+        {
+          "rect": [
+            96,
+            126,
+            194,
+            252
+          ]
+        }
+      ],
+      "paint": [
+        {
+          "line": [
+            178,
+            20,
+            282,
+            1122
+          ],
+          "width": 15,
+          "color": [
+            204,
+            170,
+            112
+          ],
+          "nodes": {
+            "every": 78,
+            "color": [
+              146,
+              112,
+              64
+            ]
+          }
+        }
+      ],
+      "mask": [
+        {
+          "line": [
+            178,
+            14,
+            283,
+            1128
+          ],
+          "width": 42
+        },
+        {
+          "line": [
+            120,
+            172,
+            334,
+            792
+          ],
+          "width": 48
+        },
+        {
+          "rect": [
+            92,
+            122,
+            198,
+            256
+          ]
+        }
+      ],
+      "feather": 6,
+      "strength": 0.4,
+      "seeds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "prompt": "a long straight bamboo boat pole with nodes, Chinese gongbi painting, fine ink outline, muted pigments, blank aged paper",
+      "negative": "text, calligraphy, red seal stamp, ribbon, flag, person, hand, blurry, deformed, broken, curved, 3d render"
+    },
+    {
+      "name": "lu303_skin",
+      "source": "out/m0_fix/lu303_pole_4.png",
+      "tint": {
+        "shapes": [
+          {
+            "ellipse": [
+              439,
+              172,
+              46,
+              70
+            ]
+          },
+          {
+            "poly": [
+              [
+                406,
+                222
+              ],
+              [
+                454,
+                222
+              ],
+              [
+                448,
+                262
+              ],
+              [
+                414,
+                262
+              ]
+            ]
+          },
+          {
+            "ellipse": [
+              243,
+              450,
+              36,
+              27
+            ]
+          },
+          {
+            "ellipse": [
+              523,
+              652,
+              27,
+              50
+            ]
+          }
+        ],
+        "rgb": [
+          0.88,
+          0.8,
+          0.72
+        ],
+        "min_luma": 90,
+        "max_luma": 170
+      },
+      "mask": [
+        {
+          "ellipse": [
+            439,
+            172,
+            46,
+            70
+          ]
+        },
+        {
+          "poly": [
+            [
+              406,
+              222
+            ],
+            [
+              454,
+              222
+            ],
+            [
+              448,
+              262
+            ],
+            [
+              414,
+              262
+            ]
+          ]
+        },
+        {
+          "ellipse": [
+            243,
+            450,
+            36,
+            27
+          ]
+        },
+        {
+          "ellipse": [
+            523,
+            652,
+            27,
+            50
+          ]
+        }
+      ],
+      "feather": 4,
+      "strength": 0.3,
+      "padding_mask_crop": 32,
+      "seeds": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "prompt": "sun-tanned brown skin, weathered face and hands of a young ferrywoman, Chinese gongbi figure painting, fine ink outline, muted pigments",
+      "negative": "pale skin, white skin, makeup, blush, text, red seal stamp, blurry, deformed, bad hands, extra fingers, 3d render"
+    }
+  ]
+}

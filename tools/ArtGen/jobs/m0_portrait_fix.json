@@ -1,0 +1,24 @@
+{
+  "set": "m0_portrait",
+  "tier": "complex",
+  "model": "animagine4",
+  "steps": 28,
+  "cfg": 5.0,
+  "negative": "lowres, bad anatomy, bad hands, bad feet, extra legs, text, watermark, signature, chibi, child, denim, jeans, modern clothes, kimono, high heels, bare feet, sandals, ink wash, paper texture, nsfw, blurry, cropped",
+  "jobs": [
+    {
+      "name": "lu_qinghe_final_full",
+      "source": "out/m0_portrait/lu_qinghe_final_relit_s50_4.png",
+      "canvas": {"size": [768, 1344], "scale": 0.67, "offset": [105, 30]},
+      "mask": [
+        {"rect": [0, 790, 768, 1344]},
+        {"rect": [0, 0, 121, 1344]},
+        {"rect": [647, 0, 768, 1344]}
+      ],
+      "feather": 12,
+      "strength": 0.99,
+      "seeds": [1, 2, 3, 4, 5, 6, 7, 8],
+      "prompt": "1girl, young woman, full body, standing, beige linen hanfu, long skirt, dark brown trousers, dark short boots, holding bamboo pole, semi-realistic, cel shading, detailed shading, pale teal background, masterpiece, high score, absurdres"
+    }
+  ]
+}

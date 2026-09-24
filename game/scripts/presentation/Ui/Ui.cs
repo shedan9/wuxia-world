@@ -23,7 +23,7 @@ public static class Ui
         return label;
     }
 
-    /// <summary>竖排文字：每字一行，用于印章与册页签。</summary>
+    /// <summary>竖排文字：每字一行，用于页名章与竖排名牌。</summary>
     public static string Vertical(string text) => string.Join('\n', text.EnumerateRunes());
 
     public static VBoxContainer Column(int separation = UiPalette.SpaceM, params Control[] children)
@@ -136,7 +136,7 @@ public static class Ui
     {
         var row = Toggle("", UiTheme.RowButton, group, onSelected, selected);
         var content = Row(UiPalette.SpaceM);
-        content.SetAnchorsPreset(Control.LayoutPreset.FullRect);
+        content.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
         content.OffsetLeft = 16;
         content.OffsetRight = -16;
         content.MouseFilter = Control.MouseFilterEnum.Ignore;
@@ -161,15 +161,7 @@ public static class Ui
             content.AddChild(tail);
         }
 
-        foreach (var node in content.FindChildren("*", owned: false))
-        {
-            if (node is Control c)
-            {
-                c.MouseFilter = Control.MouseFilterEnum.Ignore;
-            }
-        }
-
-        row.AddChild(content);
+        row.AddChild(IgnoreMouse(content));
         row.CustomMinimumSize = new Vector2(0, leading is null && detail is null ? 56 : 80);
         return row;
     }
@@ -187,7 +179,7 @@ public static class Ui
         return button;
     }
 
-    /// <summary>朱砂印章，竖排标题。</summary>
+    /// <summary>石青页名章，竖排标题。</summary>
     public static PanelContainer Seal(string text)
     {
         var label = Text(Vertical(text), UiTheme.SealLabel);
@@ -196,18 +188,21 @@ public static class Ui
     }
 
     /// <summary>
-    /// 字形图块：正式图标完成前，以单字加类别描边示意物品或招式类别。
+    /// 字形印鉴：正式图标完成前，以单字加类别色的切角玉牌示意物品或招式类别。
     /// 仅用于 M0，不作为图标美术验收。
     /// </summary>
     public static PanelContainer Glyph(string glyph, Color tone, int size = 56)
     {
-        var box = new StyleBoxFlat { BgColor = UiPalette.Paper, BorderColor = tone };
-        box.SetBorderWidthAll(2);
-        box.SetCornerRadiusAll(4);
+        var box = new OrnateBox
+        {
+            FillA = UiPalette.Surface, FillB = tone.Lerp(UiPalette.Surface, 0.78f), Chamfer = size / 7f,
+            Border = tone, BorderWidth = size >= 72 ? 2 : 1.5f,
+            Inner = tone with { A = 0.35f }, InnerInset = size / 14f,
+        };
         var panel = new PanelContainer { CustomMinimumSize = new Vector2(size, size) };
         panel.AddThemeStyleboxOverride("panel", box);
         var label = Text(glyph, UiTheme.TitleLabel, size / 2);
-        label.AddThemeColorOverride("font_color", tone);
+        label.AddThemeColorOverride("font_color", tone.Darkened(0.1f));
         label.HorizontalAlignment = HorizontalAlignment.Center;
         label.VerticalAlignment = VerticalAlignment.Center;
         panel.AddChild(label);
@@ -222,12 +217,78 @@ public static class Ui
             MaxValue = max,
             Value = value,
             ShowPercentage = false,
-            CustomMinimumSize = new Vector2(width, 14),
+            CustomMinimumSize = new Vector2(width, 16),
             SizeFlagsVertical = Control.SizeFlags.ShrinkCenter,
         };
     }
 
-    public static HSeparator Rule() => new();
+    /// <summary>分隔线：两端渐隐，正中一粒菱形。</summary>
+    public static Control Rule(bool dark = false) => new DiamondRule { Dark = dark };
+
+    /// <summary>小节标题：菱形、书法字、向右渐隐的细线。</summary>
+    public static Control Section(string text, bool dark = false)
+    {
+        var label = Text(text, dark ? UiTheme.DarkTitleLabel : UiTheme.SectionLabel);
+        if (dark)
+        {
+            label.AddThemeFontSizeOverride("font_size", 28);
+        }
+
+        var line = Expand(new DiamondRule { Dark = dark, Lead = true });
+        line.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+        return Row(UiPalette.SpaceM, label, line);
+    }
+
+    /// <summary>按键提示：键帽加说明，放在界面底部的操作栏。</summary>
+    public static Control KeyHint(string key, string action, bool dark = true)
+    {
+        var cap = Text(key, size: 17);
+        cap.AddThemeFontOverride("font", UiFonts.BodyMedium);
+        cap.AddThemeColorOverride("font_color", UiPalette.Abyss);
+        cap.HorizontalAlignment = HorizontalAlignment.Center;
+        var capPanel = MinSize(Panel(UiTheme.KeyCapPanel, cap), 34, 30);
+        capPanel.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+        return Row(UiPalette.SpaceS, capPanel, Text(action, dark ? UiTheme.DarkMutedLabel : UiTheme.MutedLabel));
+    }
+
+    /// <summary>一组按键提示，项间留出较宽间距。</summary>
+    public static HBoxContainer KeyHints(bool dark, params (string Key, string Action)[] hints)
+    {
+        var row = Row(UiPalette.SpaceXl);
+        foreach (var (key, action) in hints)
+        {
+            row.AddChild(KeyHint(key, action, dark));
+        }
+
+        return row;
+    }
+
+    /// <summary>按锚点（0 左/上，1 右/下）加偏移摆放，用于不经容器排版的全屏界面。</summary>
+    public static T Place<T>(T c, float anchorX, float anchorY, float left, float top, float right, float bottom) where T : Control
+    {
+        c.AnchorLeft = c.AnchorRight = anchorX;
+        c.AnchorTop = c.AnchorBottom = anchorY;
+        c.OffsetLeft = left;
+        c.OffsetTop = top;
+        c.OffsetRight = right;
+        c.OffsetBottom = bottom;
+        return c;
+    }
+
+    /// <summary>让整棵子树不接收鼠标，点击落到外层按钮上（卡片、列表行）。</summary>
+    public static T IgnoreMouse<T>(T root) where T : Control
+    {
+        root.MouseFilter = Control.MouseFilterEnum.Ignore;
+        foreach (var node in root.FindChildren("*", owned: false))
+        {
+            if (node is Control c)
+            {
+                c.MouseFilter = Control.MouseFilterEnum.Ignore;
+            }
+        }
+
+        return root;
+    }
 
     public static void ClearChildren(Node node)
     {

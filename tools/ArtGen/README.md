@@ -7,7 +7,7 @@
 | 机器 | 配置 | 负责 |
 |---|---|---|
 | 笔记本（本机） | AMD Ryzen 9 7845HX、16 GB 内存、RTX 4060 Laptop 8 GB、Windows 11 家庭版 26200 | 简单资源：物品与招式图标、纸张水墨肌理、UI 装饰、构图小样；任务文件 `"tier": "simple"` |
-| 家用台式机 | RTX 4070 Ti SUPER 16 GB、32 GB 内存 | 复杂资源：人物立绘与三视图、探索与战斗场景、大图高清放大；任务文件 `"tier": "complex"` |
+| 家用台式机 | Intel i7-14700KF、32 GB 内存、RTX 4070 Ti SUPER 16 GB、Windows 11 家庭版 26200 | 复杂资源：人物立绘与三视图、探索与战斗场景、大图高清放大；任务文件 `"tier": "complex"` |
 
 8 GB 显卡上 `generate.py` 自动启用模型 CPU 卸载（慢但不爆显存）；12 GB 以上显卡整体放入显存。两台机器用同一份 `requirements*.txt`、同一模型和同一种子，结果可相互复现（不同显卡架构可能有细微像素差异，以记录中的哈希为准）。
 
@@ -15,20 +15,44 @@
 
 | 项目 | 版本 / 位置 |
 |---|---|
-| Python | 3.12（本机 3.12.6，`C:\Python312`） |
-| NVIDIA 驱动 | 本机 591.86（支持 CUDA 13.1）；需支持 CUDA 12.8 及以上 |
+| Python | 3.12（笔记本 3.12.6，`C:\Python312`；台式机 3.12.10，winget 按用户安装于 `%LOCALAPPDATA%\Programs\Python\Python312`，与已有 3.13 并存） |
+| NVIDIA 驱动 | 笔记本 591.86（CUDA 13.1）、台式机 617.14（CUDA 13.4）；需支持 CUDA 12.8 及以上 |
 | PyTorch | 见 `requirements-torch.txt`，从 `https://download.pytorch.org/whl/cu128` 安装 |
 | 其他依赖 | 见 `requirements.txt`（diffusers、transformers、accelerate 等，已锁版本） |
 | 虚拟环境 | `tools/ArtGen/.venv`（不入库） |
-| 模型 | `stabilityai/stable-diffusion-xl-base-1.0`（fp16，约 7 GB，CreativeML Open RAIL++-M，允许商用）；`madebyollin/sdxl-vae-fp16-fix`（MIT） |
+| 模型 | `stabilityai/stable-diffusion-xl-base-1.0`（fp16，约 7 GB，CreativeML Open RAIL++-M，允许商用）；`madebyollin/sdxl-vae-fp16-fix`（MIT）；人物立绘用 `cagliostrolab/animagine-xl-4.0`（任务文件 `"model": "animagine4"`，约 7 GB，CreativeML Open RAIL++-M，模型卡写明允许商用，Euler Ancestral 采样） |
 | 模型缓存 | `%USERPROFILE%\.cache\huggingface`；设置 `HF_HOME` 可改到其他磁盘 |
 
 ## 本机实测（2026-09-24）
 
 - `setup.ps1` 等效步骤在笔记本完成：torch 2.11.0+cu128、diffusers 0.40.0，`torch.cuda.is_available()` 为真。
-- SDXL fp16 + CPU 卸载，1024×1024、30 步：约 30 秒一张。家用台式机整体放入显存，预计明显更快，首次运行后补记。
+- 笔记本 SDXL fp16 + CPU 卸载，1024×1024、30 步：约 30 秒一张。
 - 基础 SDXL 对器物造型把握不稳（例：剑会画成日式刀或多出零件），每项生成 4 个种子挑选，必要时人工修整；负面词挡不住偶发的印章，入库前裁掉。
 - diffusers 0.40 起 VAE 分块写作 `pipe.vae.enable_tiling()`；`torch_dtype` 参数有弃用警告，不影响结果。
+
+## 台式机实测（2026-09-24）
+
+- `setup.ps1 -Python <3.12 路径>` 一次通过：torch 2.11.0+cu128、依赖全部按锁定版本安装，CUDA 识别 RTX 4070 Ti SUPER，模型缓存到 `%USERPROFILE%\.cache\huggingface`。
+- 模型整体放入显存，832×1216、40 步：约 9 秒一张（首张 9.0 秒，其余 8.7–9.3 秒）。模型已缓存后可设 `HF_HUB_OFFLINE=1` 跳过联网检查。
+- 首次人物立绘 `char_lu_qinghe` 6 个种子：工笔画风、全身比例和江南渡口气质可用；但宽袖多于窄袖、肤色偏白、船篙常画成短杖、多为草鞋而非短靴，6 张中 4 张出现题款或印章。立绘需换用更强的人物描述或局部重绘，入库前裁掉题款。
+- 第二轮 `char_lu_qinghe_v2` 8 个种子：人物风格改用 `character_plain`（空白纸底），负面词改用 `negative_character` 预设（加入宽袖、长袍、裙、白肤、草鞋、赤足、背景景物）。8 张全部为短衣长裤加短靴，窄袖明显增多，背景基本空白；仍有问题：肤色依旧偏白，船篙多数只到腰或胸、未触地，3 张出现清式盘扣（与宋代江南不符），5 张仍有题款或小印。以 303、202 为较好候选。
+- 任务文件可用 `negative_style` 选用另一套负面词预设；共享负面词已占 67 token，直接追加会超过 77 token 被截断。
+- 局部重绘（`inpaint.py`，任务 `jobs/m0_fix.json`）：以 v2 种子 303 为底，先去掉短篙与飘带、画入一根从手中穿过并触地的长篙，strength 0.4 重绘（选种子 4）；再对脸、颈、双手调成晒肤色后 strength 0.3 重绘（选种子 1，五官保持最好）。成品 `out/m0_fix/lu303_skin_1.png`，对比图 `lu303_review_before_after.png`。每张约 4 秒。strength 0.55 时模型会把手以上的篙身抹成纸面；0.4 能保住画入的形状。
+- 仍待处理：新篙颜色偏浅、笔触比衣纹平；下颌旁有一条来历不明的黑色垂绳；左下角小印与纸面折痕需在入库修整时裁除或修掉。
+
+## 画风改定（2026-09-24）
+
+用户否定了水墨宣纸 / 工笔方向，要求蓝绿清新基调、偏写实的卡通立绘（参照 `docs/art/example/`，只作沟通参照，见资产台账）。基础 SDXL 画不出赛璐璐/厚涂立绘，且旧负面词专门排除了 anime；人物立绘改用 Animagine XL 4.0，任务文件 `jobs/m0_portrait.json`。该模型按标签式提示词训练：人物标签在前，风格与质量标签（`masterpiece, high score, absurdres`）在后，CFG 5、28 步、832×1216。旧 `m0_complex.json` 与 `m0_fix.json` 的工笔立绘结果作废，只保留作管线记录。
+
+立绘迭代记录（台式机，每张 4–7 秒）：
+- v2：交领汉服、米色麻布、青头巾，年龄感对；用户选定半身 505 的画风，但嫌服装单调，并要求全身构图。
+- v3：参照 `docs/art/example/` 加入粗线稿、撞色与纹样。以 505 为底的图生图（任务键 `init_image` / `strength`，共用子模型不增显存）在 strength 0.6 时几乎只加配饰；重新生成丰富但易出宽袖和竹林背景。
+- v4：全身 768×1344，负面词加 `wide sleeves, bamboo forest, scenery, cropped`；丰富度达标，`tan skin` 会让多数种子肤色过深，去掉 `pale teal background` 后底色变灰粉。
+- v5：改 `light tan skin`、恢复 `pale teal background`，肤色与底色回正；`thick lineart` 让画面偏美式平涂卡通，全身 768×1344 下头部只占画面约八分之一，五官细节不足。
+- SDXL 两个文本编码器只读 77 token，丰富服装描述时必须删减其他词；若继续加细节，需要引入长提示词分段编码。
+- `sheet.py out/<任务集> <名称前缀>` 把一组结果拼成带种子号的对比图。
+- 定稿：用户选定 `lu_qinghe_v3_from505_7` 为陆青禾立绘 v1（半身），已入 `art_source/ai/characters/`。其后以它为底的补光重绘（`relight.py` 换底色加柔光，再图生图）与扩成全身（`inpaint.py` 的 `canvas` 步骤）均按用户指示停止：扩图后原图区与新生成区背景色调不同，出现矩形边框和裙摆横向接缝；统一背景时颜色容差过大会吃掉竹篙高光与头巾飘带。
+- 经验：每轮改提示词重新生成会逐渐偏离用户已认可的样子；有选定图后，只以它为底做局部修改。
 
 ## 复现步骤
 
@@ -38,6 +62,25 @@
 cd tools/ArtGen
 .venv/Scripts/python generate.py jobs/m0_simple.json --dry-run   # 只看提示词
 .venv/Scripts/python generate.py jobs/m0_simple.json --only icon_  # 生成
+```
+
+## 局部重绘
+
+`inpaint.py` 读取 `jobs/*_fix.json`，对一张已生成的图依次做：`erase`（用周围纸色逐层填平旧物件）、`paint` / `tint`（画入粗略新形状或对皮肤区调色，`min_luma`/`max_luma` 把墨线、头发和纸底排除在外）、按 `mask` 与 `strength` 重绘，再只把遮罩内结果羽化贴回，其余像素不变。坐标以源图像素计；先用 `--preview` 输出预处理图和遮罩叠加图核对位置，再正式运行。多步修整写成串联任务，后一步的 `source` 指向前一步选定的输出。
+
+```powershell
+.venv/Scripts/python inpaint.py jobs/m0_fix.json --only lu303_skin --preview
+.venv/Scripts/python inpaint.py jobs/m0_fix.json --only lu303_skin
+```
+
+重绘沿用同一 SDXL 基础模型，不新增权重。重绘管线必须用 `StableDiffusionXLInpaintPipeline(**base.components)` 共用子模型：diffusers 0.40 的 `from_pipe` 会再复制一份权重（显存 6.6 → 13.1 GB），16 GB 显卡溢出到共享内存后每张从 4 秒变成 5 分钟以上。
+
+## 纯色底抠图
+
+`cutout.py` 从图像边缘按颜色距离做连通填充，只去掉与边框相连的底色（人物身上与底色相近的饰物不受影响），边缘羽化并扣除底色溢色，输出 RGBA PNG 与同名 `.json` 记录（源图与输出哈希、阈值、羽化）。
+
+```powershell
+.venv/Scripts/python cutout.py ../../art_source/ai/characters/lu_qinghe_portrait_v1.png ../../art_source/ai/characters/lu_qinghe_portrait_v1_cutout.png
 ```
 
 ## 任务文件

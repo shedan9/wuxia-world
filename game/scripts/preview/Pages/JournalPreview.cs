@@ -175,8 +175,8 @@ public partial class JournalPreview : PreviewScreen
 
     private static PanelContainer SourceGlyph(string source, int size = 48) => Ui.Glyph(source[..1], source switch
     {
-        "亲见" => UiPalette.Ink,
-        "听闻" => UiPalette.Mountain,
-        _ => UiPalette.Cinnabar,
+        "亲见" => UiPalette.Text,
+        "听闻" => UiPalette.Boost,
+        _ => UiPalette.Accent,
     }, size);
 }

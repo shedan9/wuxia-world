@@ -4,7 +4,7 @@
 
 角色年龄与身份原则上以各自小说主要剧情阶段为准，不因时间兼容而改龄或改换核心身份；统一世界的年表与事件安排服从这一约束。阿青单独采用《越女剑》故事结束后的原创延伸阶段，本作以 18 岁登场；原著故事阶段约十六七岁，不把本作年龄冒称原著设定。
 
-当前处于 M0 起步阶段：已按架构文档搭建工程骨架（Godot 工程、场景目录框架与规则类库空项目），已在本机完成 `dotnet build`、Godot 导入与 Windows x64 导出。11 个展示页中已完成角色、背包、任务、设置 4 个界面页（固定样例数据）；主菜单、大地图、对话、探索与战斗页依赖尚未制作的美术样板，因此还不是可交付的视觉 Demo。目标平台仅 Windows x64。
+当前处于 M0 起步阶段：已按架构文档搭建工程骨架（Godot 工程、场景目录框架与规则类库空项目），已在本机完成 `dotnet build`、Godot 导入与 Windows x64 导出。界面已按[界面设计规范](./docs/art/UI_DESIGN.md)重做为游戏化的“青绿·玉版”风格：12 个展示页中已完成标题页、人物对话、回合战斗、探索 HUD（界面层）与角色、背包、札记、设置共 8 页（固定样例数据，战斗与探索形象为剪影、场景为程序化山水占位）；大地图与三类探索布景依赖尚未制作的美术样板，因此还不是可交付的视觉 Demo。目标平台仅 Windows x64。
 
 ## 工程结构
 
@@ -17,11 +17,12 @@
 | `tests/` | 测试项目（M1 锁定框架） |
 | `art_source/`、`voice_source/` | 美术与配音源文件（Git LFS） |
 
-开发环境：.NET SDK 10.0.401（`global.json` 锁定补丁级前滚）、Godot 4.7.2 .NET（`4.7.2.stable.mono`）编辑器及同版导出模板、Git LFS；该组合已于 2026-09-23 在 Windows 11 上完成构建与导出启动验证。用编辑器打开 `game/project.godot` 运行；导出见 [tools/README.md](./tools/README.md)。
+开发环境：.NET SDK 10.0.401（`global.json` 锁定补丁级前滚）、Godot 4.7.2 .NET（`4.7.2.stable.mono`）编辑器及同版导出模板、Git LFS；该组合已于 2026-09-23 在 Windows 11 上完成构建与导出启动验证。两台开发机均可用 winget 安装：`winget install --id Microsoft.DotNet.SDK.10 --version 10.0.401 -e`、`winget install --id GodotEngine.GodotEngine.Mono --version 4.7.2 -e`；导出模板从 Godot 官方发布页下载 `Godot_v4.7.2-stable_mono_export_templates.tpz`，解压 `templates/` 到 `%APPDATA%\Godot\export_templates\4.7.2.stable.mono`；并把编辑器路径设为用户环境变量 `GODOT_BIN`。用编辑器打开 `game/project.godot` 运行；导出见 [tools/README.md](./tools/README.md)。
 
 - [游戏架构与系统设计](./docs/ARCHITECTURE.md)：引擎选型、统一世界与跨作品事件、地图旅行、战斗成长、内容数据、美术、AI 配音及存档架构。
 - [三篇剧情与任务设计](./docs/STORY.md)：《众路归潮》《烽火未起》《华山前夜》共 18 个短主线关口、46 条可选支线；第一篇前列有门派总览，完整游戏规划 22 处可进入的势力地图地点，最终经历大战、华山新五绝与返现代结局。
 - [十五部作品与重点人物扩展草案](./docs/canon/EXPANSION.md)：补齐尚未覆盖的小说入口，规划慕容复、丁春秋、李秋水、岳不群、金轮法王、东方不败、独孤求败、任我行、黄药师、欧阳锋、一灯大师等人物或传承；仍须逐人考据与排产。
+- [界面设计规范](./docs/art/UI_DESIGN.md)：视觉语言、纹饰组件、标题 / 菜单 / 探索 HUD / 对话 / 战斗 / 大地图版式、动效与输入。
 - [开发计划与交付标准](./docs/DEVELOPMENT_PLAN.md)：两阶段 Demo、展示页面清单、任务与工期、资产范围和验收标准。
 - [项目协作约定](./AGENTS.md)：文档职责、阶段边界与剧情内容修改规则。
 

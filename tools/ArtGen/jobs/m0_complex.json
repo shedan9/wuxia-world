@@ -21,7 +21,9 @@
     "iso": "high oblique top-down view, clear walkable paths",
     "side": "side view, flat ground in lower third, empty stage",
     "character": "full body concept, Chinese gongbi figure painting, seven heads tall, fine ink outline, muted pigments, plain rice paper background, front view",
-    "negative": "text, letters, calligraphy, watermark, signature, red seal stamp, frame, photo, photorealistic, 3d render, plastic, blurry, lowres, jpeg artifacts, deformed, extra limbs, bad hands, cropped, anime, manga, chibi, japanese style, japanese architecture, torii, modern objects"
+    "negative": "text, letters, calligraphy, watermark, signature, red seal stamp, frame, photo, photorealistic, 3d render, plastic, blurry, lowres, jpeg artifacts, deformed, extra limbs, bad hands, cropped, anime, manga, chibi, japanese style, japanese architecture, torii, modern objects",
+    "character_plain": "full body, Chinese gongbi figure painting, fine ink outline, muted pigments, blank paper background",
+    "negative_character": "text, calligraphy, inscription, poem, red seal stamp, signature, watermark, photo, 3d render, blurry, deformed, bad hands, extra limbs, cropped, anime, japanese style, wide sleeves, long robe, skirt, pale skin, sandals, bare feet, scenery, boat, reeds, water"
   },
   "jobs": [
     {
@@ -60,7 +62,27 @@
         832,
         1216
       ],
-      "prompt": "young adult Chinese woman, ferry apprentice, undyed hemp jacket and trousers, rolled sleeves, straw sandals, hair in cloth band, holding bamboo boat pole"
+      "prompt": "20 year old Chinese woman, ferry apprentice, sun-tanned skin, hair tied up with cloth band, patched undyed hemp jacket with narrow sleeves, trousers, short wading boots, holding bamboo boat pole"
+    },
+    {
+      "name": "char_lu_qinghe_v2",
+      "style": "character_plain",
+      "negative_style": "negative_character",
+      "size": [
+        832,
+        1216
+      ],
+      "seeds": [
+        101,
+        202,
+        303,
+        404,
+        505,
+        606,
+        707,
+        808
+      ],
+      "prompt": "20 year old Chinese ferrywoman, tanned skin, tight narrow sleeves bound at wrists, short patched hemp jacket, rolled trousers, knee-high wading boots, hair bun with cloth band, holding a long bamboo boat pole"
     }
   ]
 }

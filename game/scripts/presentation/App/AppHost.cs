@@ -17,16 +17,17 @@ public partial class AppHost : Node
     {
         Instance = this;
         DevCapture.Parse();
-        Router = new SceneRouter(GetTree());
         GetTree().Root.Theme = UiTheme.Build();
+        Router = new SceneRouter();
+        AddChild(Router);
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        // M0 展示包：任意预览页按取消键都回到场景目录。
-        if (@event.IsActionPressed("ui_cancel") && !Router.IsAt(ScenePaths.PreviewCatalog))
+        // M0 展示包：任意预览页按取消键都回到标题；标题页自己处理取消键（关闭弹层）。
+        if (@event.IsActionPressed("ui_cancel") && !Router.IsAt(ScenePaths.MainMenu))
         {
-            Router.GoTo(ScenePaths.PreviewCatalog);
+            Router.GoTo(ScenePaths.MainMenu);
             GetViewport().SetInputAsHandled();
         }
     }
