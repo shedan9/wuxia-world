@@ -1,0 +1,10 @@
+{
+  "id": "inn.counter",
+  "origin": [
+    175.74725,
+    -275.4206
+  ],
+  "px": 2.8076490438695165,
+  "source": "art_source/ai/inn/inn.counter.png",
+  "sha256": "3479678eec6ed7d1424afc65c71dfe4103531a80193a0c12405074c9b760faa4"
+}

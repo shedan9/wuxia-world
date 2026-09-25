@@ -4,8 +4,10 @@ namespace WuxiaWorld.Game.Preview.Pages;
 
 /// <summary>
 /// 城镇布景的统一视角：正交斜俯视投影。世界坐标 x 向东、y 向南、z 向上（约厘米）。
-/// 2026-09-25 用户定为：水平转 45°、下俯 45°，镜头在西南方，东西向的街道自左下延伸到右上（Yaw = -45°）；
+/// 2026-09-25 用户定为：水平转 45°，镜头在西南方，东西向的街道自左下延伸到右上（Yaw = -45°）；
 /// 此前转 +45°（镜头在东南、街道自左上到右下）被否定。可见的墙面为南墙与西墙。公式对任意转角成立。
+/// 俯角同日由 45° 改为 30°（2:1 等距，《暗黑破坏神 2》《金庸群侠传》《仙剑奇侠传》一类斜视角游戏的常规取值）：
+/// 45° 俯角下地面菱形只有约 1.4:1，地面像朝镜头立起，正面绘制的人物又被压到 0.71 高，看起来别扭。
 /// 地面、墙、屋顶、桥、驳岸和人物全部经这一个投影，避免“俯视地面 + 平视房屋”的拼接感。
 /// 投影是线性的，同一水平面上的点可由着色器反算回世界坐标（town_ground.gdshader）。
 /// </summary>
@@ -14,11 +16,12 @@ public static class TownView
     /// <summary>水平转角（度）：-45，镜头在西南方，东西向街道在画面上自左下向右上。</summary>
     public const float Yaw = -45;
 
-    /// <summary>俯角（度）：45。</summary>
-    public const float Pitch = 45;
+    /// <summary>俯角（度）：30，即游戏业常用的 2:1 等距（dimetric）：地面正方格投影成宽高 2:1 的菱形，
+    /// 竖直高度保留 cos30° ≈ 0.87，正面绘制的人物与建筑立面不显得被压扁。</summary>
+    public const float Pitch = 30;
 
-    /// <summary>世界单位到逻辑像素的比例：人高 175 在俯 45° 下约 150 逻辑像素（架构文档 10.2 的 120–180）。</summary>
-    public const float Scale = 1.2f;
+    /// <summary>世界单位到逻辑像素的比例：人高 175 在俯 30° 下约 152 逻辑像素（架构文档 10.2 的 120–180）。</summary>
+    public const float Scale = 1.0f;
 
     /// <summary>受光方向（指向太阳）：午后日在西南偏高处，南墙最亮、朝北的坡面暗一阶。</summary>
     public static readonly Vector3 Sun = new Vector3(-0.35f, 0.62f, 0.72f).Normalized();
@@ -82,6 +85,12 @@ public sealed class Face
 
     public Transform2D Local { get; init; } = Transform2D.Identity;
 
+    /// <summary>
+    /// 字层（匾额、碑文、路牌字，<see cref="Local"/> 坐标）：引导图里不画（AI 只画空牌），贴上 AI 件后由引擎补写在原位，
+    /// 字形取自已登记字体，不依赖模型写汉字。
+    /// </summary>
+    public Action<CanvasItem>? Lettering { get; init; }
+
     public float Outline { get; init; } = 2f;
 
     /// <summary>按受光方向压暗；水面、贴地细节等不参与明暗。</summary>
@@ -99,6 +108,24 @@ public sealed class Face
 
     private static readonly Color ShadeTint = new(0.10f, 0.17f, 0.26f);
 
+    /// <summary>
+    /// 结构引导图模式：只保留面、轮廓与门窗等开口，瓦垄、墙面水渍等纹理贴花不画（交给 AI 画），
+    /// 导出 AI 出件的结构引导图时打开。门窗必须留着：门洞位置要与交互点对齐。
+    /// </summary>
+    public static bool StructureOnly { get; set; }
+
+    public void DrawLettering(CanvasItem ci)
+    {
+        if (Lettering is not { } lettering || StructureOnly || !PieceArt.Enabled || (Normal != Vector3.Zero && !TownView.Facing(Normal)))
+        {
+            return;
+        }
+
+        ci.DrawSetTransformMatrix(Local);
+        lettering(ci);
+        ci.DrawSetTransformMatrix(Transform2D.Identity);
+    }
+
     public void Draw(CanvasItem ci)
     {
         if (Normal != Vector3.Zero && !TownView.Facing(Normal))
@@ -115,6 +142,8 @@ public sealed class Face
             decal(ci);
             ci.DrawSetTransformMatrix(Transform2D.Identity);
         }
+
+        DrawLettering(ci);
 
         if (Lit && Normal != Vector3.Zero)
         {

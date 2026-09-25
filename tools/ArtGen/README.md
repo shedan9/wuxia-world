@@ -20,7 +20,7 @@
 | PyTorch | 见 `requirements-torch.txt`，从 `https://download.pytorch.org/whl/cu128` 安装 |
 | 其他依赖 | 见 `requirements.txt`（diffusers、transformers、accelerate 等，已锁版本） |
 | 虚拟环境 | `tools/ArtGen/.venv`（不入库） |
-| 模型 | `stabilityai/stable-diffusion-xl-base-1.0`（fp16，约 7 GB，CreativeML Open RAIL++-M，允许商用）；`madebyollin/sdxl-vae-fp16-fix`（MIT）；人物立绘用 `cagliostrolab/animagine-xl-4.0`（任务文件 `"model": "animagine4"`，约 7 GB，CreativeML Open RAIL++-M，模型卡写明允许商用，Euler Ancestral 采样） |
+| 模型 | `stabilityai/stable-diffusion-xl-base-1.0`（fp16，约 7 GB，CreativeML Open RAIL++-M，允许商用）；`madebyollin/sdxl-vae-fp16-fix`（MIT）；人物立绘用 `cagliostrolab/animagine-xl-4.0`（任务文件 `"model": "animagine4"`，约 7 GB，CreativeML Open RAIL++-M，模型卡写明允许商用，Euler Ancestral 采样）；布景件引导用 `xinsir/controlnet-canny-sdxl-1.0`（约 2.5 GB，Apache-2.0） |
 | 模型缓存 | `%USERPROFILE%\.cache\huggingface`；设置 `HF_HOME` 可改到其他磁盘 |
 
 ## 本机实测（2026-09-24）
@@ -64,6 +64,43 @@ cd tools/ArtGen
 .venv/Scripts/python generate.py jobs/m0_simple.json --only icon_  # 生成
 ```
 
+## 布景件：引导出件（方案 C，2026-09-25）
+
+架构文档 10.3 的第二步。流程：
+
+```powershell
+# 1. Godot 导出占位件引导图（在仓库根目录；输出不入库；不能加 --headless，否则视口不渲染会卡住）
+& $env:GODOT_BIN.Replace('.exe','_console.exe') --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --out=$PWD/tools/ArtGen/out/guides/town
+& $env:GODOT_BIN.Replace('.exe','_console.exe') --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --region=wild --out=$PWD/tools/ArtGen/out/guides/wild   # inn 同理
+# 2. 生成（--preview 只看底图与边线；--model 临时换基础模型比较）
+cd tools/ArtGen
+.venv/Scripts/python piece.py jobs/m0_town_pieces.json --only r5_house
+# 3. 选定后入库并贴进游戏（然后 Godot --headless --path game --import）
+.venv/Scripts/python place.py out/m0_town_pieces/r5_house_g_44.png town.house.north.1
+.venv/Scripts/python place.py out/m0_town_pieces/r4_bridge_55.png town.bridge --parts
+.venv/Scripts/python place.py out/m0_town_pieces_sdxl/r3_willow_22.png town.tree.1 --recut 22 --soft 10,50 --erase 700,1036,1000,1180
+.venv/Scripts/python place.py out/m0_town_pieces/r6_flagstone_11.png town.ground.flagstone
+# 批量入库的树类：按底色抠、软抠、清图底部 12% 内树干根部以外的地影
+.venv/Scripts/python place.py out/m0_wild_pieces/b1_tree_17_33.png wild.tree.17 --recut 22 --soft 10,50 --deshadow 0.12
+```
+
+任务键：`mode`（`txt2img` 只受边线约束 / `img2img` 以占位配色为底，`strength`）、`control_from`（`shape` 结构图 / `guide` 带瓦垄等纹理线的完整引导图）、`control`（ControlNet 强度）、`control_end`（约束施加到第几成步数）、`grow`（抠图外扩）。纹理任务 `"kind": "texture"` 可带 `bond`（条石错缝格线引导：`tile` 世界边长、`rows` 行数、`lengths` 条石长度候选），生成时 UNet、VAE、ControlNet 卷积改为环绕填充，输出旁附 2×2 平铺预览。
+
+2026-09-25 台式机试做实测（每张 8–16 秒）：
+- 图生图 strength 0.7–0.95 + 完整引导图：几何准，但几乎只照描平涂占位，材质出不来。
+- 文生图 + 结构图边线（control 0.8–0.95，control_end 0.6–0.8）：材质、水渍、瓦片才出来。Animagine 画场景偏平涂卡通、绿色发荧光；SDXL base 更丰富，定为布景基础模型。
+- 结构图若连门窗也去掉，模型会画西式窗、门的位置也不再与交互点对应：结构图只去纹理贴花，门窗开口保留；负面词加 `european, western windows, shutters, brick`。屋面用 `control_from: guide`（带瓦垄线）时黛瓦更稳。
+- 石桥栏杆常被画成木扶手，负面词加 `wood railing`。
+- 树：强约束会照搬占位的粗直柳条，改为 control 0.35、control_end 0.4 的弱约束，再用 `place.py --recut` 按底色抠图；模型会自带地面阴影，用 `--erase` 羽化擦除。树冠里的雾状灰层是模型把底色混进后排枝条，边缘连通抠图碰不到；用 `--soft 10,50` 按与底色的色差软抠图，灰层变为半透明枝条（12–60 以上会让树冠顶部也透）。
+- 无约束的无缝纹理会画成斜向碎石；加错缝格线引导后条石成行。
+
+2026-09-25 批量出件（台式机，每张约 18 秒；任务 `m0_town_pieces.json` 的 `b1_`–`b4_`、`m0_inn_pieces.json`、`m0_wild_pieces.json`，共约 500 张）：
+- 招牌、匾额、碑文、路牌上的字不交给模型：引导图导出时不画字（`Face.Lettering`），负面词加 `chinese characters, calligraphy`，入库后由引擎用登记字体补写。
+- 屋面：提示词以 `black clay roof tiles in rows` 开头才稳定是黛瓦；把门面描述放在前面时，店铺与客栈屋面变成木板色 / 红褐色。铺面负面词去掉 `shutters`（与“排门”冲突）、加 `roller shutter, garage door`；即便如此铺面仍易出现现代感，north.2 取较好的一张。客栈外观在三轮中都偏暗、不画匾额，取 `b2_44`，幌子由引擎按占位画法整面补画。
+- 杂件：告示牌、船用完整引导图（`control_from: guide`）才出瓦顶与乌篷；石痕须写 `upright ... side view`，否则画成俯视石板；井台下半截四个种子都只照描线框，未入库。
+- 树：山松以种子 33 最干净，种子 44 常画成一整张小树图集；浅灰树干会被软抠图抠成半透明，换棕色树干的种子。`--deshadow` 在图底部一段里只保留最宽不透明段（树干）左右各一倍宽度的范围，按颜色判断会误伤树干背光面。
+- 山石与矮丛：弱约束（0.35）画成满屏素材图集；山石改 0.55 / 0.5 并写 `dark muted olive green moss` 后苔色正常；矮丛在 0.6 时照描占位笔画，最终取两轮中较好的，部分同形矮丛出图相同（同一引导图、同一种子）。
+
 ## 局部重绘
 
 `inpaint.py` 读取 `jobs/*_fix.json`，对一张已生成的图依次做：`erase`（用周围纸色逐层填平旧物件）、`paint` / `tint`（画入粗略新形状或对皮肤区调色，`min_luma`/`max_luma` 把墨线、头发和纸底排除在外）、按 `mask` 与 `strength` 重绘，再只把遮罩内结果羽化贴回，其余像素不变。坐标以源图像素计；先用 `--preview` 输出预处理图和遮罩叠加图核对位置，再正式运行。多步修整写成串联任务，后一步的 `source` 指向前一步选定的输出。
@@ -77,7 +114,7 @@ cd tools/ArtGen
 
 ## 纯色底抠图
 
-`cutout.py` 从图像边缘按颜色距离做连通填充，只去掉与边框相连的底色（人物身上与底色相近的饰物不受影响），边缘羽化并扣除底色溢色，输出 RGBA PNG 与同名 `.json` 记录（源图与输出哈希、阈值、羽化）。
+`cutout.py` 从图像边缘按颜色距离做连通填充，只去掉与边框相连的底色（人物身上与底色相近的饰物不受影响），边缘羽化并扣除底色溢色，输出 RGBA PNG 与同名 `.json` 记录（源图与输出哈希、阈值、羽化）。`--enclosed 距离` 另去掉离底色更近的封闭小块（树冠枝条间的空隙），默认不去；`--soft t0,t1` 按与底色的色差给半透明度（t0 以下全透、t1 以上不透），用于模型混进前景的雾状底色。
 
 ```powershell
 .venv/Scripts/python cutout.py ../../art_source/ai/characters/lu_qinghe_portrait_v1.png ../../art_source/ai/characters/lu_qinghe_portrait_v1_cutout.png

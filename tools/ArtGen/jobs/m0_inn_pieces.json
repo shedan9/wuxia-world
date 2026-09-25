@@ -1,0 +1,265 @@
+{
+  "set": "m0_inn_pieces",
+  "guides": "out/guides/inn",
+  "tier": "complex",
+  "model": "sdxl",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "canny": [
+    60,
+    160
+  ],
+  "style": {
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "scene": "no humans, isometric game asset, simple grey background, semi-realistic, cel shading, detailed texture, soft daylight",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda",
+    "negative_scene": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, western windows, shutters, brick, chimney, wood railing, japanese architecture, pagoda",
+    "negative_interior": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, modern furniture, sofa, chair with backrest, japanese architecture"
+  },
+  "jobs": [
+    {
+      "name": "b1_counter",
+      "piece": "inn.counter",
+      "prompt": "chinese inn wooden counter, dark red lacquered panels, abacus and ledger on the top, small teapot",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_stairs",
+      "piece": "inn.stairs",
+      "prompt": "chinese wooden staircase with wooden handrail, dark wood planks, plank side wall",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_screen",
+      "piece": "inn.screen",
+      "prompt": "chinese four-panel folding screen, blue and green landscape painting on silk, red sun, dark wooden frame",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_pillar.1",
+      "piece": "inn.pillar.1",
+      "prompt": "red lacquered octagonal wooden column on round stone base",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_pillar.2",
+      "piece": "inn.pillar.2",
+      "prompt": "red lacquered octagonal wooden column on round stone base",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_pillar.3",
+      "piece": "inn.pillar.3",
+      "prompt": "red lacquered octagonal wooden column on round stone base",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_table.1",
+      "piece": "inn.table.1",
+      "prompt": "chinese square wooden eight immortals table with four long benches, white porcelain teapot and tea cups, worn brown wood",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_table.2",
+      "piece": "inn.table.2",
+      "prompt": "chinese square wooden eight immortals table with four long benches, bowls of noodles and chopsticks, worn brown wood",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_table.3",
+      "piece": "inn.table.3",
+      "prompt": "chinese square wooden eight immortals table with four long benches, white porcelain teapot and tea cups, worn brown wood",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_table.booth",
+      "piece": "inn.table.booth",
+      "prompt": "chinese square wooden table with two long benches, teapot and folded letters on the table, worn brown wood",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_plant.1",
+      "piece": "inn.plant.1",
+      "prompt": "blue and white porcelain flower pot with long orchid leaves",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 16
+    },
+    {
+      "name": "b1_plant.2",
+      "piece": "inn.plant.2",
+      "prompt": "blue and white porcelain flower pot with long orchid leaves",
+      "negative_style": "negative_interior",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 16
+    },
+    {
+      "name": "b2_plant.1",
+      "piece": "inn.plant.1",
+      "style": "piece_rich",
+      "negative_style": "negative_interior",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.4,
+      "control_end": 0.45,
+      "grow": 30,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "potted orchid plant, lush dark green long arching orchid leaves, blue and white porcelain pot"
+    },
+    {
+      "name": "b2_plant.2",
+      "piece": "inn.plant.2",
+      "style": "piece_rich",
+      "negative_style": "negative_interior",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.4,
+      "control_end": 0.45,
+      "grow": 30,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "potted orchid plant, lush dark green long arching orchid leaves, blue and white porcelain pot"
+    }
+  ]
+}

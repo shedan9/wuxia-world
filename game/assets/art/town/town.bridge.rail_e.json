@@ -1,0 +1,10 @@
+{
+  "id": "town.bridge.rail_e",
+  "origin": [
+    3226.2058,
+    -500.2003
+  ],
+  "px": 1.526344980587909,
+  "source": "art_source/ai/town/town.bridge.rail_e.png",
+  "sha256": "894d67e6948285a46e14525c678e43212d3cfebd0f29878f1719c11068ba1492"
+}

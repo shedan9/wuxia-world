@@ -38,11 +38,11 @@ public static class ExploreHudKit
         return Ui.Place(frame, 1, 0, -336, 32, -40, 380);
     }
 
-    /// <summary>左侧：主线阶段与一条支线的目标追踪。</summary>
-    public static Control Tracker()
+    /// <summary>左侧：主线阶段与一条支线的目标追踪（默认为第一章样例）。</summary>
+    public static Control Tracker() => Tracker(JournalSamples.Quests[0], JournalSamples.Quests[1]);
+
+    public static Control Tracker(SampleQuest main, SampleQuest side)
     {
-        var main = JournalSamples.Quests[0];
-        var side = JournalSamples.Quests[1];
         var list = Ui.Column(UiPalette.SpaceS,
             Ui.Row(UiPalette.SpaceS, Ui.Text("◆", UiTheme.GiltLabel, 16), Ui.Text($"{main.Kind}　{main.Name}", UiTheme.GiltLabel, 20)));
         foreach (var (text, state) in main.Stages.Where(s => s.State != StageState.Hidden))
@@ -89,6 +89,46 @@ public static class ExploreHudKit
     {
         var row = Ui.KeyHints(true, hints);
         return Ui.Place(Ui.Panel(UiTheme.GlassPanel, row), 1, 1, -40 - 150 * hints.Length, -96, -40, -40);
+    }
+}
+
+/// <summary>画面边缘的目标方向：泥金圆章内一枚朝向目标的箭头，下写目标名；目标进入画面后隐去。</summary>
+public partial class GoalPointer : Control
+{
+    public string Label { get; init; } = "";
+
+    public Vector2 Direction { get; set; } = Vector2.Up;
+
+    public override void _Ready()
+    {
+        MouseFilter = MouseFilterEnum.Ignore;
+        Visible = false;
+    }
+
+    public override void _Draw()
+    {
+        var pulse = Motion.Enabled ? 1 + Mathf.Sin(Time.GetTicksMsec() / 300f) * 0.06f : 1;
+        var r = 24 * pulse;
+        DrawCircle(Vector2.Zero, r + 3, UiPalette.Abyss with { A = 0.85f });
+        DrawArc(Vector2.Zero, r, 0, Mathf.Tau, 40, UiPalette.Gilt with { A = 0.9f }, 2.4f, true);
+        var f = Direction.Normalized();
+        var side = new Vector2(-f.Y, f.X);
+        Vector2[] arrow = [f * r * 0.72f, -f * r * 0.42f + side * r * 0.5f, -f * r * 0.18f, -f * r * 0.42f - side * r * 0.5f];
+        DrawColoredPolygon(arrow, UiPalette.Gilt.Lightened(0.15f));
+        // 名称写在圆章朝画面内的一侧，不出屏。
+        var text = f.Y > 0.5f ? new Vector2(0, -r - 14) : new Vector2(0, r + 26);
+        var width = UiFonts.Title.GetStringSize(Label, HorizontalAlignment.Left, -1, 20).X;
+        var at = text - new Vector2(width / 2 + Mathf.Clamp(f.X, -1, 1) * width * 0.5f, 0);
+        DrawRect(new Rect2(at + new Vector2(-8, -21), new Vector2(width + 16, 28)), UiPalette.Abyss with { A = 0.78f });
+        DrawString(UiFonts.Title, at, Label, HorizontalAlignment.Left, -1, 20, UiPalette.Gilt.Lightened(0.2f));
+    }
+
+    public override void _Process(double delta)
+    {
+        if (Visible && Motion.Enabled)
+        {
+            QueueRedraw();
+        }
     }
 }
 

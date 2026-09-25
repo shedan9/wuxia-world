@@ -1,0 +1,6 @@
+{
+  "id": "town.ground.flagstone",
+  "world_size": 480,
+  "source": "art_source/ai/town/town.ground.flagstone.png",
+  "sha256": "2e5fd030d2d0238d3adddb54ebb5b90848297e88ef20fd02f3ee130ea4a2766a"
+}

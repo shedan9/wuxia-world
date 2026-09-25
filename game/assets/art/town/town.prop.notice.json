@@ -1,0 +1,10 @@
+{
+  "id": "town.prop.notice",
+  "origin": [
+    1527.7354,
+    33.765625
+  ],
+  "px": 4.176991150442478,
+  "source": "art_source/ai/town/town.prop.notice.png",
+  "sha256": "a69f55ecbe95600dee18e3c1099a726ae40603022fe6a412d1b2db839581f391"
+}

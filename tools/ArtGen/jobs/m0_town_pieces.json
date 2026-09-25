@@ -1,0 +1,927 @@
+{
+  "set": "m0_town_pieces",
+  "tier": "complex",
+  "model": "sdxl",
+  "guides": "out/guides/town",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "strength": 0.7,
+  "control": 0.7,
+  "canny": [
+    60,
+    160
+  ],
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "style": {
+    "piece": "no humans, isometric, simple background, grey background, cel shading, clean lineart, detailed, soft daylight, masterpiece, high score, absurdres",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda",
+    "texture": "seamless texture, top-down view, orthographic, flat lighting, cel shading, clean lineart, game asset, masterpiece, high score, absurdres",
+    "negative_texture": "text, watermark, perspective, horizon, sky, shadow gradient, vignette, people, photo, 3d render, blurry, lowres",
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "negative_scene": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, western windows, shutters, brick, chimney, wood railing, japanese architecture, pagoda",
+    "scene": "no humans, isometric game asset, simple grey background, semi-realistic, cel shading, detailed texture, soft daylight",
+    "texture_sdxl": "seamless texture, top-down orthographic view, game asset, semi-realistic, cel shading, soft even daylight",
+    "negative_house": "text, chinese characters, calligraphy, watermark, people, sky, clouds, grass field, blurry, lowres, european, western windows, brick, chimney, japanese architecture, pagoda, wooden roof, thatched roof, red roof, corrugated metal, modern",
+    "negative_shop": "text, chinese characters, calligraphy, watermark, people, sky, blurry, lowres, european, western windows, brick, wooden roof, red roof, roller shutter, garage door, metal, glass, modern"
+  },
+  "jobs": [
+    {
+      "name": "house_north_1",
+      "piece": "town.house.north.1",
+      "style": "piece",
+      "prompt": "chinese jiangnan house, white plaster walls, horse-head gable walls, black tile roof, curved grey roof tiles, wooden double door, lattice window, weathered plaster"
+    },
+    {
+      "name": "bridge",
+      "piece": "town.bridge",
+      "style": "piece",
+      "prompt": "chinese stone slab bridge, granite railings, stone posts, stone piers, weathered grey stone, moss in cracks"
+    },
+    {
+      "name": "willow",
+      "piece": "town.tree.1",
+      "style": "piece",
+      "grow": 14,
+      "strength": 0.8,
+      "control": 0.45,
+      "prompt": "weeping willow tree, drooping green branches, thin hanging leaves, dark brown trunk"
+    },
+    {
+      "name": "flagstone",
+      "kind": "texture",
+      "world_size": 480,
+      "style": "texture",
+      "negative_style": "negative_texture",
+      "prompt": "grey granite flagstone pavement, rectangular stone slabs in staggered rows, thin dark seams, a little moss"
+    },
+    {
+      "name": "house_north_1_s82",
+      "piece": "town.house.north.1",
+      "style": "piece",
+      "prompt": "chinese jiangnan house, white plaster walls, horse-head gable walls, black tile roof, curved grey roof tiles, wooden double door, lattice window, weathered plaster",
+      "strength": 0.82,
+      "control": 0.8,
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "house_north_1_s90",
+      "piece": "town.house.north.1",
+      "style": "piece",
+      "prompt": "chinese jiangnan house, white plaster walls, horse-head gable walls, black tile roof, curved grey roof tiles, wooden double door, lattice window, weathered plaster",
+      "strength": 0.9,
+      "control": 0.8,
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "house_north_1_s95",
+      "piece": "town.house.north.1",
+      "style": "piece",
+      "prompt": "chinese jiangnan house, white plaster walls, horse-head gable walls, black tile roof, curved grey roof tiles, wooden double door, lattice window, weathered plaster",
+      "strength": 0.95,
+      "control": 0.85,
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "bridge_s88",
+      "piece": "town.bridge",
+      "style": "piece",
+      "prompt": "chinese stone slab bridge, granite railings, stone posts, stone piers, weathered grey stone, moss in cracks",
+      "strength": 0.88,
+      "control": 0.8,
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "willow_loose",
+      "piece": "town.tree.1",
+      "style": "piece",
+      "grow": 40,
+      "strength": 0.97,
+      "control": 0.25,
+      "prompt": "weeping willow tree, long thin drooping branches, many small narrow leaves, dark brown trunk, lush foliage",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "flagstone_rows",
+      "kind": "texture",
+      "world_size": 480,
+      "style": "texture",
+      "negative_style": "negative_texture",
+      "prompt": "top-down view of grey granite street paving, long rectangular stone slabs laid in straight parallel rows, staggered joints, thin dark seams, faint moss"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "r3_house_a",
+      "piece": "town.house.north.1",
+      "control": 0.8,
+      "control_end": 0.6,
+      "prompt": "chinese jiangnan house, white plaster walls with rain stains, horse-head gable walls, black curved roof tiles in rows, wooden double door, wooden lattice window, stone plinth"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "r3_house_b",
+      "piece": "town.house.north.1",
+      "control": 0.95,
+      "control_end": 0.8,
+      "prompt": "chinese jiangnan house, white plaster walls with rain stains, horse-head gable walls, black curved roof tiles in rows, wooden double door, wooden lattice window, stone plinth"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "r3_bridge",
+      "piece": "town.bridge",
+      "control": 0.9,
+      "control_end": 0.7,
+      "prompt": "chinese flat stone slab bridge, granite railings, square stone posts, stone piers, weathered grey granite, moss in cracks"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "r3_willow",
+      "piece": "town.tree.1",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "prompt": "weeping willow tree, long thin drooping branches, fine narrow leaves, soft muted green, dark brown trunk"
+    },
+    {
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "name": "r4_house",
+      "piece": "town.house.north.1",
+      "control": 0.9,
+      "control_end": 0.7,
+      "prompt": "chinese huizhou jiangnan house, white plaster walls with rain stains, stepped horse-head gable walls, black curved roof tiles in rows, dark wooden double door, wooden lattice window, grey stone plinth"
+    },
+    {
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "name": "r4_bridge",
+      "piece": "town.bridge",
+      "control": 0.9,
+      "control_end": 0.7,
+      "prompt": "chinese flat granite slab bridge, granite railings, square granite posts, stone piers, weathered grey granite, moss in cracks"
+    },
+    {
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "name": "r5_house_g",
+      "piece": "town.house.north.1",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "prompt": "chinese huizhou house, white plaster walls with rain stains, stepped horse-head gables with black tile caps, black clay roof tiles in rows, dark wooden door, lattice window"
+    },
+    {
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "name": "r5_house_s",
+      "piece": "town.house.north.1",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "prompt": "chinese huizhou house, white plaster walls with rain stains, stepped horse-head gables with black tile caps, black clay roof tiles in rows, dark wooden door, lattice window"
+    },
+    {
+      "name": "r6_flagstone",
+      "kind": "texture",
+      "world_size": 480,
+      "style": "texture_sdxl",
+      "negative_style": "negative_texture",
+      "bond": {
+        "tile": 480,
+        "rows": 8,
+        "lengths": [
+          72,
+          96,
+          120
+        ],
+        "seed": 7,
+        "line": 3
+      },
+      "control": 0.85,
+      "control_end": 0.8,
+      "prompt": "grey granite street paving of long rectangular stone slabs in rows, thin dark seams, worn smooth, faint moss in joints",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_house_north.2",
+      "piece": "town.house.north.2",
+      "prompt": "chinese jiangnan shop house, open wooden shutter-board shopfront, shop counter inside, blank wooden signboard, white plaster walls, black clay roof tiles in rows",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_north.3",
+      "piece": "town.house.north.3",
+      "prompt": "chinese jiangnan shop house, open wooden shutter-board shopfront, shop counter inside, blank wooden signboard, white plaster walls, black clay roof tiles in rows",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_inn",
+      "piece": "town.house.inn",
+      "prompt": "two-storey chinese wooden inn, dark timber walls, paper lattice windows, lower tiled eave, open central door with warm light, blank dark plaque, red lanterns, blank cloth banner on pole, black clay roof tiles in rows",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_north.4",
+      "piece": "town.house.north.4",
+      "prompt": "chinese huizhou house, white plaster walls with rain stains, stepped horse-head gables with black tile caps, black clay roof tiles in rows, dark wooden door, lattice window",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_back.1",
+      "piece": "town.house.back.1",
+      "prompt": "chinese huizhou house, white plaster walls with rain stains, stepped horse-head gables with black tile caps, black clay roof tiles in rows, dark wooden door, lattice window",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_back.2",
+      "piece": "town.house.back.2",
+      "prompt": "chinese jiangnan house, white plaster walls with rain stains, plain gable ends, black clay roof tiles in rows, dark wooden door, lattice window, grey stone plinth",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_south.1",
+      "piece": "town.house.south.1",
+      "prompt": "chinese huizhou house seen from the back, white plaster back wall with rain stains, stepped horse-head gables with black tile caps, black clay roof tiles in rows, small lattice windows",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_south.2",
+      "piece": "town.house.south.2",
+      "prompt": "chinese jiangnan house seen from the back, white plaster back wall with rain stains, plain gable ends, black clay roof tiles in rows, small lattice windows",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_house_south.3",
+      "piece": "town.house.south.3",
+      "prompt": "chinese huizhou house seen from the back, white plaster back wall with rain stains, stepped horse-head gables with black tile caps, black clay roof tiles in rows, small lattice windows",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b1_tree_2",
+      "piece": "town.tree.2",
+      "prompt": "weeping willow tree, long thin drooping branches, fine narrow leaves, soft muted green, dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_3",
+      "piece": "town.tree.3",
+      "prompt": "weeping willow tree, long thin drooping branches, fine narrow leaves, soft muted green, dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_5",
+      "piece": "town.tree.5",
+      "prompt": "weeping willow tree, long thin drooping branches, fine narrow leaves, soft muted green, dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_6",
+      "piece": "town.tree.6",
+      "prompt": "weeping willow tree, long thin drooping branches, fine narrow leaves, soft muted green, dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_7",
+      "piece": "town.tree.7",
+      "prompt": "weeping willow tree, long thin drooping branches, fine narrow leaves, soft muted green, dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_8",
+      "piece": "town.tree.8",
+      "prompt": "old camphor tree, broad rounded canopy of dense leaf clusters, soft muted green, thick dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_9",
+      "piece": "town.tree.9",
+      "prompt": "old camphor tree, broad rounded canopy of dense leaf clusters, soft muted green, thick dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_10",
+      "piece": "town.tree.10",
+      "prompt": "old camphor tree, broad rounded canopy of dense leaf clusters, soft muted green, thick dark brown trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_notice",
+      "piece": "town.prop.notice",
+      "prompt": "chinese wooden notice board with small tiled roof, blank paper notices pinned on it, two dark wooden posts",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_stone_mark",
+      "piece": "town.prop.stone_mark",
+      "prompt": "old weathered standing stone marker, grey granite, carved horizontal grooves, moss at the base",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_stall",
+      "piece": "town.prop.stall",
+      "prompt": "chinese street stall, wooden counter with baskets of vegetables and spices, blue and white striped cloth awning on wooden poles",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_well",
+      "piece": "town.prop.well",
+      "prompt": "chinese stone well, octagonal grey stone curb, wooden frame with pulley and wooden bucket, dark water",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_boat.ferry",
+      "piece": "town.prop.boat.ferry",
+      "prompt": "chinese wooden sampan boat, arched woven black bamboo canopy, weathered brown planks",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_boat.2",
+      "piece": "town.prop.boat.2",
+      "prompt": "chinese wooden sampan boat, arched woven black bamboo canopy, weathered brown planks",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_jars",
+      "piece": "town.prop.jars",
+      "prompt": "three brown glazed clay wine jars with red paper labels, sealed lids",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_prop_jars.inn",
+      "piece": "town.prop.jars.inn",
+      "prompt": "three brown glazed clay wine jars with red paper labels, sealed lids",
+      "style": "piece_rich",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_house_north.2",
+      "piece": "town.house.north.2",
+      "prompt": "black clay roof tiles in rows, dark grey tiled roof, chinese jiangnan shop house, white plaster walls with rain stains, open wooden shutter-board shopfront, blank signboard",
+      "style": "scene",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b2_house_north.3",
+      "piece": "town.house.north.3",
+      "prompt": "black clay roof tiles in rows, dark grey tiled roof, chinese jiangnan shop house, white plaster walls with rain stains, open wooden shutter-board shopfront, blank signboard",
+      "style": "scene",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b2_house_inn",
+      "piece": "town.house.inn",
+      "prompt": "black clay roof tiles in rows, dark grey tiled roofs, two-storey chinese wooden inn, dark timber walls, paper lattice windows, open central door with warm light, blank plaque, plain cloth banner, red lanterns",
+      "style": "scene",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "b3_prop_notice",
+      "piece": "town.prop.notice",
+      "prompt": "small dark grey tiled roof, chinese wooden notice board, sheets of blank paper pinned on dark wood, two wooden posts",
+      "style": "piece_rich",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.85,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b3_prop_stone_mark",
+      "piece": "town.prop.stone_mark",
+      "prompt": "upright old standing stone, side view, weathered grey granite, carved horizontal grooves, moss at the base",
+      "style": "piece_rich",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b3_prop_well",
+      "piece": "town.prop.well",
+      "prompt": "old chinese stone well, octagonal grey stone curb with stone blocks, dark water, wooden crossbeam frame, hanging wooden bucket",
+      "style": "piece_rich",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.85,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b3_prop_boat.ferry",
+      "piece": "town.prop.boat.ferry",
+      "prompt": "chinese covered wooden boat, arched black woven bamboo canopy over the middle, weathered brown hull planks",
+      "style": "piece_rich",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.85,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b3_prop_boat.2",
+      "piece": "town.prop.boat.2",
+      "prompt": "chinese covered wooden boat, arched black woven bamboo canopy over the middle, weathered brown hull planks",
+      "style": "piece_rich",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.85,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b4_house_north.2",
+      "piece": "town.house.north.2",
+      "style": "scene",
+      "negative_style": "negative_shop",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "black clay roof tiles in rows, chinese jiangnan shop house, white plaster walls, traditional wooden storefront of removable vertical wooden boards, some boards taken down, dim shop interior with wooden counter, blank signboard"
+    },
+    {
+      "name": "b4_house_inn",
+      "piece": "town.house.inn",
+      "style": "scene",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "black clay roof tiles in rows, two-storey chinese inn, warm brown timber walls in bright daylight, paper lattice windows, large blank dark lacquered plaque board between the floors, open central door, red lanterns, plain cloth banner"
+    }
+  ]
+}

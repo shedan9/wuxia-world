@@ -27,6 +27,29 @@ public partial class TownPiece : Node2D, ISortable
 
     public bool Occluder { get; init; } = true;
 
+    /// <summary>多部件件（茶亭、山门）里本部件的名字：引导图按部件出遮罩，AI 件按 &lt;件 id&gt;.&lt;部件&gt; 贴回。</summary>
+    public string? Part { get; init; }
+
+    /// <summary>AI 出件贴图（有则代替程序化占位画出，面仍用于遮挡判定）。</summary>
+    protected PieceArt? Art { get; private set; }
+
+    private Vector2 _artAnchor;
+
+    /// <summary>按件 id 查找 AI 出件；在构造末尾（Position 与屏幕外框已定）调用。</summary>
+    protected void UseArt(string id)
+    {
+        Art = PieceArt.Find(id);
+        if (Art is null)
+        {
+            return;
+        }
+
+        _artAnchor = Position;
+        ScreenBox = ScreenBox.Merge(Art.Frame);
+    }
+
+    protected void DrawArt() => Art!.Draw(this, _artAnchor);
+
     /// <summary>由面算屏幕外框；子类在搭好面之后调用。</summary>
     protected void Seal(Rect2 foot)
     {
@@ -62,6 +85,13 @@ public partial class TownPiece : Node2D, ISortable
 
     public override void _Draw()
     {
+        if (Art is not null)
+        {
+            DrawArt();
+            foreach (var face in Faces) face.DrawLettering(this);
+            return;
+        }
+
         foreach (var face in Faces)
         {
             face.Draw(this);
@@ -103,6 +133,9 @@ internal static class Cel
     public static readonly Color Bark = Color.FromHtml("#5B4A3C");
     public static readonly Color BarkLight = Color.FromHtml("#7E6B57");
     public static readonly Color Cloth = Color.FromHtml("#3F7E9A");
+
+    /// <summary>是否画贴地投影阴影；导出 AI 出件的引导图时关闭，阴影留给引擎画。</summary>
+    public static bool Shadows { get; set; } = true;
 
     public static float Rand(int seed, int i) => Brushwork.Hash(seed * 12.9898f + i * 78.233f);
 
@@ -147,6 +180,11 @@ internal static class Cel
     /// <summary>地面上的投影阴影：世界坐标椭圆，经投影画出（随视角压扁）。</summary>
     public static void GroundShadow(CanvasItem ci, Vector2 center, float rx, float ry, float alpha = 0.22f, float z = 0)
     {
+        if (!Shadows)
+        {
+            return;
+        }
+
         var pts = new Vector2[24];
         for (var i = 0; i < pts.Length; i++)
         {
@@ -160,6 +198,11 @@ internal static class Cel
     /// <summary>瓦面贴花（坡面局部坐标：x 沿屋脊，y 自屋脊向檐口，单位为世界单位）：瓦垄竖条、檐口暗边与瓦当。</summary>
     public static void TileDecal(CanvasItem ci, float width, float length, int seed)
     {
+        if (Face.StructureOnly)
+        {
+            return;
+        }
+
         for (var x = 10f; x < width - 6; x += 22)
         {
             var shade = Rand(seed, (int)x) > 0.85f ? TileDark with { A = 0.35f } : TileRow with { A = 0.6f };
@@ -208,6 +251,11 @@ internal static class Cel
     /// <summary>粉墙贴花：檐下阴影、墙脚湿痕与雨渍、条石墙脚（墙面局部坐标，y 自墙顶 -h 到地面 0）。</summary>
     public static void PlasterDecal(CanvasItem ci, float w, float h, int seed)
     {
+        if (Face.StructureOnly)
+        {
+            return;
+        }
+
         ci.DrawRect(new Rect2(0, -h, w, 40), PlasterShade);
         ci.DrawPolygon([new(0, -34), new(w, -34), new(w, -120), new(0, -120)],
             [Damp, Damp, Damp with { A = 0 }, Damp with { A = 0 }]);
@@ -234,12 +282,15 @@ public partial class TownHouseNode : TownPiece
     private const float Pitch = 0.55f;
     private readonly TownHouse _h;
     private readonly List<(Vector3 Tip, int Dir)> _horns = [];
+    private Transform2D _frontLocal;
+    private Face? _flag;
 
     public TownHouseNode(TownHouse house)
     {
         _h = house;
         Build();
         Seal(new Rect2(house.X0, house.Y0, house.X1 - house.X0, house.Y1 - house.Y0));
+        UseArt($"town.{house.Id}");
     }
 
     private void Build()
@@ -271,6 +322,7 @@ public partial class TownHouseNode : TownPiece
             Local = TownView.Local(new Vector3(x0, y1, 0), Vector3.Right, TownView.Below),
             Decal = ci => Front(ci, w, hgt),
         };
+        _frontLocal = southWall.Local;
         var eastWall = new Face
         {
             Points = [new(x1, y1, 0), new(x1, y0, 0), new(x1, y0, hgt), new(x1, mid, ridgeZ), new(x1, y1, hgt)], Normal = new Vector3(1, 0, 0),
@@ -278,6 +330,17 @@ public partial class TownHouseNode : TownPiece
             Local = TownView.Local(new Vector3(x1, y1, 0), new Vector3(0, -1, 0), TownView.Below),
             Decal = ci => Side(ci, depth, hgt),
         };
+        // 远侧的马头墙先画：它朝镜头的内侧面在墙身以下会被南墙挡住，只露出高出屋面的部分。
+        List<Face> westGable = [];
+        List<Face> eastGable = [];
+        if (gable)
+        {
+            westGable = GableWall(x0, y0, y1, eaveZ, ridgeZ, over);
+            eastGable = GableWall(x1, y0, y1, eaveZ, ridgeZ, over);
+        }
+
+        var (backGable, frontGable) = TownView.ToCamera.X < 0 ? (eastGable, westGable) : (westGable, eastGable);
+        Faces.AddRange(backGable);
         Faces.AddRange([north, west, southWall, eastWall]);
 
         if (inn)
@@ -290,17 +353,7 @@ public partial class TownHouseNode : TownPiece
             Faces.Add(Slope(new Vector3(x0 - reach, y1 + reach, waist - 20), new Vector3(x1 + reach, y1 + reach, waist - 20), new Vector3(x1, y1, waist + 30), new Vector3(x0, y1, waist + 30), _h.Seed + 3));
         }
 
-        List<Face> westGable = [];
-        List<Face> eastGable = [];
-        if (gable)
-        {
-            westGable = GableWall(x0, y0, y1, eaveZ, ridgeZ, over);
-            eastGable = GableWall(x1, y0, y1, eaveZ, ridgeZ, over);
-        }
-
-        // 靠镜头一侧的马头墙压在屋面之上，另一侧先画、被屋面挡住。
-        var (backGable, frontGable) = TownView.ToCamera.X < 0 ? (eastGable, westGable) : (westGable, eastGable);
-        Faces.AddRange(backGable);
+        // 靠镜头一侧的马头墙压在屋面之上。
         // 屋面：北坡先画（在后），南坡压在上面。
         Faces.Add(Slope(new Vector3(x1 + ox, y0 - over, eaveZ), new Vector3(x0 - ox, y0 - over, eaveZ), new Vector3(x0 - ox, mid, ridgeZ), new Vector3(x1 + ox, mid, ridgeZ), _h.Seed + 1));
         Faces.Add(Slope(new Vector3(x0 - ox, y1 + over, eaveZ), new Vector3(x1 + ox, y1 + over, eaveZ), new Vector3(x1 + ox, mid, ridgeZ), new Vector3(x0 - ox, mid, ridgeZ), _h.Seed));
@@ -317,18 +370,20 @@ public partial class TownHouseNode : TownPiece
         {
             // 幌子：竹竿立在客栈西侧巷口，旗面朝街。
             var pole = new Vector2(x0 - 40, y1 + 50);
+            var flagLocal = TownView.Local(new Vector3(pole.X - 110, pole.Y, hgt + 70), Vector3.Right, TownView.Below);
             Faces.AddRange(Solid.Box(new Vector3(pole.X - 7, pole.Y - 7, 0), new Vector3(pole.X + 7, pole.Y + 7, hgt + 90), Cel.WoodDark, 1.4f));
-            Faces.Add(new Face
+            _flag = new Face
             {
                 Points = [new(pole.X - 110, pole.Y, hgt + 70), new(pole.X - 8, pole.Y, hgt + 70), new(pole.X - 8, pole.Y, hgt - 150), new(pole.X - 110, pole.Y, hgt - 150)],
                 Normal = new Vector3(0, 1, 0), Color = Cel.Paper,
-                Local = TownView.Local(new Vector3(pole.X - 110, pole.Y, hgt + 70), Vector3.Right, TownView.Below),
+                Local = flagLocal,
                 Decal = ci =>
                 {
                     ci.DrawRect(new Rect2(6, 6, 90, 208), UiPalette.Cinnabar, false, 6);
-                    ci.DrawString(UiFonts.Title, new Vector2(18, 130), "客", HorizontalAlignment.Left, -1, 64, Cel.Ink);
+                    FlagText(ci);
                 },
-            });
+            };
+            Faces.Add(_flag);
         }
     }
 
@@ -466,11 +521,12 @@ public partial class TownHouseNode : TownPiece
         Cel.Box(ci, new Rect2(inside.Position.X + 30, -110, inside.Size.X - 60, 76), Cel.WoodLight);
         ci.DrawRect(new Rect2(30, top, w - 60, -top - 34), Cel.Ink, false, 2.5f);
         ci.DrawRect(new Rect2(20, top - 14, w - 40, 16), Cel.WoodDark);
-        if (_h.Sign is { } sign)
+        if (_h.Sign is not null)
         {
-            var board = new Rect2(w - 110, top + 20, 64, 160);
+            var board = ShopBoard(h);
+            board.Position += new Vector2(w - 110, 0);
             Cel.Box(ci, board, Cel.Paper, 2.5f);
-            ci.DrawString(UiFonts.Title, new Vector2(board.Position.X + 8, board.Position.Y + 98), sign, HorizontalAlignment.Left, -1, 48, Cel.Ink);
+            SignText(ci, w, h);
         }
 
         Cel.HangingLantern(ci, new Vector2(90, top - 8));
@@ -516,15 +572,63 @@ public partial class TownHouseNode : TownPiece
             Cel.LatticeWindow(ci, new Rect2(i * bay + 26, -h + 90, bay - 52, 120));
         }
 
-        if (_h.Sign is { } sign)
+        if (_h.Sign is not null)
         {
-            var plaque = new Rect2(w / 2 - 190, -h + 100, 380, 84);
+            var plaque = InnPlaque(w, h);
             Cel.Box(ci, plaque, UiPalette.PanelDark, 3f);
             ci.DrawRect(plaque.Grow(-7), UiPalette.Gilt, false, 2f);
+            SignText(ci, w, h);
+        }
+    }
+
+    private static Rect2 ShopBoard(float h) => new(0, -h + 80, 64, 160);
+
+    private static Rect2 InnPlaque(float w, float h) => new(w / 2 - 190, -h + 100, 380, 84);
+
+    /// <summary>
+    /// 招牌字（正面局部坐标）。引导图（导出时 PieceArt 关闭）不画字，AI 只画空白招牌；贴上 AI 件后由 <see cref="_Draw"/> 在同一位置补写，
+    /// 字形与字体台账一致，不依赖模型写汉字。
+    /// </summary>
+    private void SignText(CanvasItem ci, float w, float h)
+    {
+        if (_h.Sign is not { } sign || Face.StructureOnly || !PieceArt.Enabled)
+        {
+            return;
+        }
+
+        if (_h.Style == HouseStyle.Inn)
+        {
+            var plaque = InnPlaque(w, h);
             var size = UiFonts.Title.GetStringSize(sign, HorizontalAlignment.Left, -1, 52);
             ci.DrawString(UiFonts.Title, new Vector2(plaque.GetCenter().X - size.X / 2, plaque.GetCenter().Y + 18), sign,
                 HorizontalAlignment.Left, -1, 52, UiPalette.Gilt);
+            return;
         }
+
+        var board = ShopBoard(h);
+        board.Position += new Vector2(w - 110, 0);
+        ci.DrawString(UiFonts.Title, new Vector2(board.Position.X + 8, board.Position.Y + 98), sign, HorizontalAlignment.Left, -1, 48, Cel.Ink);
+    }
+
+    public override void _Draw()
+    {
+        base._Draw();
+        if (Art is null || _h.Sign is null)
+        {
+            return;
+        }
+
+        DrawSetTransformMatrix(_frontLocal);
+        SignText(this, _h.X1 - _h.X0, _h.WallHeight);
+        DrawSetTransformMatrix(Transform2D.Identity);
+
+        // 幌子整面补画：AI 件的旗面颜色不定，墨字会看不清，按占位画法（纸色旗面、朱边、墨字）压在贴图上。
+        _flag?.Draw(this);
+    }
+
+    private static void FlagText(CanvasItem ci)
+    {
+        if (!Face.StructureOnly && PieceArt.Enabled) ci.DrawString(UiFonts.Title, new Vector2(18, 130), "客", HorizontalAlignment.Left, -1, 64, Cel.Ink);
     }
 
     protected override void DrawExtras()
@@ -618,7 +722,7 @@ public partial class TownCorridorPart : TownPiece
 /// <summary>树：立着的精灵，垂柳（丝绦下垂）与樟树（团块树冠），三阶绿色，光自左上。</summary>
 public partial class TownTreeNode : TownPiece
 {
-    private const float Art = 1.8f;
+    private const float DrawScale = 1.8f;
     private readonly TownTree _tree;
 
     public TownTreeNode(TownTree tree)
@@ -626,9 +730,10 @@ public partial class TownTreeNode : TownPiece
         _tree = tree;
         Position = TownView.P(tree.Position);
         Foot = new Rect2(tree.Position - new Vector2(20, 20), new Vector2(40, 40));
-        var s = tree.Size * Art * TownView.Upright;
+        var s = tree.Size * DrawScale * TownView.Upright;
         var local = new Rect2(-160 * s, -360 * s, 320 * s, 380 * s);
         ScreenBox = new Rect2(Position + local.Position, local.Size);
+        UseArt($"town.tree.{tree.Seed}");
     }
 
     public override void _Draw()
@@ -636,7 +741,14 @@ public partial class TownTreeNode : TownPiece
         var s = _tree.Size;
         DrawSetTransform(-Position, 0, Vector2.One);
         Cel.GroundShadow(this, _tree.Position + new Vector2(60, -60) * s, 230 * s, 170 * s, 0.16f);
-        DrawSetTransform(Vector2.Zero, 0, Vector2.One * (Art * TownView.Upright));
+        if (Art is not null)
+        {
+            DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+            DrawArt();
+            return;
+        }
+
+        DrawSetTransform(Vector2.Zero, 0, Vector2.One * (DrawScale * TownView.Upright));
         if (_tree.Kind == TreeKind.Willow)
         {
             DrawWillow(s, _tree.Seed);
@@ -760,6 +872,8 @@ public partial class TownPropNode : TownPiece
                 ScreenBox = new Rect2(_sprite + new Vector2(-80, -120) * TownView.Upright, new Vector2(160, 130) * TownView.Upright);
                 break;
         }
+
+        UseArt($"town.{prop.Id}");
     }
 
     public bool IsBoat => _prop.Kind == PropKind.Boat;
@@ -884,6 +998,12 @@ public partial class TownPropNode : TownPiece
         if (_prop.Kind is PropKind.StoneMark or PropKind.Jars)
         {
             Cel.GroundShadow(this, _prop.Position + new Vector2(10, -10), _prop.Kind == PropKind.Jars ? 90 : 45, 34, 0.2f);
+            if (Art is not null)
+            {
+                DrawArt();
+                return;
+            }
+
             DrawSetTransform(_sprite, 0, Vector2.One * TownView.Upright);
             if (_prop.Kind == PropKind.StoneMark)
             {
@@ -948,7 +1068,7 @@ public partial class TownPropNode : TownPiece
 /// <summary>平桥的栏杆：一侧一条，参与前后排序（行人走在两栏之间，东栏压在人前）。</summary>
 public partial class TownRailNode : TownPiece
 {
-    public TownRailNode(float x, Rect2 bridge)
+    public TownRailNode(float x, Rect2 bridge, string? artId = null)
     {
         Occluder = false;
         var (y0, y1) = (bridge.Position.Y, bridge.End.Y);
@@ -960,27 +1080,55 @@ public partial class TownRailNode : TownPiece
 
         Solid.Sort(Faces);
         Seal(new Rect2(x - 12, y0 - 12, 24, y1 - y0 + 24));
+        if (artId is not null) UseArt(artId);
     }
 }
 
+/// <summary>占位形象的装束：只为核对比例与辨认人物，正式形象为 4 向 / 8 向精灵（M1 起）。</summary>
+public enum FigureLook
+{
+    /// <summary>主角：束发。</summary>
+    Hero,
+
+    /// <summary>陆青禾：斗笠、肩扛长篙。</summary>
+    Boatwoman,
+
+    /// <summary>客栈掌柜乔红绡：高髻插簪、窄袖长裙。</summary>
+    Keeper,
+
+    /// <summary>店小二：小帽、肩搭白巾。</summary>
+    Waiter,
+
+    /// <summary>茶客：坐在长凳上，束发。</summary>
+    Seated,
+}
+
 /// <summary>
-/// 探索形象占位：人高 175 世界单位，按投影竖直比例缩放（俯 45° 时约 150 逻辑像素，架构文档 10.2 的 120–180），
-/// 左右朝向，走动时身体起伏、两腿交替。陆青禾戴斗笠、肩扛长篙以便核对比例；正式形象为 4 向 / 8 向精灵（M1 起）。
+/// 探索形象占位：人高 175 世界单位，按投影竖直比例缩放（俯 30° 时约 152 逻辑像素，架构文档 10.2 的 120–180），
+/// 左右朝向，走动时身体起伏、两腿交替。陆青禾戴斗笠、肩扛长篙以便核对比例；室内 NPC 为站立或坐姿的静态剪影。
 /// </summary>
 public partial class WalkerFigure : TownPiece
 {
     public Color Tone { get; init; } = UiPalette.Accent;
-    public bool Boatwoman { get; init; }
+    public FigureLook Look { get; init; }
     public int Facing { get; set; } = 1;
     public float Phase { get; set; }
     public bool Moving { get; set; }
+
+    /// <summary>坐姿时凳面高度（世界单位）。</summary>
+    private const float SeatZ = 45;
 
     /// <summary>世界坐标（地面）与高度（石阶上为负）。</summary>
     public Vector2 Ground { get; private set; }
 
     public float Z { get; private set; }
 
-    public float Height => (Boatwoman ? 165 : 175) * TownView.Upright;
+    public float Height => Look switch
+    {
+        FigureLook.Boatwoman or FigureLook.Keeper => 165,
+        FigureLook.Seated => 130,
+        _ => 175,
+    } * TownView.Upright;
 
     public WalkerFigure() => Walker = true;
 
@@ -998,10 +1146,17 @@ public partial class WalkerFigure : TownPiece
         DrawSetTransform(-Position, 0, Vector2.One);
         Cel.GroundShadow(this, Ground, 34, 26, 0.3f, Z);
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+        if (Look == FigureLook.Seated)
+        {
+            DrawSeated();
+            return;
+        }
+
         var h = Height;
         var dir = Facing;
         var bob = Moving ? -Mathf.Abs(Mathf.Sin(Phase)) * 5 : 0;
         var swing = Moving ? Mathf.Sin(Phase) * 12 : 0;
+        var skirt = Look == FigureLook.Keeper;
 
         var dark = Tone.Darkened(0.5f);
         foreach (var side in new[] { -1, 1 })
@@ -1013,31 +1168,80 @@ public partial class WalkerFigure : TownPiece
         }
 
         var shoulderY = -h * 0.76f + bob;
-        var hemY = -h * (Boatwoman ? 0.3f : 0.2f) + bob;
+        var hemY = skirt ? -8 : -h * (Look == FigureLook.Boatwoman ? 0.3f : 0.2f) + bob;
+        var hemX = skirt ? 34 : 30;
         Vector2[] robe =
         [
-            new(-24, shoulderY), new(24, shoulderY), new(20, -h * 0.5f + bob), new(30, hemY), new(-30, hemY), new(-20, -h * 0.5f + bob),
+            new(-22, shoulderY), new(22, shoulderY), new(18, -h * 0.5f + bob), new(hemX, hemY), new(-hemX, hemY), new(-18, -h * 0.5f + bob),
         ];
         Cel.Shape(this, robe, Tone);
-        DrawColoredPolygon([new(-dir * 2, shoulderY), new(-dir * 24, shoulderY), new(-dir * 20, -h * 0.5f + bob), new(-dir * 30, hemY), new(-dir * 2, hemY)],
+        DrawColoredPolygon([new(-dir * 2, shoulderY), new(-dir * 22, shoulderY), new(-dir * 18, -h * 0.5f + bob), new(-dir * hemX, hemY), new(-dir * 2, hemY)],
             Tone.Darkened(0.22f));
-        DrawRect(new Rect2(-21, -h * 0.52f + bob, 42, 7), dark);
-        DrawLine(new Vector2(dir * 18, shoulderY + 8), new Vector2(dir * 22 - swing * 0.6f, -h * 0.42f + bob), Tone.Darkened(0.1f), 10, true);
-
-        var head = new Vector2(dir * 2, -h * 0.86f + bob);
-        DrawCircle(head, h * 0.075f, Color.FromHtml("#E8C9A6"));
-        DrawColoredPolygon(Cel.Ellipse(head + new Vector2(-dir * 3, -4), h * 0.078f, h * 0.06f, 16, Mathf.Pi, Mathf.Tau), Cel.Ink);
-        if (Boatwoman)
+        if (skirt)
         {
-            Cel.Shape(this, [head + new Vector2(-34, 2), head + new Vector2(34, 2), head + new Vector2(0, -24)], Color.FromHtml("#C9A96E"), 1.8f);
-            DrawLine(new Vector2(-dir * 40, -h * 1.1f + bob), new Vector2(dir * 44, 0), Cel.WoodLight, 4, true);
+            // 长裙外罩一截短衫，腰间系带。
+            Cel.Shape(this, [new(-22, shoulderY), new(22, shoulderY), new(24, -h * 0.46f + bob), new(-24, -h * 0.46f + bob)], Cel.Paper, 1.8f);
+            DrawRect(new Rect2(-20, -h * 0.5f + bob, 40, 6), UiPalette.Cinnabar);
         }
         else
         {
-            DrawCircle(head + new Vector2(-dir * 4, -h * 0.07f), 7, Cel.Ink);
+            DrawRect(new Rect2(-21, -h * 0.52f + bob, 42, 7), dark);
+        }
+
+        DrawLine(new Vector2(dir * 18, shoulderY + 8), new Vector2(dir * 22 - swing * 0.6f, -h * 0.42f + bob), Tone.Darkened(0.1f), 10, true);
+        DrawHead(new Vector2(dir * 2, -h * 0.86f + bob), h, dir, bob);
+        if (Look == FigureLook.Waiter)
+        {
+            // 肩上白巾。
+            Cel.Shape(this, [new(-dir * 20, shoulderY - 2), new(-dir * 8, shoulderY - 2), new(-dir * 10, shoulderY + 36), new(-dir * 22, shoulderY + 30)], Cel.Plaster, 1.6f);
+        }
+    }
+
+    private void DrawHead(Vector2 head, float h, int dir, float bob)
+    {
+        DrawCircle(head, h * 0.075f, Color.FromHtml("#E8C9A6"));
+        DrawColoredPolygon(Cel.Ellipse(head + new Vector2(-dir * 3, -4), h * 0.078f, h * 0.06f, 16, Mathf.Pi, Mathf.Tau), Cel.Ink);
+        switch (Look)
+        {
+            case FigureLook.Boatwoman:
+                Cel.Shape(this, [head + new Vector2(-34, 2), head + new Vector2(34, 2), head + new Vector2(0, -24)], Color.FromHtml("#C9A96E"), 1.8f);
+                DrawLine(new Vector2(-dir * 40, -h * 1.1f + bob), new Vector2(dir * 44, 0), Cel.WoodLight, 4, true);
+                break;
+            case FigureLook.Keeper:
+                // 高髻与金簪。
+                DrawColoredPolygon(Cel.Ellipse(head + new Vector2(-dir * 2, -h * 0.1f), 10, 12, 16), Cel.Ink);
+                DrawLine(head + new Vector2(-dir * 14, -h * 0.1f), head + new Vector2(dir * 12, -h * 0.13f), UiPalette.Gilt, 3, true);
+                DrawCircle(head + new Vector2(dir * 12, -h * 0.13f), 3.5f, UiPalette.Cinnabar);
+                break;
+            case FigureLook.Waiter:
+                DrawColoredPolygon(Cel.Ellipse(head + new Vector2(0, -h * 0.045f), h * 0.08f, h * 0.045f, 16, Mathf.Pi, Mathf.Tau), Cel.TileDark);
+                break;
+            default:
+                DrawCircle(head + new Vector2(-dir * 4, -h * 0.07f), 7, Cel.Ink);
+                break;
         }
 
         DrawArc(head, h * 0.075f, 0, Mathf.Tau, 20, Cel.Ink, 1.8f, true);
+    }
+
+    /// <summary>坐姿：臀在凳面高度，大腿朝前平伸，小腿垂到地面。</summary>
+    private void DrawSeated()
+    {
+        var u = TownView.Upright;
+        var dir = Facing;
+        var seat = -SeatZ * u;
+        var knee = new Vector2(dir * 40, seat - 4);
+        var dark = Tone.Darkened(0.5f);
+        DrawLine(new Vector2(0, seat), knee, dark, 13, true);
+        DrawLine(knee, new Vector2(dir * 42, -4), dark, 11, true);
+        DrawLine(new Vector2(dir * 36, -3), new Vector2(dir * 54, -3), Cel.Ink, 7, true);
+
+        var shoulderY = seat - 80 * u;
+        Vector2[] robe = [new(-dir * 20, shoulderY), new(dir * 20, shoulderY), new(dir * 26, seat + 4), new(-dir * 24, seat + 4)];
+        Cel.Shape(this, robe, Tone);
+        DrawColoredPolygon([new(-dir * 20, shoulderY), new(-dir * 2, shoulderY), new(-dir * 2, seat + 4), new(-dir * 24, seat + 4)], Tone.Darkened(0.22f));
+        DrawLine(new Vector2(dir * 14, shoulderY + 10), new Vector2(dir * 38, seat - 18), Tone.Darkened(0.1f), 10, true);
+        DrawHead(new Vector2(dir * 2, shoulderY - 20 * u), 175 * u, dir, 0);
     }
 }
 

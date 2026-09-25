@@ -1,0 +1,10 @@
+{
+  "id": "town.prop.boat.ferry",
+  "origin": [
+    2463.2378,
+    104.49719
+  ],
+  "px": 4.0,
+  "source": "art_source/ai/town/town.prop.boat.ferry.png",
+  "sha256": "25c0bc6423d7ad3fd15d08bfcbacf2f3564facae84fee26f9d931a00b9978a9c"
+}

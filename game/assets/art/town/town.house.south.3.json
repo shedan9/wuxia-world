@@ -1,0 +1,10 @@
+{
+  "id": "town.house.south.3",
+  "origin": [
+    4498.998,
+    -877.4934
+  ],
+  "px": 1.0197486535008977,
+  "source": "art_source/ai/town/town.house.south.3.png",
+  "sha256": "c9b75a0ec083e6c39da794d4e26135a5c276a839dcfc6f3c241e775ebedd0315"
+}

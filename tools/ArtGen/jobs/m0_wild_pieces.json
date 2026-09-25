@@ -1,0 +1,1461 @@
+{
+  "set": "m0_wild_pieces",
+  "guides": "out/guides/wild",
+  "tier": "complex",
+  "model": "sdxl",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "canny": [
+    60,
+    160
+  ],
+  "style": {
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "scene": "no humans, isometric game asset, simple grey background, semi-realistic, cel shading, detailed texture, soft daylight",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda",
+    "negative_scene": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, western windows, shutters, brick, chimney, wood railing, japanese architecture, pagoda",
+    "negative_interior": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, modern furniture, sofa, chair with backrest, japanese architecture"
+  },
+  "jobs": [
+    {
+      "name": "b1_tree_1",
+      "piece": "wild.tree.1",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_2",
+      "piece": "wild.tree.2",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_3",
+      "piece": "wild.tree.3",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_4",
+      "piece": "wild.tree.4",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_5",
+      "piece": "wild.tree.5",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_6",
+      "piece": "wild.tree.6",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_7",
+      "piece": "wild.tree.7",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_8",
+      "piece": "wild.tree.8",
+      "prompt": "small maple tree, warm orange and red autumn leaves, slender dark trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_9",
+      "piece": "wild.tree.9",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_10",
+      "piece": "wild.tree.10",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_11",
+      "piece": "wild.tree.11",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_12",
+      "piece": "wild.tree.12",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_13",
+      "piece": "wild.tree.13",
+      "prompt": "small maple tree, warm orange and red autumn leaves, slender dark trunk",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_14",
+      "piece": "wild.tree.14",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_15",
+      "piece": "wild.tree.15",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_16",
+      "piece": "wild.tree.16",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_17",
+      "piece": "wild.tree.17",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_18",
+      "piece": "wild.tree.18",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_19",
+      "piece": "wild.tree.19",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_20",
+      "piece": "wild.tree.20",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_21",
+      "piece": "wild.tree.21",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_22",
+      "piece": "wild.tree.22",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_23",
+      "piece": "wild.tree.23",
+      "prompt": "chinese mountain pine tree, slanted twisting trunk, layered flat clusters of needles, dark blue-green, reddish brown bark",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_tree_24",
+      "piece": "wild.tree.24",
+      "prompt": "cluster of slender green bamboo stalks, narrow bamboo leaves on the upper half",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_rock_1",
+      "piece": "wild.rock.1",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_2",
+      "piece": "wild.rock.2",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_3",
+      "piece": "wild.rock.3",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_4",
+      "piece": "wild.rock.4",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_5",
+      "piece": "wild.rock.5",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_6",
+      "piece": "wild.rock.6",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_7",
+      "piece": "wild.rock.7",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_8",
+      "piece": "wild.rock.8",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_9",
+      "piece": "wild.rock.9",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_10",
+      "piece": "wild.rock.10",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_11",
+      "piece": "wild.rock.11",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_12",
+      "piece": "wild.rock.12",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_13",
+      "piece": "wild.rock.13",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_14",
+      "piece": "wild.rock.14",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_15",
+      "piece": "wild.rock.15",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_rock_16",
+      "piece": "wild.rock.16",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b1_shrub_1",
+      "piece": "wild.shrub.1",
+      "prompt": "low medicinal herb bush with small white flowers",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_2",
+      "piece": "wild.shrub.2",
+      "prompt": "low medicinal herb bush with small white flowers",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_3",
+      "piece": "wild.shrub.3",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_4",
+      "piece": "wild.shrub.4",
+      "prompt": "round green mountain shrub, dense small leaves",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_5",
+      "piece": "wild.shrub.5",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_6",
+      "piece": "wild.shrub.6",
+      "prompt": "round green mountain shrub, dense small leaves",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_7",
+      "piece": "wild.shrub.7",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_8",
+      "piece": "wild.shrub.8",
+      "prompt": "round green mountain shrub, dense small leaves",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_9",
+      "piece": "wild.shrub.9",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_10",
+      "piece": "wild.shrub.10",
+      "prompt": "round green mountain shrub, dense small leaves",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_11",
+      "piece": "wild.shrub.11",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_12",
+      "piece": "wild.shrub.12",
+      "prompt": "round green mountain shrub, dense small leaves",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_13",
+      "piece": "wild.shrub.13",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_14",
+      "piece": "wild.shrub.14",
+      "prompt": "round green mountain shrub, dense small leaves",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_shrub_15",
+      "piece": "wild.shrub.15",
+      "prompt": "clump of green fern, arching fronds",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.35,
+      "control_end": 0.4,
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_pavilion",
+      "piece": "wild.pavilion",
+      "prompt": "square chinese mountain pavilion, dark grey tiled pyramid roof with upturned corners, red lacquered wooden columns on stone bases, wooden benches, round stone table and stools",
+      "negative_style": "negative_scene",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_gate",
+      "piece": "wild.gate",
+      "prompt": "chinese grey stone memorial archway, two square stone pillars on stone blocks, stone lintels, small black tiled roof, blank dark plaque",
+      "negative_style": "negative_scene",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_stele",
+      "piece": "wild.stele",
+      "prompt": "chinese grey stone stele on a stone plinth, blank weathered face, small stone cap",
+      "negative_style": "negative_scene",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b1_signpost",
+      "piece": "wild.signpost",
+      "prompt": "old wooden signpost, dark wooden post, two blank wooden arrow boards",
+      "negative_style": "negative_scene",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_rock_1",
+      "piece": "wild.rock.1",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_3",
+      "piece": "wild.rock.3",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_4",
+      "piece": "wild.rock.4",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_8",
+      "piece": "wild.rock.8",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_9",
+      "piece": "wild.rock.9",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_10",
+      "piece": "wild.rock.10",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_11",
+      "piece": "wild.rock.11",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_12",
+      "piece": "wild.rock.12",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_13",
+      "piece": "wild.rock.13",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_14",
+      "piece": "wild.rock.14",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_rock_15",
+      "piece": "wild.rock.15",
+      "negative_style": "negative_scene",
+      "prompt": "grey granite mountain boulder, weathered cracks, small patches of dark muted olive green moss on top",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.55,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "grow": 10
+    },
+    {
+      "name": "b2_shrub_3",
+      "piece": "wild.shrub.3",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_4",
+      "piece": "wild.shrub.4",
+      "prompt": "a single round mountain shrub, dense small leaves, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_5",
+      "piece": "wild.shrub.5",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_6",
+      "piece": "wild.shrub.6",
+      "prompt": "a single round mountain shrub, dense small leaves, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_7",
+      "piece": "wild.shrub.7",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_8",
+      "piece": "wild.shrub.8",
+      "prompt": "a single round mountain shrub, dense small leaves, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_9",
+      "piece": "wild.shrub.9",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_10",
+      "piece": "wild.shrub.10",
+      "prompt": "a single round mountain shrub, dense small leaves, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_11",
+      "piece": "wild.shrub.11",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_12",
+      "piece": "wild.shrub.12",
+      "prompt": "a single round mountain shrub, dense small leaves, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_13",
+      "piece": "wild.shrub.13",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_14",
+      "piece": "wild.shrub.14",
+      "prompt": "a single round mountain shrub, dense small leaves, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "b2_shrub_15",
+      "piece": "wild.shrub.15",
+      "prompt": "a single clump of fern, arching fronds, soft muted green, isolated on plain background",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.5,
+      "grow": 24,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    }
+  ]
+}

@@ -1,8 +1,10 @@
 // 城镇探索地面占位（M0-03 布局样板），画风与立绘、舆图一致：半写实赛璐璐。
 // 地面多边形的顶点是 TownView 投影后的屏幕坐标；投影是线性的，着色器按同一视角参数反算回世界平面坐标
 // （x 向东、y 向南，约厘米），纹样全部按世界坐标取样，因此随视角正确压扁、转向，多块多边形之间连续。
-// kind：0 草地（三阶青绿 + 草簇）、1 石板街（错缝条石、雨后积水反光）、2 河水（两阶湖蓝 + 流动白浪线）、3 南岸泥沙地。
-// 正式地面按架构文档 10.3 换成 AI 生成的可平铺纹理后，本着色器只保留水面。
+// kind：0 草地（三阶青绿 + 草簇）、1 石板街（错缝条石、雨后积水反光）、2 河水（两阶湖蓝 + 流动白浪线）、3 南岸泥沙地、
+// 4 山道土路（夯土、碎石、嵌石）、5 山地草坡（深一阶的青绿、苔斑、小石）。flow 为水流方向（自世界东向起算的弧度）。
+// 正式地面按架构文档 10.3 逐类换成 AI 生成的可平铺纹理：石板街已换（stone_tex，按世界坐标每 stone_world 单位循环一次，
+// 纹理由条石错缝格线经 ControlNet 引导生成，见 tools/ArtGen/piece.py），积水反光仍由本着色器叠加；其余地面待换。
 shader_type canvas_item;
 
 uniform int kind = 0;
@@ -11,6 +13,12 @@ uniform float yaw = 0.7853982;
 uniform float pitch = 0.7853982;
 uniform float scale = 1.2;
 uniform float plane_z = 0.0;
+uniform float flow = 0.0;
+// 石板街 AI 纹理（kind 1）；未设置时回退到程序化条石。tint 把中性灰纹理调到青绿基调。
+uniform bool use_stone_tex = false;
+uniform sampler2D stone_tex : repeat_enable, filter_linear_mipmap;
+uniform float stone_world = 480.0;
+uniform vec3 stone_tint = vec3(1.12, 1.19, 1.17);
 
 const vec3 INK = vec3(0.13, 0.19, 0.23);
 
@@ -55,7 +63,7 @@ vec3 grass(vec2 w) {
 	return mix(c, vec3(0.30, 0.48, 0.35), blade * 0.6);
 }
 
-vec3 flagstone(vec2 w) {
+vec3 flagstone_procedural(vec2 w) {
 	// 条石：东西长 96、南北宽 56，逐行错缝。
 	float row = floor(w.y / 56.0);
 	float shift = hash(vec2(row, 3.0)) * 96.0;
@@ -72,7 +80,13 @@ vec3 flagstone(vec2 w) {
 	float joint = 1.0 - step(2.5, min(jx, jy));
 	vec3 moss = vec3(0.34, 0.47, 0.36);
 	vec3 seam = mix(INK * 2.2, moss, step(0.6, fbm(w * 0.03)));
-	stone = mix(stone, seam, joint * 0.7);
+	return mix(stone, seam, joint * 0.7);
+}
+
+vec3 flagstone(vec2 w) {
+	vec3 stone = use_stone_tex
+		? clamp(texture(stone_tex, w / stone_world).rgb * stone_tint, 0.0, 1.0)
+		: flagstone_procedural(w);
 	// 雨后积水：只在少数低洼处，边缘由高频噪声打碎成小片。
 	float wet = fbm(w * 0.004 + 11.0) + fbm(w * 0.025) * 0.18;
 	float puddle = step(0.78, wet);
@@ -105,6 +119,51 @@ vec3 sand(vec2 w) {
 	return mix(c, vec3(0.52, 0.64, 0.47), step(0.68, fbm(w * 0.01 + 5.0)) * 0.7);
 }
 
+vec3 dirt(vec2 w) {
+	float n = fbm(w * 0.008);
+	vec3 c = mix(vec3(0.62, 0.55, 0.43), vec3(0.69, 0.62, 0.49), step(0.5, n));
+	c = mix(c, vec3(0.55, 0.49, 0.39), step(0.7, fbm(w * 0.02 + 7.0)) * 0.6);
+	// 碎石：稀疏的小椭圆。
+	vec2 cell = floor(w / 26.0);
+	vec2 f = fract(w / 26.0);
+	float h = hash(cell);
+	vec2 o = vec2(hash(cell + 3.1), hash(cell + 5.7)) * 0.6 + 0.2;
+	float pebble = step(length((f - o) * vec2(1.0, 1.4)), 0.1 + 0.1 * h) * step(0.74, h);
+	c = mix(c, vec3(0.76, 0.75, 0.70), pebble);
+	// 嵌石：偶见的扁平大石，勾一圈暗缝。
+	vec2 cell2 = floor(w / 90.0);
+	vec2 f2 = fract(w / 90.0);
+	float h2 = hash(cell2 + 11.0);
+	vec2 o2 = vec2(hash(cell2 + 1.3), hash(cell2 + 2.9)) * 0.4 + 0.3;
+	float d2 = length((f2 - o2) * vec2(1.0, 1.3));
+	float big = step(0.78, h2);
+	c = mix(c, vec3(0.67, 0.70, 0.66), step(d2, 0.22) * big);
+	c = mix(c, INK * 2.2, step(0.215, d2) * step(d2, 0.245) * big * 0.7);
+	return c;
+}
+
+vec3 meadow(vec2 w) {
+	float n = fbm(w * 0.0028 + 21.0);
+	float d = fbm(w * 0.013 + 8.0);
+	vec3 c = mix(vec3(0.35, 0.55, 0.42), vec3(0.46, 0.66, 0.47), step(0.47, n));
+	c = mix(c, vec3(0.58, 0.75, 0.52), step(0.67, n) * 0.85);
+	c = mix(c, vec3(0.28, 0.45, 0.37), step(0.7, d) * 0.6);
+	vec2 cell = floor(w / 28.0);
+	vec2 f = fract(w / 28.0);
+	float h = hash(cell);
+	float blade = step(abs(f.x - 0.3 - h * 0.4), 0.06) * step(0.3, f.y) * step(f.y, 0.8) * step(0.58, h);
+	c = mix(c, vec3(0.25, 0.42, 0.33), blade * 0.6);
+	// 小石：稀疏的灰点，下沿一道暗边。
+	vec2 cell2 = floor(w / 70.0);
+	vec2 f2 = fract(w / 70.0);
+	float h2 = hash(cell2 + 4.0);
+	vec2 o2 = vec2(hash(cell2 + 8.1), hash(cell2 + 9.3)) * 0.5 + 0.25;
+	float r = length((f2 - o2) * vec2(1.0, 1.5));
+	float stone = step(r, 0.09) * step(0.86, h2);
+	c = mix(c, vec3(0.70, 0.73, 0.70), stone);
+	return c;
+}
+
 void vertex() {
 	// 反投影：屏幕 (X, Y) = ((x c - y s), ((x s + y c) sp - z cp)) * scale。
 	float c = cos(yaw);
@@ -121,7 +180,12 @@ void fragment() {
 	} else if (kind == 1) {
 		c = flagstone(world);
 	} else if (kind == 2) {
-		c = water(world);
+		vec2 r = vec2(world.x * cos(flow) + world.y * sin(flow), -world.x * sin(flow) + world.y * cos(flow));
+		c = water(r);
+	} else if (kind == 4) {
+		c = dirt(world);
+	} else if (kind == 5) {
+		c = meadow(world);
 	} else {
 		c = sand(world);
 	}

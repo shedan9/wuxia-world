@@ -12,4 +12,7 @@ public sealed class PreviewSession
     private PreviewSession()
     {
     }
+
+    /// <summary>布景页之间的到达点：出门 / 进门时由交互点写入，目标页进入时读取一次后清空（不是存档）。</summary>
+    public string? Arrival { get; set; }
 }

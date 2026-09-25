@@ -18,7 +18,7 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def cutout(src: Path, dst: Path, threshold: float, feather: float) -> None:
+def cutout(src: Path, dst: Path, threshold: float, feather: float, enclosed: float = 0, soft: tuple[float, float] | None = None) -> None:
     rgb = np.asarray(Image.open(src).convert("RGB")).astype(np.float32)
     h, w, _ = rgb.shape
     border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
@@ -46,9 +46,20 @@ def cutout(src: Path, dst: Path, threshold: float, feather: float) -> None:
         if x < w - 1:
             queue.append((y, x + 1))
 
+    # enclosed > 0：被前景围住、未与边框连通的底色小块（树冠枝条间的空隙）也去掉，只取离底色更近的像素。
+    if enclosed > 0:
+        background |= dist <= enclosed
+
     alpha = Image.fromarray(np.where(background, 0, 255).astype(np.uint8))
     alpha = alpha.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(feather))
     a = np.asarray(alpha).astype(np.float32) / 255.0
+
+    # soft = (t0, t1)：按与底色的色差给半透明度（t0 以下全透、t1 以上不透、中间平滑过渡），
+    # 用于模型把底色混进前景的地方（柳树后排枝条的雾状灰层）：灰层变成半透明枝条，去溢色后透出后面的地面。
+    if soft is not None:
+        t0, t1 = soft
+        x = np.clip((dist - t0) / (t1 - t0), 0, 1)
+        a = np.minimum(a, x * x * (3 - 2 * x))
 
     # 半透明边缘去溢色：把底色成分按透明度扣回，避免青色描边。
     edge = (a > 0) & (a < 1)
@@ -66,6 +77,8 @@ def cutout(src: Path, dst: Path, threshold: float, feather: float) -> None:
         "key_rgb": [round(float(c), 1) for c in key],
         "threshold": threshold,
         "feather": feather,
+        "enclosed": enclosed,
+        "soft": list(soft) if soft else None,
         "output_sha256": sha256(dst),
     }
     dst.with_suffix(".json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -78,5 +91,8 @@ if __name__ == "__main__":
     parser.add_argument("dst", type=Path)
     parser.add_argument("--threshold", type=float, default=30)
     parser.add_argument("--feather", type=float, default=1.2)
+    parser.add_argument("--enclosed", type=float, default=0, help="另去掉离底色不超过此距离的封闭小块（0 为不去）")
+    parser.add_argument("--soft", help="t0,t1：按与底色的色差给半透明度（软抠图），去掉混入前景的雾状底色")
     args = parser.parse_args()
-    cutout(args.src, args.dst, args.threshold, args.feather)
+    soft = tuple(float(v) for v in args.soft.split(",")) if args.soft else None
+    cutout(args.src, args.dst, args.threshold, args.feather, args.enclosed, soft)

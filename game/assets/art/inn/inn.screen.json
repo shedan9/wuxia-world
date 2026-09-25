@@ -1,0 +1,10 @@
+{
+  "id": "inn.screen",
+  "origin": [
+    811.4363,
+    -398.7409
+  ],
+  "px": 3.581651376146789,
+  "source": "art_source/ai/inn/inn.screen.png",
+  "sha256": "ca7dccd61f4eb128cb41be64c7ddec5cb24df710993b13648f67943326b00c41"
+}

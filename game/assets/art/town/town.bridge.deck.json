@@ -1,0 +1,10 @@
+{
+  "id": "town.bridge.deck",
+  "origin": [
+    3226.2058,
+    -500.2003
+  ],
+  "px": 1.526344980587909,
+  "source": "art_source/ai/town/town.bridge.deck.png",
+  "sha256": "ed00e21119515b856e7ba3db5626b0ed5bc849b543d3830db669af37e54e2283"
+}

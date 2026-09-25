@@ -1,0 +1,10 @@
+{
+  "id": "town.prop.stall",
+  "origin": [
+    2764.465,
+    -637.87866
+  ],
+  "px": 3.278688524590164,
+  "source": "art_source/ai/town/town.prop.stall.png",
+  "sha256": "c42ebfe906793f14e122d27a5bcc521fabbf7c928e3d6d093b9c2c32bc9db244"
+}

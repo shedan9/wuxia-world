@@ -1,0 +1,10 @@
+{
+  "id": "wild.signpost",
+  "origin": [
+    2841.4902,
+    -898.588
+  ],
+  "px": 4.524137931034483,
+  "source": "art_source/ai/wild/wild.signpost.png",
+  "sha256": "324036546c04082836cd10d395fa528a4d5db5cd4bd70f36670f15baac4058ed"
+}

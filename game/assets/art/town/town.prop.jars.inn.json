@@ -1,0 +1,10 @@
+{
+  "id": "town.prop.jars.inn",
+  "origin": [
+    3998.7239,
+    -1144.7634
+  ],
+  "px": 7.1656441717791415,
+  "source": "art_source/ai/town/town.prop.jars.inn.png",
+  "sha256": "b03a38687e565e9168750ee183ea1d23451cd382c1e54f450f76624bbecc3875"
+}

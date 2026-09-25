@@ -1,0 +1,10 @@
+{
+  "id": "inn.stairs",
+  "origin": [
+    809.31494,
+    -782.02454
+  ],
+  "px": 1.6633048875096974,
+  "source": "art_source/ai/inn/inn.stairs.png",
+  "sha256": "97a08fdd6c3c215631f3e7af17d7fa04d62cc78e22c689eb01fc856293dd92cc"
+}

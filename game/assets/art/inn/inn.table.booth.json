@@ -1,0 +1,10 @@
+{
+  "id": "inn.table.booth",
+  "origin": [
+    915.381,
+    -328.334
+  ],
+  "px": 5.128205128205129,
+  "source": "art_source/ai/inn/inn.table.booth.png",
+  "sha256": "708c96fc5c41e85585600fc973a70631cde1e30ddea2bc39933bb3f715ed1aa1"
+}

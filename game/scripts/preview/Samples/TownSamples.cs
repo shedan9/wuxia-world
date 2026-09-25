@@ -44,14 +44,18 @@ public enum PropKind
 
 public sealed record TownProp(string Id, PropKind Kind, Vector2 Position, int Seed = 0);
 
-/// <summary>可交互点：靠近时出现“E + 动作 + 对象”，按下只推一条通知，不写存档。MarkerHeight 为头顶菱形离地高度（世界单位）。</summary>
-public sealed record TownInteraction(string Id, Vector2 Position, float MarkerHeight, string Verb, string Target, string Kind, string Text, string Where);
+/// <summary>
+/// 可交互点：靠近时出现“E + 动作 + 对象”，按下推一条通知，不写存档。MarkerHeight 为头顶菱形离地高度（世界单位）。
+/// 设了 Scene 的是出入口：按下切到该布景页，Arrival 告诉目标页从哪个门进来。
+/// </summary>
+public sealed record TownInteraction(string Id, Vector2 Position, float MarkerHeight, string Verb, string Target, string Kind, string Text, string Where,
+    string? Scene = null, string? Arrival = null);
 
 /// <summary>
 /// 城镇 / 街道探索样板“芦湾河街”的布局（M0-03 第一步：人定布局）。架构文档 10.3 规定布局是事实来源，
 /// AI 生成的地面纹理与建筑件只贴合这里的街道、河岸与占地，不反过来改布局。
 /// 坐标是真实的平面坐标：x 向东、y 向南、z 向上，单位约为厘米（人高约 175）；
-/// 画面由 <c>TownView</c> 统一按斜 45° 正交投影，地面、墙、屋顶、桥与驳岸共用同一投影。样例数据，不是正式地图。
+/// 画面由 <c>TownView</c> 统一按2:1 等距正交投影，地面、墙、屋顶、桥与驳岸共用同一投影。样例数据，不是正式地图。
 /// </summary>
 public static class TownSamples
 {
@@ -59,6 +63,9 @@ public static class TownSamples
 
     /// <summary>进入页面时主角所在：旧渡石痕旁，一进来就能看到交互提示。</summary>
     public static readonly Vector2 Spawn = new(1130, 1700);
+
+    /// <summary>从客栈出门时站在门前街上。</summary>
+    public static readonly Vector2 InnDoor = new(3760, 1470);
 
     /// <summary>河面比街面低（世界单位），北岸露出条石驳岸。</summary>
     public const float WaterLevel = -80;
@@ -135,7 +142,8 @@ public static class TownSamples
         new("interact.notice", new Vector2(760, 1600), 260, "查看", "渡口告示", "见闻", "已记录：渡口告示上的船牌号", "札记 → 见闻"),
         new("interact.stone_mark", new Vector2(1180, 1800), 170, "查看", "旧渡石痕", "见闻", "已记录：亲见的旧渡石痕", "札记 → 见闻"),
         new("interact.stall", new Vector2(2560, 1620), 300, "查看", "杂货摊", "物品", "摊上有干粮、油纸伞出售", "行囊 → 商店"),
-        new("interact.inn_door", new Vector2(3760, 1400), 300, "进入", "江南客栈", "提示", "客栈室内布景待制作（M0-03）", "展示页目录"),
+        new("interact.inn_door", new Vector2(3760, 1400), 300, "进入", "江南客栈", "提示", "进入客栈大堂", "",
+            "res://scenes/preview/ExploreInn.tscn", "inn.front_door"),
         new("interact.well", new Vector2(2040, 470), 220, "查看", "井台", "见闻", "井栏石上刻着“芦湾”二字", "札记 → 见闻"),
     ];
 

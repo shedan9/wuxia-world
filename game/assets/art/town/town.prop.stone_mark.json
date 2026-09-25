@@ -1,0 +1,10 @@
+{
+  "id": "town.prop.stone_mark",
+  "origin": [
+    2018.825,
+    99.74449
+  ],
+  "px": 7.1656441717791415,
+  "source": "art_source/ai/town/town.prop.stone_mark.png",
+  "sha256": "026e4adc1484118969437fc306950c8e9dd187c07cb7d7b725bfbb20c30e641f"
+}
