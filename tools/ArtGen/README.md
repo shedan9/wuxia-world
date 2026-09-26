@@ -84,7 +84,7 @@ cd tools/ArtGen
 .venv/Scripts/python place.py out/m0_wild_pieces/b1_tree_17_33.png wild.tree.17 --recut 22 --soft 10,50 --deshadow 0.12
 ```
 
-任务键：`mode`（`txt2img` 只受边线约束 / `img2img` 以占位配色为底，`strength`）、`control_from`（`shape` 结构图 / `guide` 带瓦垄等纹理线的完整引导图）、`control`（ControlNet 强度）、`control_end`（约束施加到第几成步数）、`grow`（抠图外扩）。纹理任务 `"kind": "texture"` 可带 `bond`（条石错缝格线引导：`tile` 世界边长、`rows` 行数、`lengths` 条石长度候选），生成时 UNet、VAE、ControlNet 卷积改为环绕填充，输出旁附 2×2 平铺预览。
+任务键：`mode`（`txt2img` 只受边线约束 / `img2img` 以占位配色为底，`strength`；`init_from` 改以指定原图为底）、`control_from`（`shape` 结构图 / `guide` 带瓦垄等纹理线的完整引导图）、`control`（ControlNet 强度）、`control_end`（约束施加到第几成步数）、`grow`（抠图外扩）。纹理任务 `"kind": "texture"` 可带 `bond`（条石错缝格线引导：`tile` 世界边长、`rows` 行数、`lengths` 条石长度候选），生成时 UNet、VAE、ControlNet 卷积改为环绕填充，输出旁附 2×2 平铺预览。
 
 2026-09-25 台式机试做实测（每张 8–16 秒）：
 - 图生图 strength 0.7–0.95 + 完整引导图：几何准，但几乎只照描平涂占位，材质出不来。
@@ -100,6 +100,15 @@ cd tools/ArtGen
 - 杂件：告示牌、船用完整引导图（`control_from: guide`）才出瓦顶与乌篷；石痕须写 `upright ... side view`，否则画成俯视石板；井台下半截四个种子都只照描线框，未入库。
 - 树：山松以种子 33 最干净，种子 44 常画成一整张小树图集；浅灰树干会被软抠图抠成半透明，换棕色树干的种子。`--deshadow` 在图底部一段里只保留最宽不透明段（树干）左右各一倍宽度的范围，按颜色判断会误伤树干背光面。
 - 山石与矮丛：弱约束（0.35）画成满屏素材图集；山石改 0.55 / 0.5 并写 `dark muted olive green moss` 后苔色正常；矮丛在 0.6 时照描占位笔画，最终取两轮中较好的，部分同形矮丛出图相同（同一引导图、同一种子）。
+
+2026-09-26 地面纹理（`jobs/m0_ground_textures.json`，每张约 7 秒）：
+- 方砖用直缝格线引导（`bond` 加 `"stagger": false`，`lengths: [60]`），首轮即可用；模型画的缝线偏浅，由引擎勾深。
+- 土路：提示词里只要出现 pebbles / stones，整面就变成卵石铺地；取素土一张作底，碎石由着色器稀疏叠加。
+- 草地：不加负面词时常出现石块、方格或巨型叶簇；负面词加 `cobblestone, pavement, tiles, rocks, pebbles` 后稳定。草叶纹理对比强、偏艳绿，入包后在着色器里收饱和度、向平均色收拢对比，并把循环尺度缩到 200 世界单位。
+
+2026-09-26 竹丛与柳树返工（用户：竹子简陋、柳树偏写实）：
+- 竹丛（`jobs/m0_bamboo.json`，每张约 21 秒）：弱约束下 AI 件跟着占位轮廓走，占位只有几根细竿时出图也稀；先把占位竹丛加密再导出引导图，control 0.5 出图饱满。部分种子会铺满整幅或换成深色底，挑底色干净的；种子 66 竹竿偏青蓝。
+- 柳树（`jobs/m0_willow_restyle.json`）：任务键 `init_from` 以已入库件的生成原图（`__raw.png`）作图生图底图，只调画风。SDXL 0.4–0.6 只是更平滑；Animagine（`--model animagine4`）0.4 时树冠成团、树干出勾线且造型不变，0.5 起开始改枝形。
 
 ## 局部重绘
 

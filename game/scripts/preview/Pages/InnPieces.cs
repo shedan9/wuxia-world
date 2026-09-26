@@ -10,6 +10,9 @@ internal static class InnTone
 {
     public static readonly Color Brick = Color.FromHtml("#949D95");
     public static readonly Color BrickSeam = Color.FromHtml("#626C66");
+
+    /// <summary>AI 方砖纹理（平均色约 #6F7680）调到 <see cref="Brick"/> 的青灰。</summary>
+    public static readonly Color BrickTint = new(1.34f, 1.33f, 1.18f);
     public static readonly Color Section = Color.FromHtml("#3B3129");
     public static readonly Color Plaster = Color.FromHtml("#ECE6D6");
     public static readonly Color Lacquer = Color.FromHtml("#6B3A2A");
@@ -60,6 +63,7 @@ public partial class InnShell : Node2D
 
     public InnShell()
     {
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
         var room = InnSamples.Room;
         var (w, d, h, t) = (room.Size.X, room.Size.Y, InnSamples.WallHeight, InnSamples.WallThickness);
 
@@ -90,10 +94,27 @@ public partial class InnShell : Node2D
         }
     }
 
-    /// <summary>方砖地：60 见方、横平竖直铺，砖色略有深浅，自门口到柜台一带踩得发亮。</summary>
+    /// <summary>
+    /// 方砖地：60 见方、横平竖直铺，砖色略有深浅，自门口到柜台一带踩得发亮。AI 方砖纹理（inn.ground.brick，格线与 60 见方对齐）
+    /// 入库时平铺作底，逐砖深浅改为半透明叠加；缝线仍由引擎勾深。
+    /// </summary>
     private static void Floor(CanvasItem ci, float w, float d)
     {
         const float size = 60;
+        var tex = PieceArt.FindTexture("inn.ground.brick");
+        if (tex is { } t)
+        {
+            var px = t.Texture.GetSize() / t.WorldSize;
+            for (var y = 0f; y < d; y += t.WorldSize)
+            {
+                for (var x = 0f; x < w; x += t.WorldSize)
+                {
+                    var cell = new Vector2(Mathf.Min(t.WorldSize, w - x), Mathf.Min(t.WorldSize, d - y));
+                    ci.DrawTextureRectRegion(t.Texture, new Rect2(new Vector2(x, y), cell), new Rect2(Vector2.Zero, cell * px), InnTone.BrickTint);
+                }
+            }
+        }
+
         for (var y = 0f; y < d; y += size)
         {
             for (var x = 0f; x < w; x += size)
@@ -101,6 +122,11 @@ public partial class InnShell : Node2D
                 var i = (int)(x / size) * 31 + (int)(y / size);
                 var k = Cel.Rand(7, i);
                 var tone = k > 0.8f ? InnTone.Brick.Darkened(0.07f) : k < 0.2f ? InnTone.Brick.Lightened(0.06f) : InnTone.Brick;
+                if (tex is not null)
+                {
+                    tone = k > 0.8f ? Cel.Ink with { A = 0.08f } : k < 0.2f ? Colors.White with { A = 0.06f } : Colors.Transparent;
+                }
+
                 ci.DrawRect(new Rect2(x, y, Mathf.Min(size, w - x), Mathf.Min(size, d - y)), tone);
                 if (Cel.Rand(9, i) > 0.93f)
                 {

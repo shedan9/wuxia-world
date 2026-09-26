@@ -1,6 +1,6 @@
 # 武侠世界：游戏架构与系统设计
 
-版本：0.8 · 日期：2026-09-24 · 状态：探索式剧情设计基线；M0 展示工程实现中
+版本：0.8 · 日期：2026-09-26 · 状态：探索式剧情设计基线；M0 展示工程实现中
 
 配套文档：[剧情与任务设计](./STORY.md) · [开发计划](./DEVELOPMENT_PLAN.md)
 
@@ -555,11 +555,11 @@ ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名�
 
 1. 导出引导图：`PieceGuideExport.tscn`（`game/scripts/preview/Pages/PieceGuideExport.cs`，只做美术生产，不进展示目录）按 `--region=town|inn|wild` 把城镇、客栈大堂或山路的每个件单独渲染成透明底 PNG，与游戏同一投影、同一受光，贴地阴影关闭（`Cel.Shadows`），不读取已入库的 AI 件（`PieceArt.Enabled`）；另出一张结构图 `__shape`（`Face.StructureOnly`：瓦垄、墙面水渍等纹理贴花不画，门窗等开口保留，门洞须与交互点对齐）；多部件件（平桥 = 贴地桥面 + 两道排序栏杆；茶亭 = 屋面 + 四柱 + 两条坐凳 + 石桌；山门 = 两柱 + 额枋瓦顶）按游戏里的画序合成（地面件由远及近、悬空件最后），另出各部件同框 alpha 遮罩；招牌、匾额、碑文、路牌的字属于面的“字层”（`Face.Lettering`，房屋招牌与幌子另由 `TownHouseNode` 补写），引导图里不画，AI 只画空牌；`<id>.json` 记 origin（图像左上角对应的投影坐标）与 px（每投影单位像素数）。
 2. 生成：`tools/ArtGen/piece.py` 从结构图取 Canny 边线，经 SDXL ControlNet（`xinsir/controlnet-canny-sdxl-1.0`，Apache-2.0）约束文生图，只在前 60%–70% 步施加约束，材质与笔触交给模型；按引导图 alpha 抠出（树冠等轮廓与占位不同的件改按底色抠图），多部件件按遮罩拆回各层。基础模型用 SDXL 1.0 base：五轮对比中 Animagine XL 4.0 画场景偏平涂卡通、绿色发荧光，SDXL 材质更丰富、符合 10.1 的“偏写实”。地面纹理按同一思路：先按条石尺寸生成可循环的错缝格线作引导，UNet、VAE 与 ControlNet 的卷积改环绕填充生成无缝纹理。
-3. 拼装：`tools/ArtGen/place.py` 把选定件复制到 `art_source/ai/<地区>/`（附生成记录）与 `game/assets/art/<地区>/<id>.png` + `.json`；`PieceArt` 按 id 查找，有图的件在 origin 处贴图、其余继续画程序化占位，占位面仍用于遮挡判定，屏幕外框并入贴图画框参与排序；石板街由 `town_ground` 着色器按世界坐标每 480 单位循环取样 AI 纹理（`town.ground.flagstone`，带 mipmap），积水反光仍由着色器叠加。贴上 AI 件后，引擎在原位用已登记字体补写字层（客栈幌子连纸色旗面一起补画），汉字不交给模型。件 id：城镇房屋与杂件 `town.<样例 Id>`，树 `town.tree.<种子>`，平桥 `town.bridge.deck` / `.rail_w` / `.rail_e`；客栈 `inn.counter`、`inn.stairs`、`inn.screen`、`inn.pillar.<序号>`、`inn.<桌 Id>`、`inn.plant.<序号>`；山路 `wild.tree.<种子>`、`wild.rock.<种子>`、`wild.shrub.<种子>`、`wild.stele`、`wild.signpost`，多部件件 `wild.pavilion.<部件>`、`wild.gate.<部件>`（部件名见 `TownPiece.Part`）。树、灌丛与盆栽不按引导图 alpha 抠，而是 `place.py --recut` 按底色抠图、`--soft` 软抠去雾、`--deshadow` 清掉图底部树干根部以外的模型自带地影。
+3. 拼装：`tools/ArtGen/place.py` 把选定件复制到 `art_source/ai/<地区>/`（附生成记录）与 `game/assets/art/<地区>/<id>.png` + `.json`；`PieceArt` 按 id 查找，有图的件在 origin 处贴图、其余继续画程序化占位，占位面仍用于遮挡判定，屏幕外框并入贴图画框参与排序；地面由 `town_ground` 着色器按世界坐标循环取样 AI 纹理（`PieceArt.ApplyGround`：`ground_tex` 每 `tex_world` 单位循环一次，带 mipmap；`tex_tint` 逐通道调色、`tex_desat` 收饱和度、`tex_contrast` 向纹理平均色（最低级 mipmap）收拢、`tex_macro` 乘一层大尺度明暗打破循环感）：石板街 `town.ground.flagstone`、城镇草地 `town.ground.grass`、山道土路 `wild.ground.dirt`、山地草坡 `wild.ground.meadow` 已接入，积水反光、土路碎石与嵌石仍由着色器叠加，河水、溪水与南岸泥沙地仍为程序化；客栈方砖 `inn.ground.brick` 由 `InnShell` 在地面面内平铺，逐砖深浅与缝线由引擎叠加。贴上 AI 件后，引擎在原位用已登记字体补写字层（客栈幌子连纸色旗面一起补画），汉字不交给模型。件 id：城镇房屋与杂件 `town.<样例 Id>`，树 `town.tree.<种子>`，平桥 `town.bridge.deck` / `.rail_w` / `.rail_e`；客栈 `inn.counter`、`inn.stairs`、`inn.screen`、`inn.pillar.<序号>`、`inn.<桌 Id>`、`inn.plant.<序号>`；山路 `wild.tree.<种子>`、`wild.rock.<种子>`、`wild.shrub.<种子>`、`wild.stele`、`wild.signpost`，多部件件 `wild.pavilion.<部件>`、`wild.gate.<部件>`（部件名见 `TownPiece.Part`）。已入库件需改画风时不重抽，以该件的生成原图作图生图底图（`piece.py` 的 `init_from`，2026-09-26 柳树改得更卡通即用 Animagine 0.4）。树、灌丛与盆栽不按引导图 alpha 抠，而是 `place.py --recut` 按底色抠图、`--soft` 软抠去雾、`--deshadow` 清掉图底部树干根部以外的模型自带地影。
 
 试做（2026-09-25，江南水镇样板）：西头民居 `town.house.north.1`、平桥三件、渡口柳树 `town.tree.1` 与石板街纹理已替换，城镇页 `--tab=5` 对准民居；其余件待用户认可画风后批量出件。用户实机认可这一偏写实程度，要求去掉柳树树冠的雾状灰色：该灰层是模型把底色混进后排枝条，入库时按与底色的色差软抠图（`place.py --soft 10,50`），灰层变为半透明枝条并扣除底色成分。AI 自带的地面阴影同样在入库时擦除（`place.py --erase`）。
 
-批量出件（2026-09-25，按试做参数）：城镇其余 25 件、客栈大堂 12 件、山路 59 件全部生成，入库 104 件（城镇房屋 9、树 8、杂件 7；客栈柜台、楼梯、屏风、3 柱、4 桌、2 盆栽；山路 24 树、16 石、15 灌丛 / 蕨 / 草药、茶亭 8 部件、山门 3 部件、路碑、木牌）。未入库、继续画程序化占位的：城镇井台（四个种子都只照描了井圈线框）、廊棚、驳岸与渡口石阶；客栈的墙、地与吊灯；山路的地面、崖壁、石阶与木桥。批量中确认的规律：提示词里屋面词须放在最前（“black clay roof tiles in rows”），否则店铺与客栈的屋面被画成木板色或红褐色；铺面写“排门”时负面词不能含 shutters，并须排除卷帘门；弱约束（0.35）适合乔木，但矮丛和山石会被画成满屏素材图集，约束 0.55–0.6 时矮丛又照描占位笔画，最终矮丛取两轮中较好的；苔藓要写“暗橄榄绿苔斑”，否则是荧光绿描边。
+批量出件（2026-09-25，按试做参数）：城镇其余 25 件、客栈大堂 12 件、山路 59 件全部生成，入库 104 件（城镇房屋 9、树 8、杂件 7；客栈柜台、楼梯、屏风、3 柱、4 桌、2 盆栽；山路 24 树、16 石、15 灌丛 / 蕨 / 草药、茶亭 8 部件、山门 3 部件、路碑、木牌）。未入库、继续画程序化占位的：城镇井台（四个种子都只照描了井圈线框）、廊棚、驳岸与渡口石阶；客栈的墙与吊灯；山路的崖壁、石阶与木桥（2026-09-26 地面纹理另行补齐，见上文拼装一条）。批量中确认的规律：提示词里屋面词须放在最前（“black clay roof tiles in rows”），否则店铺与客栈的屋面被画成木板色或红褐色；铺面写“排门”时负面词不能含 shutters，并须排除卷帘门；弱约束（0.35）适合乔木，但矮丛和山石会被画成满屏素材图集，约束 0.55–0.6 时矮丛又照描占位笔画，最终矮丛取两轮中较好的；苔藓要写“暗橄榄绿苔斑”，否则是荧光绿描边。
 
 大地图单独处理：人工画出海岸、江河、山脉和城镇位置的色块草图，再以图生图生成青绿山水风的手绘地图，城镇图标和道路另作可交互的 UI 层。视角、配色和件的尺度先用 M0 的江南水镇样板验证，通过后再作地区件库批量生产。
 

@@ -140,6 +140,9 @@ def run_piece(pipe, spec: dict, job: dict, out_dir: Path, preview: bool) -> None
     size = work_size(*guide.size, job.get("pixels", spec.get("pixels", 1_150_000)))
     low, high = job.get("canny", spec.get("canny", [60, 160]))
     base, control, alpha = prepare(guide, shape, size, job.get("background", spec.get("background", "#B9C7C2")), low, high)
+    # init_from：以已选定件的生成原图（__raw.png，纯色底）作图生图底图，只调画风、不换造型（用户选定后局部修改的约定）。
+    if "init_from" in job:
+        base = Image.open(ROOT / job["init_from"]).convert("RGB").resize(size, Image.LANCZOS)
     if preview:
         base.save(out_dir / f"{job['name']}__base.png")
         control.save(out_dir / f"{job['name']}__control.png")
@@ -178,6 +181,9 @@ def run_piece(pipe, spec: dict, job: dict, out_dir: Path, preview: bool) -> None
             image = text_pipe(pipe)(image=control, width=size[0], height=size[1], **common).images[0]
         else:
             params["strength"] = job.get("strength", spec.get("strength", 0.7))
+            if "init_from" in job:
+                params["init_from"] = job["init_from"]
+                params["init_sha256"] = sha(ROOT / job["init_from"])
             image = pipe(image=base, control_image=control, strength=params["strength"], **common).images[0]
         stem = f"{job['name']}_{seed}"
         image.save(out_dir / f"{stem}__raw.png")
@@ -219,7 +225,7 @@ def run_piece(pipe, spec: dict, job: dict, out_dir: Path, preview: bool) -> None
 
 def bond_guide(bond: dict, size: tuple[int, int]) -> Image.Image:
     """错缝条石的可循环格线（白线黑底）：tile 为一格纹理覆盖的世界边长，rows 行，每行由若干条石拼满一格，
-    行间错缝随机。线条跨边环绕绘制，作 ControlNet 引导时生成结果仍可无缝平铺。"""
+    行间错缝随机；stagger 为 false 时各行接缝对齐（方砖横平竖直铺）。线条跨边环绕绘制，作 ControlNet 引导时生成结果仍可无缝平铺。"""
     import random
 
     from PIL import ImageDraw
@@ -240,7 +246,7 @@ def bond_guide(bond: dict, size: tuple[int, int]) -> Image.Image:
         while x < tile - min(lengths):
             joints.append(x)
             x += rng.choice(lengths)
-        shift = rng.random() * tile
+        shift = rng.random() * tile if bond.get("stagger", True) else 0.0
         for j in joints:
             px = ((j + shift) % tile) * k
             for dx in (0, -size[0], size[0]):

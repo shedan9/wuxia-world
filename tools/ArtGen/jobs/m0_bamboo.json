@@ -1,0 +1,220 @@
+{
+  "set": "m0_bamboo",
+  "guides": "out/guides/wild_bamboo",
+  "tier": "complex",
+  "model": "sdxl",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "canny": [
+    60,
+    160
+  ],
+  "style": {
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "scene": "no humans, isometric game asset, simple grey background, semi-realistic, cel shading, detailed texture, soft daylight",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda",
+    "negative_scene": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, western windows, shutters, brick, chimney, wood railing, japanese architecture, pagoda",
+    "negative_interior": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, modern furniture, sofa, chair with backrest, japanese architecture",
+    "negative_bamboo": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda, neon, oversaturated, bamboo forest, background foliage"
+  },
+  "jobs": [
+    {
+      "name": "t35_tree_2",
+      "piece": "wild.tree.2",
+      "control": 0.35,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many green bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, deep jade green and teal with yellow-green highlights",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "t50_tree_2",
+      "piece": "wild.tree.2",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many green bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, deep jade green and teal with yellow-green highlights",
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "m_tree_2",
+      "piece": "wild.tree.2",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_3",
+      "piece": "wild.tree.3",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_5",
+      "piece": "wild.tree.5",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_10",
+      "piece": "wild.tree.10",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_11",
+      "piece": "wild.tree.11",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_14",
+      "piece": "wild.tree.14",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_16",
+      "piece": "wild.tree.16",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_21",
+      "piece": "wild.tree.21",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    },
+    {
+      "name": "m_tree_24",
+      "piece": "wild.tree.24",
+      "control": 0.5,
+      "control_end": 0.5,
+      "prompt": "dense lush bamboo clump, many bamboo culms of different thickness with visible nodes, thick layered clusters of narrow bamboo leaves, muted jade green and teal, soft yellow-green highlights",
+      "style": "piece_rich",
+      "negative_style": "negative_bamboo",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "grow": 40,
+      "seeds": [
+        33,
+        55,
+        66,
+        77
+      ]
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+  "set": "m0_ground_textures",
+  "tier": "complex",
+  "model": "sdxl",
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "style": {
+    "texture_sdxl": "seamless texture, top-down orthographic view, game asset, semi-realistic, cel shading, soft even daylight",
+    "negative_texture": "text, watermark, perspective, horizon, sky, shadow gradient, vignette, people, photo, 3d render, blurry, lowres",
+    "negative_ground": "text, watermark, perspective, horizon, sky, vignette, people, photo, 3d render, blurry, lowres, cobblestone, pavement, tiles, bricks, grid, pattern repeat, rocks, pebbles",
+    "negative_dirt": "text, watermark, perspective, horizon, sky, vignette, people, photo, 3d render, blurry, lowres, cobblestone, pavement, tiles, bricks, grid, sand dunes, grass"
+  },
+  "jobs": [
+    {
+      "name": "g1_inn_brick",
+      "kind": "texture",
+      "world_size": 480,
+      "style": "texture_sdxl",
+      "negative_style": "negative_texture",
+      "bond": {
+        "tile": 480,
+        "rows": 8,
+        "lengths": [
+          60
+        ],
+        "stagger": false,
+        "seed": 1,
+        "line": 3
+      },
+      "control": 0.85,
+      "control_end": 0.8,
+      "prompt": "square grey-blue fired clay floor tiles in a straight grid, thin dark mortar lines, slightly worn and polished, subtle tone variation, indoor"
+    },
+    {
+      "name": "g2_wild_dirt",
+      "kind": "texture",
+      "world_size": 360,
+      "style": "texture_sdxl",
+      "negative_style": "negative_texture",
+      "prompt": "packed earth mountain footpath, light ochre brown dirt, scattered small grey pebbles, a few flat embedded stones, no grass"
+    },
+    {
+      "name": "g3_wild_meadow",
+      "kind": "texture",
+      "world_size": 420,
+      "style": "texture_sdxl",
+      "negative_style": "negative_texture",
+      "prompt": "short mountain grass ground, muted teal green and jade green tones, small grass tufts, dark moss patches, a few tiny grey stones"
+    },
+    {
+      "name": "g4_town_grass",
+      "kind": "texture",
+      "world_size": 420,
+      "style": "texture_sdxl",
+      "negative_style": "negative_texture",
+      "prompt": "short fresh lawn grass ground, soft jade green and light green tones, small grass tufts, even and clean, riverside"
+    },
+    {
+      "name": "g5_wild_dirt",
+      "kind": "texture",
+      "world_size": 360,
+      "style": "texture_sdxl",
+      "negative_style": "negative_ground",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "bare packed soil ground, dry light ochre brown earth, footprints and faint cracks, soft uneven tone patches, a few tiny specks"
+    },
+    {
+      "name": "g6_wild_meadow",
+      "kind": "texture",
+      "world_size": 420,
+      "style": "texture_sdxl",
+      "negative_style": "negative_ground",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "dense short mountain grass seen from above, muted teal green and jade green, small grass blades, darker moss patches, soft uneven tone"
+    },
+    {
+      "name": "g7_town_grass",
+      "kind": "texture",
+      "world_size": 420,
+      "style": "texture_sdxl",
+      "negative_style": "negative_ground",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "dense short lawn grass seen from above, soft jade green and light spring green, fine grass blades, gentle uneven tone, clean"
+    },
+    {
+      "name": "g8_wild_dirt",
+      "kind": "texture",
+      "world_size": 360,
+      "style": "texture_sdxl",
+      "negative_style": "negative_dirt",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "mostly bare packed earth footpath, light ochre brown soil with darker damp patches, sparse small grey pebbles scattered far apart, fine grit"
+    }
+  ]
+}

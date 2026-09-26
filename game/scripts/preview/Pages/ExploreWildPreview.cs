@@ -50,7 +50,7 @@ public partial class ExploreWildPreview : ExploreStage
 
     protected override (string Region, string Name, string Time) PlaceInfo => ("山门", "山门路　半山", "辰时　·　山雾初散");
 
-    protected override string Caption => "山路布局样板：三层台地与石阶、远山视差；树石灌丛、茶亭、山门、碑与木牌为 AI 出件（方案 C），地面、崖壁、石阶、木桥与人物仍为程序化占位（M0-03）";
+    protected override string Caption => "山路布局样板：三层台地与石阶、远山视差；树石灌丛、茶亭、山门、碑、木牌与土路、草坡为 AI 出件（方案 C），溪水、崖壁、石阶、木桥与人物仍为程序化占位（M0-03）";
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (WildSamples.Goal, 360, "山门");
 
@@ -124,6 +124,15 @@ public partial class ExploreWildPreview : ExploreStage
         material.SetShaderParameter("scale", TownView.Scale);
         material.SetShaderParameter("plane_z", z);
         material.SetShaderParameter("flow", Mathf.DegToRad(flow));
+        if (kind == 4)
+        {
+            PieceArt.ApplyGround(material, "wild.ground.dirt", GroundTint.Dirt, 0.2f, 0.1f);
+        }
+        else if (kind == 5)
+        {
+            PieceArt.ApplyGround(material, "wild.ground.meadow", GroundTint.Meadow, 0.3f, 0.1f, 0.5f);
+        }
+
         GroundLayer.AddChild(new Polygon2D { Polygon = frame.Select(p => TownView.P(WildSamples.W(p), z)).ToArray(), Material = material });
     }
 

@@ -3,8 +3,9 @@
 // （x 向东、y 向南，约厘米），纹样全部按世界坐标取样，因此随视角正确压扁、转向，多块多边形之间连续。
 // kind：0 草地（三阶青绿 + 草簇）、1 石板街（错缝条石、雨后积水反光）、2 河水（两阶湖蓝 + 流动白浪线）、3 南岸泥沙地、
 // 4 山道土路（夯土、碎石、嵌石）、5 山地草坡（深一阶的青绿、苔斑、小石）。flow 为水流方向（自世界东向起算的弧度）。
-// 正式地面按架构文档 10.3 逐类换成 AI 生成的可平铺纹理：石板街已换（stone_tex，按世界坐标每 stone_world 单位循环一次，
-// 纹理由条石错缝格线经 ControlNet 引导生成，见 tools/ArtGen/piece.py），积水反光仍由本着色器叠加；其余地面待换。
+// 正式地面按架构文档 10.3 逐类换成 AI 生成的可平铺纹理（ground_tex，按世界坐标每 tex_world 单位循环一次，见 tools/ArtGen/piece.py）：
+// 石板街（条石错缝格线经 ControlNet 引导）、草地、山道土路、山地草坡已换；积水反光、土路碎石与嵌石仍由本着色器叠加，
+// 河水与南岸泥沙地仍为程序化。平铺纹理另乘一层大尺度明暗（fbm），避免大片地面看出循环。
 shader_type canvas_item;
 
 uniform int kind = 0;
@@ -14,11 +15,16 @@ uniform float pitch = 0.7853982;
 uniform float scale = 1.2;
 uniform float plane_z = 0.0;
 uniform float flow = 0.0;
-// 石板街 AI 纹理（kind 1）；未设置时回退到程序化条石。tint 把中性灰纹理调到青绿基调。
-uniform bool use_stone_tex = false;
-uniform sampler2D stone_tex : repeat_enable, filter_linear_mipmap;
-uniform float stone_world = 480.0;
-uniform vec3 stone_tint = vec3(1.12, 1.19, 1.17);
+// 本块地面的 AI 纹理；未设置时回退到程序化纹样。tint 逐通道相乘，把纹理调到青绿基调；
+// desat 先向亮度收拢饱和度（模型画的草偏艳绿），macro 为大尺度明暗起伏的幅度。
+uniform bool use_tex = false;
+uniform sampler2D ground_tex : repeat_enable, filter_linear_mipmap;
+uniform float tex_world = 480.0;
+uniform vec3 tex_tint = vec3(1.0);
+uniform float tex_desat = 0.0;
+uniform float tex_macro = 0.0;
+// contrast < 1 把纹理向自身平均色（最低一级 mipmap）收拢：草叶纹理对比太强时压成赛璐璐式的平缓色块。
+uniform float tex_contrast = 1.0;
 
 const vec3 INK = vec3(0.13, 0.19, 0.23);
 
@@ -49,7 +55,18 @@ float fbm(vec2 p) {
 	return s / 0.9375;
 }
 
+vec3 ground_texture(vec2 w) {
+	vec3 c = texture(ground_tex, w / tex_world).rgb;
+	c = mix(textureLod(ground_tex, vec2(0.5), 12.0).rgb, c, tex_contrast);
+	c = mix(c, vec3(dot(c, vec3(0.299, 0.587, 0.114))), tex_desat);
+	c *= tex_tint * (1.0 + tex_macro * (fbm(w * 0.0018 + 31.0) - 0.5) * 2.0);
+	return clamp(c, 0.0, 1.0);
+}
+
 vec3 grass(vec2 w) {
+	if (use_tex) {
+		return ground_texture(w);
+	}
 	float n = fbm(w * 0.003);
 	float d = fbm(w * 0.015 + 3.0);
 	vec3 c = mix(vec3(0.42, 0.63, 0.43), vec3(0.55, 0.74, 0.50), step(0.46, n));
@@ -84,9 +101,7 @@ vec3 flagstone_procedural(vec2 w) {
 }
 
 vec3 flagstone(vec2 w) {
-	vec3 stone = use_stone_tex
-		? clamp(texture(stone_tex, w / stone_world).rgb * stone_tint, 0.0, 1.0)
-		: flagstone_procedural(w);
+	vec3 stone = use_tex ? ground_texture(w) : flagstone_procedural(w);
 	// 雨后积水：只在少数低洼处，边缘由高频噪声打碎成小片。
 	float wet = fbm(w * 0.004 + 11.0) + fbm(w * 0.025) * 0.18;
 	float puddle = step(0.78, wet);
@@ -120,9 +135,15 @@ vec3 sand(vec2 w) {
 }
 
 vec3 dirt(vec2 w) {
-	float n = fbm(w * 0.008);
-	vec3 c = mix(vec3(0.62, 0.55, 0.43), vec3(0.69, 0.62, 0.49), step(0.5, n));
-	c = mix(c, vec3(0.55, 0.49, 0.39), step(0.7, fbm(w * 0.02 + 7.0)) * 0.6);
+	vec3 c;
+	if (use_tex) {
+		// AI 纹理只给素土的颗粒与深浅；模型一写碎石就铺满整面，碎石、嵌石仍在下面稀疏叠加。
+		c = ground_texture(w);
+	} else {
+		float n = fbm(w * 0.008);
+		c = mix(vec3(0.62, 0.55, 0.43), vec3(0.69, 0.62, 0.49), step(0.5, n));
+		c = mix(c, vec3(0.55, 0.49, 0.39), step(0.7, fbm(w * 0.02 + 7.0)) * 0.6);
+	}
 	// 碎石：稀疏的小椭圆。
 	vec2 cell = floor(w / 26.0);
 	vec2 f = fract(w / 26.0);
@@ -143,6 +164,9 @@ vec3 dirt(vec2 w) {
 }
 
 vec3 meadow(vec2 w) {
+	if (use_tex) {
+		return ground_texture(w);
+	}
 	float n = fbm(w * 0.0028 + 21.0);
 	float d = fbm(w * 0.013 + 8.0);
 	vec3 c = mix(vec3(0.35, 0.55, 0.42), vec3(0.46, 0.66, 0.47), step(0.47, n));

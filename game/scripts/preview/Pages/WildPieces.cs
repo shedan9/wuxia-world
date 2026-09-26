@@ -762,43 +762,49 @@ public partial class WildTreeNode : WildSprite
         }
     }
 
+    /// <summary>
+    /// 竹丛：10–13 竿粗细、高矮不一，外侧的竿向外斜；叶簇集中在上半截，分深、中、浅三层成团。
+    /// 2026-09-26 用户认为第一版（6–8 竿细竹、叶稀）简陋，加密后重新导出作 AI 出件引导。
+    /// </summary>
     private void DrawBamboo(float s, int seed)
     {
-        Color[] leafTones = [Color.FromHtml("#3D7858"), Color.FromHtml("#5C986B"), Color.FromHtml("#8BC088")];
-        var culms = new List<Vector2[]>();
-        var count = 6 + (int)(Cel.Rand(seed, 0) * 3);
+        Color[] leafTones = [Color.FromHtml("#2F6A50"), Color.FromHtml("#4F8C64"), Color.FromHtml("#86BC86")];
+        var culms = new List<(Vector2[] Points, float Width)>();
+        var count = 10 + (int)(Cel.Rand(seed, 0) * 4);
         for (var i = 0; i < count; i++)
         {
-            var x = (Cel.Rand(seed, i + 1) - 0.5f) * 90 * s;
-            var h = (480 + 150 * Cel.Rand(seed, i + 2)) * s;
-            var bend = (x / (45 * s) * 30 + (Cel.Rand(seed, i + 3) - 0.5f) * 40) * s;
-            var pts = new Vector2[9];
+            var x = (Cel.Rand(seed, i + 1) - 0.5f) * 120 * s;
+            var h = (400 + 240 * Cel.Rand(seed, i + 2)) * s;
+            var bend = (x / (60 * s) * 36 + (Cel.Rand(seed, i + 3) - 0.5f) * 40) * s;
+            var width = (5 + 4 * Cel.Rand(seed, i + 5)) * s;
+            var pts = new Vector2[10];
             for (var k = 0; k < pts.Length; k++)
             {
                 var t = (float)k / (pts.Length - 1);
                 pts[k] = new Vector2(x + bend * t * t, -h * t);
             }
 
-            culms.Add(pts);
+            culms.Add((pts, width));
         }
 
         // 叶簇先画后排，竿在中，前排叶最后。
-        DrawLeaves(culms, leafTones[0], s, seed, 0);
-        foreach (var pts in culms)
+        var lines = culms.Select(c => c.Points).ToList();
+        DrawLeaves(lines, leafTones[0], s, seed, 0);
+        foreach (var (pts, width) in culms)
         {
-            DrawPolyline(pts, Cel.Ink, 8.5f * s, true);
-            DrawPolyline(pts, Color.FromHtml("#77A67C"), 6 * s, true);
-            DrawPolyline(pts.Select(p => p + new Vector2(-1.5f * s, 0)).ToArray(), Color.FromHtml("#A8CF9C"), 1.8f * s, true);
+            DrawPolyline(pts, Cel.Ink, width + 2.5f * s, true);
+            DrawPolyline(pts, Color.FromHtml("#6E9F72"), width, true);
+            DrawPolyline(pts.Select(p => p + new Vector2(-width * 0.25f, 0)).ToArray(), Color.FromHtml("#A8CF9C"), width * 0.3f, true);
             for (var k = 1; k < pts.Length - 1; k++)
             {
                 var n = (pts[k + 1] - pts[k - 1]).Normalized();
-                var side = new Vector2(-n.Y, n.X) * 4.5f * s;
+                var side = new Vector2(-n.Y, n.X) * (width * 0.5f + 1.5f * s);
                 DrawLine(pts[k] - side, pts[k] + side, Cel.Ink, 2f, true);
             }
         }
 
-        DrawLeaves(culms, leafTones[1], s, seed, 1);
-        DrawLeaves(culms, leafTones[2], s, seed, 2);
+        DrawLeaves(lines, leafTones[1], s, seed, 1);
+        DrawLeaves(lines, leafTones[2], s, seed, 2);
     }
 
     private void DrawLeaves(List<Vector2[]> culms, Color tone, float s, int seed, int layer)
@@ -806,17 +812,17 @@ public partial class WildTreeNode : WildSprite
         for (var c = 0; c < culms.Count; c++)
         {
             var pts = culms[c];
-            for (var k = 0; k < 16; k++)
+            for (var k = 0; k < 24; k++)
             {
                 var id = layer * 1000 + c * 40 + k;
                 if (layer == 2 && Cel.Rand(seed, id) < 0.5f) continue;
-                var t = 0.45f + 0.55f * Cel.Rand(seed, id + 1);
+                var t = 0.4f + 0.6f * Cel.Rand(seed, id + 1);
                 var i = Mathf.Min((int)(t * (pts.Length - 1)), pts.Length - 2);
                 var at = pts[i].Lerp(pts[i + 1], t * (pts.Length - 1) - i);
                 var angle = Mathf.Pi * (0.1f + 0.8f * Cel.Rand(seed, id + 2)) + (Cel.Rand(seed, id + 3) > 0.5f ? 0 : Mathf.Pi * 0.9f);
                 var dir = new Vector2(Mathf.Cos(angle), Mathf.Abs(Mathf.Sin(angle)) * 0.6f + 0.2f).Normalized();
-                var len = (34 + 16 * Cel.Rand(seed, id + 4)) * s;
-                var side = new Vector2(-dir.Y, dir.X) * 5 * s;
+                var len = (40 + 24 * Cel.Rand(seed, id + 4)) * s;
+                var side = new Vector2(-dir.Y, dir.X) * 6.5f * s;
                 Vector2[] leaf = [at, at + dir * len * 0.35f + side, at + dir * len, at + dir * len * 0.35f - side];
                 DrawColoredPolygon(leaf, tone);
                 if (layer == 0) Cel.Outline(this, leaf, 1.2f, Cel.Ink with { A = 0.5f });

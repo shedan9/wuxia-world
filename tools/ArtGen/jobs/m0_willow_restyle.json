@@ -1,0 +1,127 @@
+{
+  "set": "m0_willow_restyle",
+  "tier": "complex",
+  "model": "sdxl",
+  "guides": "out/guides/town",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "mode": "img2img",
+  "control_from": "shape",
+  "control": 0.3,
+  "control_end": 0.4,
+  "strength": 0.5,
+  "grow": 40,
+  "seeds": [
+    11,
+    22
+  ],
+  "style": {
+    "toon": "no humans, game asset, simple grey background, stylized, cel shading, clean dark lineart, flat color blocks with soft two-tone shading, hand-painted, simplified shapes, soft daylight",
+    "negative_toon": "text, watermark, people, sky, ground, grass field, photorealistic, photo, realistic texture, 3d render, hair strands, noisy detail, blurry, lowres, ink wash, sepia",
+    "toon_anim": "no humans, scenery, tree, simple background, grey background, cel shading, clean lineart, flat colors, masterpiece, high score, absurdres",
+    "negative_anim": "text, watermark, signature, people, sky, clouds, grass field, photorealistic, 3d, blurry, lowres, worst quality, neon, oversaturated"
+  },
+  "jobs": [
+    {
+      "name": "w1_s40",
+      "piece": "town.tree.1",
+      "init_from": "out/m0_town_pieces_sdxl/r3_willow_22__raw.png",
+      "strength": 0.4,
+      "style": "toon",
+      "negative_style": "negative_toon",
+      "prompt": "weeping willow tree, drooping branches grouped into soft green clumps, fresh jade green leaves, smooth dark brown trunk"
+    },
+    {
+      "name": "w1_s50",
+      "piece": "town.tree.1",
+      "init_from": "out/m0_town_pieces_sdxl/r3_willow_22__raw.png",
+      "strength": 0.5,
+      "style": "toon",
+      "negative_style": "negative_toon",
+      "prompt": "weeping willow tree, drooping branches grouped into soft green clumps, fresh jade green leaves, smooth dark brown trunk"
+    },
+    {
+      "name": "w1_s60",
+      "piece": "town.tree.1",
+      "init_from": "out/m0_town_pieces_sdxl/r3_willow_22__raw.png",
+      "strength": 0.6,
+      "style": "toon",
+      "negative_style": "negative_toon",
+      "prompt": "weeping willow tree, drooping branches grouped into soft green clumps, fresh jade green leaves, smooth dark brown trunk"
+    },
+    {
+      "name": "a2",
+      "piece": "town.tree.2",
+      "init_from": "out/m0_town_pieces/b1_tree_2_11__raw.png",
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk",
+      "strength": 0.4
+    },
+    {
+      "name": "a3",
+      "piece": "town.tree.3",
+      "init_from": "out/m0_town_pieces/b1_tree_3_11__raw.png",
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk",
+      "strength": 0.4
+    },
+    {
+      "name": "a5",
+      "piece": "town.tree.5",
+      "init_from": "out/m0_town_pieces/b1_tree_5_11__raw.png",
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk",
+      "strength": 0.4
+    },
+    {
+      "name": "a6",
+      "piece": "town.tree.6",
+      "init_from": "out/m0_town_pieces/b1_tree_6_11__raw.png",
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk",
+      "strength": 0.4
+    },
+    {
+      "name": "a7",
+      "piece": "town.tree.7",
+      "init_from": "out/m0_town_pieces/b1_tree_7_22__raw.png",
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk",
+      "strength": 0.4
+    },
+    {
+      "name": "a1_s30",
+      "piece": "town.tree.1",
+      "init_from": "out/m0_town_pieces_sdxl/r3_willow_22__raw.png",
+      "strength": 0.3,
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk"
+    },
+    {
+      "name": "a1_s40",
+      "piece": "town.tree.1",
+      "init_from": "out/m0_town_pieces_sdxl/r3_willow_22__raw.png",
+      "strength": 0.4,
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk"
+    },
+    {
+      "name": "a1_s50",
+      "piece": "town.tree.1",
+      "init_from": "out/m0_town_pieces_sdxl/r3_willow_22__raw.png",
+      "strength": 0.5,
+      "style": "toon_anim",
+      "negative_style": "negative_anim",
+      "prompt": "weeping willow, drooping branches in soft clumps, muted jade green leaves, dark brown trunk"
+    }
+  ]
+}

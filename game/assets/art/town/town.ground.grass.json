@@ -1,0 +1,6 @@
+{
+  "id": "town.ground.grass",
+  "world_size": 200,
+  "source": "art_source/ai/town/town.ground.grass.png",
+  "sha256": "cf4011625ef9f5279fc97eede835b6ac74147b8c676ac9940ce935036660b24c"
+}

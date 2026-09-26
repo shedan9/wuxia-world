@@ -24,7 +24,7 @@ public partial class ExploreInnPreview : ExploreStage
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (InnSamples.Goal, 200, "雅座");
 
-    protected override string Caption => "室内布局样板：镜头一侧的墙剖切到齐腰；柜台、楼梯、屏风、柱、桌与盆栽为 AI 出件（方案 C），墙地、灯光与人物仍为程序化占位（M0-03）";
+    protected override string Caption => "室内布局样板：镜头一侧的墙剖切到齐腰；柜台、楼梯、屏风、柱、桌、盆栽与方砖地为 AI 出件（方案 C），墙面、灯光与人物仍为程序化占位（M0-03）";
 
     protected override (Vector2 Hero, Vector2 Lu, float Zoom) Start(string? arrival)
     {

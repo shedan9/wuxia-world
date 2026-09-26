@@ -25,7 +25,7 @@ public partial class ExploreTownPreview : ExploreStage
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (TownSamples.Goal, 120, "旧渡石痕");
 
-    protected override string Caption => "2:1 等距视角布局样板：房屋、树、杂件、平桥与石板街面为 AI 出件（方案 C），井台、廊棚、驳岸与人物仍为程序化占位（M0-03）";
+    protected override string Caption => "2:1 等距视角布局样板：房屋、树、杂件、平桥、石板街面与草地为 AI 出件（方案 C），井台、廊棚、驳岸与人物仍为程序化占位（M0-03）";
 
     protected override (Vector2 Hero, Vector2 Lu, float Zoom) Start(string? arrival)
     {
@@ -63,7 +63,6 @@ public partial class ExploreTownPreview : ExploreStage
     private static void BuildGround(Node2D parent)
     {
         var shader = GD.Load<Shader>("res://assets/shaders/town_ground.gdshader");
-        var stoneTex = PieceArt.FindTexture("town.ground.flagstone");
         void Ground(int kind, IEnumerable<Vector2> worldPolygon, float z = 0)
         {
             var material = new ShaderMaterial { Shader = shader };
@@ -72,11 +71,13 @@ public partial class ExploreTownPreview : ExploreStage
             material.SetShaderParameter("pitch", Mathf.DegToRad(TownView.Pitch));
             material.SetShaderParameter("scale", TownView.Scale);
             material.SetShaderParameter("plane_z", z);
-            if (kind == 1 && stoneTex is not null)
+            if (kind == 1)
             {
-                material.SetShaderParameter("use_stone_tex", true);
-                material.SetShaderParameter("stone_tex", stoneTex.Value.Texture);
-                material.SetShaderParameter("stone_world", stoneTex.Value.WorldSize);
+                PieceArt.ApplyGround(material, "town.ground.flagstone", new Vector3(1.12f, 1.19f, 1.17f), macro: 0.05f);
+            }
+            else if (kind == 0)
+            {
+                PieceArt.ApplyGround(material, "town.ground.grass", GroundTint.Grass, 0.35f, 0.08f, 0.5f);
             }
 
             parent.AddChild(new Polygon2D { Polygon = worldPolygon.Select(p => TownView.P(p, z)).ToArray(), Material = material });

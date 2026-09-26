@@ -79,6 +79,34 @@ public sealed class PieceArt
         return (GD.Load<Texture2D>($"{basePath}.png"), doc.RootElement.GetProperty("world_size").GetSingle());
     }
 
+    /// <summary>
+    /// 给 town_ground 着色器的一块地面接上 AI 纹理；纹理未入库或关闭贴图时保持程序化纹样。
+    /// tint 逐通道相乘调到青绿基调，desat 先收饱和度，macro 为大尺度明暗起伏的幅度（打破平铺循环），contrast 小于 1 时向平均色收拢。
+    /// </summary>
+    public static void ApplyGround(ShaderMaterial material, string id, Vector3 tint, float desat = 0, float macro = 0, float contrast = 1)
+    {
+        if (FindTexture(id) is not { } tex)
+        {
+            return;
+        }
+
+        material.SetShaderParameter("use_tex", true);
+        material.SetShaderParameter("ground_tex", tex.Texture);
+        material.SetShaderParameter("tex_world", tex.WorldSize);
+        material.SetShaderParameter("tex_tint", tint);
+        material.SetShaderParameter("tex_desat", desat);
+        material.SetShaderParameter("tex_macro", macro);
+        material.SetShaderParameter("tex_contrast", contrast);
+    }
+
     /// <summary>画在节点局部坐标里：节点的 Position 是它在投影坐标中的原点。</summary>
     public void Draw(CanvasItem ci, Vector2 nodePosition) => ci.DrawTextureRect(Texture, new Rect2(Origin - nodePosition, Texture.GetSize() / Px), false);
+}
+
+/// <summary>AI 地面纹理的调色系数：按纹理平均色（先收饱和度）对齐原程序化地面的中间色。</summary>
+internal static class GroundTint
+{
+    public static readonly Vector3 Grass = new(1.67f, 1.57f, 2.07f);
+    public static readonly Vector3 Meadow = new(1.55f, 1.56f, 2.04f);
+    public static readonly Vector3 Dirt = new(1.02f, 1.12f, 1.12f);
 }
