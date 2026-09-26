@@ -259,7 +259,7 @@ public static class Solid
 /// <summary>
 /// 参与前后排序的物件：地面占地（x, y 的外接矩形）、屏幕外框。
 /// 两件在屏幕上重叠时，按占地是否在镜头方向上分离决定前后（斜视下 y 更南或 x 更东的在前），
-/// 无法分离时按占地中心远近；Overhead（廊棚屋面）压在其下的行人之上。
+/// 无法分离时按占地中心远近；Overhead（廊棚屋面）压在其下的行人与占地中心在其下的柱、坐栏之上。
 /// </summary>
 public interface ISortable
 {
@@ -277,6 +277,10 @@ public static class DepthSort
     {
         if (a.Overhead && b.Walker && !Ahead(b.Foot, a.Foot)) return 1;
         if (b.Overhead && a.Walker && !Ahead(a.Foot, b.Foot)) return -1;
+        // 悬空件（廊棚屋面、牌坊额枋）之下的柱、坐栏等：占地中心落在悬空件占地内的，一律排在它之下；
+        // 否则河沿一排柱按中心远近会排到屋面之前，柱头穿出屋面。
+        if (a.Overhead && !b.Overhead && a.Foot.Grow(1).HasPoint(b.Foot.GetCenter())) return 1;
+        if (b.Overhead && !a.Overhead && b.Foot.Grow(1).HasPoint(a.Foot.GetCenter())) return -1;
         if (Ahead(a.Foot, b.Foot)) return 1;
         if (Ahead(b.Foot, a.Foot)) return -1;
         return 0;

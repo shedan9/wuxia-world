@@ -1,0 +1,184 @@
+{
+  "set": "m0_wild_steps",
+  "guides": "out/guides/wild_steps",
+  "tier": "complex",
+  "model": "sdxl",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "canny": [
+    60,
+    160
+  ],
+  "style": {
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "scene": "no humans, isometric game asset, simple grey background, semi-realistic, cel shading, detailed texture, soft daylight",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda",
+    "negative_scene": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, western windows, shutters, brick, chimney, wood railing, japanese architecture, pagoda",
+    "negative_interior": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, modern furniture, sofa, chair with backrest, japanese architecture",
+    "negative_stone": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda, wood, wooden steps, brick, modern, concrete",
+    "negative_wood": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda, stone bridge, metal, modern, rope bridge"
+  },
+  "jobs": [
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "s1_steps_1",
+      "piece": "wild.steps.1",
+      "negative_style": "negative_stone",
+      "prompt": "stone staircase cut into a rocky cliff, grey granite steps with worn rounded edges, low stone side curbs, dark moss in the cracks"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "s1_steps_2",
+      "piece": "wild.steps.2",
+      "negative_style": "negative_stone",
+      "prompt": "stone staircase cut into a rocky cliff, grey granite steps with worn rounded edges, low stone side curbs, dark moss in the cracks"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "s1_bridge",
+      "piece": "wild.bridge",
+      "negative_style": "negative_wood",
+      "prompt": "rustic wooden plank footbridge, weathered dark brown planks, round log side rails, simple mountain stream crossing"
+    },
+    {
+      "style": "piece_rich",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "i55_steps_1",
+      "piece": "wild.steps.1",
+      "negative_style": "negative_stone",
+      "prompt": "stone staircase cut into a rocky cliff, grey granite steps with worn rounded edges, low stone side curbs, dark moss in the cracks",
+      "strength": 0.55
+    },
+    {
+      "style": "piece_rich",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "i70_steps_1",
+      "piece": "wild.steps.1",
+      "negative_style": "negative_stone",
+      "prompt": "stone staircase cut into a rocky cliff, grey granite steps with worn rounded edges, low stone side curbs, dark moss in the cracks",
+      "strength": 0.7
+    },
+    {
+      "style": "piece_rich",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "i55_steps_2",
+      "piece": "wild.steps.2",
+      "negative_style": "negative_stone",
+      "prompt": "stone staircase cut into a rocky cliff, grey granite steps with worn rounded edges, low stone side curbs, dark moss in the cracks",
+      "strength": 0.55
+    },
+    {
+      "style": "piece_rich",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "i70_steps_2",
+      "piece": "wild.steps.2",
+      "negative_style": "negative_stone",
+      "prompt": "stone staircase cut into a rocky cliff, grey granite steps with worn rounded edges, low stone side curbs, dark moss in the cracks",
+      "strength": 0.7
+    },
+    {
+      "style": "piece_rich",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "i55_bridge",
+      "piece": "wild.bridge",
+      "negative_style": "negative_wood",
+      "prompt": "rustic wooden plank footbridge, weathered dark brown planks, round log side rails, simple mountain stream crossing",
+      "strength": 0.55
+    },
+    {
+      "style": "piece_rich",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "name": "i70_bridge",
+      "piece": "wild.bridge",
+      "negative_style": "negative_wood",
+      "prompt": "rustic wooden plank footbridge, weathered dark brown planks, round log side rails, simple mountain stream crossing",
+      "strength": 0.7
+    }
+  ]
+}

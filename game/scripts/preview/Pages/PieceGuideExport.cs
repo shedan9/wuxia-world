@@ -142,6 +142,9 @@ public partial class PieceGuideExport : Node
         yield return ("wild.gate", Stack(WildGatePart.Build()));
         yield return ("wild.stele", [Piece("body", WildMarkerNode.Stele())]);
         yield return ("wild.signpost", [Piece("body", WildMarkerNode.Signpost())]);
+        yield return ("wild.steps.1", [Piece("body", new WildStepsNode(WildSamples.Steps1, "wild.steps.1"))]);
+        yield return ("wild.steps.2", [Piece("body", new WildStepsNode(WildSamples.Steps2, "wild.steps.2"))]);
+        yield return ("wild.bridge", [Piece("body", new WildBridgeNode())]);
     }
 
     /// <summary>多部件按游戏里的画序合成：地面件由远及近（占地中心的屏幕纵坐标），悬空件（屋面、额枋）最后压上。</summary>
@@ -154,6 +157,7 @@ public partial class PieceGuideExport : Node
         foreach (var house in TownSamples.Houses) yield return ($"town.{house.Id}", [Piece("body", new TownHouseNode(house))]);
         foreach (var tree in TownSamples.Trees) yield return ($"town.tree.{tree.Seed}", [Piece("body", new TownTreeNode(tree))]);
         foreach (var prop in TownSamples.Props) yield return ($"town.{prop.Id}", [Piece("body", new TownPropNode(prop))]);
+        yield return ("town.corridor.roof", [Piece("body", TownCorridorPart.Build(TownSamples.Corridor).First())]);
 
         var bridge = TownSamples.Bridge;
         var deck = new FaceSheet(TownGroundDetail.BridgeFaces());

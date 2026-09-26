@@ -1,0 +1,53 @@
+{
+  "set": "m0_grass_tufts",
+  "tier": "complex",
+  "model": "sdxl",
+  "size": [
+    1024,
+    768
+  ],
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66
+  ],
+  "style": {
+    "tuft": "single isolated game asset sprite, side view, plain flat light grey background, semi-realistic, cel shading, clean lineart, soft daylight",
+    "negative": "text, watermark, people, sky, clouds, horizon, ground plane, soil, pot, vase, scenery, landscape, multiple objects, grid, sprite sheet, photo, 3d render, blurry, lowres, neon, oversaturated",
+    "negative_green": "text, watermark, people, sky, clouds, horizon, ground plane, soil, pot, vase, scenery, landscape, multiple objects, grid, sprite sheet, photo, 3d render, blurry, lowres, neon, oversaturated, wheat, grain, ears, seed heads, flowers, golden, yellow, dry grass"
+  },
+  "jobs": [
+    {
+      "name": "t1_grass",
+      "style": "tuft",
+      "prompt": "one small clump of wild mountain grass, thin arching blades, muted jade green with yellow-green tips"
+    },
+    {
+      "name": "t2_grass_tall",
+      "style": "tuft",
+      "prompt": "one tuft of tall slender wild grass and sedge, blades bending outward, muted teal green, a few dry yellow blades"
+    },
+    {
+      "name": "t3_bush",
+      "style": "tuft",
+      "prompt": "one small low round shrub of dense tiny leaves, muted dark green with lighter green top, compact mound"
+    },
+    {
+      "name": "t4_grass_green",
+      "style": "tuft",
+      "negative_style": "negative_green",
+      "prompt": "one small clump of lush green grass blades, short arching leaves, muted jade green and teal with lighter tips"
+    },
+    {
+      "name": "t5_grass_strip",
+      "style": "tuft",
+      "negative_style": "negative_green",
+      "prompt": "a low wide strip of short green grass tufts along an edge, arching blades, muted jade green and teal"
+    }
+  ]
+}

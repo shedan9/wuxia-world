@@ -12,8 +12,8 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 地面由 town_ground 着色器按反投影的世界坐标铺石板、河水与草地，房屋、廊棚、桥栏、摊位等由面搭成（按法线剔除与分阶明暗），
 /// 人物与树为立着的精灵；行走、排序、遮挡与镜头由 <see cref="ExploreStage"/> 共用。
 /// 客栈门前按 E 进入客栈大堂页（<see cref="ExploreInnPreview"/>），从大堂出门回到门前。
-/// 房屋、树、杂件、平桥与石板街面已按架构文档 10.3 方案 C 换成 AI 出件（井台、廊棚、驳岸仍为程序化占位）。
-/// 截图参数 <c>--tab</c>：0 旧渡石痕旁（交互提示）、1 南岸街被屋身遮挡、2 客栈门前、3 廊棚下、4 缩到 0.85 看平桥一带、5 西头民居（AI 出件样板）。
+/// 房屋、树、杂件、平桥与石板街面已按架构文档 10.3 方案 C 换成 AI 出件（廊柱、坐栏与渡口石阶仍为程序化占位）。
+/// 截图参数 <c>--tab</c>：0 旧渡石痕旁（交互提示）、1 南岸街被屋身遮挡、2 客栈门前、3 廊棚下、4 缩到 0.85 看平桥一带、5 西头民居（AI 出件样板）、6 廊棚西头外侧（屋面不淡出，查屋面与廊柱遮挡）。
 /// </summary>
 public partial class ExploreTownPreview : ExploreStage
 {
@@ -25,7 +25,7 @@ public partial class ExploreTownPreview : ExploreStage
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (TownSamples.Goal, 120, "旧渡石痕");
 
-    protected override string Caption => "2:1 等距视角布局样板：房屋、树、杂件、平桥、石板街面与草地为 AI 出件（方案 C），井台、廊棚、驳岸与人物仍为程序化占位（M0-03）";
+    protected override string Caption => "2:1 等距布局样板：房屋、树、杂件、井台、平桥、廊棚屋面、街面、草地与驳岸为 AI 出件，渡口石阶为几何贴 AI 纹理；廊柱与人物仍为占位（M0-03）";
 
     protected override (Vector2 Hero, Vector2 Lu, float Zoom) Start(string? arrival)
     {
@@ -41,6 +41,7 @@ public partial class ExploreTownPreview : ExploreStage
             3 => (new Vector2(4050, 1700), new Vector2(3930, 1690), 1f),
             4 => (new Vector2(2900, 2300), new Vector2(2900, 2180), MinZoom),
             5 => (new Vector2(620, 1560), new Vector2(500, 1590), 1f),
+            6 => (new Vector2(3120, 1700), new Vector2(3000, 1690), 1f),
             _ => (TownSamples.Spawn, TownSamples.Spawn + new Vector2(-120, -40), 1f),
         };
     }
@@ -188,6 +189,8 @@ public partial class TownGroundDetail : Node2D
 
     public TownGroundDetail()
     {
+        TextureRepeat = TextureRepeatEnum.Enabled;
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
         const float step = 60;
         var water = TownSamples.WaterLevel;
         var b = TownSamples.Bounds;
@@ -213,10 +216,14 @@ public partial class TownGroundDetail : Node2D
         var bank = TownSamples.NorthBank(steps.GetCenter().X) - 10;
         const int count = 5;
         var depth = (steps.End.Y - bank) / count;
+        // 与山路石阶同法：各面贴石面纹理，踢面压暗一阶（FaceTexture）。
+        var slab = PieceArt.FindTexture("wild.ground.slab");
         for (var i = 0; i < count; i++)
         {
             var top = -(i + 1) * (-water - 16) / count;
-            _faces.AddRange(Solid.Box(new Vector3(steps.Position.X, bank + i * depth, water), new Vector3(steps.End.X, steps.End.Y, top + 16), Cel.StoneLight, 1.6f));
+            var box = Solid.Box(new Vector3(steps.Position.X, bank + i * depth, water), new Vector3(steps.End.X, steps.End.Y, top + 16), Cel.StoneLight, 1.6f);
+            var k = Cel.Rand(19, i);
+            _faces.AddRange(slab is { } t ? FaceTexture.Apply(box, t.Texture, t.WorldSize, new Color(1.02f + 0.08f * k, 1.06f + 0.08f * k, 1.04f + 0.07f * k), 1.4f) : box);
         }
 
         // 平桥桥面：有 AI 出件时画贴图（画在驳岸与石阶之后，与占位面同一次序），否则画占位面。
@@ -262,8 +269,21 @@ public partial class TownGroundDetail : Node2D
         return deck;
     }
 
+    private static readonly (Texture2D Texture, float WorldSize)? EmbankmentTexture = PieceArt.FindTexture("town.embankment");
+
     private static void Embankment(CanvasItem ci, float width, float height, float offset)
     {
+        // AI 条石纹理（town.embankment，横向无缝）：按沿岸累计长度取 u，整幅高度对应驳岸高；水线苔带与白沫照旧叠加。
+        if (EmbankmentTexture is { } tex)
+        {
+            var px = tex.Texture.GetSize().X / tex.WorldSize;
+            var u0 = Mathf.PosMod(offset, tex.WorldSize) * px;
+            ci.DrawTextureRectRegion(tex.Texture, new Rect2(0, 0, width, height), new Rect2(u0, 0, width * px, tex.Texture.GetSize().Y), new Color(1.05f, 1.1f, 1.08f));
+            ci.DrawRect(new Rect2(0, height - 16, width, 12), Cel.Leaf.Darkened(0.35f) with { A = 0.55f });
+            ci.DrawLine(new Vector2(0, height - 2), new Vector2(width, height - 2), Colors.White with { A = 0.7f }, 3);
+            return;
+        }
+
         // 条石：每层高 26，块长 90，逐层错缝；越近水线越暗，水线上一道苔带。
         var rows = (int)Mathf.Ceil(height / 26);
         for (var r = 0; r < rows; r++)

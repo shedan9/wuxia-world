@@ -1,0 +1,92 @@
+{
+  "set": "m0_town_rest",
+  "tier": "complex",
+  "model": "sdxl",
+  "guides": "out/guides/town2",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "strength": 0.7,
+  "control": 0.7,
+  "canny": [
+    60,
+    160
+  ],
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "style": {
+    "piece": "no humans, isometric, simple background, grey background, cel shading, clean lineart, detailed, soft daylight, masterpiece, high score, absurdres",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, pagoda",
+    "texture": "seamless texture, top-down view, orthographic, flat lighting, cel shading, clean lineart, game asset, masterpiece, high score, absurdres",
+    "negative_texture": "text, watermark, perspective, horizon, sky, shadow gradient, vignette, people, photo, 3d render, blurry, lowres",
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "negative_scene": "text, watermark, people, sky, clouds, grass field, background scenery, blurry, lowres, european, western windows, shutters, brick, chimney, wood railing, japanese architecture, pagoda",
+    "scene": "no humans, isometric game asset, simple grey background, semi-realistic, cel shading, detailed texture, soft daylight",
+    "texture_sdxl": "seamless texture, top-down orthographic view, game asset, semi-realistic, cel shading, soft even daylight",
+    "negative_house": "text, chinese characters, calligraphy, watermark, people, sky, clouds, grass field, blurry, lowres, european, western windows, brick, chimney, japanese architecture, pagoda, wooden roof, thatched roof, red roof, corrugated metal, modern",
+    "negative_shop": "text, chinese characters, calligraphy, watermark, people, sky, blurry, lowres, european, western windows, brick, wooden roof, red roof, roller shutter, garage door, metal, glass, modern"
+  },
+  "jobs": [
+    {
+      "name": "c1_corridor_roof",
+      "piece": "town.corridor.roof",
+      "style": "scene",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.85,
+      "control_end": 0.65,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "black clay roof tiles in rows, long gable roof of a chinese riverside covered walkway, dark tiled ridge, dark wooden eave beam"
+    },
+    {
+      "name": "c1_well",
+      "piece": "town.prop.well",
+      "style": "scene",
+      "negative_style": "negative_scene",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.6,
+      "grow": 10,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "old chinese stone well, octagonal grey granite well curb with worn edges, dark water inside, wooden frame with a pulley and a wooden bucket"
+    },
+    {
+      "name": "c2_corridor_roof",
+      "piece": "town.corridor.roof",
+      "style": "scene",
+      "negative_style": "negative_house",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.9,
+      "control_end": 0.7,
+      "seeds": [
+        55,
+        66,
+        77,
+        88,
+        99,
+        111
+      ],
+      "prompt": "black clay roof tiles in rows, clearly visible parallel rows of curved grey clay tiles running down the slope, dark tiled ridge, long gable roof of a riverside covered walkway"
+    }
+  ]
+}

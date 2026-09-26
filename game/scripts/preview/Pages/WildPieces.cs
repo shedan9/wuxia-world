@@ -207,6 +207,12 @@ public partial class WildWall : Node2D
         return pts.ToArray();
     }
 
+    public override void _Ready()
+    {
+        TextureRepeat = TextureRepeatEnum.Enabled;
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+    }
+
     public override void _Draw()
     {
         foreach (var (s0, s1) in Spans())
@@ -238,7 +244,60 @@ public partial class WildWall : Node2D
                 [shade, shade, shade with { A = 0 }, shade with { A = 0 }]);
         }
 
-        // 岩块：宽 50–150，斜折痕分受光 / 背光两面；色阶按块随机，避免成排同色。
+        // AI 岩壁纹理（wild.cliff，横向无缝）入库时：沿崖边每段按崖长取 u、按高取 v 贴图，岩块、石台与顶光不再画。
+        if (CliffTexture is { } tex)
+        {
+            DrawCliffTexture(s0, s1, tex.Texture, tex.WorldSize);
+        }
+        else
+        {
+            DrawCliffBlocks(s0, s1, h);
+        }
+
+        // 垂苔：自崖顶挂下的不规则绿片，深浅两层（贴了 AI 岩壁纹理时不画：纹理自带苔斑，程序化绿片像三角贴纸）。
+        for (var a = s0 + 10; a < s1 - 40 && CliffTexture is null; a += 60)
+        {
+            if (Cel.Rand(Seed, (int)a + 31) < 0.5f) continue;
+            var len = 30 + 50 * Cel.Rand(Seed, (int)a + 33);
+            var pts = new List<Vector2> { S(a, Z1) };
+            var inner = new List<Vector2> { S(a, Z1) };
+            for (var t = 1; t < 6; t++)
+            {
+                var x = a + len * t / 6;
+                var drop = h * (0.12f + 0.25f * Cel.Rand(Seed, (int)x + t)) * Mathf.Sin(Mathf.Pi * t / 6);
+                pts.Add(S(x, Z1 - drop));
+                inner.Add(S(x, Z1 - drop * 0.55f));
+            }
+
+            pts.Add(S(a + len, Z1));
+            inner.Add(S(a + len, Z1));
+            DrawColoredPolygon(pts.ToArray(), Cel.LeafDark);
+            DrawColoredPolygon(inner.ToArray(), Cel.Leaf);
+        }
+
+        DrawPolyline(Line(s0, s1, Z0).ToArray(), Cel.Ink with { A = 0.45f }, 1.6f, true);
+        if (s0 > WildLayout.FarA0) DrawLine(S(s0, Z0), S(s0, Z1), Cel.Ink, 2.2f, true);
+        if (s1 < WildLayout.FarA1) DrawLine(S(s1, Z0), S(s1, Z1), Cel.Ink, 2.2f, true);
+    }
+
+    private static readonly (Texture2D Texture, float WorldSize)? CliffTexture = PieceArt.FindTexture("wild.cliff");
+
+    /// <summary>岩壁纹理：u 随崖长（每 worldSize 循环一次），v 自崖顶 0 到崖脚 1；崖脚再压一道暗，接上地面接触阴影。</summary>
+    private void DrawCliffTexture(float s0, float s1, Texture2D texture, float worldSize)
+    {
+        var white = Colors.White;
+        var foot = new Color(0.78f, 0.82f, 0.8f);
+        for (var a = s0; a < s1 - 0.5f; a += Seg)
+        {
+            var b = Mathf.Min(a + Seg, s1);
+            DrawPolygon([S(a, Z1), S(b, Z1), S(b, Z0), S(a, Z0)], [white, white, foot, foot],
+                [new(a / worldSize, 0), new(b / worldSize, 0), new(b / worldSize, 1), new(a / worldSize, 1)], texture);
+        }
+    }
+
+    /// <summary>程序化岩块（无 AI 纹理时）：宽 50–150，斜折痕分受光 / 背光两面；色阶按块随机，避免成排同色。</summary>
+    private void DrawCliffBlocks(float s0, float s1, float h)
+    {
         var i = 0;
         for (var a = s0; a < s1 - 1; i++)
         {
@@ -273,31 +332,6 @@ public partial class WildWall : Node2D
 
         // 崖顶一道受光。
         DrawColoredPolygon(Strip(s0, s1, s1, s0, Z1, Z1 - h * 0.1f), RockLight with { A = 0.55f });
-
-        // 垂苔：自崖顶挂下的不规则绿片，深浅两层。
-        for (var a = s0 + 10; a < s1 - 40; a += 60)
-        {
-            if (Cel.Rand(Seed, (int)a + 31) < 0.5f) continue;
-            var len = 30 + 50 * Cel.Rand(Seed, (int)a + 33);
-            var pts = new List<Vector2> { S(a, Z1) };
-            var inner = new List<Vector2> { S(a, Z1) };
-            for (var t = 1; t < 6; t++)
-            {
-                var x = a + len * t / 6;
-                var drop = h * (0.12f + 0.25f * Cel.Rand(Seed, (int)x + t)) * Mathf.Sin(Mathf.Pi * t / 6);
-                pts.Add(S(x, Z1 - drop));
-                inner.Add(S(x, Z1 - drop * 0.55f));
-            }
-
-            pts.Add(S(a + len, Z1));
-            inner.Add(S(a + len, Z1));
-            DrawColoredPolygon(pts.ToArray(), Cel.LeafDark);
-            DrawColoredPolygon(inner.ToArray(), Cel.Leaf);
-        }
-
-        DrawPolyline(Line(s0, s1, Z0).ToArray(), Cel.Ink with { A = 0.45f }, 1.6f, true);
-        if (s0 > WildLayout.FarA0) DrawLine(S(s0, Z0), S(s0, Z1), Cel.Ink, 2.2f, true);
-        if (s1 < WildLayout.FarA1) DrawLine(S(s1, Z0), S(s1, Z1), Cel.Ink, 2.2f, true);
     }
 
     private void DrawBank(float s0, float s1)
@@ -329,6 +363,21 @@ public partial class WildWall : Node2D
         }
 
         DrawPolyline(Line(s0, s1, Z1).ToArray(), Cel.Ink, 2.6f, true);
+        if (Tufts.Ready)
+        {
+            // AI 草丛精灵沿崖沿 / 岸沿错落：间距、大小、左右翻转随机，崖沿间或一丛矮灌。
+            for (var a = s0 + 6; a < s1 - 6; a += 20 + 34 * Cel.Rand(Seed, (int)a + 5))
+            {
+                var r = Cel.Rand(Seed, (int)a + 77);
+                if (r < 0.15f) continue;
+                var bush = !Bank && Cel.Rand(Seed, (int)a + 91) > 0.86f;
+                var height = bush ? 46 + 18 * r : (Bank ? 24 : 30) + 20 * r;
+                Tufts.Draw(this, S(a, Z1) + new Vector2(0, 3), height, bush ? -1 : (int)(Cel.Rand(Seed, (int)a + 13) * 4), Cel.Rand(Seed, (int)a + 17) > 0.5f);
+            }
+
+            return;
+        }
+
         for (var a = s0 + 4; a < s1; a += 11)
         {
             var r = Cel.Rand(Seed, (int)a + 77);
@@ -354,15 +403,30 @@ public partial class WildWall : Node2D
     }
 }
 
-/// <summary>凿进崖里的石阶：逐级方石，两侧石栏，贴地层中按远近先后画出（行人走在其上）。</summary>
+/// <summary>
+/// 凿进崖里的石阶：逐级方石，两侧石栏，贴地层中按远近先后画出（行人走在其上）。
+/// 各面贴 AI 石面纹理（wild.ground.slab，按世界坐标取样，相邻两级纹理连续），明暗与勾线沿用面的三阶受光；
+/// 另加踏面前沿受光倒角、两端苔藓与少量缺角（2026-09-26 用户认为纯色块占位太粗糙）。无纹理时退回纯色面。
+/// </summary>
 public partial class WildStepsNode : TownPiece
 {
     private static readonly Color Tread = Color.FromHtml("#C4CCC4");
     private static readonly Color Riser = Color.FromHtml("#7D8B84");
+    private static readonly Color Rock = Color.FromHtml("#7F8D86");
+    private const float Curb = 18;
 
-    public WildStepsNode(WildSteps s)
+    private readonly WildSteps _s;
+
+    public WildStepsNode(WildSteps s, string artId)
     {
-        const float curb = 18;
+        _s = s;
+        var tex = PieceArt.FindTexture("wild.ground.slab");
+        if (tex is not null)
+        {
+            TextureRepeat = TextureRepeatEnum.Enabled;
+            TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+        }
+
         var tread = (s.D1 - s.D0) / s.Count;
         var rise = (s.High - s.Low) / s.Count;
         for (var i = s.Count - 1; i >= 0; i--)
@@ -370,18 +434,96 @@ public partial class WildStepsNode : TownPiece
             var d0 = s.D1 - (i + 1) * tread;
             var d1 = s.D1 - i * tread;
             var top = s.Low + (i + 1) * rise;
-            Faces.AddRange(Solid.ExtrudeZ(Quad(s.A0 + curb, s.A1 - curb, d0, d1), s.Low, top, Riser, Tread, 1.6f));
-            foreach (var (c0, c1) in new[] { (s.A0, s.A0 + curb), (s.A1 - curb, s.A1) })
+            // 每级石色略有深浅，石栏比踏步暗一阶。
+            var k = Cel.Rand(s.Count * 7 + 3, i);
+            var step = new Color(1.04f + 0.08f * k, 1.08f + 0.08f * k, 1.04f + 0.07f * k);
+            var steps = Solid.ExtrudeZ(Quad(s.A0 + Curb, s.A1 - Curb, d0, d1), s.Low, top, Riser, Tread, 1.4f);
+            Faces.AddRange(tex is { } t ? FaceTexture.Apply(steps, t.Texture, t.WorldSize, step, 1.4f) : steps);
+        }
+
+        // 两侧石栏：一整条随坡升高的斜顶石栏（镜头只看得到斜顶与朝镜头的端面），不再逐级分块。
+        foreach (var (c0, c1) in new[] { (s.A0, s.A0 + Curb), (s.A1 - Curb, s.A1) })
+        {
+            var (nearTop, farTop) = (s.Low + rise + 14, s.High + 14);
+            Vector3 P3(float a, float d, float z) { var w = WildSamples.W(a, d); return new Vector3(w.X, w.Y, z); }
+            var slope = (P3(c0, s.D0, farTop) - P3(c0, s.D1, nearTop)).Cross(P3(c1, s.D1, nearTop) - P3(c0, s.D1, nearTop)).Normalized();
+            if (slope.Z < 0) slope = -slope;
+            List<Face> curb =
+            [
+                new Face { Points = [P3(c0, s.D1, s.Low), P3(c1, s.D1, s.Low), P3(c1, s.D1, nearTop), P3(c0, s.D1, nearTop)],
+                    Normal = new Vector3(-1, 1, 0).Normalized(), Color = Rock, Outline = 1.4f },
+                new Face { Points = [P3(c0, s.D1, nearTop), P3(c1, s.D1, nearTop), P3(c1, s.D0, farTop), P3(c0, s.D0, farTop)],
+                    Normal = slope, Color = Rock.Lightened(0.18f), Outline = 1.4f },
+            ];
+            Faces.AddRange(tex is { } u ? FaceTexture.Apply(curb, u.Texture, u.WorldSize, new Color(0.92f, 0.97f, 0.95f), 1.4f) : curb);
+        }
+
+        Seal(Bounds(Quad(s.A0, s.A1, s.D0, s.D1)));
+        UseArt(artId);
+    }
+
+    protected override void DrawExtras()
+    {
+        if (!PieceArt.Enabled) return;
+        var s = _s;
+        var tread = (s.D1 - s.D0) / s.Count;
+        var rise = (s.High - s.Low) / s.Count;
+        var (a0, a1) = (s.A0 + Curb, s.A1 - Curb);
+        for (var i = 0; i < s.Count; i++)
+        {
+            var d1 = s.D1 - i * tread;
+            var top = s.Low + (i + 1) * rise;
+            // 踏面前沿受光倒角：一道亮线，间或被缺口打断。
+            var gapAt = a0 + (a1 - a0) * Cel.Rand(s.Count, i + 40);
+            var hasGap = Cel.Rand(s.Count, i + 50) > 0.55f;
+            DrawLine(WildLayout.S(a0 + 3, d1 - 2, top), WildLayout.S(hasGap ? gapAt - 8 : a1 - 3, d1 - 2, top), Colors.White with { A = 0.45f }, 2.2f, true);
+            if (hasGap)
             {
-                Faces.AddRange(Solid.ExtrudeZ(Quad(c0, c1, d0, d1), s.Low, top + 14, Rock, Rock.Lightened(0.18f), 1.4f));
+                DrawLine(WildLayout.S(gapAt + 10, d1 - 2, top), WildLayout.S(a1 - 3, d1 - 2, top), Colors.White with { A = 0.45f }, 2.2f, true);
+                // 缺角：前沿一小块暗色三角。
+                DrawColoredPolygon([WildLayout.S(gapAt - 8, d1, top), WildLayout.S(gapAt + 10, d1, top), WildLayout.S(gapAt + 2, d1, top - rise * 0.55f)], Cel.Ink with { A = 0.35f });
+            }
+
+            // 贴石栏的墙角偶有一小撮苔：三四个大小不一的扁点挤成一团，颜色压暗，不成排。
+            foreach (var (edge, dir) in new[] { (a0, 1f), (a1, -1f) })
+            {
+                var seed = i * 3 + (dir > 0 ? 1 : 2);
+                if (Cel.Rand(s.Count, seed) < 0.72f) continue;
+                var at = d1 - tread * (0.25f + 0.5f * Cel.Rand(s.Count, seed + 90));
+                for (var k = 0; k < 4; k++)
+                {
+                    var c = WildLayout.S(edge + dir * (3 + 10 * Cel.Rand(s.Count, seed * 7 + k)), at + (Cel.Rand(s.Count, seed * 5 + k) - 0.5f) * 12, top);
+                    var r = 2.5f + 4 * Cel.Rand(s.Count, seed * 11 + k);
+                    DrawColoredPolygon(Cel.Ellipse(c, r, r * 0.55f, 8), (k == 3 ? Cel.Leaf : Cel.LeafDark) with { A = 0.7f });
+                }
+            }
+        }
+
+        // 石阶脚下两角各一丛草（AI 草丛精灵；未入库时画几笔草叶）。
+        foreach (var a in new[] { s.A0 + 4, s.A1 - 4 })
+        {
+            var root = WildLayout.S(a, s.D1 + 4, s.Low);
+            var r = Cel.Rand(s.Count, (int)a);
+            if (Tufts.Ready)
+            {
+                Tufts.Draw(this, root, 24 + 10 * r, (int)(r * 4), a > s.A0 + 10);
+            }
+            else
+            {
+                DrawLine(root, root + new Vector2((r - 0.5f) * 14, -12 - 10 * r), r > 0.6f ? Cel.LeafLight : Cel.Leaf, 2.6f, true);
             }
         }
     }
 
-    private static readonly Color Rock = Color.FromHtml("#7F8D86");
-
-    private static Vector2[] Quad(float a0, float a1, float d0, float d1) =>
+    internal static Vector2[] Quad(float a0, float a1, float d0, float d1) =>
         [WildSamples.W(a0, d0), WildSamples.W(a1, d0), WildSamples.W(a1, d1), WildSamples.W(a0, d1)];
+
+    internal static Rect2 Bounds(Vector2[] quad)
+    {
+        var r = new Rect2(quad[0], Vector2.Zero);
+        foreach (var q in quad) r = r.Expand(q);
+        return r;
+    }
 }
 
 /// <summary>跨溪木桥：桥面木板、两侧圆木栏，水面上压一道桥影。</summary>
@@ -396,6 +538,37 @@ public partial class WildBridgeNode : TownPiece
         foreach (var (r0, r1) in new[] { (a0, a0 + Rail), (a1 - Rail, a1) })
         {
             Faces.AddRange(Solid.ExtrudeZ(Quad(r0, r1, d0 - 8, d1 + 8), z - 12, z + 16, Cel.WoodDark, Cel.Wood, 1.4f));
+        }
+
+        // 桥面木板：AI 木板纹理（wild.ground.planks，板缝沿 A 向、每 22 一块）在桥面内平铺，栏杆仍为程序化圆木。
+        if (PieceArt.FindTexture("wild.ground.planks") is { } planks)
+        {
+            _planks = true;
+            TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+            var (u, v) = (WildSamples.W(1, 0) - WildSamples.W(0, 0), WildSamples.W(0, 1) - WildSamples.W(0, 0));
+            var o = WildSamples.W(a0 + Rail, d0);
+            var size = new Vector2(a1 - a0 - 2 * Rail, d1 - d0);
+            FaceKit.Decorate(Faces, TownView.Above,
+                TownView.Local(new Vector3(o.X, o.Y, z), new Vector3(u.X, u.Y, 0), new Vector3(v.X, v.Y, 0)),
+                ci => Tile(ci, planks.Texture, planks.WorldSize, size));
+        }
+
+        Seal(WildStepsNode.Bounds(Quad(a0, a1, d0 - 8, d1 + 8)));
+        UseArt("wild.bridge");
+    }
+
+    private readonly bool _planks;
+
+    private static void Tile(CanvasItem ci, Texture2D texture, float world, Vector2 size)
+    {
+        var px = texture.GetSize() / world;
+        for (var y = 0f; y < size.Y; y += world)
+        {
+            for (var x = 0f; x < size.X; x += world)
+            {
+                var cell = new Vector2(Mathf.Min(world, size.X - x), Mathf.Min(world, size.Y - y));
+                ci.DrawTextureRectRegion(texture, new Rect2(new Vector2(x, y), cell), new Rect2(Vector2.Zero, cell * px), new Color(1.1f, 1.05f, 1f));
+            }
         }
     }
 
@@ -414,6 +587,7 @@ public partial class WildBridgeNode : TownPiece
 
     protected override void DrawExtras()
     {
+        if (_planks) return;
         var (a0, a1, d0, d1, z) = (WildSamples.BridgeA0 + Rail, WildSamples.BridgeA1 - Rail, WildSamples.BridgeD0, WildSamples.BridgeD1, WildSamples.BridgeZ);
         for (var d = d0 + 22; d < d1; d += 22)
         {
@@ -1259,5 +1433,38 @@ public partial class WildMiniMap : Control
 
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
         DrawString(UiFonts.Title, new Vector2(Size.X - 30, 28), "北", HorizontalAlignment.Left, -1, 20, UiPalette.Text);
+    }
+}
+
+/// <summary>
+/// AI 草丛精灵（wild.tuft.grass.1–4、wild.tuft.bush.1，2026-09-26 替换崖沿、岸沿与阶脚的直线草叶和椭圆矮灌占位）：
+/// 按脚底中心与屏幕高度画出，可左右翻转；variant 为 -1 时画矮灌。
+/// </summary>
+internal static class Tufts
+{
+    private static readonly Texture2D[] Grass = Load("grass", 4);
+    private static readonly Texture2D[] Bush = Load("bush", 1);
+
+    public static bool Ready => PieceArt.Enabled && Grass.Length > 0;
+
+    private static Texture2D[] Load(string kind, int count)
+    {
+        var list = new List<Texture2D>();
+        for (var i = 1; i <= count; i++)
+        {
+            var path = $"res://assets/art/wild/wild.tuft.{kind}.{i}.png";
+            if (ResourceLoader.Exists(path)) list.Add(GD.Load<Texture2D>(path));
+        }
+
+        return list.ToArray();
+    }
+
+    public static void Draw(CanvasItem ci, Vector2 foot, float height, int variant, bool flip)
+    {
+        var tex = variant < 0 && Bush.Length > 0 ? Bush[0] : Grass[Mathf.PosMod(variant, Grass.Length)];
+        var size = tex.GetSize() * (height / tex.GetSize().Y);
+        ci.DrawSetTransform(foot, 0, new Vector2(flip ? -1 : 1, 1));
+        ci.DrawTextureRect(tex, new Rect2(-size.X / 2, -size.Y, size.X, size.Y), false);
+        ci.DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }
 }

@@ -14,7 +14,9 @@
     "texture_sdxl": "seamless texture, top-down orthographic view, game asset, semi-realistic, cel shading, soft even daylight",
     "negative_texture": "text, watermark, perspective, horizon, sky, shadow gradient, vignette, people, photo, 3d render, blurry, lowres",
     "negative_ground": "text, watermark, perspective, horizon, sky, vignette, people, photo, 3d render, blurry, lowres, cobblestone, pavement, tiles, bricks, grid, pattern repeat, rocks, pebbles",
-    "negative_dirt": "text, watermark, perspective, horizon, sky, vignette, people, photo, 3d render, blurry, lowres, cobblestone, pavement, tiles, bricks, grid, sand dunes, grass"
+    "negative_dirt": "text, watermark, perspective, horizon, sky, vignette, people, photo, 3d render, blurry, lowres, cobblestone, pavement, tiles, bricks, grid, sand dunes, grass",
+    "texture_wall": "seamless texture, orthographic front view, flat framing, game asset, semi-realistic, cel shading, clean lineart, soft daylight from upper left",
+    "negative_wall": "text, watermark, perspective, horizon, sky, clouds, trees, grass field, people, photo, 3d render, blurry, lowres, bricks, masonry wall, man-made, vignette"
   },
   "jobs": [
     {
@@ -124,6 +126,111 @@
         66
       ],
       "prompt": "mostly bare packed earth footpath, light ochre brown soil with darker damp patches, sparse small grey pebbles scattered far apart, fine grit"
+    },
+    {
+      "name": "g9_wild_cliff",
+      "kind": "texture",
+      "world_size": 360,
+      "size": [
+        1536,
+        640
+      ],
+      "style": "texture_wall",
+      "negative_style": "negative_wall",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "natural rock cliff face, grey-green granite with angular blocky facets and vertical cracks, lit planes and shadowed planes, a few small dark moss patches"
+    },
+    {
+      "name": "g10_wild_planks",
+      "kind": "texture",
+      "world_size": 220,
+      "style": "texture_sdxl",
+      "negative_style": "negative_texture",
+      "bond": {
+        "tile": 220,
+        "rows": 10,
+        "lengths": [
+          220
+        ],
+        "seed": 3,
+        "line": 4
+      },
+      "control": 0.85,
+      "control_end": 0.8,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "weathered wooden plank boards laid side by side, dark brown timber with wood grain, worn edges, a few iron nails"
+    },
+    {
+      "name": "g11_town_embankment",
+      "kind": "texture",
+      "world_size": 240,
+      "size": [
+        1536,
+        512
+      ],
+      "style": "texture_wall",
+      "negative_style": "negative_texture",
+      "bond": {
+        "tile": 240,
+        "rows": 9,
+        "lengths": [
+          60,
+          90
+        ],
+        "seed": 5,
+        "line": 4
+      },
+      "control": 0.85,
+      "control_end": 0.8,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "river embankment retaining wall of long grey granite blocks in courses, staggered joints, damp dark lower edge, a little moss"
+    },
+    {
+      "name": "g12_stone_slab",
+      "kind": "texture",
+      "world_size": 160,
+      "style": "texture_sdxl",
+      "negative_style": "negative_ground",
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "weathered grey granite stone slab surface, fine speckles, small chips and hairline cracks, faint patches of dark moss, worn smooth"
+    },
+    {
+      "name": "g13_stone_slab",
+      "kind": "texture",
+      "world_size": 160,
+      "style": "texture_wall",
+      "negative_style": "negative_wall",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "flat carved granite stone surface, grey-green stone with a few angular chips, hairline cracks and small dark moss spots, lit and shaded planes"
     }
   ]
 }

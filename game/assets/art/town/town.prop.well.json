@@ -1,0 +1,10 @@
+{
+  "id": "town.prop.well",
+  "origin": [
+    1635.2428,
+    -800.449
+  ],
+  "px": 5.368421052631579,
+  "source": "art_source/ai/town/town.prop.well.png",
+  "sha256": "64ec65626da24ae3fe065c51a9f0559f62b7ebfa6c71931ac0804a3c143b70ed"
+}

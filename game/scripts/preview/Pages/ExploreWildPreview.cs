@@ -50,7 +50,7 @@ public partial class ExploreWildPreview : ExploreStage
 
     protected override (string Region, string Name, string Time) PlaceInfo => ("山门", "山门路　半山", "辰时　·　山雾初散");
 
-    protected override string Caption => "山路布局样板：三层台地与石阶、远山视差；树石灌丛、茶亭、山门、碑、木牌与土路、草坡为 AI 出件（方案 C），溪水、崖壁、石阶、木桥与人物仍为程序化占位（M0-03）";
+    protected override string Caption => "山路布局样板：树石灌丛、茶亭、山门、碑牌、土路、草坡、崖壁与桥面为 AI 出件，石阶为几何贴 AI 纹理；溪水、桥栏与人物仍为占位（M0-03）";
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (WildSamples.Goal, 360, "山门");
 
@@ -87,7 +87,7 @@ public partial class ExploreWildPreview : ExploreStage
 
         var s1 = WildSamples.Steps1;
         GroundLayer.AddChild(new WildWall { Edge = WildSamples.Edge1, Z0 = WildSamples.Z0, Z1 = WildSamples.Z1, Gaps = [(s1.A0, s1.A1)], Seed = 11 });
-        GroundLayer.AddChild(new WildStepsNode(s1));
+        GroundLayer.AddChild(new WildStepsNode(s1, "wild.steps.1"));
         Ground(5, WildLayout.Band(WildSamples.Edge2, WildSamples.Edge1, s1), WildSamples.Z1);
         GroundLayer.AddChild(new WildWall { Edge = WildSamples.Edge1, Z0 = WildSamples.Z0, Z1 = WildSamples.Z1, Gaps = [(s1.A0, s1.A1)], LipOnly = true, Seed = 11 });
         Path(WildSamples.PathMid, WildSamples.Z1, 3);
@@ -95,7 +95,7 @@ public partial class ExploreWildPreview : ExploreStage
 
         var s2 = WildSamples.Steps2;
         GroundLayer.AddChild(new WildWall { Edge = WildSamples.Edge2, Z0 = WildSamples.Z1, Z1 = WildSamples.Z2, Gaps = [(s2.A0, s2.A1)], Seed = 23 });
-        GroundLayer.AddChild(new WildStepsNode(s2));
+        GroundLayer.AddChild(new WildStepsNode(s2, "wild.steps.2"));
         Ground(5, WildLayout.Band(_ => WildSamples.FogEnd, WildSamples.Edge2, s2), WildSamples.Z2);
         GroundLayer.AddChild(new WildWall { Edge = WildSamples.Edge2, Z0 = WildSamples.Z1, Z1 = WildSamples.Z2, Gaps = [(s2.A0, s2.A1)], LipOnly = true, Seed = 23 });
         Path(WildSamples.PathTop, WildSamples.Z2, 4);

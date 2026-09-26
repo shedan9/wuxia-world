@@ -683,6 +683,7 @@ public partial class TownCorridorPart : TownPiece
         }
 
         roof.Seal(area);
+        roof.UseArt("town.corridor.roof");
         yield return roof;
 
         for (var x = x0; x <= x1 + 1; x += bay)
@@ -708,8 +709,16 @@ public partial class TownCorridorPart : TownPiece
         }
     }
 
+    /// <summary>贴上 AI 屋面后灯笼仍由引擎挂在檐下（引导图不含灯笼，导出时屋面件无贴图照常画出）。</summary>
+    public override void _Draw()
+    {
+        base._Draw();
+        if (Art is not null) DrawExtras();
+    }
+
     protected override void DrawExtras()
     {
+        if (!PieceArt.Enabled) return;
         foreach (var top in _lanternTops)
         {
             DrawSetTransform(TownView.P(top), 0, Vector2.One * TownView.Upright);
