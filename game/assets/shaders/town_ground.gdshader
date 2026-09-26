@@ -5,9 +5,13 @@
 // 4 山道土路（夯土、碎石、嵌石）、5 山地草坡（深一阶的青绿、苔斑、小石）。flow 为水流方向（自世界东向起算的弧度）。
 // 正式地面按架构文档 10.3 逐类换成 AI 生成的可平铺纹理（ground_tex，按世界坐标每 tex_world 单位循环一次，见 tools/ArtGen/piece.py）：
 // 石板街（条石错缝格线经 ControlNet 引导）、草地、山道土路、山地草坡已换；积水反光、土路碎石与嵌石仍由本着色器叠加，
-// 城镇河水与南岸泥沙地仍为程序化。平铺纹理另乘一层大尺度明暗（fbm），避免大片地面看出循环。
+// 南岸泥沙地仍为程序化。平铺纹理另乘一层大尺度明暗（fbm），避免大片地面看出循环。
 // 山路溪水（kind 2 且 use_tex）：AI 溪床卵石纹理作水底，按离岸远近叠浅水 / 深水两阶水色，水底随时间微微折射晃动，
 // 水面浪线沿水流漂移、近岸一道碎白沫。离岸距离按 stream_n / stream_s 在着色器里算（与 WildSamples 的两岸函数一致）。
+// 城镇河水（kind 2 且 canal）：运河水深看不到底，画成倒影——贴北岸一道驳岸条石的暗倒影（边缘随波碎开）、
+// 其外零星的柳荫与屋影、河心天光；细浪线在暗倒影里亮、在天光里淡，驳岸脚一道贴壁暗线与碎亮光。
+// 离岸距离按 canal_n / canal_s（与 TownSamples 的两岸函数一致）算。船、渡口石阶与桥墩（canal_obj）脚下压一圈暗影、
+// 朝镜头一侧拖一片倒影，外圈一道随水闪动的碎亮涟漪。
 shader_type canvas_item;
 
 uniform int kind = 0;
@@ -30,6 +34,18 @@ uniform float tex_contrast = 1.0;
 // 溪涧两岸（画面坐标 A 水平、D 远近）：北岸 D = x + y·sin(A / z + w)，南岸 = 北岸 + x + y·sin(A / z)。
 uniform vec4 stream_n = vec4(0.0);
 uniform vec3 stream_s = vec3(0.0);
+
+// 城镇河道两岸：y = x0 + x1·sin(x / x2 + x3) + y0·sin(x / y1 + y2)（canal_n / canal_n2 为北岸，canal_s / canal_s2 为南岸）。
+uniform bool canal = false;
+uniform vec4 canal_n = vec4(0.0);
+uniform vec4 canal_n2 = vec4(0.0);
+uniform vec4 canal_s = vec4(0.0);
+uniform vec4 canal_s2 = vec4(0.0);
+// 驳岸露出水面的高度：决定倒影带的宽度。
+uniform float canal_wall = 80.0;
+// 水中物件：圆角矩形（中心 x、y，半宽、半长）与（圆角半径、露出水面的高度）；未用的槽位半宽为 0。
+uniform vec4 canal_obj[6];
+uniform vec2 canal_obj_shape[6];
 
 const vec3 INK = vec3(0.13, 0.19, 0.23);
 
@@ -174,6 +190,70 @@ vec3 creek(vec2 w, vec2 r, float dn, float ds) {
 	return clamp(c, 0.0, 1.0);
 }
 
+float round_box(vec2 p, vec2 h, float r) {
+	vec2 q = abs(p) - h + r;
+	return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+}
+
+float bank_y(vec4 a, vec4 b, float x) {
+	return a.x + a.y * sin(x / a.z + a.w) + b.x * sin(x / b.y + b.z);
+}
+
+// 运河：w 为世界坐标，dn / ds 为离北岸 / 南岸的距离（沿 y）。
+vec3 canal_water(vec2 w, float dn, float ds) {
+	float t = TIME;
+	// 竖直的驳岸倒映在水里、朝镜头方向延伸：俯角 30° 下高 h 的墙对应水面上约 h·√3 的视向距离，
+	// 视向与河岸成 45°，折成离岸距离约 1.22 h。
+	float reach = canal_wall * 1.22;
+	// 倒影边缘随水波横向拉长、碎开。
+	float jag = (vnoise(vec2(w.x * 0.022 - t * 0.35, dn * 0.09 + t * 0.2)) - 0.5) * 22.0
+		+ (vnoise(vec2(w.x * 0.004 + t * 0.05, 3.0)) - 0.5) * 20.0;
+	float e = dn + jag;
+	// 河心天光：大尺度两阶，缓慢漂移。
+	float n = fbm(vec2(w.x * 0.0016 - t * 0.012, w.y * 0.005));
+	vec3 sky = mix(vec3(0.33, 0.55, 0.55), vec3(0.42, 0.63, 0.61), step(0.52, n));
+	sky = mix(sky, vec3(0.53, 0.72, 0.69), step(0.7, n) * 0.7);
+	// 柳荫与屋影：岸边零星几片青黛色的软倒影，只在部分河段。
+	float shade_n = fbm(vec2(w.x * 0.003 + 7.0, dn * 0.004 + t * 0.01));
+	float shade = step(e, reach + 150.0 * step(0.55, shade_n)) * step(0.55, shade_n);
+	vec3 c = mix(sky, vec3(0.24, 0.42, 0.40), shade * 0.75);
+	// 驳岸倒影：灰黛条石，隐约的横向石缝随波断开。
+	float wall = step(e, reach);
+	float course = step(0.82, fract(e / (reach / 4.0))) * step(0.45, vnoise(vec2(w.x * 0.03 - t * 0.4, floor(e / (reach / 4.0)))));
+	vec3 stone = mix(vec3(0.22, 0.33, 0.34), vec3(0.30, 0.42, 0.42), course * 0.8);
+	c = mix(c, stone, wall);
+	// 细浪线：顺流拉长，在暗处亮、在天光里淡。
+	float dark = max(wall, shade * 0.75);
+	float wave = vnoise(vec2(w.x * 0.012 - t * 0.35, floor(w.y / 18.0) * 1.9));
+	float line = step(0.82, wave) * step(fract(w.y / 18.0), 0.16);
+	c = mix(c, vec3(0.80, 0.91, 0.89), line * mix(0.28, 0.6, dark));
+	// 驳岸脚：贴壁一道暗线，外侧碎亮光随水拍岸闪动。
+	float lap = vnoise(vec2(w.x * 0.05 - t * 0.9, t * 0.7));
+	c = mix(c, vec3(0.13, 0.22, 0.24), step(dn, 3.0 + 2.0 * lap) * 0.8);
+	c = mix(c, vec3(0.78, 0.90, 0.88), step(dn, 9.0 + 4.0 * lap) * step(3.0 + 2.0 * lap, dn) * step(0.55, lap) * 0.7);
+	// 水中物件：脚下暗影、朝镜头（世界西南）的倒影、外圈碎亮涟漪。
+	for (int i = 0; i < 6; i++) {
+		vec4 o = canal_obj[i];
+		if (o.z <= 0.0) {
+			continue;
+		}
+		vec2 sh = canal_obj_shape[i];
+		float d = round_box(w - o.xy, o.zw, sh.x);
+		float rj = (vnoise(vec2(w.x * 0.03 - t * 0.5, w.y * 0.06)) - 0.5) * 10.0;
+		// 倒影：物件沿视线朝镜头方向扫过露出高度的 √3 倍（俯角 30°），取三处圆角矩形的并集。
+		vec2 view = vec2(-0.70710678, 0.70710678) * sh.y * 1.732;
+		float refl = min(round_box(w - o.xy - view * 0.5, o.zw * 0.92, sh.x), round_box(w - o.xy - view, o.zw * 0.8, sh.x)) + rj;
+		c = mix(c, c * vec3(0.72, 0.8, 0.8), step(refl, 0.0) * 0.8);
+		c = mix(c, vec3(0.13, 0.22, 0.24), step(d, 4.0) * 0.7);
+		float ring_n = vnoise(vec2(w.x * 0.045 + t * 0.6, w.y * 0.045 - t * 0.4));
+		float ring = step(8.0 + 4.0 * ring_n, d) * step(d, 12.0 + 4.0 * ring_n) * step(0.5, ring_n);
+		c = mix(c, vec3(0.80, 0.92, 0.90), ring * 0.65);
+	}
+	// 南岸一侧大半被岸上地面挡住，露出的少许水面收暗，与岸影相接。
+	c = mix(c, c * 0.88, 1.0 - smoothstep(canal_wall * 1.22, canal_wall * 1.22 + 60.0, ds));
+	return clamp(c, 0.0, 1.0);
+}
+
 vec3 sand(vec2 w) {
 	float n = fbm(w * 0.006);
 	vec3 c = mix(vec3(0.72, 0.68, 0.56), vec3(0.78, 0.74, 0.61), step(0.5, n));
@@ -251,7 +331,9 @@ void fragment() {
 		c = flagstone(world);
 	} else if (kind == 2) {
 		vec2 r = vec2(world.x * cos(flow) + world.y * sin(flow), -world.x * sin(flow) + world.y * cos(flow));
-		if (use_tex) {
+		if (canal) {
+			c = canal_water(world, world.y - bank_y(canal_n, canal_n2, world.x), bank_y(canal_s, canal_s2, world.x) - world.y);
+		} else if (use_tex) {
 			float a = (world.x + world.y) * 0.70710678;
 			float d = (world.y - world.x) * 0.70710678;
 			float north = stream_n.x + stream_n.y * sin(a / stream_n.z + stream_n.w);

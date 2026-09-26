@@ -71,10 +71,34 @@ public static class TownSamples
     public const float WaterLevel = -80;
 
     /// <summary>北岸（街侧）河沿：y 随 x 缓慢起伏。</summary>
-    public static float NorthBank(float x) => 1850 + 18 * Mathf.Sin(x / 620f) + 8 * Mathf.Sin(x / 210f + 1.3f);
+    public static float NorthBank(float x) => Bank(NorthBankWave, x);
 
     /// <summary>南岸河沿。</summary>
-    public static float SouthBank(float x) => 2760 + 16 * Mathf.Sin(x / 700f + 1f) + 6 * Mathf.Sin(x / 230f);
+    public static float SouthBank(float x) => Bank(SouthBankWave, x);
+
+    /// <summary>
+    /// 两岸函数的参数：y = 基线 + a1·sin(x / p1 + φ1) + a2·sin(x / p2 + φ2)，
+    /// 依次为（基线、a1、p1、φ1）与（a2、p2、φ2、0）；河水着色器按同一组参数算离岸远近。
+    /// </summary>
+    public static readonly Vector4[] NorthBankWave = [new(1850, 18, 620, 0), new(8, 210, 1.3f, 0)];
+
+    public static readonly Vector4[] SouthBankWave = [new(2760, 16, 700, 1), new(6, 230, 0, 0)];
+
+    /// <summary>
+    /// 河中物件在水面上的占地（圆角矩形：中心、半宽半长；圆角半径、露出水面高度），河水着色器据此画接触暗影、倒影与涟漪：
+    /// 两条乌篷船（船身两头收圆）、渡口石阶伸入水中的部分、平桥两座桥墩。
+    /// </summary>
+    public static readonly (Vector4 Box, Vector2 Shape)[] WaterObstacles =
+    [
+        (new(1640, 2080, 160, 48), new(44, 60)),
+        (new(3900, 2450, 138, 48), new(44, 60)),
+        (new(1390, 1925, 130, 75), new(4, 70)),
+        (new(2900, 2110, 100, 30), new(4, 50)),
+        (new(2900, 2470, 100, 30), new(4, 50)),
+    ];
+
+    private static float Bank(Vector4[] w, float x) =>
+        w[0].X + w[0].Y * Mathf.Sin(x / w[0].Z + w[0].W) + w[1].X * Mathf.Sin(x / w[1].Y + w[1].Z);
 
     public const float StreetNorth = 1350;
     public const float SouthWalkEnd = 3060;

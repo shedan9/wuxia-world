@@ -80,6 +80,19 @@ public partial class ExploreTownPreview : ExploreStage
             {
                 PieceArt.ApplyGround(material, "town.ground.grass", GroundTint.Grass, 0.35f, 0.08f, 0.5f);
             }
+            else if (kind == 2)
+            {
+                // 河水：按两岸参数算离岸远近，北岸驳岸倒影、天光与浪线全在着色器里画。
+                material.SetShaderParameter("canal", true);
+                material.SetShaderParameter("canal_n", TownSamples.NorthBankWave[0]);
+                material.SetShaderParameter("canal_n2", TownSamples.NorthBankWave[1]);
+                material.SetShaderParameter("canal_s", TownSamples.SouthBankWave[0]);
+                material.SetShaderParameter("canal_s2", TownSamples.SouthBankWave[1]);
+                material.SetShaderParameter("canal_wall", -TownSamples.WaterLevel);
+                var obstacles = TownSamples.WaterObstacles;
+                material.SetShaderParameter("canal_obj", Enumerable.Range(0, 6).Select(i => i < obstacles.Length ? obstacles[i].Box : Vector4.Zero).ToArray());
+                material.SetShaderParameter("canal_obj_shape", Enumerable.Range(0, 6).Select(i => i < obstacles.Length ? obstacles[i].Shape : Vector2.Zero).ToArray());
+            }
 
             parent.AddChild(new Polygon2D { Polygon = worldPolygon.Select(p => TownView.P(p, z)).ToArray(), Material = material });
         }
