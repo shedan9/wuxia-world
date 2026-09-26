@@ -247,7 +247,7 @@ public partial class WildWall : Node2D
         // AI 岩壁纹理（wild.cliff，横向无缝）入库时：沿崖边每段按崖长取 u、按高取 v 贴图，岩块、石台与顶光不再画。
         if (CliffTexture is { } tex)
         {
-            DrawCliffTexture(s0, s1, tex.Texture, tex.WorldSize);
+            DrawFacadeTexture(s0, s1, tex.Texture, tex.WorldSize, new Color(0.78f, 0.82f, 0.8f));
         }
         else
         {
@@ -282,16 +282,17 @@ public partial class WildWall : Node2D
 
     private static readonly (Texture2D Texture, float WorldSize)? CliffTexture = PieceArt.FindTexture("wild.cliff");
 
-    /// <summary>岩壁纹理：u 随崖长（每 worldSize 循环一次），v 自崖顶 0 到崖脚 1；崖脚再压一道暗，接上地面接触阴影。</summary>
-    private void DrawCliffTexture(float s0, float s1, Texture2D texture, float worldSize)
+    private static readonly (Texture2D Texture, float WorldSize)? BankTexture = PieceArt.FindTexture("wild.bank");
+
+    /// <summary>立面纹理（岩壁、溪岸）：u 随崖长（每 worldSize 循环一次），v 自顶 0 到脚 1；脚下按 foot 压暗（崖脚接地面阴影、岸脚湿石）。</summary>
+    private void DrawFacadeTexture(float s0, float s1, Texture2D texture, float worldSize, Color foot, float v1 = 1)
     {
         var white = Colors.White;
-        var foot = new Color(0.78f, 0.82f, 0.8f);
         for (var a = s0; a < s1 - 0.5f; a += Seg)
         {
             var b = Mathf.Min(a + Seg, s1);
             DrawPolygon([S(a, Z1), S(b, Z1), S(b, Z0), S(a, Z0)], [white, white, foot, foot],
-                [new(a / worldSize, 0), new(b / worldSize, 0), new(b / worldSize, 1), new(a / worldSize, 1)], texture);
+                [new(a / worldSize, 0), new(b / worldSize, 0), new(b / worldSize, v1), new(a / worldSize, v1)], texture);
         }
     }
 
@@ -336,6 +337,16 @@ public partial class WildWall : Node2D
 
     private void DrawBank(float s0, float s1)
     {
+        // AI 卵石岸纹理（wild.bank，横向无缝）入库时整面贴图，岸脚压暗成湿石；否则画程序化椭圆卵石。
+        if (BankTexture is { } tex)
+        {
+            // 岸高 40 只取纹理上部 v1，卵石按纹理宽高比放大到约二三十厘米。
+            var v1 = (Z1 - Z0) * tex.Texture.GetWidth() / tex.Texture.GetHeight() / tex.WorldSize;
+            DrawFacadeTexture(s0, s1, tex.Texture, tex.WorldSize, new Color(0.7f, 0.78f, 0.78f), v1);
+            DrawPolyline(Line(s0, s1, Z0 + 2).ToArray(), Color.FromHtml("#E4F2EE") with { A = 0.7f }, 2.4f, true);
+            return;
+        }
+
         DrawColoredPolygon(Strip(s0, s1, s1, s0, Z1, Z0), BankTone);
         DrawColoredPolygon(Strip(s0, s1, s1, s0, Z1, Z1 - (Z1 - Z0) * 0.35f), BankTone.Lightened(0.15f));
         // 卵石与水线白沫。
@@ -795,15 +806,24 @@ public abstract partial class WildSprite : TownPiece
         {
             DrawSetTransform(Vector2.Zero, 0, Vector2.One);
             DrawArt();
-            return;
+        }
+        else
+        {
+            DrawSetTransform(Vector2.Zero, 0, Vector2.One * TownView.Upright);
+            DrawSprite();
         }
 
-        DrawSetTransform(Vector2.Zero, 0, Vector2.One * TownView.Upright);
-        DrawSprite();
+        DrawSetTransform(-Position, 0, Vector2.One);
+        DrawFront();
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }
 
     protected virtual void DrawShadow()
+    {
+    }
+
+    /// <summary>画在件本身之上、仍用投影坐标（溪中石的前半圈水沫）。</summary>
+    protected virtual void DrawFront()
     {
     }
 
@@ -1046,7 +1066,46 @@ public partial class WildRockNode : WildSprite
         UseArt($"wild.rock.{rock.Seed}");
     }
 
-    protected override void DrawShadow() => Cel.GroundShadow(this, Ground + new Vector2(20, -20), _rock.W * 0.55f, _rock.W * 0.4f, 0.22f, Z);
+    private bool InWater => Z < WildSamples.Z0 - 1;
+
+    /// <summary>岸上压地影；溪中石改为石根一圈深色水影和外圈涟漪。</summary>
+    protected override void DrawShadow()
+    {
+        if (!InWater)
+        {
+            Cel.GroundShadow(this, Ground + new Vector2(20, -20), _rock.W * 0.55f, _rock.W * 0.4f, 0.22f, Z);
+            return;
+        }
+
+        var (rx, ry) = (_rock.W * 0.46f, _rock.W * 0.34f);
+        DrawPolyline(Ring(rx * 1.25f, ry * 1.25f, 0, Mathf.Tau), Color.FromHtml("#E4F2EE") with { A = 0.45f }, 1.6f, true);
+        DrawColoredPolygon(Ring(rx, ry, 0, Mathf.Tau), Cel.Ink with { A = 0.18f });
+    }
+
+    /// <summary>溪中石：石根前半圈碎白沫压在石上，像水漫过石脚。</summary>
+    protected override void DrawFront()
+    {
+        if (!InWater) return;
+        var (rx, ry) = (_rock.W * 0.38f, _rock.W * 0.26f);
+        var foam = Color.FromHtml("#EAF6F2");
+        // 镜头在西南（世界 x 东、y 南，西南为 3π/4）：朝镜头的前半圈是 π/4 … 5π/4。
+        DrawPolyline(Ring(rx, ry, Mathf.Pi * 0.25f, Mathf.Pi * 1.25f), foam with { A = 0.85f }, 3.2f, true);
+        DrawPolyline(Ring(rx * 1.12f, ry * 1.12f, Mathf.Pi * 0.5f, Mathf.Pi), foam with { A = 0.55f }, 2f, true);
+    }
+
+    /// <summary>石根一圈（世界平面上以石心为中心的椭圆弧，投到水面高度）。</summary>
+    private Vector2[] Ring(float rx, float ry, float from, float to)
+    {
+        var n = Mathf.Max(6, Mathf.CeilToInt((to - from) / Mathf.Tau * 28));
+        var pts = new Vector2[n + 1];
+        for (var i = 0; i <= n; i++)
+        {
+            var a = from + (to - from) * i / n;
+            pts[i] = TownView.P(Ground + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry), Z);
+        }
+
+        return pts;
+    }
 
     protected override void DrawSprite()
     {
@@ -1440,6 +1499,64 @@ public partial class WildMiniMap : Control
 /// AI 草丛精灵（wild.tuft.grass.1–4、wild.tuft.bush.1，2026-09-26 替换崖沿、岸沿与阶脚的直线草叶和椭圆矮灌占位）：
 /// 按脚底中心与屏幕高度画出，可左右翻转；variant 为 -1 时画矮灌。
 /// </summary>
+/// <summary>
+/// 溪涧南岸（近镜头一侧）：岸边立面背向镜头看不见，在南岸地面贴边铺一窄条沙滩（溪床纹理 wild.ground.streambed，向草坡渐隐），
+/// 水边勾一道淡墨线与白沫，滩外沿错落几丛草。画在南岸地面之后、山道之前。
+/// </summary>
+public partial class WildShore : Node2D
+{
+    private const float Width = 34;
+    private const float Seg = 20;
+    private const int Seed = 41;
+
+    private static readonly (Texture2D Texture, float WorldSize)? SandTexture = PieceArt.FindTexture("wild.ground.streambed");
+
+    private static Vector2 S(float a, float d) => WildLayout.S(a, d, WildSamples.Z0);
+
+    private static float Edge(float a) => WildSamples.StreamSouth(a);
+
+    /// <summary>滩宽随位置起伏，间或收窄到只剩水边一线。</summary>
+    private static float Beach(float a) => Width * Mathf.Clamp(0.55f + 0.6f * Mathf.Sin(a / 170 + 2) + 0.25f * Mathf.Sin(a / 57), 0.15f, 1);
+
+    public override void _Ready()
+    {
+        TextureRepeat = TextureRepeatEnum.Enabled;
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+    }
+
+    public override void _Draw()
+    {
+        var (a0, a1) = (WildLayout.FarA0, WildLayout.FarA1);
+        if (SandTexture is { } tex)
+        {
+            var solid = new Color(0.8f, 0.84f, 0.8f);
+            for (var a = a0; a < a1; a += Seg)
+            {
+                var b = a + Seg;
+                var (da, db) = (Edge(a), Edge(b));
+                var (wa, wb) = (Beach(a), Beach(b));
+                // 按画面坐标 (A, D) 平铺沙纹，滩外沿淡出到草坡。
+                Vector2 Uv(float x, float d) => new Vector2(x, d) / tex.WorldSize;
+                DrawPolygon([S(a, da), S(b, db), S(b, db + wb), S(a, da + wa)],
+                    [solid, solid, solid with { A = 0 }, solid with { A = 0 }],
+                    [Uv(a, da), Uv(b, db), Uv(b, db + wb), Uv(a, da + wa)], tex.Texture);
+            }
+        }
+
+        var edge = new List<Vector2>();
+        for (var a = a0; a <= a1; a += Seg) edge.Add(S(a, Edge(a)));
+        DrawPolyline(edge.ToArray(), Cel.Ink with { A = 0.4f }, 1.8f, true);
+
+        if (!Tufts.Ready) return;
+        for (var a = WildSamples.WalkA0 - 400; a < WildSamples.WalkA1 + 400; a += 30 + 50 * Cel.Rand(Seed, (int)a + 5))
+        {
+            var r = Cel.Rand(Seed, (int)a + 77);
+            if (r < 0.35f || a > WildSamples.BridgeA0 - 60 && a < WildSamples.BridgeA1 + 60) continue;
+            Tufts.Draw(this, S(a, Edge(a) + Beach(a) * 0.8f + 4), 22 + 16 * r, (int)(Cel.Rand(Seed, (int)a + 13) * 4), Cel.Rand(Seed, (int)a + 17) > 0.5f);
+        }
+    }
+}
+
 internal static class Tufts
 {
     private static readonly Texture2D[] Grass = Load("grass", 4);

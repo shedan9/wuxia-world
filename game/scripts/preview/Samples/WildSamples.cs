@@ -89,10 +89,15 @@ public static class WildSamples
     /// <summary>半山与上台之间的崖边。</summary>
     public static float Edge2(float a) => Steps2.D1 + (Mathf.Sin(a / 300 + 2) * 55 + Mathf.Sin(a / 111 + 1) * 20) * Flat(a, Steps2);
 
-    /// <summary>溪涧北岸、南岸（D 值），溪水沿 A 方向自左向右流。</summary>
-    public static float StreamNorth(float a) => 585 + Mathf.Sin(a / 380 + 1) * 35;
+    /// <summary>溪涧北岸、南岸（D 值），溪水沿 A 方向自左向右流。南岸以北约 70 被南岸地面挡住（溪面低 40），可见水面约 110 宽。</summary>
+    public static float StreamNorth(float a) => StreamN.X + StreamN.Y * Mathf.Sin(a / StreamN.Z + StreamN.W);
 
-    public static float StreamSouth(float a) => StreamNorth(a) + 120 + Mathf.Sin(a / 210) * 18;
+    public static float StreamSouth(float a) => StreamNorth(a) + StreamS.X + StreamS.Y * Mathf.Sin(a / StreamS.Z);
+
+    /// <summary>两岸函数的参数（基线、振幅、周期、相位），溪水着色器按同一组参数算离岸远近。</summary>
+    public static readonly Vector4 StreamN = new(525, 35, 380, 1);
+
+    public static readonly Vector3 StreamS = new(180, 18, 210);
 
     /// <summary>木桥：跨溪，A 方向宽 100，桥面高出谷底 8。</summary>
     public const float BridgeA0 = 840;
@@ -110,7 +115,7 @@ public static class WildSamples
     /// </summary>
     public static readonly Vector2[] PathSouth = [new(60, 1000), new(330, 890), new(640, 800), new(890, 770), new(890, 740)];
 
-    public static readonly Vector2[] PathNorth = [new(890, 540), new(900, 470), new(1120, 390), new(1330, 300), new(1390, 262)];
+    public static readonly Vector2[] PathNorth = [new(890, 490), new(900, 440), new(1120, 390), new(1330, 300), new(1390, 262)];
 
     public static readonly Vector2[] PathMid =
         [new(1390, 14), new(1450, -10), new(1720, 30), new(2050, 20), new(2400, -40), new(2650, -170), new(2800, -300), new(2830, -430), new(2830, -500)];

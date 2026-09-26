@@ -50,7 +50,7 @@ public partial class ExploreWildPreview : ExploreStage
 
     protected override (string Region, string Name, string Time) PlaceInfo => ("山门", "山门路　半山", "辰时　·　山雾初散");
 
-    protected override string Caption => "山路布局样板：树石灌丛、茶亭、山门、碑牌、土路、草坡、崖壁与桥面为 AI 出件，石阶为几何贴 AI 纹理；溪水、桥栏与人物仍为占位（M0-03）";
+    protected override string Caption => "山路布局样板：树石灌丛、茶亭、山门、碑牌、土路、草坡、崖壁、溪岸、溪床与桥面为 AI 出件，石阶为几何贴 AI 纹理；桥栏与人物仍为占位（M0-03）";
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (WildSamples.Goal, 360, "山门");
 
@@ -81,6 +81,7 @@ public partial class ExploreWildPreview : ExploreStage
         Ground(5, WildLayout.Band(WildSamples.Edge1, WildSamples.StreamNorth), WildSamples.Z0);
         GroundLayer.AddChild(new WildWall { Edge = WildSamples.StreamNorth, Z0 = WildSamples.WaterZ, Z1 = WildSamples.Z0, Bank = true, LipOnly = true, Seed = 3 });
         Ground(5, WildLayout.Band(WildSamples.StreamSouth, _ => 2400), WildSamples.Z0);
+        GroundLayer.AddChild(new WildShore());
         Path(WildSamples.PathSouth, WildSamples.Z0, 1);
         Path(WildSamples.PathNorth, WildSamples.Z0, 2);
         GroundLayer.AddChild(new WildBridgeNode());
@@ -131,6 +132,13 @@ public partial class ExploreWildPreview : ExploreStage
         else if (kind == 5)
         {
             PieceArt.ApplyGround(material, "wild.ground.meadow", GroundTint.Meadow, 0.3f, 0.1f, 0.5f);
+        }
+        else if (kind == 2)
+        {
+            // 溪水：AI 溪床纹理作水底，着色器按两岸参数算离岸远近（浅水、深水与近岸白沫）。
+            PieceArt.ApplyGround(material, "wild.ground.streambed", Vector3.One, 0.15f, 0.12f, 0.8f);
+            material.SetShaderParameter("stream_n", WildSamples.StreamN);
+            material.SetShaderParameter("stream_s", WildSamples.StreamS);
         }
 
         GroundLayer.AddChild(new Polygon2D { Polygon = frame.Select(p => TownView.P(WildSamples.W(p), z)).ToArray(), Material = material });

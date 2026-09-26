@@ -5,7 +5,9 @@
 // 4 山道土路（夯土、碎石、嵌石）、5 山地草坡（深一阶的青绿、苔斑、小石）。flow 为水流方向（自世界东向起算的弧度）。
 // 正式地面按架构文档 10.3 逐类换成 AI 生成的可平铺纹理（ground_tex，按世界坐标每 tex_world 单位循环一次，见 tools/ArtGen/piece.py）：
 // 石板街（条石错缝格线经 ControlNet 引导）、草地、山道土路、山地草坡已换；积水反光、土路碎石与嵌石仍由本着色器叠加，
-// 河水与南岸泥沙地仍为程序化。平铺纹理另乘一层大尺度明暗（fbm），避免大片地面看出循环。
+// 城镇河水与南岸泥沙地仍为程序化。平铺纹理另乘一层大尺度明暗（fbm），避免大片地面看出循环。
+// 山路溪水（kind 2 且 use_tex）：AI 溪床卵石纹理作水底，按离岸远近叠浅水 / 深水两阶水色，水底随时间微微折射晃动，
+// 水面浪线沿水流漂移、近岸一道碎白沫。离岸距离按 stream_n / stream_s 在着色器里算（与 WildSamples 的两岸函数一致）。
 shader_type canvas_item;
 
 uniform int kind = 0;
@@ -25,6 +27,9 @@ uniform float tex_desat = 0.0;
 uniform float tex_macro = 0.0;
 // contrast < 1 把纹理向自身平均色（最低一级 mipmap）收拢：草叶纹理对比太强时压成赛璐璐式的平缓色块。
 uniform float tex_contrast = 1.0;
+// 溪涧两岸（画面坐标 A 水平、D 远近）：北岸 D = x + y·sin(A / z + w)，南岸 = 北岸 + x + y·sin(A / z)。
+uniform vec4 stream_n = vec4(0.0);
+uniform vec3 stream_s = vec3(0.0);
 
 const vec3 INK = vec3(0.13, 0.19, 0.23);
 
@@ -128,6 +133,47 @@ vec3 water(vec2 w) {
 	return c;
 }
 
+// 溪水：w 为世界坐标（水底纹理，不随水流移动），r 为沿水流旋转后的坐标（水面纹样），dn / ds 为离北岸 / 南岸的距离。
+vec3 creek(vec2 w, vec2 r, float dn, float ds) {
+	float t = TIME;
+	// 南岸地面比溪面高 40，挡住南岸以北约 70（40 / tan30°）：离岸远近按可见的水面算。
+	float shore = min(dn, ds - 69.0);
+	vec2 wobble = vec2(sin(r.y * 0.09 + t * 1.6), sin(r.x * 0.05 - t * 1.2)) * 1.6;
+	vec3 bed = ground_texture(w + wobble);
+	// 水底零星散石：大小不一、形状压扁拉斜，只在少数格子里出现，避免满底规整卵石。
+	vec2 q = w + wobble;
+	vec2 cell = floor(q / 96.0);
+	vec2 f = fract(q / 96.0);
+	float h = hash(cell + 21.0);
+	vec2 o = vec2(hash(cell + 2.3), hash(cell + 7.9)) * 0.5 + 0.25;
+	vec2 dq = f - o;
+	float ang = h * 6.2832;
+	dq = mat2(vec2(cos(ang), sin(ang)), vec2(-sin(ang), cos(ang))) * dq;
+	float rad = 0.08 + 0.14 * hash(cell + 4.4);
+	float rock = step(length(dq * vec2(1.0, 1.6 + h)) + (vnoise(q * 0.25) - 0.5) * 0.05, rad) * step(0.72, h);
+	float n = fbm(vec2(r.x * 0.004 + t * 0.01, r.y * 0.02));
+	// 两阶水色：近岸浅水多透出卵石，中流深一阶，交界按噪声起伏成硬边。
+	float deep = step(24.0 + 22.0 * n, shore);
+	vec3 shallow = mix(bed * vec3(0.8, 0.95, 0.98), vec3(0.30, 0.60, 0.62), 0.62);
+	vec3 channel = mix(bed * vec3(0.6, 0.8, 0.85), vec3(0.18, 0.43, 0.49), 0.85);
+	vec3 c = mix(shallow, channel, deep);
+	// 散石压暗一阶，受光一侧留一道亮边（深水处更淡）。
+	float lit = rock * step(dq.y, -rad * 0.35);
+	c = mix(c, c * vec3(0.66, 0.76, 0.76), rock * (1.0 - 0.45 * deep));
+	c = mix(c, c * 1.18, lit * (1.0 - 0.45 * deep));
+	// 水面：顺流拉长的亮带与细白浪线，随时间向下游漂移。
+	float band = fbm(vec2(r.x * 0.0035 - t * 0.05, r.y * 0.02 + 4.0));
+	c = mix(c, c + vec3(0.10, 0.12, 0.10), step(0.62, band) * 0.8);
+	float wave = vnoise(vec2(r.x * 0.015 - t * 0.45, floor(r.y / 16.0) * 1.7));
+	float line = step(0.8, wave) * step(fract(r.y / 16.0), 0.18);
+	c = mix(c, vec3(0.86, 0.95, 0.93), line * 0.65);
+	// 近岸白沫：贴岸一道，外缘由噪声打碎，随水流闪动。
+	float foam_n = vnoise(vec2(r.x * 0.05 - t * 0.8, r.y * 0.05));
+	float foam = step(shore, 2.0 + 5.0 * foam_n) * step(0.45, foam_n);
+	c = mix(c, vec3(0.90, 0.97, 0.95), foam * 0.8);
+	return clamp(c, 0.0, 1.0);
+}
+
 vec3 sand(vec2 w) {
 	float n = fbm(w * 0.006);
 	vec3 c = mix(vec3(0.72, 0.68, 0.56), vec3(0.78, 0.74, 0.61), step(0.5, n));
@@ -205,7 +251,15 @@ void fragment() {
 		c = flagstone(world);
 	} else if (kind == 2) {
 		vec2 r = vec2(world.x * cos(flow) + world.y * sin(flow), -world.x * sin(flow) + world.y * cos(flow));
-		c = water(r);
+		if (use_tex) {
+			float a = (world.x + world.y) * 0.70710678;
+			float d = (world.y - world.x) * 0.70710678;
+			float north = stream_n.x + stream_n.y * sin(a / stream_n.z + stream_n.w);
+			float south = north + stream_s.x + stream_s.y * sin(a / stream_s.z);
+			c = creek(world, r, d - north, south - d);
+		} else {
+			c = water(r);
+		}
 	} else if (kind == 4) {
 		c = dirt(world);
 	} else if (kind == 5) {

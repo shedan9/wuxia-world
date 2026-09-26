@@ -1,0 +1,109 @@
+{
+  "set": "m0_creek",
+  "tier": "complex",
+  "model": "sdxl",
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66
+  ],
+  "style": {
+    "texture_sdxl": "seamless texture, top-down orthographic view, game asset, semi-realistic, cel shading, clean lineart, soft even daylight",
+    "texture_wall": "seamless texture, orthographic front view, flat framing, game asset, semi-realistic, cel shading, clean lineart, soft daylight from upper left",
+    "negative_water": "text, watermark, perspective, horizon, sky, reflection of trees, fish, boat, people, photo, 3d render, blurry, lowres, vignette, ice, lava, grass field, leaves",
+    "negative_bank": "text, watermark, perspective, horizon, sky, clouds, trees, water surface, people, photo, 3d render, blurry, lowres, bricks, masonry wall, cut stone blocks, man-made, vignette",
+    "negative_bank2": "text, watermark, perspective, horizon, sky, clouds, trees, water surface, people, photo, 3d render, blurry, lowres, bricks, masonry wall, cobblestone, pebble wall, stone wall, rows of stones, man-made, vignette",
+    "negative_bed": "text, watermark, perspective, horizon, sky, fish, boat, people, photo, 3d render, blurry, lowres, vignette, cobblestone, pebbles, pavement, tiles, grid, grass, leaves"
+  },
+  "jobs": [
+    {
+      "name": "k1_bank",
+      "kind": "texture",
+      "world_size": 200,
+      "size": [
+        1536,
+        512
+      ],
+      "style": "texture_wall",
+      "negative_style": "negative_bank",
+      "prompt": "natural creek bank of piled rounded river pebbles and smooth cobbles, grey and pale grey-green stones of mixed sizes, damp darker stones at the bottom, small moss tufts between stones"
+    },
+    {
+      "name": "k2_water",
+      "kind": "texture",
+      "world_size": 320,
+      "style": "texture_sdxl",
+      "negative_style": "negative_water",
+      "prompt": "clear shallow mountain stream water seen from above, teal and jade blue-green water over a bed of rounded pebbles, pebbles faintly visible through water, soft light ripples"
+    },
+    {
+      "name": "k3_water",
+      "kind": "texture",
+      "world_size": 320,
+      "style": "texture_sdxl",
+      "negative_style": "negative_water",
+      "prompt": "stylized clear stream water surface seen from above, flat teal and turquoise color areas, simple light ripple shapes, a few dim pebbles under the water, calm"
+    },
+    {
+      "name": "k4_bank",
+      "kind": "texture",
+      "world_size": 200,
+      "size": [
+        1536,
+        512
+      ],
+      "style": "texture_wall",
+      "negative_style": "negative_bank2",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "natural earthen creek bank cut by water, damp dark olive-brown soil and clay, a few irregular half-buried rocks of very different sizes far apart, hanging roots and moss, wet darker lower edge"
+    },
+    {
+      "name": "k5_bank",
+      "kind": "texture",
+      "world_size": 200,
+      "size": [
+        1536,
+        512
+      ],
+      "style": "texture_wall",
+      "negative_style": "negative_bank2",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "mossy creek bank of dark wet earth and grey-green bedrock, one or two large angular boulders, small gravel patches, tufts of moss, uneven organic shapes"
+    },
+    {
+      "name": "k6_bed",
+      "kind": "texture",
+      "world_size": 320,
+      "style": "texture_sdxl",
+      "negative_style": "negative_bed",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "prompt": "sandy stream bed seen from above, fine pale sand with soft ripple marks and darker silt patches, sparse gravel, a single small stone here and there, muted grey-teal tones"
+    }
+  ]
+}
