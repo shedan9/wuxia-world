@@ -50,7 +50,7 @@ public partial class ExploreWildPreview : ExploreStage
 
     protected override (string Region, string Name, string Time) PlaceInfo => ("山门", "山门路　半山", "辰时　·　山雾初散");
 
-    protected override string Caption => "山路布局样板：树石灌丛、茶亭、山门、碑牌、土路、草坡、崖壁、溪岸、溪床与桥面为 AI 出件，石阶为几何贴 AI 纹理；桥栏与人物仍为占位（M0-03）";
+    protected override string Caption => "山路布局样板：树石灌丛、茶亭、山门、碑牌、土路、草坡、崖壁、溪岸、溪床与桥面为 AI 出件，石阶与桥栏为几何贴 AI 纹理；人物仍为占位（M0-03）";
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (WildSamples.Goal, 360, "山门");
 

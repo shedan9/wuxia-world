@@ -25,7 +25,7 @@ public partial class ExploreTownPreview : ExploreStage
 
     protected override (Vector2 Ground, float Height, string Label)? Goal => (TownSamples.Goal, 120, "旧渡石痕");
 
-    protected override string Caption => "2:1 等距布局样板：房屋、树、杂件、井台、平桥、廊棚屋面、街面、草地与驳岸为 AI 出件，渡口石阶为几何贴 AI 纹理；廊柱与人物仍为占位（M0-03）";
+    protected override string Caption => "2:1 等距布局样板：房屋、树、杂件、井台、平桥、廊棚屋面、街面、草地与驳岸为 AI 出件，石阶、廊柱与坐栏为几何贴 AI 纹理；人物仍为占位（M0-03）";
 
     protected override (Vector2 Hero, Vector2 Lu, float Zoom) Start(string? arrival)
     {

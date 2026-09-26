@@ -1,0 +1,30 @@
+{
+  "set": "m0_wood",
+  "tier": "complex",
+  "model": "sdxl",
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [11, 22, 33, 44, 55, 66],
+  "style": {
+    "texture_wall": "seamless texture, orthographic front view, flat framing, game asset, semi-realistic, cel shading, clean lineart, soft daylight from upper left",
+    "negative_wood": "text, watermark, perspective, horizon, sky, people, photo, 3d render, blurry, lowres, vignette, planks, boards, seams, grid, tiles, nails, knots pattern repeating, carving, ornament, furniture, door, window"
+  },
+  "jobs": [
+    {
+      "name": "w1_lacquer",
+      "kind": "texture",
+      "world_size": 120,
+      "style": "texture_wall",
+      "negative_style": "negative_wood",
+      "prompt": "single surface of old cinnabar red lacquered wood, vertical wood grain faintly showing through the worn lacquer, lacquer slightly faded and chipped in a few places revealing brown wood, muted brick red and dark red tones"
+    },
+    {
+      "name": "w2_weathered",
+      "kind": "texture",
+      "world_size": 160,
+      "style": "texture_wall",
+      "negative_style": "negative_wood",
+      "prompt": "single surface of weathered natural wood, long horizontal wood grain lines, warm grey-brown and umber tones, soft darker streaks, a few small cracks, one continuous piece of timber"
+    }
+  ]
+}

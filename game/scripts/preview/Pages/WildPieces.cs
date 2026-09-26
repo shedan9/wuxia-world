@@ -542,20 +542,45 @@ public partial class WildBridgeNode : TownPiece
 {
     private const float Rail = 12;
 
+    /// <summary>桥栏风化木：比坐栏略偏灰，山里木头更旧。</summary>
+    private static readonly Color RailTone = new(1.02f, 0.96f, 0.88f);
+
     public WildBridgeNode()
     {
         var (a0, a1, d0, d1, z) = (WildSamples.BridgeA0, WildSamples.BridgeA1, WildSamples.BridgeD0, WildSamples.BridgeD1, WildSamples.BridgeZ);
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+        TextureRepeat = TextureRepeatEnum.Enabled;
         Faces.AddRange(Solid.ExtrudeZ(Quad(a0 + Rail, a1 - Rail, d0, d1), z - 10, z, Cel.Wood, Cel.WoodLight, 1.6f));
+        // 桥栏：两侧边梁 + 圆木立柱 + 圆木扶手（风化木纹顺构件走）；D 方向在屏幕上是竖直的，桥栏只在桥面左右，
+        // 与桥上行人没有前后遮挡，仍随桥画在地面层。桥栏所在竖直面恰好侧对镜头，立柱与扶手叠在同一条竖线上，扶手压低、柱头冒出扶手少许，免得看成两根竖杆。
+        var timber = PieceArt.FindTexture("town.wood.weathered");
+        List<Face> Wood(List<Face> faces, Color tone, float outline = 1.4f) =>
+            timber is { } t ? FaceTexture.Apply(faces, t.Texture, t.WorldSize, tone, outline, 0.12f) : faces;
+        var rails = new List<Face>();
         foreach (var (r0, r1) in new[] { (a0, a0 + Rail), (a1 - Rail, a1) })
         {
-            Faces.AddRange(Solid.ExtrudeZ(Quad(r0, r1, d0 - 8, d1 + 8), z - 12, z + 16, Cel.WoodDark, Cel.Wood, 1.4f));
+            rails.AddRange(Wood(Solid.ExtrudeZ(Quad(r0, r1, d0 - 8, d1 + 8), z - 12, z + 6, Cel.WoodDark, Cel.Wood, 1.4f), RailTone.Darkened(0.15f)));
+            var ra = (r0 + r1) / 2;
+            var posts = new List<Face>();
+            for (var i = 0; i < 4; i++)
+            {
+                var d = Mathf.Lerp(d0 + 2, d1 + 2, i / 3f);
+                var foot = WildSamples.W(ra, d);
+                posts.AddRange(Solid.Prism(new Vector3(foot.X, foot.Y, z + 6), new Vector3(foot.X, foot.Y, z + 42), 5.5f, 6, Cel.Wood, 1.2f, alongU: true));
+            }
+
+            Solid.Sort(posts);
+            rails.AddRange(Wood(posts, RailTone));
+            var (h0, h1) = (WildSamples.W(ra, d0 - 4), WildSamples.W(ra, d1 + 8));
+            rails.AddRange(Wood(Solid.Prism(new Vector3(h0.X, h0.Y, z + 32), new Vector3(h1.X, h1.Y, z + 32), 4.5f, 6, Cel.Wood, 1.2f, alongU: true), RailTone));
         }
 
-        // 桥面木板：AI 木板纹理（wild.ground.planks，板缝沿 A 向、每 22 一块）在桥面内平铺，栏杆仍为程序化圆木。
+        Faces.AddRange(rails);
+
+        // 桥面木板：AI 木板纹理（wild.ground.planks，板缝沿 A 向、每 22 一块）在桥面内平铺。
         if (PieceArt.FindTexture("wild.ground.planks") is { } planks)
         {
             _planks = true;
-            TextureFilter = TextureFilterEnum.LinearWithMipmaps;
             var (u, v) = (WildSamples.W(1, 0) - WildSamples.W(0, 0), WildSamples.W(0, 1) - WildSamples.W(0, 0));
             var o = WildSamples.W(a0 + Rail, d0);
             var size = new Vector2(a1 - a0 - 2 * Rail, d1 - d0);

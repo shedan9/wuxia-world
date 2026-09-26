@@ -686,28 +686,56 @@ public partial class TownCorridorPart : TownPiece
         roof.UseArt("town.corridor.roof");
         yield return roof;
 
+        var lacquer = PieceArt.FindTexture("town.wood.lacquer");
+        var timber = PieceArt.FindTexture("town.wood.weathered");
         for (var x = x0; x <= x1 + 1; x += bay)
         {
             foreach (var y in new[] { y0, y1 })
             {
-                var pillar = new TownCorridorPart { Occluder = false };
-                pillar.Faces.AddRange(Solid.Box(new Vector3(x - 14, y - 14, 0), new Vector3(x + 14, y + 14, 12), Cel.Stone, 1.4f));
-                pillar.Faces.AddRange(Solid.Box(new Vector3(x - 9, y - 9, 12), new Vector3(x + 9, y + 9, eaveZ - 8), Cel.Wood, 1.6f));
-                pillar.Seal(new Rect2(x - 14, y - 14, 28, 28));
+                // 廊柱：两级八角石础 + 八角圆柱（朱漆木纹，竖纹顺柱身）。
+                var pillar = new TownCorridorPart { Occluder = false, TextureFilter = TextureFilterEnum.LinearWithMipmaps, TextureRepeat = TextureRepeatEnum.Enabled };
+                pillar.Faces.AddRange(Solid.Prism(new Vector3(x, y, 0), new Vector3(x, y, 6), 16, 8, Cel.Stone, 1.4f, phase: Mathf.Pi / 8));
+                pillar.Faces.AddRange(Solid.Prism(new Vector3(x, y, 6), new Vector3(x, y, 14), 12.5f, 8, Cel.StoneLight, 1.4f, phase: Mathf.Pi / 8));
+                var shaft = Solid.Prism(new Vector3(x, y, 14), new Vector3(x, y, eaveZ - 8), 9.5f, 8, Lacquer, 1.6f, phase: Mathf.Pi / 8);
+                pillar.Faces.AddRange(lacquer is { } l ? FaceTexture.Apply(shaft, l.Texture, l.WorldSize, LacquerTone, 1.6f, 0) : shaft);
+                pillar.Seal(new Rect2(x - 16, y - 16, 32, 32));
                 yield return pillar;
             }
 
-            // 河沿一侧的坐栏（美人靠），每三间留一个口下到河边。
+            // 河沿一侧的坐栏（美人靠），每三间留一个口下到河边：坐板下是裙板，靠背向河面外倾，由一排细弯靠条与扶手横木组成。
             if (x + bay <= x1 + 1 && Mathf.PosMod(Mathf.RoundToInt((x - x0) / bay), 3) != 1)
             {
-                var bench = new TownCorridorPart { Occluder = false };
-                bench.Faces.AddRange(Solid.Box(new Vector3(x + 10, y1 - 30, 40), new Vector3(x + bay - 10, y1 - 4, 50), Cel.WoodLight, 1.4f));
-                bench.Faces.AddRange(Solid.Box(new Vector3(x + 10, y1 - 8, 50), new Vector3(x + bay - 10, y1 + 4, 88), Cel.Wood, 1.4f));
-                bench.Seal(new Rect2(x + 10, y1 - 30, bay - 20, 34));
+                var bench = new TownCorridorPart { Occluder = false, TextureFilter = TextureFilterEnum.LinearWithMipmaps, TextureRepeat = TextureRepeatEnum.Enabled };
+                var (b0, b1) = (x + 12, x + bay - 12);
+                List<Face> Wood(List<Face> faces, Color tone, float outline = 1.3f) =>
+                    timber is { } t ? FaceTexture.Apply(faces, t.Texture, t.WorldSize, tone, outline, 0.12f) : faces;
+                bench.Faces.AddRange(Wood(Solid.Box(new Vector3(b0 + 2, y1 - 8, 8), new Vector3(b1 - 2, y1 - 2, 42), Cel.WoodDark, 1.3f), BenchTone.Darkened(0.25f)));
+                bench.Faces.AddRange(Wood(Solid.Box(new Vector3(b0, y1 - 32, 42), new Vector3(b1, y1 + 2, 50), Cel.WoodLight, 1.3f), BenchTone));
+                var slats = new List<Face>();
+                for (var sx = b0 + 9; sx < b1 - 5; sx += 17)
+                {
+                    // 靠条两段：自坐板外沿先外倾，上段再略收，形如鹅颈。
+                    slats.AddRange(Solid.Prism(new Vector3(sx, y1 - 1, 50), new Vector3(sx, y1 + 13, 76), 2.4f, 4, Cel.Wood, 0, phase: Mathf.Pi / 4));
+                    slats.AddRange(Solid.Prism(new Vector3(sx, y1 + 13, 76), new Vector3(sx, y1 + 17, 94), 2.4f, 4, Cel.Wood, 0, phase: Mathf.Pi / 4));
+                }
+
+                Solid.Sort(slats);
+                // 靠条细，描边会把整根吃成墨色，不描边。
+                bench.Faces.AddRange(Wood(slats, BenchTone.Darkened(0.3f), 0));
+                bench.Faces.AddRange(Wood(Solid.Prism(new Vector3(b0 - 4, y1 + 17, 96), new Vector3(b1 + 4, y1 + 17, 96), 3.6f, 6, Cel.Wood, 1.3f, alongU: true), BenchTone));
+                bench.Seal(new Rect2(b0 - 4, y1 - 32, b1 - b0 + 8, 54));
                 yield return bench;
             }
         }
     }
+
+    /// <summary>朱漆廊柱：底色为旧朱漆，AI 漆木纹理只以低不透明度叠在上面，留一点竖纹与斑驳（整张贴上去纹理对比太强，像蛇皮）。</summary>
+    private static readonly Color Lacquer = Color.FromHtml("#8E3F31");
+
+    private static readonly Color LacquerTone = new(0.9f, 0.6f, 0.55f, 0.35f);
+
+    /// <summary>坐栏风化木：灰褐木纹略偏暖。</summary>
+    private static readonly Color BenchTone = new(1.08f, 0.98f, 0.88f);
 
     /// <summary>贴上 AI 屋面后灯笼仍由引擎挂在檐下（引导图不含灯笼，导出时屋面件无贴图照常画出）。</summary>
     public override void _Draw()

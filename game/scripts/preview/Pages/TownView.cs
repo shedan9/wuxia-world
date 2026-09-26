@@ -240,6 +240,38 @@ public static class Solid
     }
 
     /// <summary>远的先画。</summary>
+    /// <summary>
+    /// 两点之间的正多棱柱（圆木、圆柱、栏杆立柱）：侧面 + 两端截面。alongU 为真时侧面局部 x 沿轴向（贴横纹木纹时顺着构件走），
+    /// 否则局部 x 绕周向、y 沿轴向（竖纹）。phase 为棱角起始转角（弧度）。
+    /// </summary>
+    public static List<Face> Prism(Vector3 a, Vector3 b, float radius, int sides, Color color, float outline = 1.4f, bool alongU = false, float phase = 0)
+    {
+        var axis = (b - a).Normalized();
+        var side = Mathf.Abs(axis.Z) > 0.9f ? Vector3.Right : new Vector3(-axis.Y, axis.X, 0).Normalized();
+
+        var up = axis.Cross(side).Normalized();
+        var ring = new Vector3[sides];
+        for (var i = 0; i < sides; i++)
+        {
+            var t = phase + Mathf.Tau * i / sides;
+            ring[i] = (side * Mathf.Cos(t) + up * Mathf.Sin(t)) * radius;
+        }
+
+        var faces = new List<Face>();
+        for (var i = 0; i < sides; i++)
+        {
+            var (r0, r1) = (ring[i], ring[(i + 1) % sides]);
+            var n = (r0 + r1).Normalized();
+            Vector3[] pts = alongU ? [a + r0, b + r0, b + r1, a + r1] : [a + r0, a + r1, b + r1, b + r0];
+            faces.Add(new Face { Points = pts, Normal = n, Color = color, Outline = outline });
+        }
+
+        Sort(faces);
+        faces.Add(new Face { Points = ring.Select(r => a + r).Reverse().ToArray(), Normal = -axis, Color = color, Outline = outline });
+        faces.Add(new Face { Points = ring.Select(r => b + r).ToArray(), Normal = axis, Color = color, Outline = outline });
+        return faces;
+    }
+
     public static void Sort(List<Face> faces) => faces.Sort((a, b) => TownView.Depth(a.Center).CompareTo(TownView.Depth(b.Center)));
 
     private static Vector2[] Ccw(Vector2[] p)
