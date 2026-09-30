@@ -84,7 +84,8 @@ public partial class Backdrop : Control
         }
     }
 
-    private static CpuParticles2D LeafFall(int amount, float alpha, float mood)
+    /// <summary>飘落柳叶粒子；战斗页 AI 布景（BattleBackdrop）也叠用。</summary>
+    internal static CpuParticles2D LeafFall(int amount, float alpha, float mood)
     {
         var particles = new CpuParticles2D
         {

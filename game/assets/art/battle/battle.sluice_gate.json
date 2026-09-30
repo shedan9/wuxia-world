@@ -1,0 +1,10 @@
+{
+  "id": "battle.sluice_gate",
+  "foot": [
+    468.5,
+    1017.0
+  ],
+  "stature": 1013.0,
+  "source": "art_source/ai/battle/battle.sluice_gate.png",
+  "sha256": "95b7962f4e5290f0046d865f24138e32b2e3647716850bc7d1fed852bcac2e3e"
+}

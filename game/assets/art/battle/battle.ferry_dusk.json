@@ -1,0 +1,10 @@
+{
+  "id": "battle.ferry_dusk",
+  "size": [
+    1920,
+    1080
+  ],
+  "waterline": 578.0,
+  "source": "art_source/ai/battle/battle.ferry_dusk.png",
+  "sha256": "f7cbbefbacc8113db3a53b46876539344554a11234739fdfc79e9406def8a25b"
+}

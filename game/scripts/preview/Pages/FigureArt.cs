@@ -8,6 +8,8 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 所有人物由 tools/ArtGen/figure.py 按同一副骨架生成、四分之三侧身朝画面左侧；json 记脚底中点 foot（像素）与身高 stature（头顶到脚底的像素数），
 /// 引擎按“屏幕身高 ÷ stature”缩放、脚底对齐地面，朝右时水平翻转（第一阶段允许，正式 4 / 8 向形象见 M1 起）。
 /// 探索与战斗共用同一张图，保证两处形象一致；没有对应文件时调用方继续画程序化占位。入库由 tools/ArtGen/place.py --figure 完成。
+/// 战斗道具（<c>battle.&lt;道具&gt;</c>，如水门机关）用同一格式：foot 为底边中点、stature 为整高，入库由 place.py --prop 完成，
+/// 文件按 id 前缀放在 <c>assets/art/&lt;前缀&gt;/</c>。
 /// </summary>
 public sealed class FigureArt
 {
@@ -40,7 +42,7 @@ public sealed class FigureArt
             return cached;
         }
 
-        var basePath = $"res://assets/art/figure/{id}";
+        var basePath = $"res://assets/art/{id.Split('.', 2)[0]}/{id}";
         FigureArt? art = null;
         if (ResourceLoader.Exists($"{basePath}.png") && Godot.FileAccess.FileExists($"{basePath}.json"))
         {

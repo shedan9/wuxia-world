@@ -1,0 +1,69 @@
+{
+  "set": "m0_battle_props",
+  "tier": "complex",
+  "model": "sdxl",
+  "guides": "out/guides/battle",
+  "pixels": 1150000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "strength": 0.72,
+  "control": 0.7,
+  "control_end": 0.7,
+  "canny": [60, 160],
+  "seeds": [11, 22, 33, 44, 55, 66],
+  "style": {
+    "prop": "no humans, front view, game asset, grey background, semi-realistic, cel shading, detailed texture, weathered, warm evening light",
+    "negative": "text, chinese characters, watermark, people, sky, clouds, ground, water, scenery background, perspective, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture, torii, european, metal machinery, gears"
+  },
+  "props": [
+    {
+      "id": "battle.sluice_gate",
+      "size": [900, 1000],
+      "shapes": [
+        {"poly": [[50, 152], [850, 152], [806, 96], [94, 96]], "fill": "#2B3039"},
+        {"poly": [[40, 160], [90, 150], [60, 128]], "fill": "#2B3039"},
+        {"poly": [[860, 160], [810, 150], [840, 128]], "fill": "#2B3039"},
+        {"rect": [90, 150, 810, 205], "fill": "#6B4B33"},
+        {"rect": [130, 205, 220, 960], "fill": "#8C8A84"},
+        {"rect": [680, 205, 770, 960], "fill": "#8C8A84"},
+        {"rect": [220, 470, 680, 960], "fill": "#6E4E35"},
+        {"line": [[288, 470], [288, 960]], "fill": "#4B3322", "width": 5, "detail": true},
+        {"line": [[356, 470], [356, 960]], "fill": "#4B3322", "width": 5, "detail": true},
+        {"line": [[424, 470], [424, 960]], "fill": "#4B3322", "width": 5, "detail": true},
+        {"line": [[492, 470], [492, 960]], "fill": "#4B3322", "width": 5, "detail": true},
+        {"line": [[560, 470], [560, 960]], "fill": "#4B3322", "width": 5, "detail": true},
+        {"line": [[628, 470], [628, 960]], "fill": "#4B3322", "width": 5, "detail": true},
+        {"rect": [220, 540, 680, 562], "fill": "#3A3A3A"},
+        {"rect": [220, 860, 680, 882], "fill": "#3A3A3A"},
+        {"rect": [240, 236, 660, 286], "fill": "#7A5638"},
+        {"line": [[380, 286], [380, 470]], "fill": "#3A3A3A", "width": 9},
+        {"line": [[520, 286], [520, 470]], "fill": "#3A3A3A", "width": 9},
+        {"circle": [270, 261], "r": 72, "outline": "#5A3D28", "width": 14},
+        {"line": [[198, 261], [342, 261]], "fill": "#5A3D28", "width": 9},
+        {"line": [[270, 189], [270, 333]], "fill": "#5A3D28", "width": 9},
+        {"line": [[219, 210], [321, 312]], "fill": "#5A3D28", "width": 9},
+        {"line": [[219, 312], [321, 210]], "fill": "#5A3D28", "width": 9},
+        {"rect": [96, 956, 804, 992], "fill": "#77736B"}
+      ]
+    }
+  ],
+  "jobs": [
+    {
+      "name": "a_sluice",
+      "piece": "battle.sluice_gate",
+      "style": "prop",
+      "prompt": "chinese wooden sluice gate, granite posts, wooden crossbeam, small black tile roof, windlass with spoked wheel, iron chains, plank gate with iron bands, moss"
+    },
+    {
+      "name": "b_sluice_txt",
+      "piece": "battle.sluice_gate",
+      "style": "prop",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.75,
+      "control_end": 0.65,
+      "prompt": "chinese wooden sluice gate, granite posts, wooden crossbeam, small black tile roof, windlass with spoked wheel, iron chains, plank gate with iron bands, moss"
+    }
+  ]
+}

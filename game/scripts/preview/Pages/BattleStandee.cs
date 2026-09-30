@@ -4,7 +4,7 @@ using WuxiaWorld.Game.Presentation;
 namespace WuxiaWorld.Game.Preview.Pages;
 
 /// <summary>
-/// 战斗形象：有 AI 全身形象（<see cref="FigureArt"/>，与探索共用同一张）时贴图，否则画纸影剪影（头、肩、衣摆）；机关画方框。带地面投影。
+/// 战斗形象：有 AI 全身形象（<see cref="FigureArt"/>，与探索共用同一张）时贴图，否则画纸影剪影（头、肩、衣摆）；机关有 AI 道具图时贴图，否则画方框。带地面投影。
 /// 第一阶段只有静态站姿与迎敌架势，用于核对站位、比例与界面层级；正式战斗骨骼动作见架构文档 10.2，不以立绘平移代替。
 /// </summary>
 public partial class BattleStandee : Control
@@ -35,6 +35,13 @@ public partial class BattleStandee : Control
         DrawSetTransform(new Vector2(cx, h - 4), 0, new Vector2(1, 0.22f));
         DrawCircle(Vector2.Zero, w * 0.52f, shadow);
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+
+        if (Mechanism && ArtId is not null && FigureArt.Find(ArtId) is { } prop)
+        {
+            // 机关道具（place.py --prop）：底边落地、整高即立像高度，压暗一阶融进黄昏。
+            prop.Draw(this, new Vector2(cx, h - 4), h, FacingLeft ? -1 : 1, modulate: new Color(0.8f, 0.8f, 0.86f));
+            return;
+        }
 
         if (!Mechanism && ArtId is not null && FigureArt.Find(ArtId) is { } art)
         {

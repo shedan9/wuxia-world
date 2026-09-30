@@ -15,6 +15,10 @@
 --figure：全身人物（figure.py 的输出，id 形如 figure.hero）：按不透明外框裁边、缩放到身高 --stature 像素（默认 800，
 战斗 1080p 下约 2 倍源图），json 记脚底中点 foot 与身高 stature，引擎按它们对齐地面与缩放（FigureArt.cs）；
 --top 给出头顶的 y（原图像素），长篙、刀尖高出头顶时用它代替外框顶边算身高。
+--backdrop 远岸水线 y：整张布景（backdrop.py 的输出，id 形如 battle.ferry_dusk）原样入库，json 记远岸水线在图中的 y，
+引擎把它对齐到版式规定的高度，水线以下由引擎画近景地面（BattleBackdrop.cs）。
+--prop：战斗道具（prop_guide.py 引导出件，id 形如 battle.sluice_gate）：按不透明外框裁边，json 记底边中点 foot 与整高 stature，
+与全身人物同一格式，引擎用 FigureArt 按底边对齐站位（BattleStandee 的机关）。
 """
 
 from __future__ import annotations
@@ -48,6 +52,8 @@ def main() -> int:
     parser.add_argument("--figure", action="store_true", help="全身人物：裁边、缩放到统一身高，记脚底与身高")
     parser.add_argument("--stature", type=int, default=800, help="--figure：头顶到脚底的输出像素")
     parser.add_argument("--top", type=int, help="--figure：头顶 y（原图像素），默认取外框顶边")
+    parser.add_argument("--prop", action="store_true", help="战斗道具：裁边，记底边中点与整高（FigureArt 格式）")
+    parser.add_argument("--backdrop", type=float, metavar="WATERLINE", help="整张布景：原样入库，记远岸水线 y（原图像素）")
     parser.add_argument("--regrade", help="按引导图分区调色 light,chroma（如 0.7,1.0）：保留材质细节，把各色块区的平均色拉回布局配色（regrade.py）")
     args = parser.parse_args()
 
@@ -136,6 +142,10 @@ def main() -> int:
 
     if args.figure:
         return place_figure(args, src, record, art_dir, game_dir)
+    if args.backdrop is not None:
+        return place_backdrop(args, src, record, art_dir, game_dir)
+    if args.prop:
+        return place_prop(args, src, record, art_dir, game_dir)
 
     outputs = {args.id: src}
     if args.parts:
@@ -157,6 +167,49 @@ def main() -> int:
             json.dumps({**record, "placed_as": game_id, "placed_sha256": placed["sha256"]}, ensure_ascii=False, indent=2), encoding="utf-8"
         )
         print(f"{game_id}  ←  {path.name}  sha256 {placed['sha256'][:8]}…")
+    return 0
+
+
+def place_prop(args, src: Path, record: dict, art_dir: Path, game_dir: Path) -> int:
+    import numpy as np
+    from PIL import Image
+
+    image = Image.open(src).convert("RGBA")
+    ys, xs = np.nonzero(np.asarray(image.getchannel("A")) > 16)
+    pad = 4
+    box = (max(0, int(xs.min()) - pad), max(0, int(ys.min()) - pad), min(image.width, int(xs.max()) + pad + 1), min(image.height, int(ys.max()) + pad + 1))
+    out = image.crop(box)
+    path = art_dir / f"{args.id}.png"
+    out.save(path, optimize=True)
+    shutil.copyfile(path, game_dir / f"{args.id}.png")
+    foot = [round(out.width / 2, 1), float(int(ys.max()) - box[1])]
+    stature = float(int(ys.max()) - int(ys.min()))
+    placed = {"id": args.id, "foot": foot, "stature": stature, "source": f"art_source/ai/{args.id.split('.', 1)[0]}/{args.id}.png", "sha256": sha(path)}
+    (game_dir / f"{args.id}.json").write_text(json.dumps(placed, ensure_ascii=False, indent=2), encoding="utf-8")
+    (art_dir / f"{args.id}.json").write_text(
+        json.dumps({**record, "prop": {"crop": list(box), "foot": foot, "stature": stature}, "placed_as": args.id, "placed_sha256": placed["sha256"]},
+                   ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"{args.id}  ←  {src.name}  {out.width}×{out.height}  foot {foot}  sha256 {placed['sha256'][:8]}…")
+    return 0
+
+
+def place_backdrop(args, src: Path, record: dict, art_dir: Path, game_dir: Path) -> int:
+    from PIL import Image
+
+    size = Image.open(src).size
+    path = art_dir / f"{args.id}.png"
+    shutil.copyfile(src, path)
+    shutil.copyfile(src, game_dir / f"{args.id}.png")
+    placed = {"id": args.id, "size": list(size), "waterline": args.backdrop, "source": f"art_source/ai/{args.id.split('.', 1)[0]}/{args.id}.png",
+              "sha256": sha(path)}
+    (game_dir / f"{args.id}.json").write_text(json.dumps(placed, ensure_ascii=False, indent=2), encoding="utf-8")
+    (art_dir / f"{args.id}.json").write_text(
+        json.dumps({**record, "waterline": args.backdrop, "placed_as": args.id, "placed_sha256": placed["sha256"]}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    print(f"{args.id}  ←  {src.name}  {size[0]}×{size[1]}  waterline {args.backdrop}  sha256 {placed['sha256'][:8]}…")
     return 0
 
 

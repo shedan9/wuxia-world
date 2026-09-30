@@ -1,0 +1,100 @@
+{
+  "set": "m0_battle_backdrop",
+  "tier": "complex",
+  "model": "sdxl",
+  "size": [1360, 768],
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [11, 22, 33, 44, 55, 66, 77, 88, 99, 111, 222, 333],
+  "canny": [30, 90],
+  "noise": 10,
+  "refine": {"strength": 0.3, "steps": 30},
+  "style": {
+    "backdrop": "game battle background, side view, wide shot, no humans, semi-realistic, cel shading, clean lineart, painterly, detailed texture, rich detail, masterpiece, high score, absurdres",
+    "negative": "text, chinese characters, watermark, signature, people, person, character, crowd, japanese architecture, torii, european, castle, battlements, street lamp, blurry, lowres, photo, 3d render, ink wash, sepia, frame, border, flat color, vector art, minimalist",
+    "scenery": "anime background art, scenery, no humans, game background, painterly, semi-realistic, highly detailed, soft light, masterpiece, best quality"
+  },
+  "sketch": [
+    {"vgrad": [0, 0, 1920, 360], "from": "#34436C", "to": "#E7A967"},
+    {"ellipse": [640, 200, 760, 320], "fill": "#F6CF8E"},
+    {
+      "poly": [
+        [0, 330],
+        [120, 290],
+        [260, 305],
+        [420, 250],
+        [560, 300],
+        [700, 285],
+        [860, 240],
+        [1020, 290],
+        [1200, 270],
+        [1380, 230],
+        [1560, 280],
+        [1720, 250],
+        [1920, 290],
+        [1920, 360],
+        [0, 360]
+      ],
+      "fill": "#6E8894"
+    },
+    {
+      "poly": [
+        [0, 350],
+        [180, 320],
+        [340, 335],
+        [520, 310],
+        [700, 340],
+        [900, 315],
+        [1100, 340],
+        [1320, 320],
+        [1520, 345],
+        [1740, 318],
+        [1920, 335],
+        [1920, 380],
+        [0, 380]
+      ],
+      "fill": "#4F6E70"
+    },
+    {"rect": [0, 362, 1920, 388], "fill": "#3E5652"},
+    {"rect": [40, 332, 150, 372], "fill": "#D8D0BE"},
+    {"poly": [[30, 336], [160, 336], [140, 318], [50, 318]], "fill": "#2C3139"},
+    {"rect": [170, 340, 300, 374], "fill": "#D8D0BE"},
+    {"poly": [[160, 344], [310, 344], [290, 326], [180, 326]], "fill": "#2C3139"},
+    {"rect": [330, 346, 420, 376], "fill": "#CFC6B2"},
+    {"poly": [[322, 350], [428, 350], [412, 334], [338, 334]], "fill": "#2C3139"},
+    {"rect": [1700, 340, 1810, 374], "fill": "#D8D0BE"},
+    {"poly": [[1690, 344], [1820, 344], [1800, 326], [1710, 326]], "fill": "#2C3139"},
+    {"rect": [1830, 336, 1920, 372], "fill": "#CFC6B2"},
+    {"poly": [[1822, 340], [1920, 340], [1920, 322], [1840, 322]], "fill": "#2C3139"},
+    {"vgrad": [0, 386, 1920, 486], "from": "#C79A70", "to": "#5E7886"},
+    {"rect": [1175, 190, 1270, 492], "fill": "#8C8982"},
+    {"rect": [1545, 190, 1640, 492], "fill": "#8C8982"},
+    {"rect": [1150, 172, 1665, 228], "fill": "#77736B"},
+    {"poly": [[1128, 178], [1688, 178], [1648, 132], [1168, 132]], "fill": "#2B3039"},
+    {"rect": [1270, 270, 1545, 480], "fill": "#6B4B33"},
+    {"line": [[1270, 310], [1545, 310]], "fill": "#4B3322", "width": 6},
+    {"line": [[1270, 352], [1545, 352]], "fill": "#4B3322", "width": 6},
+    {"line": [[1270, 394], [1545, 394]], "fill": "#4B3322", "width": 6},
+    {"line": [[1270, 436], [1545, 436]], "fill": "#4B3322", "width": 6},
+    {"line": [[1300, 228], [1300, 270]], "fill": "#3A3A3A", "width": 8},
+    {"line": [[1515, 228], [1515, 270]], "fill": "#3A3A3A", "width": 8},
+    {"poly": [[330, 452], [830, 452], [790, 500], [380, 500]], "fill": "#5A4030"},
+    {"ellipse": [430, 398, 710, 470], "fill": "#2F3035"},
+    {"line": [[800, 470], [900, 505]], "fill": "#3A3A3A", "width": 5},
+    {"line": [[160, 540], [175, 380], [205, 200], [230, 60]], "fill": "#4A3A2C", "width": 30},
+    {"ellipse": [-120, -60, 460, 400], "fill": "#577F52"},
+    {"line": [[20, 200], [10, 470]], "fill": "#577F52", "width": 18},
+    {"line": [[100, 250], [90, 520]], "fill": "#577F52", "width": 18},
+    {"line": [[300, 240], [320, 500]], "fill": "#577F52", "width": 18},
+    {"line": [[400, 200], [430, 430]], "fill": "#577F52", "width": 16},
+    {"vgrad": [0, 486, 1920, 1080], "from": "#6A8290", "to": "#3E5664"}
+  ],
+  "jobs": [
+    {
+      "name": "m_far",
+      "mode": "txt2img",
+      "style": "scenery",
+      "prompt": "distant view across a wide calm river at dusk, jiangnan water town on the far bank, white walls and black tile roofs, old stone water gate with wooden sluice boards on the far bank, weeping willows, small moored wooden boats with black awnings near the far bank, distant blue-green mountains, amber glow at the horizon, deep indigo upper sky, soft clouds, horizon in the middle of the image, open water in the foreground reflecting the sky"
+    }
+  ]
+}

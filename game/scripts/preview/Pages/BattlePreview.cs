@@ -35,7 +35,7 @@ public partial class BattlePreview : Control
     public override void _Ready()
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        AddChild(new Backdrop { Mood = 1, SunX = 0.8f, Defocus = 0.3f, Veil = 0.08f, Leaves = 14 });
+        AddChild(new BattleBackdrop { ArtId = "battle.ferry_dusk" });
 
         _field = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _field.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
@@ -111,10 +111,11 @@ public partial class BattlePreview : Control
         return new Vector2(x + u.Slot * (u.Side == SampleSide.Ally ? -70 : 70), GroundY + u.Slot * 72);
     }
 
-    /// <summary>单位 id → AI 全身形象 id：主角与陆青禾用探索同一张，两名押运打手共用一张。</summary>
+    /// <summary>单位 id → AI 形象 id：主角与陆青禾用探索同一张，两名押运打手共用一张，水门机关为战斗道具图。</summary>
     private static string FigureId(string unitId) => unitId switch
     {
         "enemy.escort_a" or "enemy.escort_b" => "figure.escort",
+        "enemy.sluice_gate" => "battle.sluice_gate",
         _ => "figure." + unitId.Split('.', 2)[1],
     };
 
@@ -396,7 +397,7 @@ public partial class BattlePreview : Control
     {
         var tag = Ui.Panel(UiTheme.GlassPanel, Ui.Column(2,
             Ui.Text("旧渡水门　·　剧情战", UiTheme.DarkLabel, 20),
-            Ui.Text("战斗形象为 AI 静态样稿；布景与动作待制作", UiTheme.DarkMutedLabel, 15)));
+            Ui.Text("布景与战斗形象为 AI 静态样稿；动作待制作", UiTheme.DarkMutedLabel, 15)));
         return Ui.Place(tag, 0, 0, 40, 30, 420, 110);
     }
 

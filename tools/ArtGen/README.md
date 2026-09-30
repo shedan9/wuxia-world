@@ -151,6 +151,23 @@ cd tools/ArtGen
 - 不写朝代词时店小二、主角出现棒球帽、运动鞋和 T 恤；风格加 `ancient china, wuxia`，负面词加 `sneakers, baseball cap, t-shirt`。
 - `light tan skin` 会画成深肤色；陆青禾按已认可立绘改为 `fair skin`。模型常在脚下自带投影，负面词加 `cast shadow, floor shadow`。
 
+
+## 战斗布景与道具（2026-09-30）
+
+```powershell
+cd tools/ArtGen
+.venv/Scripts/python backdrop.py jobs/m0_battle_backdrop.json --preview     # 只出色块草图与边线
+.venv/Scripts/python backdrop.py jobs/m0_battle_backdrop.json               # 生成 → out/m0_battle_backdrop/
+.venv/Scripts/python place.py out/m0_battle_backdrop/m_far_99.png battle.ferry_dusk --backdrop 578   # 578 = 远岸水线 y
+.venv/Scripts/python prop_guide.py jobs/m0_battle_props.json                # 道具引导图 → out/guides/battle/
+.venv/Scripts/python piece.py jobs/m0_battle_props.json --only b_
+.venv/Scripts/python place.py out/m0_battle_props/b_sluice_txt_66.png battle.sluice_gate --regrade 0.7,1.0 --prop
+```
+
+- `backdrop.py` 整张生成不需要行走的布景：任务文件的 `sketch` 按 1920×1080 设计坐标画色块草图，`mode` 取 `txt2img` / `img2img` / `canny` / `img2img_canny`；生成 1360×768，放大到 1920×1088 以 strength 0.3 补细节后裁回 1080。提示词分段编码（`figure.encode_long`），不会被 77 token 截断。
+- 四轮对比的结论：前景带大片地面的侧视整图，SDXL 会把地面画成水面或立墙；色块草图图生图（0.8–0.96）和草图边线引导都照搬平涂成矢量风；`cel shading, clean lineart` 会把 SDXL base 推向平涂。因此 AI 只画远景（风格词 `anime background art, scenery, painterly, semi-realistic`，文生图，多种子按构图挑选），水线以下的码头由引擎按透视铺石板纹理（架构文档 10.3“战斗布景”）。
+- 道具不经 Godot 布局：`prop_guide.py` 按任务文件 `props` 的色块坐标画正立面引导图（`detail` 色块不进结构图）。与客栈内墙相同，图生图 0.72 照描平涂，文生图材质好但配色跑偏，入库时 `--regrade` 调回。
+
 ## 局部重绘
 
 `inpaint.py` 读取 `jobs/*_fix.json`，对一张已生成的图依次做：`erase`（用周围纸色逐层填平旧物件）、`paint` / `tint`（画入粗略新形状或对皮肤区调色，`min_luma`/`max_luma` 把墨线、头发和纸底排除在外）、按 `mask` 与 `strength` 重绘，再只把遮罩内结果羽化贴回，其余像素不变。坐标以源图像素计；先用 `--preview` 输出预处理图和遮罩叠加图核对位置，再正式运行。多步修整写成串联任务，后一步的 `source` 指向前一步选定的输出。
