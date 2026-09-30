@@ -11,6 +11,7 @@
 --recut 阈值：不用引导图 alpha，改用 cutout.py 从生成原图（__raw）按底色抠图（树冠等与占位轮廓不一致的件）；
 --soft t0,t1 再按色差软抠图，把模型混进树冠的雾状底色变成半透明枝条。
 --deshadow 比例：清掉图底部一段里树干根部以外的像素（模型自带的地面阴影），树类批量入库用，代替逐张框 --erase。
+--regrade light,chroma：按引导图的平涂色块分区调色（regrade.py），文生图材质好但配色跑偏时用（客栈内墙）。
 """
 
 from __future__ import annotations
@@ -41,6 +42,7 @@ def main() -> int:
     parser.add_argument("--soft", help="recut 时按色差软抠图 t0,t1（去掉树冠里混入的雾状底色）")
     parser.add_argument("--erase", action="append", default=[], help="清掉 x0,y0,x1,y1 矩形内的像素（AI 自带的地面阴影等，边缘羽化 14 像素），可多次")
     parser.add_argument("--deshadow", type=float, help="清掉图底部这一比例内、树干根部以外的像素（模型自带的地面阴影），并切掉底边残条")
+    parser.add_argument("--regrade", help="按引导图分区调色 light,chroma（如 0.7,1.0）：保留材质细节，把各色块区的平均色拉回布局配色（regrade.py）")
     args = parser.parse_args()
 
     src = (ROOT / args.source).resolve() if not Path(args.source).is_absolute() else Path(args.source)
@@ -114,6 +116,17 @@ def main() -> int:
         image.save(cleaned)
         record["deshadow"] = args.deshadow
         src = cleaned
+
+    if args.regrade:
+        from PIL import Image
+
+        from regrade import regrade
+
+        light, chroma = (float(v) for v in args.regrade.split(","))
+        graded = src.with_name(src.stem + "__regrade.png")
+        regrade(Image.open(src), Image.open(ROOT / record["guide"]), light, chroma).save(graded)
+        record["regrade"] = {"light": light, "chroma": chroma}
+        src = graded
 
     outputs = {args.id: src}
     if args.parts:

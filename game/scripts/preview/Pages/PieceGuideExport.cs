@@ -131,6 +131,16 @@ public partial class PieceGuideExport : Node
         for (var i = 0; i < InnSamples.Pillars.Length; i++) yield return ($"inn.pillar.{i + 1}", [Piece("body", new InnPillarNode(InnSamples.Pillars[i], i))]);
         foreach (var table in InnSamples.Tables) yield return ($"inn.{table.Id}", [Piece("body", new InnTableNode(table))]);
         for (var i = 0; i < InnSamples.Plants.Length; i++) yield return ($"inn.plant.{i + 1}", [Piece("body", new InnPlantNode(InnSamples.Plants[i], i))]);
+
+        // 内墙是正立面（墙面局部坐标，不经投影），吊灯以灯笼顶为原点；这两类 origin 不是投影坐标，见 InnShell.WallArt 与 InnLanterns。
+        // 吊灯很小，单独用大 px 导出：--only=inn.lantern --px=8。
+        foreach (var (id, north) in new[] { ("inn.wall.north", true), ("inn.wall.east", false) })
+        {
+            var wall = new InnWallElevation(north);
+            yield return (id, [new Part("body", wall, wall.Box)]);
+        }
+
+        yield return ("inn.lantern", [new Part("body", new InnLanternGuide(), InnLanternGuide.Box)]);
     }
 
     private static IEnumerable<(string Id, List<Part> Parts)> WildTargets()

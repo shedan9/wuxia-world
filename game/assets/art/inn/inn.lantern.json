@@ -1,0 +1,10 @@
+{
+  "id": "inn.lantern",
+  "origin": [
+    -19.454483,
+    -4.732051
+  ],
+  "px": 21.743589743589745,
+  "source": "art_source/ai/inn/inn.lantern.png",
+  "sha256": "a4c2eafe951ea0bd29148cf2b35ed1f6f28455b93260438a3bb39836195133a3"
+}

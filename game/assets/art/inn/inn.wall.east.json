@@ -1,0 +1,10 @@
+{
+  "id": "inn.wall.east",
+  "origin": [
+    -12,
+    -342
+  ],
+  "px": 2.024896265560166,
+  "source": "art_source/ai/inn/inn.wall.east.png",
+  "sha256": "3ccb15e98e041940a3e33cc632bdac7a7ea1ead55ddb1d497577c9e89e2eb9c2"
+}

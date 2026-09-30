@@ -1,0 +1,297 @@
+{
+  "set": "m0_inn_walls",
+  "guides": "out/guides/inn",
+  "tier": "complex",
+  "model": "sdxl",
+  "pixels": 1400000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "canny": [
+    60,
+    160
+  ],
+  "style": {
+    "elevation": "no humans, orthographic front elevation, flat wall, no perspective, game background art, semi-realistic, cel shading, clean lineart, detailed texture, soft warm interior light",
+    "piece_rich": "no humans, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft light, masterpiece, high score, absurdres",
+    "texture_wall": "seamless texture, orthographic front view, flat framing, game asset, semi-realistic, cel shading, soft daylight from upper left",
+    "negative_wall": "text, chinese characters, calligraphy, watermark, people, perspective, vanishing point, floor, ceiling, furniture in front, sky, photo, 3d render, blurry, lowres, european, western windows, brick, japanese architecture",
+    "negative_lantern": "text, chinese characters, watermark, people, background scenery, multiple lanterns, string lights, photo, 3d render, blurry, lowres, japanese",
+    "negative_plaster": "text, watermark, bricks, tiles, stones, grid, planks, cracks pattern, graffiti, window, door, photo, blurry, lowres, vignette"
+  },
+  "jobs": [
+    {
+      "name": "a1_wall_north",
+      "piece": "inn.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "interior wall of old chinese inn, dark red lacquered posts and beam, whitewashed plaster, brown wood wainscot, shelf of blue white porcelain, bowls, wine jars with red seals, black menu board, blue door curtain, paper lattice windows",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "a1_wall_east",
+      "piece": "inn.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "interior wall of old chinese inn, dark red lacquered wooden posts and top beam, whitewashed lime plaster with faint stains, brown wooden wainscot panels, one blank silk hanging scroll with wooden rods",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "a1_lantern",
+      "piece": "inn.lantern",
+      "style": "piece_rich",
+      "negative_style": "negative_lantern",
+      "prompt": "single round red paper chinese lantern hanging from a short cord, black wooden caps top and bottom, golden tassel, warm glow from inside",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.6,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "a2_wall_north",
+      "piece": "inn.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white plaster walls, dark brown wooden posts and beam, brown wainscot, inn shelf of blue white porcelain and brown wine jars, blank black menu board, blue cloth door curtain, paper lattice windows",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a3_wall_north",
+      "piece": "inn.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white plaster walls, dark brown wooden posts and beam, brown wainscot, inn shelf of blue white porcelain and brown wine jars, blank black menu board, blue cloth door curtain, paper lattice windows",
+      "mode": "img2img",
+      "strength": 0.75,
+      "control_from": "guide",
+      "control": 0.6,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a2_wall_east",
+      "piece": "inn.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white lime plaster walls with faint stains, dark brown wooden posts and top beam, brown wooden wainscot panels, one blank silk hanging scroll",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a3_wall_east",
+      "piece": "inn.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white lime plaster walls with faint stains, dark brown wooden posts and top beam, brown wooden wainscot panels, one blank silk hanging scroll",
+      "mode": "img2img",
+      "strength": 0.75,
+      "control_from": "guide",
+      "control": 0.6,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a2_lantern",
+      "piece": "inn.lantern",
+      "style": "piece_rich",
+      "negative_style": "negative_lantern",
+      "prompt": "single round red paper chinese lantern, black caps top and bottom, golden tassel, warm glow from inside",
+      "mode": "img2img",
+      "strength": 0.7,
+      "control_from": "guide",
+      "control": 0.5,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "a4_wall_north_s85",
+      "piece": "inn.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white plaster walls, dark brown wooden posts and beam, brown wainscot, inn shelf of blue white porcelain and brown wine jars, blank black menu board, blue cloth door curtain, paper lattice windows",
+      "mode": "img2img",
+      "strength": 0.85,
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a4_wall_east_s85",
+      "piece": "inn.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white lime plaster walls with faint stains, dark brown wooden posts and top beam, brown wooden wainscot panels, one blank silk hanging scroll",
+      "mode": "img2img",
+      "strength": 0.85,
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a4_wall_north_s92",
+      "piece": "inn.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white plaster walls, dark brown wooden posts and beam, brown wainscot, inn shelf of blue white porcelain and brown wine jars, blank black menu board, blue cloth door curtain, paper lattice windows",
+      "mode": "img2img",
+      "strength": 0.92,
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a4_wall_east_s92",
+      "piece": "inn.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "white lime plaster walls with faint stains, dark brown wooden posts and top beam, brown wooden wainscot panels, one blank silk hanging scroll",
+      "mode": "img2img",
+      "strength": 0.92,
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ]
+    },
+    {
+      "name": "a3_lantern",
+      "piece": "inn.lantern",
+      "style": "piece_rich",
+      "negative_style": "negative_lantern",
+      "prompt": "single round red paper chinese lantern with ribs, black wooden caps top and bottom, golden tassel below, warm glow from inside, plain grey background",
+      "mode": "txt2img",
+      "control": 0.45,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "control_from": "shape"
+    },
+    {
+      "name": "a4_lantern",
+      "piece": "inn.lantern",
+      "style": "piece_rich",
+      "negative_style": "negative_lantern",
+      "prompt": "single oval red silk chinese lantern with thin ribs, small black caps top and bottom, gold tassel, front view, centered, isolated on plain grey background",
+      "mode": "txt2img",
+      "control": 0.0,
+      "control_end": 0.1,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "control_from": "shape"
+    },
+    {
+      "name": "a1_plaster",
+      "kind": "texture",
+      "world_size": 200,
+      "style": "texture_wall",
+      "negative_style": "negative_plaster",
+      "prompt": "single surface of whitewashed lime plaster wall, warm off-white, subtle uneven trowel marks, faint grey rain stains and a few small chipped spots",
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    }
+  ]
+}

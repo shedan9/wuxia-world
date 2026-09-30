@@ -71,12 +71,14 @@ public partial class InnShell : Node2D
         _faces.Add(new Face
         {
             Points = [new(0, 0, 0), new(w, 0, 0), new(w, 0, h), new(0, 0, h)], Normal = new Vector3(0, 1, 0), Color = InnTone.Plaster,
-            Local = TownView.Local(Vector3.Zero, Vector3.Right, TownView.Below), Decal = ci => NorthWall(ci, w, h),
+            Local = TownView.Local(Vector3.Zero, Vector3.Right, TownView.Below),
+            Decal = ci => WallArt(ci, "inn.wall.north", c => NorthWall(c, w, h)), Lettering = NorthLettering,
         });
         _faces.Add(new Face
         {
             Points = [new(w, 0, 0), new(w, d, 0), new(w, d, h), new(w, 0, h)], Normal = new Vector3(-1, 0, 0), Color = InnTone.Plaster,
-            Local = TownView.Local(new Vector3(w, 0, 0), new Vector3(0, 1, 0), TownView.Below), Decal = ci => EastWall(ci, d, h),
+            Local = TownView.Local(new Vector3(w, 0, 0), new Vector3(0, 1, 0), TownView.Below),
+            Decal = ci => WallArt(ci, "inn.wall.east", c => EastWall(c, d, h)), Lettering = ci => EastLettering(ci, h),
         });
 
         // 墙顶剖切面与北墙西端、东墙南端的断面。
@@ -147,6 +149,21 @@ public partial class InnShell : Node2D
             [Cel.Ink with { A = 0.25f }, Cel.Ink with { A = 0.25f }, Cel.Ink with { A = 0 }, Cel.Ink with { A = 0 }]);
     }
 
+    /// <summary>
+    /// 内墙面：AI 按正立面引导图（<see cref="InnWallElevation"/>）出的整面墙已入库时贴图，否则画程序化占位。
+    /// 立面图的 origin / px 以墙面局部坐标计（x 沿墙、y 自墙顶 -高 到地面 0），与面的 Local 变换直接相乘即到屏幕。
+    /// </summary>
+    private static void WallArt(CanvasItem ci, string id, Action<CanvasItem> fallback)
+    {
+        if (PieceArt.Find(id) is { } art)
+        {
+            ci.DrawTextureRect(art.Texture, art.Frame, false);
+            return;
+        }
+
+        fallback(ci);
+    }
+
     /// <summary>内墙通用：檐下暗带、木裙板、立柱与顶梁。posts 为立柱的局部 x。</summary>
     private static void Frame(CanvasItem ci, float w, float h, float[] posts)
     {
@@ -168,11 +185,11 @@ public partial class InnShell : Node2D
         Cel.Box(ci, new Rect2(0, -h, w, 26), InnTone.Lacquer, 1.6f);
     }
 
-    private static void NorthWall(CanvasItem ci, float w, float h)
+    internal static void NorthWall(CanvasItem ci, float w, float h)
     {
         Frame(ci, w, h, [10, 120, 620, 692, 848, 1130, w - 10]);
         Shelves(ci, new Rect2(132, -300, 478, 300));
-        MenuBoard(ci, new Rect2(626, -278, 58, 168));
+        MenuBoard(ci, Menu);
         KitchenDoor(ci, new Rect2(704, -228, 136, 228));
         foreach (var x in new[] { 890f, 1010f })
         {
@@ -181,25 +198,55 @@ public partial class InnShell : Node2D
         }
     }
 
-    private static void EastWall(CanvasItem ci, float d, float h)
+    /// <summary>字轴的位置（东墙局部坐标）。</summary>
+    private static readonly Rect2 Scroll = new(790, -284, 86, 196);
+
+    /// <summary>水牌的位置（北墙局部坐标）。</summary>
+    private static readonly Rect2 Menu = new(626, -278, 58, 168);
+
+    internal static void EastWall(CanvasItem ci, float d, float h)
     {
         Frame(ci, d, h, [10, 240, 480, 730, d - 10]);
 
-        // 字轴：绢心竖写四字，上下木轴。
-        var scroll = new Rect2(790, -284, 86, 196);
+        // 字轴：绢心留白（字由字层补写），上下木轴。
+        var scroll = Scroll;
         Cel.Box(ci, scroll, InnTone.Silk, 1.6f);
         ci.DrawRect(new Rect2(scroll.Position.X + 8, scroll.Position.Y + 18, scroll.Size.X - 16, scroll.Size.Y - 36), InnTone.Silk.Lightened(0.3f));
         Cel.Box(ci, new Rect2(scroll.Position.X - 8, scroll.Position.Y - 8, scroll.Size.X + 16, 10), Cel.WoodDark, 1.4f);
         Cel.Box(ci, new Rect2(scroll.Position.X - 8, scroll.End.Y - 2, scroll.Size.X + 16, 10), Cel.WoodDark, 1.4f);
-        var y = scroll.Position.Y + 54;
+        ci.DrawLine(new Vector2(scroll.GetCenter().X, -h + 26), scroll.Position + new Vector2(scroll.Size.X / 2, -8), Cel.Ink, 1.6f);
+    }
+
+    /// <summary>字层：字轴竖写“宾至如归”与落款小印；引导图不画，AI 只画空白绢心。</summary>
+    private static void EastLettering(CanvasItem ci, float h)
+    {
+        var y = Scroll.Position.Y + 54;
         foreach (var ch in "宾至如归")
         {
-            ci.DrawString(UiFonts.Title, new Vector2(scroll.GetCenter().X - 17, y), ch.ToString(), HorizontalAlignment.Left, -1, 34, Cel.Ink);
+            ci.DrawString(UiFonts.Title, new Vector2(Scroll.GetCenter().X - 17, y), ch.ToString(), HorizontalAlignment.Left, -1, 34, Cel.Ink);
             y += 38;
         }
 
-        ci.DrawRect(new Rect2(scroll.GetCenter().X - 7, scroll.End.Y - 28, 14, 14), UiPalette.Cinnabar);
-        ci.DrawLine(new Vector2(scroll.GetCenter().X, -h + 26), scroll.Position + new Vector2(scroll.Size.X / 2, -8), Cel.Ink, 1.6f);
+        ci.DrawRect(new Rect2(Scroll.GetCenter().X - 7, Scroll.End.Y - 28, 14, 14), UiPalette.Cinnabar);
+    }
+
+    /// <summary>字层：水牌朱砂题头“今日”，下面白字竖写三样菜名（与交互提示的样例一致）。</summary>
+    private static void NorthLettering(CanvasItem ci)
+    {
+        var r = Menu;
+        ci.DrawString(UiFonts.Title, new Vector2(r.Position.X + 9, r.Position.Y + 24), "今日", HorizontalAlignment.Left, -1, 19, InnTone.Silk);
+        string[] dishes = ["菱角", "黄酒", "阳春面"];
+        for (var i = 0; i < dishes.Length; i++)
+        {
+            // 竖写自右向左。
+            var x = r.End.X - 19 - i * 16;
+            var y = r.Position.Y + 50;
+            foreach (var ch in dishes[i])
+            {
+                ci.DrawString(UiFonts.Title, new Vector2(x, y), ch.ToString(), HorizontalAlignment.Left, -1, 14, Colors.White with { A = 0.9f });
+                y += 16;
+            }
+        }
     }
 
     /// <summary>柜台后的博古货架：四层，酒坛、叠碗、瓷瓶与纸包。</summary>
@@ -252,17 +299,11 @@ public partial class InnShell : Node2D
         }
     }
 
-    /// <summary>水牌：黑漆牌，朱砂题头，白字菜名（以笔画示意）。</summary>
+    /// <summary>水牌：黑漆牌，朱砂题头；菜名在字层（<see cref="NorthLettering"/>）。</summary>
     private static void MenuBoard(CanvasItem ci, Rect2 r)
     {
         Cel.Box(ci, r, Cel.WoodDark, 2f);
         ci.DrawRect(new Rect2(r.Position.X + 6, r.Position.Y + 6, r.Size.X - 12, 22), UiPalette.Cinnabar);
-        for (var i = 0; i < 3; i++)
-        {
-            var x = r.Position.X + 14 + i * 15;
-            var len = 70 + Cel.Rand(5, i) * 50;
-            ci.DrawLine(new Vector2(x, r.Position.Y + 40), new Vector2(x, r.Position.Y + 40 + len), Colors.White with { A = 0.85f }, 3f);
-        }
     }
 
     /// <summary>后厨门：门洞透灶火暖光，石青门帘垂到齐胸，中缝分开。</summary>
@@ -282,6 +323,53 @@ public partial class InnShell : Node2D
 
         ci.DrawCircle(new Vector2(r.GetCenter().X, r.Position.Y + 62), 16, InnTone.Silk with { A = 0.85f });
         ci.DrawArc(new Vector2(r.GetCenter().X, r.Position.Y + 62), 10, 0, Mathf.Tau, 16, Cel.Cloth, 3f, true);
+    }
+}
+
+/// <summary>
+/// 内墙正立面（只用于 <see cref="PieceGuideExport"/> 导出引导图）：墙面局部坐标 x 沿墙 0–宽、y 自墙顶 -高 到地面 0，不经投影。
+/// AI 按它出整面墙（正面平视、无透视），游戏里经墙面的 Local 仿射变换贴回，斜视下与布局一致；字轴与水牌的字不画，由字层补写。
+/// </summary>
+public partial class InnWallElevation : Node2D
+{
+    private readonly bool _north;
+
+    public InnWallElevation(bool north)
+    {
+        _north = north;
+        var length = north ? InnSamples.Room.Size.X : InnSamples.Room.Size.Y;
+        Box = new Rect2(0, -InnSamples.WallHeight, length, InnSamples.WallHeight);
+    }
+
+    public Rect2 Box { get; }
+
+    public override void _Draw()
+    {
+        DrawRect(Box, InnTone.Plaster);
+        if (_north)
+        {
+            InnShell.NorthWall(this, Box.Size.X, Box.Size.Y);
+        }
+        else
+        {
+            InnShell.EastWall(this, Box.Size.X, Box.Size.Y);
+        }
+    }
+}
+
+/// <summary>吊灯引导图（<see cref="PieceGuideExport"/> 用）：屏幕坐标，原点为灯笼顶，按游戏里的大小画一盏占位灯笼。</summary>
+public partial class InnLanternGuide : Node2D
+{
+    public const float Size = 0.95f;
+
+    /// <summary>灯身宽约 ±16、自顶到流苏末端约 78（均乘 Size），外留描边余量，再按竖直投影比例缩放。</summary>
+    public static Rect2 Box => new(new Vector2(-19, -2) * TownView.Upright, new Vector2(38, 80) * TownView.Upright);
+
+    public override void _Draw()
+    {
+        DrawSetTransform(Vector2.Zero, 0, Vector2.One * TownView.Upright);
+        Cel.HangingLantern(this, Vector2.Zero, Size);
+        DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }
 }
 
@@ -329,6 +417,7 @@ public partial class InnCutWall : TownPiece
     public InnCutWall(Vector3 min, Vector3 max, bool post = false)
     {
         Occluder = false;
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
         var faces = Solid.Box(min, max, post ? InnTone.Lacquer : InnTone.Plaster, 1.8f);
         FaceKit.Recolor(faces, TownView.Above, InnTone.Section);
         if (!post)
@@ -350,9 +439,38 @@ public partial class InnCutWall : TownPiece
         Seal(new Rect2(min.X, min.Y, max.X - min.X, max.Y - min.Y));
     }
 
+    /// <summary>粉壁纹理（inn.wall.plaster）偏灰，乘上略大于 1 的系数提回粉壁的暖白。</summary>
+    private static readonly Color PlasterLift = new(1.14f, 1.12f, 1.07f);
+
+    /// <summary>外侧立面：粉壁 + 30 高条石墙脚。有 AI 纹理时粉壁贴 inn.wall.plaster、墙脚取驳岸条石纹理（town.embankment）最上一行。</summary>
     private static void Base(CanvasItem ci, float w, float h)
     {
         ci.DrawRect(new Rect2(0, -h, w, h), InnTone.Plaster);
+        var plaster = PieceArt.FindTexture("inn.wall.plaster");
+        var stone = PieceArt.FindTexture("town.embankment");
+        if (plaster is { } p && stone is { } s)
+        {
+            var ppx = p.Texture.GetSize().X / p.WorldSize;
+            for (var x = 0f; x < w; x += p.WorldSize)
+            {
+                var cell = new Vector2(Mathf.Min(p.WorldSize, w - x), h - 30);
+                ci.DrawTextureRectRegion(p.Texture, new Rect2(x, -h, cell.X, cell.Y), new Rect2(0, 0, cell.X * ppx, cell.Y * ppx), PlasterLift);
+            }
+
+            // 驳岸纹理三行条石，取最上一行（约三分之一高）压成 30 高的墙脚。
+            var row = s.Texture.GetSize().Y / 3;
+            var spx = row / 30;
+            var span = s.Texture.GetSize().X / spx;
+            for (var x = 0f; x < w; x += span)
+            {
+                var len = Mathf.Min(span, w - x);
+                ci.DrawTextureRectRegion(s.Texture, new Rect2(x, -30, len, 30), new Rect2(0, 0, len * spx, row), new Color(1.05f, 1.05f, 1.02f));
+            }
+
+            ci.DrawLine(new Vector2(0, -30), new Vector2(w, -30), Cel.Ink with { A = 0.35f }, 1.6f);
+            return;
+        }
+
         ci.DrawRect(new Rect2(0, -30, w, 30), Cel.Stone);
         ci.DrawLine(new Vector2(0, -29), new Vector2(w, -29), Cel.StoneLight, 3);
         for (var x = 55f; x < w; x += 60)
@@ -741,6 +859,7 @@ public partial class InnLanterns : Node2D
 
     public override void _Ready()
     {
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
         _halo.Draw += () =>
         {
             foreach (var l in InnSamples.Lanterns)
@@ -762,11 +881,19 @@ public partial class InnLanterns : Node2D
 
     public override void _Draw()
     {
+        // AI 灯笼件（inn.lantern）的 origin 以灯笼顶为原点、屏幕坐标计，六盏共用一件。
+        var art = PieceArt.Find("inn.lantern");
         foreach (var l in InnSamples.Lanterns)
         {
             DrawLine(TownView.P(l.X, l.Y, InnSamples.WallHeight), TownView.P(l), Cel.Ink, 2f);
+            if (art is not null)
+            {
+                DrawTextureRect(art.Texture, new Rect2(art.Frame.Position + TownView.P(l), art.Frame.Size), false);
+                continue;
+            }
+
             DrawSetTransform(TownView.P(l), 0, Vector2.One * TownView.Upright);
-            Cel.HangingLantern(this, Vector2.Zero, 0.95f);
+            Cel.HangingLantern(this, Vector2.Zero, InnLanternGuide.Size);
             DrawSetTransform(Vector2.Zero, 0, Vector2.One);
         }
     }
