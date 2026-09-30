@@ -6,7 +6,7 @@
 
 | 方式 | 用于 | 许可要求 |
 |---|---|---|
-| 本地 AI 生成（SDXL 系模型，`tools/ArtGen`） | 人物、场景、道具、图标的草图与成品底稿；人物立绘用 Animagine XL 4.0（CreativeML Open RAIL++-M，模型卡写明允许商用）；布景件用 SDXL 1.0 base（CreativeML Open RAIL++-M）加 ControlNet `xinsir/controlnet-canny-sdxl-1.0`（Apache-2.0，允许商用），引导图取自本作程序化占位件 | 模型许可须允许商用；每张图保留生成记录（模型、种子、提示词、哈希） |
+| 本地 AI 生成（SDXL 系模型，`tools/ArtGen`） | 人物、场景、道具、图标的草图与成品底稿；人物立绘用 Animagine XL 4.0（CreativeML Open RAIL++-M，模型卡写明允许商用）；布景件用 SDXL 1.0 base（CreativeML Open RAIL++-M）加 ControlNet `xinsir/controlnet-canny-sdxl-1.0`（Apache-2.0，允许商用），引导图取自本作程序化占位件；全身人物形象用 Animagine XL 4.0 加 ControlNet `xinsir/controlnet-openpose-sdxl-1.0`（Apache-2.0，允许商用），骨架由 `tools/ArtGen/figure.py` 按坐标程序绘制，不取自他人图像 | 模型许可须允许商用；每张图保留生成记录（模型、种子、提示词、哈希） |
 | 博物馆开放获取（CC0） | 构图参考（2026-09-24 画风改为蓝绿清新后，不再直接作远景或肌理） | 仅用 CC0 / 公有领域；记录馆藏号与原始链接 |
 | 开源字体 | 正文与标题字体 | SIL OFL 1.1，许可文本随包附带 |
 
@@ -73,5 +73,6 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | 溪涧纹理（2 张；任务名·种子）：溪岸 `wild.bank` k5·44（长苔不规则岩土，1536×512，横向无缝，横向覆盖 200 单位、岸高 40 只取上部）、溪床 `wild.ground.streambed` k6·11（细沙，1024×1024，四向无缝，320 单位一格）；同日首版 k1·66（规整卵石岸）、k2·44（满底卵石）经用户指出过于规整后替换 | `tools/ArtGen/jobs/m0_creek.json`，SDXL base 文生图、环绕填充；溪床由 `town_ground` 着色器叠散石、水色、浪线与白沫 | 见左栏 | 家用台式机 RTX 4070 Ti SUPER | 2026-09-26 入库，待用户核对；未修整；记录见 `art_source/ai/wild/<id>.json` |
 | 木纹纹理（2 张；任务名·种子）：朱漆木 `town.wood.lacquer` w1·55（竖纹，1024×1024，四向无缝，120 单位一格）、风化木 `town.wood.weathered` w2·11（横纹，160 单位一格） | `tools/ArtGen/jobs/m0_wood.json`，SDXL base 文生图、环绕填充；朱漆木只以 35% 不透明度叠在程序化朱漆底色上（城镇廊柱），风化木整贴（城镇坐栏、山路桥栏与边梁） | 见左栏 | 家用台式机 RTX 4070 Ti SUPER | 2026-09-26 入库，待用户核对；未修整；记录见 `art_source/ai/town/<id>.json` |
 | 客栈内墙与吊灯（4 件；任务名·种子）：北墙正立面 `inn.wall.north` a2·11、东墙正立面 `inn.wall.east` a2·33（均经 `--regrade 0.7,1.0` 分区调色）、吊灯 `inn.lantern` a2·66、粉壁纹理 `inn.wall.plaster` a1·22（1024×1024，四向无缝，200 单位一格） | `tools/ArtGen/jobs/m0_inn_walls.json`：内墙 SDXL base + canny ControlNet 文生图（完整引导图，control 0.8、至七成步数），`regrade.py` 按引导图色块调回布局配色；吊灯 SDXL base + canny ControlNet 图生图 strength 0.7；粉壁 SDXL base 文生图、环绕填充 | 见左栏 | 家用台式机 RTX 4070 Ti SUPER | 2026-09-30 入库，待用户核对；未修整；记录见 `art_source/ai/inn/<id>.json` |
+| 全身人物形象（7 件；任务名·种子）：主角 `figure.hero` hero·66、陆青禾 `figure.lu_qinghe` lu_qinghe·33、乔红绡 `figure.qiao_hongxiao` qiao_hongxiao·22、店小二 `figure.waiter` waiter·22、茶客 `figure.tea_guest` tea_guest·22（坐姿）、唐守亭 `figure.tang_shouting` tang_shouting·11、押运打手 `figure.escort` escort·44（迎敌架势）；入包为 `game/assets/art/figure/<id>.png`，头顶到脚底 800 像素 | `tools/ArtGen/jobs/m0_figures.json`：Animagine XL 4.0 + openpose ControlNet 文生图（control 0.8、至八成步数，长提示词分段编码），`cutout.py` 灰底抠图，`place.py --figure` 裁边缩放并按骨架记脚底与身高 | 见左栏 | 家用台式机 RTX 4070 Ti SUPER | 2026-09-30 入库，探索与战斗共用，待用户核对；未修整；记录见 `art_source/ai/figure/<id>.json` |
 
 生成记录由 `tools/ArtGen/generate.py` 写在每张图旁的 `.json` 中；入库时把该记录一并放入 `art_source/ai/`，并在上表登记。

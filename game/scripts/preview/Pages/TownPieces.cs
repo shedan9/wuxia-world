@@ -1167,7 +1167,27 @@ public partial class WalkerFigure : TownPiece
         _ => 175,
     } * TownView.Upright;
 
-    public WalkerFigure() => Walker = true;
+    public WalkerFigure()
+    {
+        Walker = true;
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+    }
+
+    /// <summary>AI 形象的 id（<see cref="FigureArt"/>）；按装束取默认人物，未入库时画程序化占位。</summary>
+    public string ArtId
+    {
+        get => _artId ?? Look switch
+        {
+            FigureLook.Boatwoman => "figure.lu_qinghe",
+            FigureLook.Keeper => "figure.qiao_hongxiao",
+            FigureLook.Waiter => "figure.waiter",
+            FigureLook.Seated => "figure.tea_guest",
+            _ => "figure.hero",
+        };
+        init => _artId = value;
+    }
+
+    private readonly string? _artId;
 
     public void Place(Vector2 ground, float z = 0)
     {
@@ -1176,6 +1196,12 @@ public partial class WalkerFigure : TownPiece
         Foot = new Rect2(ground - new Vector2(20, 20), new Vector2(40, 40));
         Position = TownView.P(ground, z);
         ScreenBox = new Rect2(Position + new Vector2(-40, -Height - 20), new Vector2(80, Height + 30));
+        if (FigureArt.Find(ArtId) is { } art)
+        {
+            // 长篙、衣摆可能超出占位外框：按贴图两个朝向的外框合并，避免翻身时被裁或排序跳变。
+            var box = art.Bounds(Vector2.Zero, Height, 1).Merge(art.Bounds(Vector2.Zero, Height, -1));
+            ScreenBox = ScreenBox.Merge(new Rect2(Position + box.Position, box.Size));
+        }
     }
 
     public override void _Draw()
@@ -1183,6 +1209,14 @@ public partial class WalkerFigure : TownPiece
         DrawSetTransform(-Position, 0, Vector2.One);
         Cel.GroundShadow(this, Ground, 34, 26, 0.3f, Z);
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+        if (FigureArt.Find(ArtId) is { } art)
+        {
+            // 第一阶段只有一张站姿：走动时按步频上下起伏、竖向微缩并略向前倾，正式行走帧见 M1 起的 4 / 8 向形象。
+            var step = Moving ? Mathf.Abs(Mathf.Sin(Phase)) : 0;
+            art.Draw(this, new Vector2(0, -step * 4), Height, Facing, Moving ? 0.035f : 0, 1 - step * 0.018f);
+            return;
+        }
+
         if (Look == FigureLook.Seated)
         {
             DrawSeated();

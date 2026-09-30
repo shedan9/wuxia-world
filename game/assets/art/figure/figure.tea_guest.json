@@ -1,0 +1,10 @@
+{
+  "id": "figure.tea_guest",
+  "foot": [
+    260.0,
+    806.0
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.tea_guest.png",
+  "sha256": "b47262c2c81d803f25f17c57bc06873c1079a5a26ad74871584cbcea676ecc48"
+}

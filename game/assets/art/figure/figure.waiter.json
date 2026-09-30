@@ -1,0 +1,10 @@
+{
+  "id": "figure.waiter",
+  "foot": [
+    110.4,
+    804.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.waiter.png",
+  "sha256": "7277887e0f8c451bd392d3a00954b1fd51e39118c909fd58f3e97c34c0cc5c67"
+}

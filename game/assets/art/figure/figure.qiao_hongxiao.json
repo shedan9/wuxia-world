@@ -1,0 +1,10 @@
+{
+  "id": "figure.qiao_hongxiao",
+  "foot": [
+    123.7,
+    804.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.qiao_hongxiao.png",
+  "sha256": "00e5e70211511d61581b240e776d7646502b94e680d2cad0b10c3832788d7dc1"
+}

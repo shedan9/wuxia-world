@@ -132,6 +132,25 @@ cd tools/ArtGen
 - 吊灯很小（游戏里约 33×70 像素），占位是一个胖椭圆加两块方帽：文生图在椭圆里另画一盏小灯笼，弱约束或无约束画成各式宫灯、一整张图集，都进不了画框；取图生图 strength 0.7 的平涂赛璐璐灯笼，在该尺寸下与场景画法一致。
 - 粉壁纹理六个种子都很淡（近乎素白），取 a1·22；游戏里乘略大于 1 的系数提回暖白。
 
+## 全身人物：统一骨架出图（2026-09-30）
+
+探索与战斗共用一张全身形象（架构文档 10.2）。`figure.py` 按任务的 `pose`（`stand` 站立、`stand_pole` 持篙、`guard` 迎敌架势、`sit` 坐凳）画同一副 OpenPose 骨架作 ControlNet 引导（`xinsir/controlnet-openpose-sdxl-1.0`，Apache-2.0），Animagine XL 4.0 文生图、纯灰底，再用 `cutout.py` 按边框底色抠图。同一姿势的人物身高、站位和朝向一致；出图均为四分之三侧身朝画面左侧，朝右由引擎水平翻转。人物服装描述常超过 77 token，`figure.py` 按逗号把提示词切段、两个文本编码器逐段编码后拼接（正负提示词补齐到同样段数），不再静默截断。
+
+```powershell
+cd tools/ArtGen
+.venv/Scripts/python figure.py jobs/m0_figures.json --preview          # 只画骨架图 out/m0_figures/pose_*.png
+.venv/Scripts/python figure.py jobs/m0_figures.json --only lu_qinghe
+# 入库：按外框裁边、缩放到头顶—脚底 800 像素，json 记脚底中点 foot 与 stature；长篙高出头顶时用 --top 给头顶 y
+.venv/Scripts/python place.py out/m0_figures/lu_qinghe_33.png figure.lu_qinghe --figure --top 60
+```
+
+游戏端 `FigureArt`（`game/scripts/preview/Pages/FigureArt.cs`）按“屏幕身高 ÷ stature”缩放、脚底对齐地面；图导入时须开 mipmap（探索里约缩到五分之一）。
+
+无引导试跑（每张约 6 秒）：
+- 风格词里写 `hanfu` 会让所有人都穿白色宽袍，主角的短打也变成长袍；`hanfu` 只写进需要的人物，男性短打负面词加 `long robe`。
+- 不写朝代词时店小二、主角出现棒球帽、运动鞋和 T 恤；风格加 `ancient china, wuxia`，负面词加 `sneakers, baseball cap, t-shirt`。
+- `light tan skin` 会画成深肤色；陆青禾按已认可立绘改为 `fair skin`。模型常在脚下自带投影，负面词加 `cast shadow, floor shadow`。
+
 ## 局部重绘
 
 `inpaint.py` 读取 `jobs/*_fix.json`，对一张已生成的图依次做：`erase`（用周围纸色逐层填平旧物件）、`paint` / `tint`（画入粗略新形状或对皮肤区调色，`min_luma`/`max_luma` 把墨线、头发和纸底排除在外）、按 `mask` 与 `strength` 重绘，再只把遮罩内结果羽化贴回，其余像素不变。坐标以源图像素计；先用 `--preview` 输出预处理图和遮罩叠加图核对位置，再正式运行。多步修整写成串联任务，后一步的 `source` 指向前一步选定的输出。

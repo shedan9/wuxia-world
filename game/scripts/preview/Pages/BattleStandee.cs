@@ -4,8 +4,8 @@ using WuxiaWorld.Game.Presentation;
 namespace WuxiaWorld.Game.Preview.Pages;
 
 /// <summary>
-/// 战斗形象占位：纸影剪影（头、肩、衣摆）或机关方框，带地面投影。
-/// 只用于核对站位、比例与界面层级；正式战斗形象见架构文档 10.2，不以立绘平移代替。
+/// 战斗形象：有 AI 全身形象（<see cref="FigureArt"/>，与探索共用同一张）时贴图，否则画纸影剪影（头、肩、衣摆）；机关画方框。带地面投影。
+/// 第一阶段只有静态站姿与迎敌架势，用于核对站位、比例与界面层级；正式战斗骨骼动作见架构文档 10.2，不以立绘平移代替。
 /// </summary>
 public partial class BattleStandee : Control
 {
@@ -14,12 +14,16 @@ public partial class BattleStandee : Control
     public bool Mechanism { get; init; }
     public float Height { get; init; } = 300;
 
+    /// <summary>AI 全身形象 id（与探索共用，见 <see cref="FigureArt"/>）；未入库时画剪影占位。</summary>
+    public string? ArtId { get; init; }
+
     public override void _Ready()
     {
         CustomMinimumSize = new Vector2(Height * 0.55f, Height);
         Size = CustomMinimumSize;
         MouseFilter = MouseFilterEnum.Ignore;
         PivotOffset = new Vector2(Size.X / 2, Size.Y);
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
     }
 
     public override void _Draw()
@@ -31,6 +35,13 @@ public partial class BattleStandee : Control
         DrawSetTransform(new Vector2(cx, h - 4), 0, new Vector2(1, 0.22f));
         DrawCircle(Vector2.Zero, w * 0.52f, shadow);
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+
+        if (!Mechanism && ArtId is not null && FigureArt.Find(ArtId) is { } art)
+        {
+            // 头顶到脚底为 Height 的 92%：留出发髻、兵刃高出头顶的余量，与剪影占位的头顶位置相当。
+            art.Draw(this, new Vector2(cx, h - 6), h * 0.92f, FacingLeft ? -1 : 1);
+            return;
+        }
 
         var dark = Tone.Darkened(0.45f);
         var light = Tone.Lightened(0.15f);

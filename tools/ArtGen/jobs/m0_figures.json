@@ -1,0 +1,76 @@
+{
+  "set": "m0_figures",
+  "model": "animagine4",
+  "size": [
+    832,
+    1216
+  ],
+  "steps": 28,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66
+  ],
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe"
+  },
+  "jobs": [
+    {
+      "name": "hero",
+      "style": "figure",
+      "pose": "stand",
+      "prompt": "1boy, solo, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, commoner, martial artist, indigo cross-collar short jacket ending at the hips, narrow sleeves, dark cloth belt, grey-blue trousers, trousers visible, white leg wraps, black cloth shoes, standing",
+      "negative_style": "negative_short"
+    },
+    {
+      "name": "lu_qinghe",
+      "style": "figure",
+      "pose": "stand_pole",
+      "prompt": "1girl, solo, adult woman, fair skin, black hair in a high bun, teal headband with long ribbon, hanfu, cream jacket, white inner collar, dark brown cross-collar panel, dark brown embroidered waist wrap, teal sash tied at waist, narrow sleeves, red bracelet, cream long skirt, cloth shoes, holding a tall green bamboo pole, pole touching the ground, standing",
+      "negative_style": "negative_robe"
+    },
+    {
+      "name": "qiao_hongxiao",
+      "style": "figure",
+      "pose": "stand",
+      "prompt": "1girl, solo, mature woman, around thirty, beautiful, confident smile, black hair in a tall elegant bun, gold hairpin, hanfu, short white cross-collar jacket, narrow sleeves, cinnabar waist sash, long crimson pleated skirt, embroidered cloth shoes, innkeeper, standing",
+      "negative_style": "negative_robe"
+    },
+    {
+      "name": "waiter",
+      "style": "figure",
+      "pose": "stand",
+      "prompt": "1boy, solo, young adult man, friendly smile, small black round cloth cap, grey-blue cross-collar short jacket, rolled sleeves, white towel over shoulder, dark trousers, black cloth shoes, inn waiter, standing"
+    },
+    {
+      "name": "tea_guest",
+      "style": "figure",
+      "negative_style": "negative_seated",
+      "pose": "sit",
+      "prompt": "1boy, solo, middle-aged man, short beard, hair bun with brown cloth wrap, brown cross-collar robe, sitting, legs forward, holding a teacup, from side"
+    },
+    {
+      "name": "tang_shouting",
+      "style": "figure",
+      "pose": "guard",
+      "prompt": "1boy, solo, burly middle-aged man, stubble, scar on cheek, fierce expression, black hair tied back, dark grey leather vest over black robe, leather bracers, holding a chinese dao broadsword, fighting stance"
+    },
+    {
+      "name": "escort",
+      "style": "figure",
+      "pose": "guard",
+      "prompt": "1boy, solo, rough adult man, dark headband, dark brown short jacket, rolled sleeves, dark trousers, leg wraps, holding a wooden club, fighting stance"
+    }
+  ]
+}
