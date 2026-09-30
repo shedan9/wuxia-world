@@ -1,0 +1,50 @@
+[
+  {
+    "id": "skill.sword.probe",
+    "tags": ["sword", "external"],
+    "inner_cost": 6,
+    "target_rule": "single_reachable_enemy",
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 6000, "fixed": 5 },
+      { "type": "apply_status", "status": "status.insight" }
+    ],
+    "animation_id": "anim.sword.probe"
+  },
+  {
+    "id": "skill.sword.break_guard",
+    "tags": ["sword", "external", "guard_break"],
+    "inner_cost": 12,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 12000 },
+      { "type": "stance_damage", "amount": 30 }
+    ],
+    "animation_id": "anim.sword.thrust"
+  },
+  {
+    "id": "skill.sword.chain_thrust",
+    "tags": ["sword", "external", "combo"],
+    "inner_cost": 10,
+    "momentum_cost": 30,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 8000, "bonus_vs_status": "status.broken", "bonus_bp": 8000 },
+      { "type": "damage", "kind": "external", "scale_bp": 8000, "bonus_vs_status": "status.broken", "bonus_bp": 8000 }
+    ],
+    "animation_id": "anim.sword.chain"
+  },
+  {
+    "id": "skill.sword.pierce",
+    "tags": ["sword", "external", "pierce"],
+    "inner_cost": 10,
+    "target_rule": "column_enemies",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 7500 },
+      { "type": "stance_damage", "amount": 10 }
+    ],
+    "animation_id": "anim.sword.lunge"
+  }
+]

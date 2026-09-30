@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Godot;
 using WuxiaWorld.Game.Preview.Samples;
+using WuxiaWorld.Game.Presentation.Art;
 
 namespace WuxiaWorld.Game.Preview.Pages;
 

@@ -1,5 +1,6 @@
 using Godot;
 using WuxiaWorld.Game.Presentation;
+using WuxiaWorld.Game.Presentation.Art;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
 

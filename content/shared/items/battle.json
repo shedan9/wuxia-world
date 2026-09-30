@@ -1,0 +1,20 @@
+[
+  {
+    "id": "item.medicine.golden_sore",
+    "target_rule": "single_ally",
+    "effects": [
+      { "type": "heal", "amount": 90 },
+      { "type": "cleanse", "tag": "bleed", "count": 1 }
+    ]
+  },
+  {
+    "id": "item.medicine.qi_pill",
+    "target_rule": "single_ally",
+    "effects": [{ "type": "restore_inner", "amount": 45 }]
+  },
+  {
+    "id": "item.medicine.clear_heart",
+    "target_rule": "single_ally",
+    "effects": [{ "type": "cleanse", "tag": "dispellable", "count": 2 }]
+  }
+]

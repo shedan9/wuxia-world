@@ -201,6 +201,9 @@ public abstract partial class ExploreStage : Control
     /// <summary>左侧目标追踪；野外等不在第一章的布景换成本地的样例任务。</summary>
     protected virtual Control Tracker() => ExploreHudKit.Tracker();
 
+    /// <summary>在上方通知栏推一条通知（见闻、物品……）。</summary>
+    protected void Toast(string kind, string text, string where) => _toasts.Push(kind, text, where);
+
     // ── 输入 ─────────────────────────────────────────────
 
     public override void _UnhandledInput(InputEvent @event)

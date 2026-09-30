@@ -2,6 +2,7 @@ using Godot;
 using WuxiaWorld.Game.Presentation;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
+using WuxiaWorld.Game.Presentation.Art;
 
 namespace WuxiaWorld.Game.Preview.Pages;
 

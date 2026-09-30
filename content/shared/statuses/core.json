@@ -1,0 +1,57 @@
+[
+  {
+    "id": "status.defend",
+    "tags": ["buff"],
+    "tick": "owner_action_start",
+    "duration": 1,
+    "damage_taken_bp": -5000,
+    "consume_on_hit": true
+  },
+  {
+    "id": "status.broken",
+    "harmful": true,
+    "tags": ["stance"],
+    "tick": "owner_action_end",
+    "duration": 1,
+    "damage_taken_bp": 5000,
+    "consume_on_hit": true,
+    "cancels_reactions": true,
+    "restore_stance_on_end": true
+  },
+  {
+    "id": "status.meditating",
+    "harmful": true,
+    "tags": ["stance"],
+    "tick": "owner_action_start",
+    "duration": 1,
+    "damage_taken_bp": 2000
+  },
+  {
+    "id": "status.charging",
+    "tags": ["intent"],
+    "duration": 0,
+    "stacking": "ignore"
+  },
+  {
+    "id": "status.guarded",
+    "tags": ["buff"],
+    "tick": "source_action_start",
+    "duration": 1
+  },
+  {
+    "id": "status.control_guard",
+    "tags": ["buff"],
+    "tick": "owner_action_end",
+    "duration": 1,
+    "immune_tag": "control"
+  },
+  {
+    "id": "status.stunned",
+    "harmful": true,
+    "tags": ["control", "dispellable"],
+    "tick": "owner_action_end",
+    "duration": 1,
+    "skip_action": true,
+    "grant_on_end": "status.control_guard"
+  }
+]

@@ -27,6 +27,9 @@ public abstract partial class PreviewScreen : Control
     private readonly List<Button> _tabs = [];
     private MarginContainer _content = null!;
 
+    /// <summary>经 Q / E 或分区签立即切换进来：顶栏、绢页与第一屏内容不做入场动效，避免分区切换时整页淡入。</summary>
+    private bool _still;
+
     protected abstract string SealText { get; }
     protected abstract string Title { get; }
     protected abstract string Subtitle { get; }
@@ -36,6 +39,7 @@ public abstract partial class PreviewScreen : Control
 
     public override void _Ready()
     {
+        _still = AppHost.Instance.Router.ArrivedInstantly;
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(Backdrop.Veiled());
 
@@ -53,7 +57,10 @@ public abstract partial class PreviewScreen : Control
 
         var sheet = Ui.Expand(new PanelContainer { ThemeTypeVariation = UiTheme.SheetPanel }, vertical: true);
         page.AddChild(sheet);
-        Motion.Enter(sheet, 0.05f, Motion.Normal, rise: 20);
+        if (!_still)
+        {
+            Motion.Enter(sheet, 0.05f, Motion.Normal, rise: 20);
+        }
 
         var strip = Ui.Row(UiPalette.SpaceS);
         var tabs = Tabs;
@@ -87,7 +94,7 @@ public abstract partial class PreviewScreen : Control
         {
             var current = Array.FindIndex(Sections, s => s.Scene == SceneFilePath);
             var next = Sections[(current + (key.Keycode == Key.E ? 1 : -1) + Sections.Length) % Sections.Length];
-            AppHost.Instance.Router.GoTo(next.Scene);
+            AppHost.Instance.Router.GoTo(next.Scene, instant: true);
             GetViewport().SetInputAsHandled();
             return;
         }
@@ -119,7 +126,7 @@ public abstract partial class PreviewScreen : Control
         foreach (var (name, scene) in Sections)
         {
             var here = scene == SceneFilePath;
-            var tab = Ui.Button(name, UiTheme.NavTab, here ? null : () => router.GoTo(scene));
+            var tab = Ui.Button(name, UiTheme.NavTab, here ? null : () => router.GoTo(scene, instant: true));
             tab.ToggleMode = true;
             tab.ButtonGroup = group;
             tab.ButtonPressed = here;
@@ -141,7 +148,11 @@ public abstract partial class PreviewScreen : Control
 
         // 左右两块等宽扩展，分区签保持居中。
         var header = Ui.Row(UiPalette.SpaceL, Ui.Expand(left), nav, Ui.Expand(status));
-        Motion.Enter(header, 0, Motion.Normal, rise: -12);
+        if (!_still)
+        {
+            Motion.Enter(header, 0, Motion.Normal, rise: -12);
+        }
+
         return header;
     }
 
@@ -168,6 +179,13 @@ public abstract partial class PreviewScreen : Control
         var body = Ui.Expand(build(), vertical: true);
         scroll.AddChild(body);
         _content.AddChild(scroll);
+        if (_still)
+        {
+            // 分区切换进来的第一屏直接呈现；之后切子页签仍保留轻微入场。
+            _still = false;
+            return;
+        }
+
         Motion.Enter(body, 0, Motion.Normal, rise: 10);
     }
 }

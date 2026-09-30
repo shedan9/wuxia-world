@@ -30,7 +30,14 @@ public partial class SceneRouter : CanvasLayer
 
     public static bool CanGoTo(string scenePath) => ResourceLoader.Exists(scenePath);
 
-    public void GoTo(string scenePath)
+    /// <summary>当前场景是否经 <c>instant</c> 切换进入；为 true 时新场景应跳过入场动效，直接呈现终态。</summary>
+    public bool ArrivedInstantly { get; private set; }
+
+    /// <summary>
+    /// 切换场景。默认经色幕淡出淡入；<paramref name="instant"/> 为 true 时立即切换、不走色幕，
+    /// 用于同一外框内的并列页面（菜单分区 Q / E），切换时不应有明暗闪烁。
+    /// </summary>
+    public void GoTo(string scenePath, bool instant = false)
     {
         if (!CanGoTo(scenePath))
         {
@@ -44,7 +51,8 @@ public partial class SceneRouter : CanvasLayer
         }
 
         var tree = GetTree();
-        if (!Motion.Enabled)
+        ArrivedInstantly = instant;
+        if (instant || !Motion.Enabled)
         {
             tree.CallDeferred(SceneTree.MethodName.ChangeSceneToFile, scenePath);
             return;

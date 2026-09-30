@@ -3,6 +3,7 @@ using WuxiaWorld.Game.Presentation;
 using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
+using WuxiaWorld.Game.Presentation.Art;
 
 namespace WuxiaWorld.Game.Preview.Pages;
 
@@ -12,7 +13,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 地面由 town_ground 着色器按反投影的世界坐标铺石板、河水与草地，房屋、廊棚、桥栏、摊位等由面搭成（按法线剔除与分阶明暗），
 /// 人物与树为立着的精灵；行走、排序、遮挡与镜头由 <see cref="ExploreStage"/> 共用。
 /// 客栈门前按 E 进入客栈大堂页（<see cref="ExploreInnPreview"/>），从大堂出门回到门前。
-/// 房屋、树、杂件、平桥与石板街面已按架构文档 10.3 方案 C 换成 AI 出件（廊柱、坐栏与渡口石阶仍为程序化占位）。
+/// 房屋、树、杂件、平桥、街面、草地与驳岸已按架构文档 10.3 方案 C 换成 AI 出件，廊柱、坐栏与渡口石阶为几何面贴 AI 纹理，河水为着色器。
 /// 截图参数 <c>--tab</c>：0 旧渡石痕旁（交互提示）、1 南岸街被屋身遮挡、2 客栈门前、3 廊棚下、4 缩到 0.85 看平桥一带、5 西头民居（AI 出件样板）、6 廊棚西头外侧（屋面不淡出，查屋面与廊柱遮挡）。
 /// </summary>
 public partial class ExploreTownPreview : ExploreStage

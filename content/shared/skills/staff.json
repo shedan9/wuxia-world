@@ -1,0 +1,25 @@
+[
+  {
+    "id": "skill.staff.pole_jab",
+    "tags": ["staff", "external"],
+    "inner_cost": 8,
+    "target_rule": "single_reachable_enemy",
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 9000 },
+      { "type": "apply_status", "status": "status.bleed", "chance_bp": 6000 }
+    ],
+    "animation_id": "anim.staff.jab"
+  },
+  {
+    "id": "skill.staff.pole_sweep",
+    "tags": ["staff", "external", "sweep"],
+    "inner_cost": 14,
+    "target_rule": "reachable_row_enemies",
+    "cooldown": 2,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 6500 },
+      { "type": "stance_damage", "amount": 10 }
+    ],
+    "animation_id": "anim.staff.sweep"
+  }
+]

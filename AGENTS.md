@@ -1,6 +1,6 @@
 # 项目协作约定
 
-本仓库当前有规划文档和按 [ARCHITECTURE.md 第 5.3 节](./docs/ARCHITECTURE.md#53-未来目录结构) 搭建的工程骨架（`game/`、`src/` 等）：构建与 Windows 导出已跑通，但展示页、美术资产与玩法均未制作，不能称为已交付 Demo。处理任务时先读 [README.md](./README.md)，再按工作范围阅读 `docs/` 中的以下文档：
+本仓库按 [ARCHITECTURE.md 第 5.3 节](./docs/ARCHITECTURE.md#53-未来目录结构) 搭建：M0 视觉 Demo（展示页与 AI 美术样稿）已于 2026-09-30 经用户验收；M1 已有战斗规则内核、第一章战斗内容、内容编译器、战斗模拟器、规则测试与战斗原型页，但探索、任务、旅行、存档等玩法和正式动作、配音尚未完成，不能称为已交付玩法 Demo。处理任务时先读 [README.md](./README.md)，再按工作范围阅读 `docs/` 中的以下文档：
 
 - [STORY.md](./docs/STORY.md)：三篇连续故事的剧情、任务 ID、人物动机、友情爱情、分支和结局。剧情内容以此为准。
 - [ARCHITECTURE.md](./docs/ARCHITECTURE.md)：统一世界、角色约束、系统边界、内容数据与存档契约。系统规则以此为准。

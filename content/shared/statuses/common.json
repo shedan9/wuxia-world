@@ -1,0 +1,66 @@
+[
+  {
+    "id": "status.bleed",
+    "harmful": true,
+    "tags": ["bleed", "dispellable"],
+    "tick": "owner_action_start",
+    "duration": 2,
+    "max_stacks": 3,
+    "stacking": "add_stack",
+    "tick_damage_bp": 400
+  },
+  {
+    "id": "status.internal_injury",
+    "harmful": true,
+    "tags": ["injury", "dispellable"],
+    "tick": "owner_action_end",
+    "duration": 2,
+    "inner_recovery_bp": -5000,
+    "damage_dealt_bp": -1000
+  },
+  {
+    "id": "status.insight",
+    "harmful": true,
+    "tags": ["dispellable"],
+    "tick": "owner_action_end",
+    "duration": 2,
+    "stance_taken_bp": 5000,
+    "damage_taken_bp": 1000
+  },
+  {
+    "id": "status.counter_ready",
+    "tags": ["buff"],
+    "tick": "owner_action_start",
+    "duration": 1,
+    "counter_ready": true
+  },
+  {
+    "id": "status.slow",
+    "harmful": true,
+    "tags": ["dispellable"],
+    "tick": "owner_action_end",
+    "duration": 2,
+    "speed_bp": -2000
+  },
+  {
+    "id": "status.water_level",
+    "tags": ["mechanism"],
+    "duration": 0,
+    "max_stacks": 3,
+    "stacking": "add_stack"
+  },
+  {
+    "id": "status.sluice_cover",
+    "tags": ["mechanism"],
+    "duration": 0,
+    "damage_taken_bp": -2000
+  },
+  {
+    "id": "status.exposed",
+    "harmful": true,
+    "tags": ["mechanism"],
+    "duration": 0,
+    "damage_taken_bp": 1500,
+    "stance_taken_bp": 2500
+  }
+]

@@ -1,0 +1,54 @@
+[
+  {
+    "id": "combatant.enemy.escort",
+    "level": 4,
+    "attributes": { "physique": 6, "strength": 8, "root": 4, "agility": 5, "insight": 4 },
+    "loadout": { "skills": ["skill.enemy.escort_chop"] },
+    "equipment": { "external_attack": 6 },
+    "overrides": { "max_hp": 150 },
+    "ai": "ai.brawler",
+    "art_id": "figure.escort"
+  },
+  {
+    "id": "combatant.enemy.hookman",
+    "level": 4,
+    "attributes": { "physique": 4, "strength": 6, "root": 4, "agility": 9, "insight": 6 },
+    "loadout": { "skills": ["skill.enemy.hook_throw", "skill.enemy.escort_chop"] },
+    "overrides": { "max_hp": 125 },
+    "ai": "ai.skirmisher",
+    "art_id": "figure.escort"
+  },
+  {
+    "id": "combatant.enemy.yard_guard",
+    "level": 5,
+    "attributes": { "physique": 10, "strength": 7, "root": 6, "agility": 4, "insight": 4 },
+    "loadout": { "skills": ["skill.enemy.bodyguard", "skill.enemy.brace", "skill.enemy.escort_chop"] },
+    "equipment": { "external_defense": 10 },
+    "overrides": { "max_hp": 240 },
+    "tags": ["armored"],
+    "ai": "ai.guardian",
+    "art_id": "figure.escort"
+  },
+  {
+    "id": "combatant.enemy.tang_shouting",
+    "level": 7,
+    "attributes": { "physique": 12, "strength": 10, "root": 9, "agility": 7, "insight": 8 },
+    "loadout": { "skills": ["skill.boss.harbor_blade", "skill.boss.chain_hook", "skill.boss.sluice_torrent", "skill.boss.undertow_hook"] },
+    "equipment": { "external_attack": 8, "external_defense": 16 },
+    "overrides": { "max_hp": 620, "max_stance": 80 },
+    "tags": ["boss", "armored"],
+    "ai": "ai.boss.tang_shouting",
+    "control_threshold": 2,
+    "art_id": "figure.tang_shouting"
+  },
+  {
+    "id": "combatant.mech.sluice_gate",
+    "level": 1,
+    "loadout": { "skills": ["skill.mech.open_sluice"] },
+    "overrides": { "max_hp": 180, "max_inner": 0, "external_defense": 30, "internal_defense": 60, "speed": 25, "evasion": 0, "max_stance": 0 },
+    "tags": ["mechanism"],
+    "ai": "ai.mechanism",
+    "counts_for_victory": false,
+    "art_id": "battle.sluice_gate"
+  }
+]

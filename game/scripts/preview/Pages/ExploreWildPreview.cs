@@ -3,6 +3,7 @@ using WuxiaWorld.Game.Presentation;
 using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
+using WuxiaWorld.Game.Presentation.Art;
 
 namespace WuxiaWorld.Game.Preview.Pages;
 
@@ -11,7 +12,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 与城镇、客栈同一个2:1 等距正交投影；山势做成三层台地（溪涧谷底、半山茶亭、上台山门），崖边在画面上层层升高，
 /// 只能经凿进崖里的石阶上下，行人的高度随石阶连续变化。前景松竹压画框、中景台地、远景三层远山按镜头做视差，
 /// 上台远处没入山雾；山道用土路色带与路碑、木牌标出走向，山门在画面外时屏幕边缘有方向箭头（目标提示预览）。
-/// 植被、山石、茶亭、山门与路标已按架构文档 10.3 方案 C 换成 AI 出件；地面、崖壁、石阶与木桥仍为程序化赛璐璐占位。
+/// 植被、山石、茶亭、山门、路标、土路、草坡、崖壁、溪岸、溪床与桥面已按架构文档 10.3 方案 C 换成 AI 出件或纹理，石阶与桥栏为几何面贴 AI 纹理，溪水为着色器。
 /// 截图参数 <c>--tab</c>：0 山脚入口、1 木桥上、2 茶亭下（屋顶淡出）、3 上台岔路木牌前（交互提示）、4 缩到 0.85 看山门与远山、5 石阶半途。
 /// </summary>
 public partial class ExploreWildPreview : ExploreStage

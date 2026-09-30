@@ -1,0 +1,53 @@
+[
+  {
+    "id": "skill.fist.shield_palm",
+    "tags": ["fist", "guard"],
+    "inner_cost": 8,
+    "target_rule": "other_ally",
+    "cooldown": 1,
+    "effects": [
+      { "type": "guard" },
+      { "type": "restore_stance", "applies": "self", "amount": 10 }
+    ],
+    "animation_id": "anim.fist.guard"
+  },
+  {
+    "id": "skill.fist.counter_stance",
+    "tags": ["fist", "stance"],
+    "inner_cost": 6,
+    "target_rule": "self",
+    "cooldown": 1,
+    "effects": [
+      { "type": "apply_status", "applies": "self", "status": "status.counter_ready" },
+      { "type": "restore_stance", "applies": "self", "amount": 15 }
+    ],
+    "animation_id": "anim.fist.stance"
+  },
+  {
+    "id": "skill.fist.heavy_palm",
+    "tags": ["fist", "external", "heavy"],
+    "inner_cost": 12,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 13000 },
+      { "type": "stance_damage", "amount": 15 },
+      { "type": "gain_momentum", "applies": "self", "amount": 5 }
+    ],
+    "animation_id": "anim.fist.palm"
+  },
+  {
+    "id": "skill.fist.sweep",
+    "tags": ["fist", "external", "sweep"],
+    "inner_cost": 10,
+    "momentum_cost": 30,
+    "target_rule": "reachable_row_enemies",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 8000 },
+      { "type": "stance_damage", "amount": 12 },
+      { "type": "apply_status", "status": "status.slow", "chance_bp": 5000 }
+    ],
+    "animation_id": "anim.fist.sweep"
+  }
+]

@@ -49,14 +49,14 @@ public partial class SettingsPreview : PreviewScreen
 
     private static Control BuildDisplay()
     {
-        var resolution = Options(1, "1600 × 900（窗口）", "1920 × 1080", "2560 × 1440", "3840 × 2160");
-        var mode = Options(0, "窗口", "无边框全屏", "独占全屏");
+        var resolution = Options(1, "1600 × 900", "1920 × 1080", "2560 × 1440", "3840 × 2160");
+        var mode = Options(1, "窗口", "无边框全屏", "独占全屏");
         mode.SetItemDisabled(2, true);
         mode.SetItemTooltip(2, "目标设备验证后开放");
 
         return Form(
             Setting("分辨率", "界面按 1920 × 1080 逻辑画布缩放输出。", resolution),
-            Setting("窗口模式", "独占全屏为禁用示例。", mode),
+            Setting("窗口模式", "默认无边框全屏，Alt+Enter 可切换窗口；独占全屏为禁用示例。", mode),
             Setting("垂直同步", "开启可减少画面撕裂。", Ui.Switch(true)),
             Setting("界面缩放", "只缩放界面，不缩放场景。", Slider(100, 90, 130, 5, v => $"{v:0}%")),
             Setting("帧率上限", null, Options(1, "30", "60", "120", "不限")));

@@ -21,4 +21,10 @@ public static class PreviewPages
         new("preview.journal", "任务 / 关系 / 见闻", "目标说明、人物关系与已知信息层级", "res://scenes/preview/Journal.tscn"),
         new("preview.settings", "暂停 / 设置", "文字大小、音量、分辨率选项与返回路径", "res://scenes/preview/Settings.tscn"),
     ];
+
+    /// <summary>第二阶段原型（M1 起）：规则真实结算，不计入 M0 展示页数。</summary>
+    public static readonly IReadOnlyList<PreviewPage> Prototypes =
+    [
+        new("proto.battle", "战斗原型（M1）", "规则内核真实结算：三流派、旧渡首领机制、预估与重放", "res://scenes/battle/BattlePrototype.tscn"),
+    ];
 }

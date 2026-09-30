@@ -160,7 +160,7 @@ Godot 采用 MIT 许可，具体分发说明以[官方许可页](https://godoten
 | 动画 | Godot Skeleton2D / AnimationPlayer + 关键帧特效 | 不依赖付费骨骼运行时；M0 仅做短动作预览，完整动作管线在 M1 验证 |
 | 角色配音 | AI 语音供应商适配器 + 本地音频资产 | MiniMax、ElevenLabs 作为试听候选；选型后锁定音色及可记录的模型版本，不将 API 接入玩家客户端 |
 | 图片制作 | 可输出分层源文件的绘画工具 | 工具不限，统一导出规范、图层命名与授权台账 |
-| 测试 | .NET 单元测试 + Godot 集成场景 | 规则测试框架及 NuGet 补丁版本在 M1 锁定；M0 以视觉和 UI 验收为主 |
+| 测试 | .NET 单元测试 + Godot 集成场景 | 2026-09-30（M1）锁定：xUnit 2.9.3、xunit.runner.visualstudio 3.1.4、Microsoft.NET.Test.Sdk 17.14.1（`tests/Domain/WuxiaWorld.Domain.Tests`）；升级另开分支回归 |
 | 版本管理 | Git + Git LFS | 代码与配置进 Git，大型分层源文件和音频进 LFS |
 | 构建 | 本地脚本；随后接入仓库 CI | 本地与 CI 使用相同校验和导出入口 |
 
@@ -208,7 +208,7 @@ flowchart TB
 
 ### 5.3 未来目录结构
 
-以下是长期目标结构，不表示这些文件目前存在。M0 只创建 UI 展示、场景预览和 Windows 导出所需文件；规则库、内容编译器与测试工具在第二阶段逐步建立。
+以下是长期目标结构，不表示这些文件都已存在。M0 只创建了 UI 展示、场景预览和 Windows 导出所需文件；M1 起建立规则库、内容编译器、战斗模拟器与测试项目，实际落地情况见本节末尾。
 
 ```text
 wuxia-world/
@@ -245,7 +245,25 @@ wuxia-world/
 └── build/                        # 构建输出，忽略提交
 ```
 
-当前 `game/scripts/presentation/` 下分 `App/`（宿主、路由、截图命令）与 `Ui/`（主题、字体、控件工厂）；M0 展示页及其样例数据在 `game/scripts/preview/`（`Pages/`、`Samples/`），第二阶段随 preview 目录一起退役。
+当前 `game/scripts/presentation/` 下分 `App/`（宿主、路由、截图命令）、`Ui/`（主题、字体、控件工厂）、`Art/`（AI 件与全身形象的贴图加载 `PieceArt`、`FigureArt`，2026-09-30 自 preview 迁出）与 `Battle/`（战斗布景、战斗形象与 M1 战斗原型 `BattleScreen`）；M0 展示页及其样例数据在 `game/scripts/preview/`（`Pages/`、`Samples/`），第二阶段随 preview 目录一起退役。
+
+M1（2026-09-30）实际落地的结构：
+
+| 位置 | 内容 |
+|---|---|
+| `src/WuxiaWorld.Domain/Common/` | `Pcg32`（项目自有随机数）、`Bp`（万分比定点）、`StateHasher`（64 位 FNV-1a 状态哈希） |
+| `src/WuxiaWorld.Domain/Characters/` | 五项属性、派生公式 `StatFormula`（含规则版本号）、心法 / 轻功 / 天赋定义、装配校验 `LoadoutRules` |
+| `src/WuxiaWorld.Domain/Combat/` | 内容定义（招式、状态、战斗单位模板、遭遇、克制、战斗物品）、`BattleState`、命令、事件、`BattleEngine`（流程、行动、效果、预估四个分部）、`DamageMath`、`Targeting`、`Ai/BattleAi` |
+| `src/WuxiaWorld.Application/Combat/` | `BattleSession`：替 AI 决策、逐条记录命令与状态哈希、按记录重放 |
+| `src/WuxiaWorld.Infrastructure/Content/` | 内容 JSON 选项、`CombatContentLoader`（读 `content/`）、`CombatContentValidator`（语义校验）、`CombatBundle`（合成包） |
+| `content/shared/{skills,statuses,arts,items,combat,text}/` | 招式、状态、心法 / 轻功 / 天赋、战斗物品、克制表、中文文本表 `zh-Hans.json` |
+| `content/characters/combat_presets.json` | M1 战斗预设：主角三流派、陆青禾与占位同行者（M2 起由成长状态生成主角模板） |
+| `content/regions/jiangnan/{combatants,encounters}/` | 第一章敌人与遭遇（押运队冲突、旧渡水门） |
+| `tools/ContentCompiler/` | 校验并写出 `game/generated/content/combat.json`；导出脚本先运行它 |
+| `tools/BattleSimulator/` | 固定种子批量模拟，含三个流派挑战场景 |
+| `tests/Domain/WuxiaWorld.Domain.Tests/` | 规则、确定性、重放与内容校验测试 |
+| `game/scripts/adapters/GeneratedContent.cs` | 经 Godot 文件接口读取内容包（导出包内同样可用） |
+| `game/scenes/battle/BattlePrototype.tscn` | M1 战斗原型页，场景目录末尾可进入 |
 
 Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scripts/adapters`，纯文件与 JSON 适配留在 `Infrastructure`。避免将全部源代码塞进引擎项目导致规则测试必须启动编辑器。
 
@@ -380,6 +398,26 @@ Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scr
 - 每次行动记录状态哈希、种子状态、命令和结算摘要，可重放问题战斗。
 - 反应链有单层规则及总事件上限；超限报错并保存诊断快照，不能无限循环。
 
+### 7.6 M1 实现规格
+
+2026-09-30 在 `src/WuxiaWorld.Domain/Combat` 按 7.1–7.5 实现，以下为实际采用、7.1–7.4 未写死的取值与接口；全部属于配置，改动须递增 `StatFormula.RulesetVersion`。当前为规则版本 2（版本 1 → 2：同速先比身法；新增“穿透一列”；首领使用敌方势）。
+
+- **内核接口**：`BattleEngine.Start(BattleSetup)` 开战并推进到第一名待行动单位；`Submit(state, command)` 校验后原子结算，返回事件列表，非法命令不改状态、不扣费、不消耗随机数；`Validate` 给出玩家可读的拒绝原因；`Estimate` 给出命中率、伤害区间（不含 / 含暴击）、架势伤害、是否破绽与护援代受，只读状态。内核不区分玩家与 AI，每名待行动单位都停在 `Pending`；`BattleSession`（应用层）替 AI 调 `BattleAi.Decide` 并逐条记录命令与行动后状态哈希。
+- **随机与哈希**：PCG-XSH-RR（64 位状态，参考实现测试向量已入测试），战斗流选择量 `0xB4771E00`；状态哈希为 64 位 FNV-1a，按单位 ID、状态列表、冷却 ID 的固定次序写入。
+- **补充派生**：外防 = 10 + 2×体魄 + 等级，内防 = 10 + 2×根骨 + 等级，命中 = 100 + 2×悟性 + 2×等级，闪避 = 50 + 2×身法 + 等级，暴击率 = 5% + 0.3%×悟性，架势上限 = 40 + 2×体魄，控制抗性 = 0.4%×根骨；每级 3 点潜能。心法、轻功、装备只给固定加成；主修与辅修阴阳相冲时辅修加成减半，装配校验以警告说明代价。
+- **伤害层次**：基础 → 克制（0.8–1.25，匹配规则相乘后截断）→ 暴击 1.5 倍（率上限 35%）→ 攻方增减伤（加法合计，截断到 −50%～+100%）→ 受方增减伤（加法合计，截断到 −80%～+100%）→ 浮动 0.95–1.05 → 至少 1。每层万分比整数相乘后向下取整；护盾吸收层预留在浮动之后。
+- **势**：我方、敌方各一池，0–100，战后清空。命中 +5、打出破绽 +10、受伤一方 +3、招架 +10；我方连环刺、扫堂腿耗 30，周天归元耗 50；敌方由首领唐守亭使用：满 50 蓄力“回澜钩”（扣势在蓄力时，下一次行动钩住意图里写明的一人）。
+- **架势与破绽**：架势归零即破绽：受伤 +50%，取消反应，蓄力被打断；受一次有效伤害（同一招全部段数结算后）或到目标下次行动结束时消失，并把架势回满。破绽中不再累计架势伤害。
+- **防御 / 调息**：防御受伤 −50%，受一次有效伤害即消失，否则到自身下次行动开始结束，回架势 5。调息回最大内力 20%（静息功 +15%），回架势 10，至下次行动开始受伤 +20%。
+- **反应**：反击（反击架势中受近身攻击后以普通攻击七成还手）、护援（护身掌：到护卫者下次行动开始前，同伴受到的单体攻击由护卫者代受）、招架（天赋：防御中受击回架势 10、积势 10）。每人每轮 1 次；反应出招不再触发反应；破绽或被控时不能反应。单条命令事件上限 512 条，超出抛出带状态哈希的诊断异常。
+- **状态时点**：持有者行动开始、持有者行动结束、施加者行动开始（护援）三种；施加在当前行动者身上且会在本次行动结束时消耗的状态，本次不计。流血按最大气血 4%×层数在行动开始结算，至多 3 层。
+- **控制**：点穴跳过 1 次主行动，被跳过的行动照常计入冷却与持续时间；结束时获得 1 个自身行动周期的免控。首领控制积累阈值（唐守亭 2 次），满阈值才生效并清零。
+- **蓄力（首领预兆）**：蓄力招施放时只扣费并亮出意图，下一次自身行动自动出手，冷却从出手时计；架势被破或被点穴即打断；出手时原目标失效则改打第一个合法目标，无目标落空。
+- **行动与阵位**：每轮开轮按有效速度排序，同速身法高者先，再同按 ID；速度增减只影响下一轮；换位移到空位或与同伴互换；撤退成功率 = clamp(50% + (我方平均速度 − 敌方平均速度)×1%, 20%, 95%)，剧情锁定战拒绝并说明原因；物品在不会产生任何变化（满血、满内力、无可驱散状态）时拒绝使用。
+- **遭遇阶段**：按轮次、指定单位气血低于比例、指定单位倒下触发，一次性执行增援（空位不足时顺延、同位倒下者让位）与状态施加 / 移除；胜利条件为全歼计入胜利的敌人或击倒指定单位；双方同时失去战斗能力判负。
+- **选目标规则**：近身单体（对方前排有人只能打前排）、远程单体、横扫可接触一排、穿透一列（任选一名敌人，命中其所在槽位前后两排，前排不挡）、敌方全体、自身、己方单体、同伴、己方全体。护援只拦单体招，穿透一列与群体招不被代受；每名目标单独判定命中。
+- **AI**：莽攻（预计伤害占目标剩余气血比例、击倒、破绽、附带状态评分；“穿透一列”按整列合计）、游击（偏好后排、已流血者与远程招）、护卫（同伴低于六成时护援、否则摆反击架势）、唐守亭（敌方势够时先蓄力回澜钩、指向气血比例最低者，否则第 2 轮起蓄力水门冲击，都不可用时按莽攻）、机关（每次行动抬一层）、木桩；同分按招式 ID、目标 ID 取第一个。
+
 ## 8. 成长、武学与队伍深度
 
 ### 8.1 成长的五个维度
@@ -459,7 +497,10 @@ Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scr
 |---|---|
 | `CharacterDefinition` | `id, source_work_id, story_anchor_id, faction_id, profile_id, stats_template, art_id, adaptation_ref` |
 | `CharacterStoryAnchor` | `id, source_work_id, edition_ref, main_story_segment, chapter_refs, age_spec, identity, known_events, relationship_refs`；`age_spec` 记录精确值或范围及依据 |
-| `SkillDefinition` | `id, tags, costs, target_rule, effects, cooldown, animation_id` |
+| `SkillDefinition` | `id, tags, inner_cost, momentum_cost, target_rule, effects, cooldown, charged, sure_hit, animation_id`；显示名与说明取文本表 `<id>.name` / `<id>.desc` |
+| `StatusDefinition` | `id, harmful, tags, tick, duration, max_stacks, stacking` 与有限的修正字段（受伤 / 造成伤害 / 架势 / 速度 / 回内 / 命中修正、跳过行动、受击即消、取消反应、反击架势、结束回架势、结束授予、免疫标签） |
+| `CombatantTemplate` | `id, level, attributes, loadout, equipment, overrides, tags, ai, control_threshold, counts_for_victory, art_id`；M1 的主角与伙伴模板为预设，M2 起由成长状态生成 |
+| `EncounterDefinition` | `id, locked, enemies, victory, victory_unit, phases, experience`；阶段含触发条件、增援与状态施加 / 移除 |
 | `QuestDefinition` | `id, region_id, trigger_maps, prerequisites, visible_hints, priority, reservation_rules, stages, branches, guaranteed_clue, rewards, exclusive_group, expiry_notice, recovery_location`；记录失败/放弃结果与汇合事实 |
 | `DialogueDefinition` | `id, entry_node, nodes, lines`；台词行含 `line_id, character_id, text_key, voice_asset_id` |
 | `VoiceProfile` | `character_id, voice_profile_version, provider, model_id, provider_voice_id, delivery_defaults, pronunciation_dict_version` |
@@ -472,19 +513,18 @@ Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scr
 
 ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名称来自中文文本表。实例 ID 与定义 ID 分开，避免两把同名剑共享耐久或改造状态。ID 发布后不可随意复用。
 
-示例仅说明配置契约，不代表已存在的文件：
+示例取自现有内容 `content/shared/skills/sword.json`（M1 v0 数值，随平衡调整）：
 
 ```json
 {
   "id": "skill.sword.break_guard",
-  "name_key": "skill.sword.break_guard.name",
   "tags": ["sword", "external", "guard_break"],
-  "costs": {"inner_power": 12, "momentum": 0},
+  "inner_cost": 12,
   "target_rule": "single_reachable_enemy",
   "cooldown": 1,
   "effects": [
-    {"type": "damage", "stat": "external_attack", "scale_bp": 11000},
-    {"type": "stance_damage", "amount": 25}
+    { "type": "damage", "kind": "external", "scale_bp": 12000 },
+    { "type": "stance_damage", "amount": 30 }
   ],
   "animation_id": "anim.sword.thrust"
 }
@@ -495,6 +535,8 @@ ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名�
 `编辑 JSON / 场景 → Schema 校验 → 跨表与剧情语义检查 → 编译内容索引 → 运行试玩 → 打包`
 
 校验器必须发现：重复 ID、无效引用、非法数值、缺失文本、孤立对话节点、无条件自循环、无出口地图、不存在的落点、角色重复实例、角色事件占用冲突、缺失资源、互斥任务同时激活、无提示限时条件及缺少汇合出口。复杂分支可达性用固定测试存档与条件图遍历验证；静态校验不宣称能证明所有剧情都无死锁。
+
+M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读取 `content/` 下的招式、状态、心法、物品、克制表、文本表、战斗单位与遭遇，`CombatContentValidator` 检查 ID 格式与重复、跨表引用、内核必需定义（`CoreIds`）、数值范围、阵位、阶段引用与缺失文本，通过后写出单一合成包 `game/generated/content/combat.json`（含 `content_version`：各源文件路径与内容的 SHA-256 前 16 位，及 `ruleset_version`）。游戏只读这份包，规则版本不符即拒绝加载；JSON 采用蛇形小写字段与枚举，未知字段报错。地图、任务与对白的编译在 M2 接入同一入口。
 
 正式剧情修改要同时评审来源、人物动机、玩家选择和状态变化。人物内容校验检查剧情锚点引用、年龄范围格式及身份字段完整性；原著依据、年龄感和身份是否符合主要剧情由人工审核，不能宣称静态工具能自动判断原著事实。为年代兼容而偏离锚点的改动不得通过审核。M3 后新增普通任务应以数据与场景配置完成；若每个任务都新增专属脚本，说明原语或工具边界需要改进。
 
@@ -513,6 +555,7 @@ ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名�
 | 资产 | 首期规格 | 验收重点 |
 |---|---|---|
 | 逻辑画布 | 1920×1080，支持 2560×1440 和 3840×2160 输出 | UI 随输出缩放，不能只是把整个低清画面拉伸 |
+| 窗口 | 启动即无边框全屏（`window/size/mode=3`，按显示器原生分辨率输出，`canvas_items` + `expand` 缩放逻辑画布）；Alt+Enter 在全屏与窗口之间切换（`AppHost._Input`）；窗口不固定像素，取所在屏幕可用区域（扣除任务栏）宽高各 80% 并居中，宽高比随屏幕，逻辑画布按 `expand` 适配；项目不再设 `window_width_override` / `window_height_override`；截图模式（`--capture`）切回窗口并按 `--size` 设尺寸 | 4K 屏启动即铺满，不留桌面边；正式设置页接入后改为读取玩家设置 |
 | 地图 | 单图建议 2–6 个屏幕面积，分块纹理 2048² 为主 | 视角、比例、光源一致；近看清楚、边缘无接缝 |
 | 关键场景 | 分层前景、中景、远景与可交互物 | 遮挡正确，主角不会藏在大面积树冠下 |
 | 探索人物 | 屏幕身高约 120–180 逻辑像素，源资产至少 2 倍 | 面向清楚，轮廓与武器可辨识 |
@@ -561,9 +604,9 @@ ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名�
 
 批量出件（2026-09-25，按试做参数）：城镇其余 25 件、客栈大堂 12 件、山路 59 件全部生成，入库 104 件（城镇房屋 9、树 8、杂件 7；客栈柜台、楼梯、屏风、3 柱、4 桌、2 盆栽；山路 24 树、16 石、15 灌丛 / 蕨 / 草药、茶亭 8 部件、山门 3 部件、路碑、木牌）。未入库、继续画程序化占位的：城镇井台（四个种子都只照描了井圈线框）、廊棚、驳岸与渡口石阶；客栈的墙与吊灯；山路的崖壁、石阶与木桥（2026-09-26 地面纹理另行补齐，见上文拼装一条）。批量中确认的规律：提示词里屋面词须放在最前（“black clay roof tiles in rows”），否则店铺与客栈的屋面被画成木板色或红褐色；铺面写“排门”时负面词不能含 shutters，并须排除卷帘门；弱约束（0.35）适合乔木，但矮丛和山石会被画成满屏素材图集，约束 0.55–0.6 时矮丛又照描占位笔画，最终矮丛取两轮中较好的；苔藓要写“暗橄榄绿苔斑”，否则是荧光绿描边。
 
-**人物形象（2026-09-30，M0-04 样稿）。** 探索与战斗共用同一张 AI 全身图，保证两处形象一致：`tools/ArtGen/figure.py` 按统一的 OpenPose 骨架（`stand` 站立、`stand_pole` 持篙、`guard` 迎敌架势、`sit` 坐凳，关节坐标以 832×1216 画布给出）作 ControlNet 引导（`xinsir/controlnet-openpose-sdxl-1.0`，Apache-2.0），Animagine XL 4.0 文生图、纯灰底；人物服装描述超过 77 token，提示词按逗号分段、两个文本编码器逐段编码后拼接。同一姿势的人物身高、站位一致，出图均为四分之三侧身朝画面左侧。`place.py --figure` 只留主体连通块（去掉底色渐变在画框边残留的亮带）、按外框裁边，并按骨架取锚点：脚底 x 为两踝中点（坐姿为两胯中点，与占位坐姿落点一致），脚底 y 为两踝附近列最低的不透明像素，头顶为鼻子附近列最高的不透明像素（长篙、刀尖、棍梢不计入身高），再缩放到头顶—脚底 800 像素（战斗 1080p 下约 2 倍源图），入包为 `game/assets/art/figure/figure.<人物>.png` 与记 `foot`、`stature` 的 `.json`，导入开 mipmap。游戏端 `FigureArt` 按“屏幕身高 ÷ stature”缩放、脚底对齐地面，朝右时水平翻转（第一阶段允许，见 10.2）；`WalkerFigure` 按装束取默认 id（主角、陆青禾、乔红绡、店小二、茶客），屏幕外框并入贴图两个朝向的外框参与排序，走动时只按步频上下起伏、竖向微缩并略前倾，正式行走帧与 4 / 8 向形象放到 M1 起；`BattleStandee` 按单位 id 取图（两名押运打手共用 `figure.escort`），头顶到脚底取立像高度的 92%，敌方朝左；水门机关仍为程序化方框。没有对应图时两处都继续画程序化占位。
+**人物形象（2026-09-30，M0-04 样稿）。** 探索与战斗共用同一张 AI 全身图，保证两处形象一致：`tools/ArtGen/figure.py` 按统一的 OpenPose 骨架（`stand` 站立、`stand_pole` 持篙、`guard` 迎敌架势、`sit` 坐凳，关节坐标以 832×1216 画布给出）作 ControlNet 引导（`xinsir/controlnet-openpose-sdxl-1.0`，Apache-2.0），Animagine XL 4.0 文生图、纯灰底；人物服装描述超过 77 token，提示词按逗号分段、两个文本编码器逐段编码后拼接。同一姿势的人物身高、站位一致，出图均为四分之三侧身朝画面右侧（2026-10-01 更正：此前文档误记为朝左，引擎据此把朝右的人物翻转，导致战斗两军与探索走向的朝向全部相反）。`place.py --figure` 只留主体连通块（去掉底色渐变在画框边残留的亮带）、按外框裁边，并按骨架取锚点：脚底 x 为两踝中点（坐姿为两胯中点，与占位坐姿落点一致），脚底 y 为两踝附近列最低的不透明像素，头顶为鼻子附近列最高的不透明像素（长篙、刀尖、棍梢不计入身高），再缩放到头顶—脚底 800 像素（战斗 1080p 下约 2 倍源图），入包为 `game/assets/art/figure/figure.<人物>.png` 与记 `foot`、`stature` 的 `.json`，导入开 mipmap。游戏端 `FigureArt` 按“屏幕身高 ÷ stature”缩放、脚底对齐地面，朝左时水平翻转（第一阶段允许，见 10.2）；`WalkerFigure` 按装束取默认 id（主角、陆青禾、乔红绡、店小二、茶客），屏幕外框并入贴图两个朝向的外框参与排序，走动时只按步频上下起伏、竖向微缩并略前倾，正式行走帧与 4 / 8 向形象放到 M1 起；`BattleStandee` 按单位 id 取图（两名押运打手共用 `figure.escort`），头顶到脚底取立像高度的 92%，我方朝右、敌方朝左；水门机关仍为程序化方框。没有对应图时两处都继续画程序化占位。
 
-**战斗布景（2026-09-30，M0-04 样稿）。** 侧视战斗按“远景整张生成、近景引擎铺设”拼成一幅：AI 只画远岸水线以上的远景（`tools/ArtGen/backdrop.py`，SDXL base 文生图，场景加风格词超过 77 token 时分段编码；放大到 1920×1088 后 strength 0.3 图生图补细节），入包为 `game/assets/art/battle/<id>.png`，`.json` 记远岸水线在图中的 y（`place.py --backdrop`）。`BattleBackdrop`（`game/scripts/preview/Pages/BattleBackdrop.cs`）把水线对齐到设计坐标 y 430、按宽度铺满（21:9 时放大，水线仍对齐），远景乘 (0.9, 0.9, 0.94) 略压暗；y 505 起为码头近景，由 `battle_ground.gdshader` 按透视铺城镇同一张 AI 石板纹理 `town.ground.flagstone`：屏幕行 y 的深度为 focal·cam_h / (y − horizon)，horizon 取 200（高于画上的远岸，镜头显得更高、地面压缩更缓，两军站位不随远近缩放也不显得浮起），cam_h 600、focal 2065；远端一道 22 像素条石压边（纹理平均色加细碎明暗与竖缝，边沿一线映天光，下压一道阴影），由远及近乘暖灰到冷灰两组系数，落日方向（sun_x）一道湿石板暖色反光，底部两角压暗；上层叠 `Backdrop.LeafFall` 飘叶。两军脚底（y 540–684）都在近景地面上。整张侧视构图（远景 + 大片前景地面）SDXL 画不稳：前景地面被画成水面或立墙，色块草图图生图与草图边线引导都会照搬平涂，因此前景一律交给引擎。未入库或关闭贴图时退回程序化黄昏山水（`Backdrop`）。战斗道具（`battle.<道具>`，首件为水门机关 `battle.sluice_gate`）不经 Godot 布局：`tools/ArtGen/prop_guide.py` 按任务文件 `props` 里的色块坐标画正立面引导图（透明底，`detail` 色块只进完整引导图、不进结构图），再由 `piece.py` 引导出件；`place.py --prop` 裁边并记底边中点 foot 与整高 stature，与全身人物同一格式，`FigureArt` 按 id 前缀从 `assets/art/<前缀>/` 读取，`BattleStandee` 以底边落地、立像高度为整高贴图。
+**战斗布景（2026-09-30，M0-04 样稿）。** 侧视战斗按“远景整张生成、近景引擎铺设”拼成一幅：AI 只画远岸水线以上的远景（`tools/ArtGen/backdrop.py`，SDXL base 文生图，场景加风格词超过 77 token 时分段编码；放大到 1920×1088 后 strength 0.3 图生图补细节），入包为 `game/assets/art/battle/<id>.png`，`.json` 记远岸水线在图中的 y（`place.py --backdrop`）。`BattleBackdrop`（`game/scripts/presentation/Battle/BattleBackdrop.cs`）把水线对齐到设计坐标 y 430、按宽度铺满（21:9 时放大，水线仍对齐），远景乘 (0.9, 0.9, 0.94) 略压暗；y 505 起为码头近景，由 `battle_ground.gdshader` 按透视铺城镇同一张 AI 石板纹理 `town.ground.flagstone`：屏幕行 y 的深度为 focal·cam_h / (y − horizon)，horizon 取 200（高于画上的远岸，镜头显得更高、地面压缩更缓，两军站位不随远近缩放也不显得浮起），cam_h 600、focal 2065；远端一道 22 像素条石压边（纹理平均色加细碎明暗与竖缝，边沿一线映天光，下压一道阴影），由远及近乘暖灰到冷灰两组系数，落日方向（sun_x）一道湿石板暖色反光，底部两角压暗；上层叠 `Backdrop.LeafFall` 飘叶。两军脚底（M1 战斗原型 y 580–756，M0 展示页 y 540–684）都在近景地面上。整张侧视构图（远景 + 大片前景地面）SDXL 画不稳：前景地面被画成水面或立墙，色块草图图生图与草图边线引导都会照搬平涂，因此前景一律交给引擎。未入库或关闭贴图时退回程序化黄昏山水（`Backdrop`）。战斗道具（`battle.<道具>`，首件为水门机关 `battle.sluice_gate`）不经 Godot 布局：`tools/ArtGen/prop_guide.py` 按任务文件 `props` 里的色块坐标画正立面引导图（透明底，`detail` 色块只进完整引导图、不进结构图），再由 `piece.py` 引导出件；`place.py --prop` 裁边并记底边中点 foot 与整高 stature，与全身人物同一格式，`FigureArt` 按 id 前缀从 `assets/art/<前缀>/` 读取，`BattleStandee` 以底边落地、立像高度为整高贴图。
 
 大地图单独处理：人工画出海岸、江河、山脉和城镇位置的色块草图，再以图生图生成青绿山水风的手绘地图，城镇图标和道路另作可交互的 UI 层。视角、配色和件的尺度先用 M0 的江南水镇样板验证，通过后再作地区件库批量生产。
 
@@ -607,14 +650,14 @@ ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名�
 - 类型变体：按钮 `PrimaryButton`、`RowButton`、`ChipButton`、`NavTab`、`SubTab`、`DarkButton`、`MenuItem`、`CardButton`、`ChoiceButton`；面板 `SheetPanel`（玉版）、`DarkPanel`（潭影）、`GlassPanel`（薄玻璃）、`InsetPanel`、`SealPanel`、`KeyCapPanel`；标签 `DisplayLabel`、`DarkTitleLabel`、`GiltLabel` 等；进度条 `HealthBar`、`InnerBar`、`ExpBar`。键盘焦点统一为控件外侧金泥折角。
 - 组件工厂 `Ui/Ui.cs`：列表行、开关、页名章、字形印鉴、菱形分隔 `DiamondRule`、小节标题、键帽提示、锚点摆放 `Place`、整树忽略鼠标 `IgnoreMouse`。动效 `Ui/Motion.cs`（入场、依次入场、闪烁、淡入淡出；`Motion.Enabled` 为 false 时直接落到终态，截图模式自动关闭）。入场只叠加一段逐渐归零的位移、不缓存终点，父容器中途重排时位移叠到新位置上，避免列表项被拉回旧坐标而重叠。
 - 背景 `Presentation/Scenery/Backdrop.cs` + `assets/shaders/landscape.gdshader`：程序化青绿山水（天空、日轮、流云、四重山、流雾、江面、近岸）与柳叶粒子，参数 `defocus`、`veil`、`left_wash`、`parallax`、`world_seed`、`mood`（0 晨昼、1 黄昏）；山脚染赭石、天际为暖绢色；标题页清晰、菜单虚化压暗、战斗用黄昏、存档缩略图按存档时辰取 `mood`。正式场景美术完成前它也作探索与战斗的占位远景。
-- `SceneRouter` 改为最上层 `CanvasLayer`，切换场景时经玄潭色幕淡出淡入；启动进入标题页 `scenes/preview/MainMenu.tscn`，任意展示页 Esc 回标题，标题页的“继续旅程”进入 M0 场景目录。
+- `SceneRouter` 改为最上层 `CanvasLayer`，切换场景时经玄潭色幕淡出淡入；`GoTo(path, instant: true)` 立即切换、不走色幕，并置 `ArrivedInstantly` 让新场景跳过入场动效（菜单分区 Q / E 用此方式）；启动进入标题页 `scenes/preview/MainMenu.tscn`，任意展示页 Esc 回标题，标题页的“继续旅程”进入 M0 场景目录。
 - 菜单外框 `preview/PreviewScreen.cs`：虚化山水底、顶栏页名章 + 分区签（Q / E）+ 地点与铜钱、中部玉版与子页签（PgUp / PgDn）、底栏键帽提示。
 - 对话展示页读取 `game/dialogue/arc01/chapter01.md`（M0 未锁稿样例，导出预设 `include_filter="dialogue/*.md"` 打包），台词不写进代码；解析器在 `preview/Samples/DialogueSamples.cs`。
 - 大地图展示页 `preview/Pages/WorldMapPreview.cs`（`scenes/preview/WorldMap.tscn`）：底图 `WorldMapCanvas` 在 CPU 上生成 768×426 高度图（每格 6 逻辑像素）（`Image.Format.Rf`），由 `assets/shaders/world_relief.gdshader` 在着色器内做三次 B 样条插值（兼容渲染器上 32 位浮点纹理不保证线性过滤）作俯视地面底色，山脉按用户要求以平视山峦矢量绘制（三角形数组，不经多边形三角化），江河、道路与题字同样矢量叠加，画布 4608×2560 逻辑像素（坐标按 2880×1600 设计稿书写，`WorldMapSamples.Scale` = 1.6 整体放大；山体、河宽与地名章不随之放大，世界更辽阔）、基准缩放 0.8 × 玩家缩放（最小值按视口算出、恰好容下全图，最大 1.15），舆图大于视口的方向平移夹在图内、小于视口的方向居中；舆图在进入页面时由离屏 `SubViewport` 画一次，`GetImage` 读回后生成多级纹理，以 `TextureRect`（线性 + 多级纹理过滤）显示，缩放平移只改这张贴图的变换，不再逐帧运行地形着色器与重绘矢量（兼容渲染器不支持 2D MSAA，烘焙视口不开）；地标 `MapLandmark`（`preview/Pages/MapLandmark.cs`）为圆章 + 地点图标（`MapNode.Icon` → `MapIcons` 程序化剪影占位），放在不缩放的图层，按“底图位置 + 地图坐标 × 缩放”摆放，竖排地名印只在悬停或 Tab 跳选时显示；交通面板点空白处或 Esc 关闭；所选路线 `RouteLayer` 随底图缩放。路线按方式在样例路网上求最短路（渡船只走水路、骑马与马车只走陆路，不经未开放节点），时辰与铜钱按路程估算。样例 `preview/Samples/WorldMapSamples.cs` 为第一篇第二章开始时的局势，门派节点沿用 `map.faction.*`，主线地域在 STORY 中尚无稳定节点 ID，暂以 `sample.*` 标出；它不是 6.2 节的正式路线数据，启程也只是表现预览，不走 6.3 节的旅行事务。
 - 开关文字同时写“开/关”；状态一律符号 + 名称 + 颜色。
 - 字体随包：`assets/fonts/` 下思源黑体 CN（正文）与霞鹜文楷 Medium（标题、印章、页签），`UiFonts` 加载；导出脚本把 OFL 许可与资产台账复制到 `build/windows/licenses/`。
 - 物品、招式、见闻来源与队伍头像在正式图标完成前使用“字形印鉴”（切角玉牌、类别色描边、书法单字）示意，不作为图标美术验收。陆青禾立绘以抠图版 `assets/portraits/lu_qinghe_v1.png` 用于标题页、对话与人物页；其余人物显示“立绘待制作”。
-- 截图命令：`Godot --path game --resolution 1920x1080 -- --scene=<场景> --tab=<页签或状态序号> --capture=<png>`，由 `Presentation/App/DevCapture.cs` 处理，未传参数时不生效，用于交付截图与布局自查；加 `--motion --settle=<帧数>` 保留动效截取动画中途或落定画面，用于检查入场动画与排版；标题、对话、战斗、探索 HUD 页的 `--tab` 表示界面状态，含义写在各页面类注释中。
+- 截图命令：`Godot --path game -- --scene=<场景> --tab=<页签或状态序号> --capture=<png> --size=1920x1080`（游戏默认全屏，截图时切回窗口并按 `--size` 设窗口尺寸，缺省 1920x1080；引擎参数 `--windowed`、`--resolution` 会被项目的全屏设置盖过），由 `Presentation/App/DevCapture.cs` 处理，未传参数时不生效，用于交付截图与布局自查；加 `--motion --settle=<帧数>` 保留动效截取动画中途或落定画面，用于检查入场动画与排版；标题、对话、战斗、探索 HUD 页的 `--tab` 表示界面状态，含义写在各页面类注释中。M0 交付截图由 `tools/scripts/capture-review.ps1` 驱动导出包按镜头清单（48 个页面状态）批量生成到 `build/review/m0/<分辨率>/`，清单与 `docs/playtests/M0_REVIEW.md` 第 3 节对应。
 
 ### 10.5 音频与 AI 角色配音
 
@@ -729,4 +772,4 @@ Headless 构建用于自动化检查，不能代替真实 GPU 画面与性能验
 
 ## 14. 文档边界
 
-本文是可执行的架构基线与玩法初案。具体故事、任务、人物动机和结局以[剧情文档](./STORY.md)为准；交付范围、负责人和验收以[开发计划](./DEVELOPMENT_PLAN.md)为准。仓库当前有 M0 展示工程与部分 UI 展示页，尚无已完成的玩法系统、性能实测或制作完成的美术资产。M0 首先交付场景与 UI 视觉 Demo；画风获用户认可后，M1–M3 再验证真实玩法与完整内容规范。
+本文是可执行的架构基线与玩法初案。具体故事、任务、人物动机和结局以[剧情文档](./STORY.md)为准；交付范围、负责人和验收以[开发计划](./DEVELOPMENT_PLAN.md)为准。仓库当前有已验收的 M0 视觉展示工程（2026-09-30 用户认可画风与视角）和 M1 战斗规则内核、内容编译器、战斗模拟器与战斗原型页；探索、任务、旅行、存档等玩法系统、性能实测与正式动作美术尚未完成。M1–M3 按开发计划继续验证真实玩法与完整内容规范。

@@ -1,8 +1,9 @@
 using System.Text.Json;
 using Godot;
 using WuxiaWorld.Game.Presentation.Scenery;
+using WuxiaWorld.Game.Presentation.Art;
 
-namespace WuxiaWorld.Game.Preview.Pages;
+namespace WuxiaWorld.Game.Presentation.Battle;
 
 /// <summary>
 /// 侧视战斗布景（M0-04，旧渡水门）：远景为整张 AI 布景（<c>assets/art/battle/&lt;id&gt;.png</c>，tools/ArtGen/backdrop.py 生成，

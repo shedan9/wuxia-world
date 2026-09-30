@@ -1,0 +1,8 @@
+[
+  { "skill_tag": "guard_break", "target_tag": "armored", "bp": 12000 },
+  { "skill_tag": "combo", "target_tag": "armored", "bp": 12000 },
+  { "skill_tag": "heavy", "target_tag": "mechanism", "bp": 12500 },
+  { "skill_tag": "pierce", "target_tag": "mechanism", "bp": 12000 },
+  { "skill_tag": "internal", "target_tag": "mechanism", "bp": 8000 },
+  { "skill_tag": "sweep", "target_tag": "armored", "bp": 8500 }
+]

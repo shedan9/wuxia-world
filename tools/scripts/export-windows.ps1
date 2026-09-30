@@ -16,6 +16,10 @@ if (-not $Godot -or -not (Test-Path $Godot)) {
     throw '未找到 Godot 编辑器：请设置 GODOT_BIN 或传入 -Godot。'
 }
 
+# 内容包（game/generated/content）不入库，每次导出前由内容编译器校验并重新生成。
+dotnet run --project (Join-Path $root 'tools/ContentCompiler') -c Debug
+if ($LASTEXITCODE -ne 0) { throw '内容编译失败' }
+
 dotnet build (Join-Path $root 'WuxiaWorld.sln') -c Debug
 if ($LASTEXITCODE -ne 0) { throw 'dotnet build 失败' }
 

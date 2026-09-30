@@ -1,0 +1,12 @@
+[
+  {
+    "id": "skill.basic.strike",
+    "tags": ["basic", "external"],
+    "target_rule": "single_reachable_enemy",
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 9000 },
+      { "type": "stance_damage", "amount": 8 }
+    ],
+    "animation_id": "anim.basic.strike"
+  }
+]

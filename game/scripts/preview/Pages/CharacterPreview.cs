@@ -1,5 +1,6 @@
 using Godot;
 using WuxiaWorld.Game.Presentation;
+using WuxiaWorld.Game.Presentation.Art;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
 
@@ -328,6 +329,22 @@ public partial class CharacterPreview : PreviewScreen
             art.OffsetBottom = 180;
             stage.AddChild(art);
         }
+        else if (FigureArt.Find(m.Id.Replace("char.", "figure.")) is { } figure)
+        {
+            // 没有立绘但有 AI 全身样稿（探索与战斗共用那张）：整身立在框中、翻转朝向右侧信息栏，脚底留出名牌位置。
+            var art = new TextureRect
+            {
+                Texture = figure.Texture,
+                ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+                StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+                FlipH = true,
+                MouseFilter = MouseFilterEnum.Ignore,
+            };
+            art.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+            art.OffsetTop = 28;
+            art.OffsetBottom = -96;
+            stage.AddChild(art);
+        }
         else
         {
             var name = Ui.Text(Ui.Vertical(m.Name), UiTheme.DarkTitleLabel, 72);
@@ -340,7 +357,8 @@ public partial class CharacterPreview : PreviewScreen
 
         var caption = Ui.Panel(UiTheme.GlassPanel, Ui.Column(2,
             Ui.Text(m.Name, UiTheme.DarkTitleLabel, 28),
-            Ui.Text(Portraits.ContainsKey(m.Id) ? m.Role : "立绘待制作", UiTheme.DarkMutedLabel, 16)));
+            Ui.Text(Portraits.ContainsKey(m.Id) ? m.Role
+                : FigureArt.Find(m.Id.Replace("char.", "figure.")) is not null ? "全身样稿　立绘待制作" : "立绘待制作", UiTheme.DarkMutedLabel, 16)));
         stage.AddChild(Ui.Place(caption, 0, 1, 14, -86, 272, -14));
         return Ui.MinSize(frame, 300, 580);
     }

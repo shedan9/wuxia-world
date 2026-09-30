@@ -2,6 +2,7 @@ using Godot;
 using WuxiaWorld.Game.Presentation;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
+using WuxiaWorld.Game.Presentation.Art;
 
 namespace WuxiaWorld.Game.Preview.Pages;
 
@@ -1475,7 +1476,8 @@ public partial class WildMiniMap : Control
         var (hero, heading) = Hero();
         var k = Size.X / Window;
         var origin = hero - new Vector2(Window, Window) / 2;
-        DrawRect(new Rect2(Vector2.Zero, Size), UiPalette.Abyss);
+        // 底色取上台色：镜头缩小时窗口越出台地多边形的东北角，不能露出深色底。
+        DrawRect(new Rect2(Vector2.Zero, Size), Color.FromHtml("#4E7267"));
         DrawSetTransform(-origin * k, 0, new Vector2(k, k));
 
         Vector2[] W(IEnumerable<Vector2> ad) => ad.Select(WildSamples.W).ToArray();

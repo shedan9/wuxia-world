@@ -1,0 +1,101 @@
+[
+  {
+    "id": "skill.enemy.escort_chop",
+    "tags": ["blade", "external"],
+    "target_rule": "single_reachable_enemy",
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 10000 },
+      { "type": "stance_damage", "amount": 10 },
+      { "type": "apply_status", "status": "status.bleed", "chance_bp": 3500 }
+    ],
+    "animation_id": "anim.blade.chop"
+  },
+  {
+    "id": "skill.enemy.hook_throw",
+    "tags": ["hook", "external", "ranged"],
+    "target_rule": "single_any_enemy",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 8500 },
+      { "type": "apply_status", "status": "status.slow", "chance_bp": 5000 }
+    ],
+    "animation_id": "anim.hook.throw"
+  },
+  {
+    "id": "skill.enemy.bodyguard",
+    "tags": ["guard"],
+    "target_rule": "other_ally",
+    "cooldown": 1,
+    "effects": [{ "type": "guard" }],
+    "animation_id": "anim.fist.guard"
+  },
+  {
+    "id": "skill.enemy.brace",
+    "tags": ["stance"],
+    "target_rule": "self",
+    "cooldown": 2,
+    "effects": [
+      { "type": "apply_status", "applies": "self", "status": "status.counter_ready" },
+      { "type": "restore_stance", "applies": "self", "amount": 15 }
+    ],
+    "animation_id": "anim.fist.stance"
+  },
+  {
+    "id": "skill.boss.harbor_blade",
+    "tags": ["boss", "blade", "external"],
+    "target_rule": "single_reachable_enemy",
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 11000 },
+      { "type": "stance_damage", "amount": 15 },
+      { "type": "apply_status", "status": "status.bleed", "chance_bp": 3000 }
+    ],
+    "animation_id": "anim.blade.chop"
+  },
+  {
+    "id": "skill.boss.chain_hook",
+    "tags": ["boss", "hook", "external", "ranged"],
+    "target_rule": "single_any_enemy",
+    "cooldown": 2,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 9000 },
+      { "type": "apply_status", "status": "status.stunned", "chance_bp": 4000 }
+    ],
+    "animation_id": "anim.hook.chain"
+  },
+  {
+    "id": "skill.boss.sluice_torrent",
+    "tags": ["boss", "internal", "water"],
+    "target_rule": "reachable_row_enemies",
+    "cooldown": 3,
+    "charged": true,
+    "effects": [
+      { "type": "damage", "kind": "internal", "scale_bp": 15000, "fixed": 20 },
+      { "type": "stance_damage", "amount": 25 },
+      { "type": "apply_status", "status": "status.slow", "chance_bp": 7000 }
+    ],
+    "animation_id": "anim.boss.torrent"
+  },
+  {
+    "id": "skill.boss.undertow_hook",
+    "tags": ["boss", "hook", "external"],
+    "momentum_cost": 50,
+    "target_rule": "single_any_enemy",
+    "cooldown": 3,
+    "charged": true,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 21000 },
+      { "type": "stance_damage", "amount": 35 },
+      { "type": "apply_status", "status": "status.bleed", "stacks": 2 }
+    ],
+    "animation_id": "anim.hook.chain"
+  },
+  {
+    "id": "skill.mech.open_sluice",
+    "tags": ["mechanism", "water"],
+    "target_rule": "self",
+    "effects": [
+      { "type": "raise_level", "applies": "self", "status": "status.water_level", "fixed": 45, "amount": 15 }
+    ],
+    "animation_id": "anim.mech.sluice"
+  }
+]

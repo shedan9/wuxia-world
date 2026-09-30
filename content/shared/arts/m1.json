@@ -1,0 +1,33 @@
+[
+  {
+    "id": "art.inner.calm_breath",
+    "kind": "inner",
+    "polarity": "yin",
+    "bonus": { "max_inner": 30, "internal_defense": 8 },
+    "meditate_bonus_bp": 1500,
+    "inner_per_action": 4
+  },
+  {
+    "id": "art.inner.iron_shirt",
+    "kind": "inner",
+    "polarity": "yang",
+    "bonus": { "max_hp": 40, "external_defense": 14, "max_stance": 15 }
+  },
+  {
+    "id": "art.inner.clear_mind",
+    "kind": "inner",
+    "polarity": "neutral",
+    "bonus": { "crit_bp": 500, "accuracy": 15 },
+    "traits": ["stance_breaker"]
+  },
+  {
+    "id": "art.qinggong.reed_step",
+    "kind": "qinggong",
+    "bonus": { "speed": 8, "evasion": 15 }
+  },
+  {
+    "id": "art.talent.parry",
+    "kind": "talent",
+    "traits": ["parry"]
+  }
+]

@@ -48,18 +48,28 @@ public static class ExploreHudKit
         foreach (var (text, state) in main.Stages.Where(s => s.State != StageState.Hidden))
         {
             var done = state == StageState.Done;
-            var line = Ui.Text($"{(done ? "✓" : "○")}　{text}", done ? UiTheme.DarkMutedLabel : UiTheme.DarkLabel, done ? 17 : 20, wrap: true);
-            list.AddChild(line);
+            list.AddChild(Step(done ? "✓" : "○", text, done ? UiTheme.DarkMutedLabel : UiTheme.DarkLabel, done ? 17 : 20));
         }
 
         list.AddChild(Ui.Rule(dark: true));
         list.AddChild(Ui.Text($"{side.Kind}　{side.Name}", UiTheme.DarkMutedLabel, 18));
-        list.AddChild(Ui.Text($"○　{side.Stages[0].Text}", UiTheme.DarkMutedLabel, 17));
+        list.AddChild(Step("○", side.Stages[0].Text, UiTheme.DarkMutedLabel, 17));
         list.AddChild(Ui.KeyHint("J", "札记"));
 
         var panel = Ui.Panel(UiTheme.GlassPanel, list);
         Motion.Enter(panel, 0.2f, Motion.Normal, fromX: -20, rise: 0);
         return Ui.Place(panel, 0, 0, 40, 220, 480, 560);
+    }
+
+    /// <summary>
+    /// 一条目标：勾 / 圈与文字分成两个标签，长目标折行时悬挂缩进在文字列内；
+    /// 合成一个标签时 WordSmart 会在全角空格处断行，把圆点单独留在上一行。
+    /// </summary>
+    private static Control Step(string mark, string text, string variation, int size)
+    {
+        var bullet = Ui.Text(mark, variation, size);
+        bullet.SizeFlagsVertical = Control.SizeFlags.ShrinkBegin;
+        return Ui.Row(UiPalette.SpaceS, bullet, Ui.Text(text, variation, size, wrap: true));
     }
 
     /// <summary>左下：印鉴头像 + 气血 / 内力细条，不写数值。</summary>

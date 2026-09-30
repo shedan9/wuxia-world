@@ -1,0 +1,49 @@
+[
+  {
+    "id": "skill.inner.qi_bolt",
+    "tags": ["inner", "internal", "ranged"],
+    "inner_cost": 12,
+    "target_rule": "single_any_enemy",
+    "effects": [
+      { "type": "damage", "kind": "internal", "scale_bp": 9500 },
+      { "type": "apply_status", "status": "status.internal_injury", "chance_bp": 3000 }
+    ],
+    "animation_id": "anim.inner.bolt"
+  },
+  {
+    "id": "skill.inner.mend",
+    "tags": ["inner", "heal"],
+    "inner_cost": 16,
+    "target_rule": "single_ally",
+    "cooldown": 2,
+    "effects": [
+      { "type": "heal", "amount": 30, "amount_scale_bp": 9000 },
+      { "type": "cleanse", "tag": "dispellable", "count": 1 }
+    ],
+    "animation_id": "anim.inner.mend"
+  },
+  {
+    "id": "skill.inner.pressure_point",
+    "tags": ["inner", "internal", "control"],
+    "inner_cost": 18,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 3,
+    "effects": [
+      { "type": "damage", "kind": "internal", "scale_bp": 5000 },
+      { "type": "apply_status", "status": "status.stunned", "chance_bp": 8000 }
+    ],
+    "animation_id": "anim.inner.point"
+  },
+  {
+    "id": "skill.inner.surge",
+    "tags": ["inner", "internal", "ultimate"],
+    "momentum_cost": 50,
+    "target_rule": "all_enemies",
+    "cooldown": 3,
+    "effects": [
+      { "type": "damage", "kind": "internal", "scale_bp": 6500 },
+      { "type": "restore_inner", "applies": "self", "amount": 30 }
+    ],
+    "animation_id": "anim.inner.surge"
+  }
+]

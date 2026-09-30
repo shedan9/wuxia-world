@@ -134,7 +134,7 @@ cd tools/ArtGen
 
 ## 全身人物：统一骨架出图（2026-09-30）
 
-探索与战斗共用一张全身形象（架构文档 10.2）。`figure.py` 按任务的 `pose`（`stand` 站立、`stand_pole` 持篙、`guard` 迎敌架势、`sit` 坐凳）画同一副 OpenPose 骨架作 ControlNet 引导（`xinsir/controlnet-openpose-sdxl-1.0`，Apache-2.0），Animagine XL 4.0 文生图、纯灰底，再用 `cutout.py` 按边框底色抠图。同一姿势的人物身高、站位和朝向一致；出图均为四分之三侧身朝画面左侧，朝右由引擎水平翻转。人物服装描述常超过 77 token，`figure.py` 按逗号把提示词切段、两个文本编码器逐段编码后拼接（正负提示词补齐到同样段数），不再静默截断。
+探索与战斗共用一张全身形象（架构文档 10.2）。`figure.py` 按任务的 `pose`（`stand` 站立、`stand_pole` 持篙、`guard` 迎敌架势、`sit` 坐凳）画同一副 OpenPose 骨架作 ControlNet 引导（`xinsir/controlnet-openpose-sdxl-1.0`，Apache-2.0），Animagine XL 4.0 文生图、纯灰底，再用 `cutout.py` 按边框底色抠图。同一姿势的人物身高、站位和朝向一致；出图均为四分之三侧身朝画面右侧，朝左由引擎水平翻转。人物服装描述常超过 77 token，`figure.py` 按逗号把提示词切段、两个文本编码器逐段编码后拼接（正负提示词补齐到同样段数），不再静默截断。
 
 ```powershell
 cd tools/ArtGen

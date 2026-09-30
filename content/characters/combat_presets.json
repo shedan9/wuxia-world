@@ -1,0 +1,59 @@
+[
+  {
+    "id": "combatant.hero.sword",
+    "level": 5,
+    "attributes": { "physique": 5, "strength": 11, "root": 5, "agility": 7, "insight": 9 },
+    "loadout": {
+      "skills": ["skill.sword.probe", "skill.sword.break_guard", "skill.sword.chain_thrust", "skill.sword.pierce"],
+      "main_art": "art.inner.clear_mind",
+      "qinggong": "art.qinggong.reed_step"
+    },
+    "equipment": { "external_attack": 12 },
+    "art_id": "figure.hero"
+  },
+  {
+    "id": "combatant.hero.fist",
+    "level": 5,
+    "attributes": { "physique": 11, "strength": 9, "root": 7, "agility": 5, "insight": 5 },
+    "loadout": {
+      "skills": ["skill.fist.shield_palm", "skill.fist.counter_stance", "skill.fist.heavy_palm", "skill.fist.sweep"],
+      "main_art": "art.inner.iron_shirt",
+      "talents": ["art.talent.parry"]
+    },
+    "equipment": { "external_attack": 6, "external_defense": 6 },
+    "art_id": "figure.hero"
+  },
+  {
+    "id": "combatant.hero.inner",
+    "level": 5,
+    "attributes": { "physique": 7, "strength": 5, "root": 13, "agility": 5, "insight": 7 },
+    "loadout": {
+      "skills": ["skill.inner.qi_bolt", "skill.inner.mend", "skill.inner.pressure_point", "skill.inner.surge"],
+      "main_art": "art.inner.calm_breath",
+      "qinggong": "art.qinggong.reed_step"
+    },
+    "equipment": { "internal_attack": 12 },
+    "art_id": "figure.hero"
+  },
+  {
+    "id": "combatant.lu_qinghe",
+    "level": 5,
+    "attributes": { "physique": 7, "strength": 9, "root": 6, "agility": 9, "insight": 6 },
+    "loadout": {
+      "skills": ["skill.staff.pole_jab", "skill.staff.pole_sweep"],
+      "qinggong": "art.qinggong.reed_step"
+    },
+    "equipment": { "external_attack": 8 },
+    "art_id": "figure.lu_qinghe"
+  },
+  {
+    "id": "combatant.placeholder.companion",
+    "level": 6,
+    "attributes": { "physique": 8, "strength": 10, "root": 7, "agility": 8, "insight": 7 },
+    "loadout": {
+      "skills": ["skill.sword.break_guard", "skill.sword.pierce", "skill.fist.heavy_palm"],
+      "main_art": "art.inner.iron_shirt"
+    },
+    "equipment": { "external_attack": 12 }
+  }
+]

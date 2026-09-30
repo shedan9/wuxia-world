@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 规则测试（架构文档 12.2 第 1、5 层）。测试框架与版本于 M1 锁定：xUnit 2.9.3、runner 3.1.4、Test SDK 17.14.1。 -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>WuxiaWorld.Domain.Tests</RootNamespace>
+    <!-- 测试方法名用下划线分段、断言数值为规则常量。 -->
+    <NoWarn>$(NoWarn);CA1707;CA1515;CA1861</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\WuxiaWorld.Domain\WuxiaWorld.Domain.csproj" />
+    <ProjectReference Include="..\..\..\src\WuxiaWorld.Application\WuxiaWorld.Application.csproj" />
+    <ProjectReference Include="..\..\..\src\WuxiaWorld.Infrastructure\WuxiaWorld.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

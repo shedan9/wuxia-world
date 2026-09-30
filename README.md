@@ -4,17 +4,17 @@
 
 角色年龄与身份原则上以各自小说主要剧情阶段为准，不因时间兼容而改龄或改换核心身份；统一世界的年表与事件安排服从这一约束。阿青单独采用《越女剑》故事结束后的原创延伸阶段，本作以 18 岁登场；原著故事阶段约十六七岁，不把本作年龄冒称原著设定。
 
-当前处于 M0 起步阶段：已按架构文档搭建工程骨架（Godot 工程、场景目录框架与规则类库空项目），已在本机完成 `dotnet build`、Godot 导入与 Windows x64 导出。界面已按[界面设计规范](./docs/art/UI_DESIGN.md)重做为游戏化的“绢本青绿”风格（青绿山水背景，绢色与黛色面板、朱砂印章、笔触框线）：12 个展示页中已完成标题页、人物对话、回合战斗、探索 HUD（界面层）、江湖大地图与交通面板、城镇 / 街道探索（“芦湾河街”布局样板，可行走、遮挡淡出、交互提示）、客栈 / 室内探索（“江南客栈·大堂”布局样板，剖切墙、屏风遮挡、吊灯光斑，可与城镇进出门切换）、山路 / 野外探索（“山门路·半山”布局样板，三层台地与石阶、茶亭、山门、远山视差），以及角色、背包、札记、设置，12 页均可进入（固定样例数据，舆图为程序化占位）；三类探索布景的房屋、树石植被、杂件、家具、地面、崖壁、驳岸、桥面、廊柱与客栈墙面已按 AI 引导出件（方案 C）换成 AI 件与纹理，水面为着色器，探索与战斗人物为同一套 AI 全身静态样稿，战斗页“旧渡水门”为 AI 远景 + 引擎透视码头石板与 AI 水门机关，均待用户实机核对；行走帧与战斗动作未做，因此还不是可交付的视觉 Demo。目标平台仅 Windows x64。
+当前进度：**M0 视觉 Demo 已于 2026-09-30 经用户验收**（“绢本青绿”界面、三类探索布景、大地图、战斗页等 12 个展示页，画风与视角全部认可），现进入 M1 战斗与成长原型。M1 已完成确定性战斗规则内核（`src/`：轮次与阵位、伤害层次、架势与破绽、反应、点穴与免控、首领蓄力预兆、遭遇阶段、AI、命令记录与重放）、第一章战斗内容（`content/`：主角剑术 / 拳掌 / 内功三流派 12 招、3 门心法、押运队与唐守亭旧渡水门机制战）、内容编译器、战斗模拟器、48 项规则测试，以及场景目录末尾可进入的“战斗原型（M1）”页（结算来自内核，动作为补间占位）；正式骨骼动作、AI 配音选型和实机试玩反馈尚待进行，探索、任务、旅行与存档属于 M2。进度与验证记录见[开发计划](./docs/DEVELOPMENT_PLAN.md)的 M0、M1 进度记录。目标平台仅 Windows x64。
 
 ## 工程结构
 
 | 路径 | 内容 |
 |---|---|
 | `game/` | Godot 4.7.2 .NET 工程；入口 `scenes/boot/Boot.tscn` → M0 场景目录 |
-| `src/` | `Domain` / `Application` / `Infrastructure` 规则类库（M1 起填充） |
-| `content/` | 手工维护的 JSON 内容源 |
+| `src/` | `Domain` / `Application` / `Infrastructure` 规则类库（M1 起：战斗内核、战斗会话、内容加载与校验） |
+| `content/` | 手工维护的 JSON 内容源；`dotnet run --project tools/ContentCompiler` 校验并生成 `game/generated/content` |
 | `tools/` | 构建导出脚本与内容、战斗、配音工具 |
-| `tests/` | 测试项目（M1 锁定框架） |
+| `tests/` | 测试项目（xUnit，M1 锁定版本）：`dotnet test tests/Domain/WuxiaWorld.Domain.Tests` |
 | `art_source/`、`voice_source/` | 美术与配音源文件（Git LFS） |
 
 开发环境：.NET SDK 10.0.401（`global.json` 锁定补丁级前滚）、Godot 4.7.2 .NET（`4.7.2.stable.mono`）编辑器及同版导出模板、Git LFS；该组合已于 2026-09-23 在 Windows 11 上完成构建与导出启动验证。两台开发机均可用 winget 安装：`winget install --id Microsoft.DotNet.SDK.10 --version 10.0.401 -e`、`winget install --id GodotEngine.GodotEngine.Mono --version 4.7.2 -e`；导出模板从 Godot 官方发布页下载 `Godot_v4.7.2-stable_mono_export_templates.tpz`，解压 `templates/` 到 `%APPDATA%\Godot\export_templates\4.7.2.stable.mono`；并把编辑器路径设为用户环境变量 `GODOT_BIN`。用编辑器打开 `game/project.godot` 运行；导出见 [tools/README.md](./tools/README.md)。

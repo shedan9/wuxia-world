@@ -25,7 +25,7 @@ public partial class PreviewCatalog : Control
         var ready = PreviewPages.All.Count(p => p.ScenePath is not null && SceneRouter.CanGoTo(p.ScenePath));
         var heading = Ui.Column(4,
             Ui.Text("场景目录", UiTheme.DarkTitleLabel, 44),
-            Ui.Text("M0 视觉 Demo：每页可直接进入与返回，内容为固定样例数据，不代表玩法已实现。", UiTheme.DarkMutedLabel));
+            Ui.Text("M0 视觉 Demo（已验收）：展示页为固定样例数据；末尾“战斗原型”为 M1 真实规则结算。", UiTheme.DarkMutedLabel));
         heading.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         var count = Ui.Text($"已完成 {ready} / {PreviewPages.All.Count}", UiTheme.GiltLabel, 24);
         count.SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -36,7 +36,7 @@ public partial class PreviewCatalog : Control
         grid.AddThemeConstantOverride("v_separation", UiPalette.SpaceL);
 
         Button? first = null;
-        foreach (var page in PreviewPages.All)
+        foreach (var page in PreviewPages.All.Concat(PreviewPages.Prototypes))
         {
             var card = PageCard(page);
             grid.AddChild(card);
