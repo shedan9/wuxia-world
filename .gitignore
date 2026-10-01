@@ -32,3 +32,6 @@ Thumbs.db
 tools/ArtGen/.venv/
 tools/ArtGen/out/
 __pycache__/
+
+# ACE-Step 在工作目录写的进度缓存（tools/MusicGen）
+.cache/

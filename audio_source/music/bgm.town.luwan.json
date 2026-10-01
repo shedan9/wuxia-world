@@ -1,0 +1,34 @@
+{
+  "id": "bgm.town.luwan",
+  "title": "芦湾水镇·探索",
+  "status": "用户 2026-10-02 选定的工作稿；未剪循环、未统一响度",
+  "license": "ACE-Step 1.5 代码与权重 MIT，生成物可商用（README 要求核对原创性、披露 AI 参与）",
+  "machine": "家用台式机 RTX 4070 Ti SUPER 16 GB",
+  "format": "48000 Hz 2 声道 FLOAT，120.00 秒",
+  "sha256": "b44f8bb14e8085c5374e8c50ce483cbc7a900603eaf5a2c676e3bca86a5e0794",
+  "steps": [
+    {
+      "step": "文生曲",
+      "tool": "tools/MusicGen/sample.py",
+      "job": "tools/MusicGen/jobs/m1_bgm_samples.json（当时 model 为 acestep-v15-xl-turbo，之后任务文件改为 2B）",
+      "model": "acestep-v15-xl-turbo + LM acestep-5Hz-lm-1.7B",
+      "seed": 11,
+      "params": {
+        "model": "acestep-v15-xl-turbo",
+        "lm": "acestep-5Hz-lm-1.7B",
+        "caption": "Instrumental Chinese folk-orchestral video game background music for a peaceful Jiangnan water town on a fresh, clear morning after rain. A bright bamboo flute (dizi) sings a gentle pentatonic melody over flowing guzheng arpeggios, light pipa plucks and a soft, warm string ensemble. Light woodblock and hand percussion keep an easy walking pulse. Airy, clean and unhurried with even dynamics. No vocals, no drum kit, no synthesizer.",
+        "lyrics": "[Intro - short guzheng arpeggio]\n\n[Theme A - dizi melody over guzheng]\n\n[Theme B - pipa and strings answer]\n\n[Theme A - dizi melody, fuller strings]\n\n[Bridge - guzheng solo with light woodblock]\n\n[Theme A - dizi melody]",
+        "bpm": 88,
+        "keyscale": "D major",
+        "timesignature": "4",
+        "duration": 120,
+        "inference_steps": 8,
+        "shift": 3.0,
+        "guidance_scale": 7.0,
+        "lm_temperature": 0.85,
+        "thinking": true
+      },
+      "note": "Windows 上 LM 采样不随种子复现，重跑不保证得到同一首"
+    }
+  ]
+}

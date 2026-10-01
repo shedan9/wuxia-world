@@ -1,0 +1,38 @@
+{
+  "name": "m1_bgm_edit6",
+  "note": "用户 2026-10-02 选定留白过渡“重渲染 · 保留度 0.5 · 种子 22”，要求删掉 0:53 处一个突兀的高音。实测在 0:53.20–0:53.35（约 727 Hz，比空白区高约 9 dB，高频泛音同步冲高），位于 0:53.64 保留段之前。只重画 0:52.83–0:53.64 两拍，描述为旋律休止、只留鼓与低音弦乐，8 个种子按旋律频段有无冒头筛选。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.boss.old_ferry.rest53",
+      "title": "首领战 · 删去 0:53 突兀高音（重画 0:52.83–0:53.64）",
+      "base": "edits/m1_bgm_edit5/picks/bgm.boss.old_ferry.breath3_s22_n0.5.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "repaint": [
+        {
+          "start": 52.8,
+          "end": 53.641,
+          "strength": 0.5,
+          "inner": true
+        }
+      ],
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. The melody rests here: no erhu, no dizi, no plucked strings, no high notes. Only the war drums keep a light steady pulse and the low strings hold a sustained drone underneath, leading into the next section. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    }
+  ]
+}

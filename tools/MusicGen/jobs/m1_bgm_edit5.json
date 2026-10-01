@@ -1,0 +1,44 @@
+{
+  "name": "m1_bgm_edit5",
+  "note": "用户 2026-10-02 指出：0:48 那段本意就是整段重画，“只重画后半句”作废；“留白”是参考种子 44 在 0:36–0:48 的呼吸律动——旋律中间有空白——做一个小过渡，而不是再画一句完整旋律。只靠描述词重画 12 个种子，10 个仍每拍都有旋律（探针 build/music/edits/probe_breath）。本轮借种子 44 自 0:39.97 起 5.63 秒（一句约 2 秒的短句接 3 秒空白，与种子 11 同调同网格，平移 20 拍即 5 小节）放到 0:48.01–0:53.64，再用 XL 加噪重渲染 0:47.6–0:53.64 融合音色与和声、保留短句加空白的形状；0:53.64 起原样保留。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.boss.old_ferry.breath3",
+      "title": "首领战 · 0:48–0:53.6 留白过渡（借种子 44 的呼吸律动）",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "splice": [
+        {
+          "from": "edits/m1_bgm_edit/bgm.boss.old_ferry_s44.wav",
+          "start": 48.0,
+          "end": 53.641,
+          "src_start": 40.05,
+          "inner": true
+        }
+      ],
+      "rerender": [
+        {
+          "start": 47.6,
+          "end": 53.641,
+          "inner": true
+        }
+      ],
+      "rerender_noise": [
+        0.5,
+        0.65
+      ],
+      "seeds": [
+        11,
+        22
+      ],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. Driving Chinese war drums, tense pipa tremolo and rapid strumming, a staccato string ostinato and short low brass accents. Erhu and dizi phrases with breathing space between them. Tense and thrilling. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    }
+  ]
+}

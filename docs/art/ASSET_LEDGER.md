@@ -78,3 +78,13 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | 战斗道具“水门机关”`battle.sluice_gate`（937×1022） | `tools/ArtGen/jobs/m0_battle_props.json` / `b_sluice_txt`：`prop_guide.py` 按任务文件色块画正立面引导图，SDXL base + canny ControlNet 文生图（control 0.75、至六成半步数），按引导图 alpha 抠出；`place.py --regrade 0.7,1.0 --prop` 调色、裁边并记底边与整高 | 66 | 同上 | 同上；SHA-256 `95b7962f…` |
 
 生成记录由 `tools/ArtGen/generate.py` 写在每张图旁的 `.json` 中；入库时把该记录一并放入 `art_source/ai/`，并在上表登记。
+
+## AI 配乐
+
+取得方式：本地 ACE-Step 1.5（代码与权重 MIT，生成物可商用；其 README 要求核对原创性并披露 AI 参与），`tools/MusicGen`，家用台式机 RTX 4070 Ti SUPER。母带放 `audio_source/music/`（Git LFS），每首旁的同名 `.json` 记录逐步生成与剪辑过程；运行时 Ogg、循环点与响度统一尚未做。
+
+| 资产 | 来源过程 | 母带 | 状态 |
+|---|---|---|---|
+| 芦湾水镇·探索 `bgm.town.luwan` | XL turbo 文生曲种子 11 | `audio_source/music/bgm.town.luwan.wav`，48000 Hz 2 声道 FLOAT，120.00 秒 | 2026-10-02 用户选定工作稿；未剪循环；SHA-256 `b44f8bb1…0794` |
+| 普通战斗 `bgm.battle.common` | 2B 种子 11 → XL cover 种子 11 / 22 → 60.02–92.69 秒换成种子 22 同段（交叉淡化拼接） | `audio_source/music/bgm.battle.common.wav`，48000 Hz 2 声道 PCM_16，100.00 秒 | 2026-10-02 用户选定工作稿；未剪循环；SHA-256 `4ec4cd5d…925e` |
+| 旧渡首领战 `bgm.boss.old_ferry` | 普通战斗 2B 种子 33 → XL 重画两段旋律（种子 11）→ 0:48 借种子 44 呼吸律动做留白过渡 → 去 0:53 高音 → `note_gate.py` 删去类似二胡长音 → 0:03–0:09 重画为大提琴独奏 | `audio_source/music/bgm.boss.old_ferry.wav`，48000 Hz 2 声道 FLOAT，100.00 秒 | 2026-10-02 用户选定工作稿；未剪循环；SHA-256 `15d9358f…b0a0` |

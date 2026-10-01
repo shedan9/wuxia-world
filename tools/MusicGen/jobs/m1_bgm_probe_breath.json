@@ -1,0 +1,42 @@
+{
+  "name": "probe_breath",
+  "note": "探针：0:48–0:53.6 整段重画为留白过渡，12 个种子供筛选",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.boss.old_ferry.breath2",
+      "title": "首领战 · 0:48–0:53.6 留白过渡（整段重画）",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "repaint": [
+        {
+          "start": 48.0,
+          "end": 53.641,
+          "strength": 0.5,
+          "inner": true
+        }
+      ],
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. A short breathing transition: the erhu plays brief two- or three-note fragments separated by clear rests, like taking a breath, leaving open space between phrases. The war drums keep a light steady pulse and the low strings hold a sustained drone underneath. Sparse and spacious, quietly building tension toward the next section. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    }
+  ]
+}

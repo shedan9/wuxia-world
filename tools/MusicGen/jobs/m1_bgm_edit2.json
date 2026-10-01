@@ -1,0 +1,54 @@
+{
+  "name": "m1_bgm_edit2",
+  "note": "用户 2026-10-02 第二次试听：普通战斗定为“仅交叉淡化拼接”。旧渡首领战选重画种子 11，其余部分不动，只改两处：① 0:03–0:09 的乐器音色不好，由它衍生的 0:29–0:35 也一样，用 XL 加噪重渲染换音色质感（保留音符与节奏），两段取自同一次渲染；② 0:48 进入的旋律收得太急、戛然而止，参照种子 44 在 0:36–0:48 的留白处理，重画时让乐句早收、留出呼吸。整句重画与只重画后半句各出一组。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.boss.old_ferry.timbre",
+      "title": "首领战 · 0:03–0:09 与 0:29–0:35 换音色",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "rerender": [
+        {"start": 3.0, "end": 9.0},
+        {"start": 29.11, "end": 35.0}
+      ],
+      "rerender_noise": [0.5, 0.7],
+      "seeds": [11, 22],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game, high-fidelity studio recording. Driving Chinese war drums, tense pipa tremolo and rapid strumming, a staccato string ostinato and short low brass accents, erhu and dizi with rich, warm, natural acoustic timbre. Tense and thrilling, constant forward momentum. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    },
+    {
+      "id": "bgm.boss.old_ferry.breath",
+      "title": "首领战 · 0:48 进入的乐句留白（整句重画）",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "repaint": [
+        {"start": 48.0, "end": 53.641, "strength": 0.5, "inner": true}
+      ],
+      "seeds": [11, 22, 33],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. The erhu and dizi phrase that enters here is short and resolves early on a long sustained note, then leaves breathing space: the texture thins out to sparse drums and a held low string drone before the next section. Unhurried phrase ending, no abrupt cut-off. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    },
+    {
+      "id": "bgm.boss.old_ferry.breath_tail",
+      "title": "首领战 · 0:48 乐句留白（保留进入，只重画后半句）",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "repaint": [
+        {"start": 50.5, "end": 53.641, "strength": 0.5, "inner": true}
+      ],
+      "seeds": [11, 22, 33],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. The erhu and dizi phrase resolves on a long sustained note, then leaves breathing space: the texture thins out to sparse drums and a held low string drone before the next section. Unhurried phrase ending, no abrupt cut-off. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    }
+  ]
+}

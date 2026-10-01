@@ -1,0 +1,41 @@
+{
+  "name": "m1_bgm_edit",
+  "note": "用户 2026-10-02 复听 XL 版后的剪辑要求。普通战斗：以 XL 种子 11 为底，1:00–1:33 换成 XL 种子 22 的 1:00–1:32（两稿同一节拍网格，接缝取 1:32–1:33 之间的拍点），两处接缝用 XL 重画使衔接自然。旧渡首领战：以普通战斗 2B 种子 33 原稿为底，0:00–0:29 与 0:54–1:20 是核心氛围、原样保留，只用 XL 重画 0:29–0:54 与 1:20–1:40 两段旋律。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.battle.common",
+      "title": "普通战斗（XL 11 为底，中段换 XL 22）",
+      "base": "m1_bgm_xl/bgm.battle.common_11.wav",
+      "snap": true,
+      "bpm": 148,
+      "splice": [
+        {"from": "m1_bgm_xl/bgm.battle.common_22.wav", "start": 60.0, "end": 92.5}
+      ],
+      "repaint": [
+        {"start": 58.35, "end": 61.65, "strength": 0.5},
+        {"start": 90.85, "end": 94.15, "strength": 0.5}
+      ],
+      "seeds": [11, 22, 33],
+      "caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. Driving Chinese war drums with fast rhythmic patterns, energetic pipa tremolo and rapid strumming, erhu and dizi trading a bold heroic melody, a staccato string ostinato and short low brass accents. Tense yet heroic with constant forward momentum and steady energy throughout. Smooth, natural transitions between phrases. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    },
+    {
+      "id": "bgm.boss.old_ferry",
+      "title": "旧渡首领战（保留两段氛围，重画两段旋律）",
+      "base": "m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "repaint": [
+        {"start": 29.0, "end": 54.0, "strength": 0.3, "inner": true},
+        {"start": 80.0, "end": 100.0, "strength": 0.3, "inner": true}
+      ],
+      "seeds": [11, 22, 33, 44],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. Driving Chinese war drums, tense pipa tremolo and rapid strumming, a staccato string ostinato and short low brass accents. A clear, memorable and well-shaped melody carried by erhu and dizi, with coherent phrasing that grows from the surrounding tension. Tense and thrilling, constant forward momentum. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "name": "m1_bgm_edit9",
+  "note": "用户 2026-10-02 允许把重画延伸到 0:54.55，让 0:53 处圆润。以 A 版（已删去类似二胡的长音）为底，重画到 0:54.45（下一句约 293 Hz 自 0:54.45 起音，止于其前，0:54.45 起沿用 A 版），两种起点各 12 个种子，按长音不复现、0.1 秒跳变 ≤ 10 dB、0:53.2–0:54.45 无低于 −10 dB 的空洞、接下一句电平连贯筛选。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "base": "edits/m1_bgm_edit7/boss_A_remove.wav",
+      "snap": false,
+      "bpm": 149,
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. A smooth, rounded transition: the low strings and soft sustained harmony carry the music continuously and swell gently into the next phrase, with the war drums keeping a light steady pulse. No gaps, no sudden entries, no solo erhu, no high notes. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor",
+      "id": "bgm.boss.old_ferry.round53a",
+      "title": "首领战 · 0:53 圆润（重画 0:52.84–0:54.45）",
+      "repaint": [
+        {
+          "start": 52.837,
+          "end": 54.45,
+          "strength": 0.5,
+          "inner": true
+        }
+      ],
+      "seeds": [
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42
+      ]
+    },
+    {
+      "base": "edits/m1_bgm_edit7/boss_A_remove.wav",
+      "snap": false,
+      "bpm": 149,
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game. A smooth, rounded transition: the low strings and soft sustained harmony carry the music continuously and swell gently into the next phrase, with the war drums keeping a light steady pulse. No gaps, no sudden entries, no solo erhu, no high notes. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor",
+      "id": "bgm.boss.old_ferry.round53b",
+      "title": "首领战 · 0:53 圆润（重画 0:52.4–0:54.45）",
+      "repaint": [
+        {
+          "start": 52.4,
+          "end": 54.45,
+          "strength": 0.5,
+          "inner": true
+        }
+      ],
+      "seeds": [
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42
+      ]
+    }
+  ]
+}

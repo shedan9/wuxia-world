@@ -1,0 +1,39 @@
+{
+  "name": "m1_bgm_xl",
+  "note": "用户 2026-10-01 试听第一轮样带后选定：芦湾水镇探索用 XL 种子 11（已是 XL，不重做）；普通战斗用 2B 种子 11、旧渡首领战改用普通战斗的 2B 种子 33。两首以选中的 2B 音频为底，用 XL 做 cover 重新渲染（跟随强度 1.0），保留结构与旋律、提高音质。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "defaults": {
+    "task": "cover",
+    "cover_strength": 1.0,
+    "timesignature": "4",
+    "inference_steps": 8,
+    "shift": 3.0,
+    "thinking": false,
+    "seeds": [11, 22]
+  },
+  "tracks": [
+    {
+      "id": "bgm.battle.common",
+      "title": "普通战斗（XL 重新渲染）",
+      "src_audio": "m1_bgm_samples/picks/bgm.battle.common_11.wav",
+      "caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. Driving Chinese war drums with fast rhythmic patterns, energetic pipa tremolo and rapid strumming, erhu and dizi trading a bold heroic melody, a staccato string ostinato and short low brass accents. Tense yet heroic with constant forward momentum and steady energy throughout. No vocals, no electric guitar, no synthesizer.",
+      "structure": "[Intro - war drums and string ostinato]\n\n[Theme A - erhu melody over pipa strumming]\n\n[Theme B - dizi answers, drums intensify]\n\n[Theme A - full ensemble]\n\n[Break - drums and pipa tremolo]\n\n[Theme B - erhu and dizi together]",
+      "bpm": 148,
+      "keyscale": "D minor",
+      "duration": 100
+    },
+    {
+      "id": "bgm.boss.old_ferry",
+      "title": "旧渡首领战（以普通战斗种子 33 为底，XL 重新渲染）",
+      "src_audio": "m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. Driving Chinese war drums with fast rhythmic patterns, energetic pipa tremolo and rapid strumming, erhu and dizi trading a bold heroic melody, a staccato string ostinato and short low brass accents. Tense yet heroic with constant forward momentum and steady energy throughout. No vocals, no electric guitar, no synthesizer.",
+      "structure": "[Intro - war drums and string ostinato]\n\n[Theme A - erhu melody over pipa strumming]\n\n[Theme B - dizi answers, drums intensify]\n\n[Theme A - full ensemble]\n\n[Break - drums and pipa tremolo]\n\n[Theme B - erhu and dizi together]",
+      "bpm": 148,
+      "keyscale": "D minor",
+      "duration": 100
+    }
+  ]
+}

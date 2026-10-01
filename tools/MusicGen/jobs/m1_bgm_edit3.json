@@ -1,0 +1,49 @@
+{
+  "name": "m1_bgm_edit3",
+  "note": "用户 2026-10-02 第三次试听：上一轮换音色 4 版都不好——开头那件弹拨乐太薄太亮、听不清；也不要换成琵琶，因为 0:29–0:35 已用琵琶，前面再用就重复。本轮只换 0:03–0:09：描述里指定中阮（温厚圆润的中低音区）或中低音区古筝，加噪保留度降到 0.4 / 0.55 给换乐器留空间；0:29–0:35 保持种子 11 原样，另附两版“琵琶更饱满”供选。",
+  "model": "acestep-v15-xl-turbo",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.boss.old_ferry.open_ruan",
+      "title": "首领战 · 0:03–0:09 开头弹拨乐换中阮",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "rerender": [{"start": 3.0, "end": 9.0}],
+      "rerender_noise": [0.4, 0.55],
+      "seeds": [11, 22],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game, high-fidelity studio recording. The plucked melody is played on a zhongruan (Chinese moon-shaped lute): warm, round, full-bodied mid-low register, clearly articulated and present in the mix, not thin, not bright, not liuqin, not pipa. Driving Chinese war drums and a staccato low string ostinato underneath. Tense, dark and thrilling. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    },
+    {
+      "id": "bgm.boss.old_ferry.open_zheng",
+      "title": "首领战 · 0:03–0:09 开头弹拨乐换中低音区古筝",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "rerender": [{"start": 3.0, "end": 9.0}],
+      "rerender_noise": [0.4],
+      "seeds": [11, 22],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game, high-fidelity studio recording. The plucked melody is played on a guzheng in its low and middle register: deep, resonant, full-bodied strings, clearly articulated and present in the mix, not thin, not bright, not pipa. Driving Chinese war drums and a staccato low string ostinato underneath. Tense, dark and thrilling. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    },
+    {
+      "id": "bgm.boss.old_ferry.pipa_full",
+      "title": "（可选）首领战 · 0:29–0:35 琵琶更饱满",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "rerender": [{"start": 29.11, "end": 35.0}],
+      "rerender_noise": [0.55],
+      "seeds": [11, 22],
+      "caption": "Instrumental Chinese martial arts (wuxia) boss battle music for a video game, high-fidelity studio recording. Tense pipa tremolo and rapid strumming with a full, rich, resonant body and clear attack, not thin. Driving Chinese war drums, a staccato string ostinato and short low brass accents. Tense and thrilling, constant forward momentum. No vocals, no electric guitar, no synthesizer.",
+      "keyscale": "D minor"
+    }
+  ]
+}

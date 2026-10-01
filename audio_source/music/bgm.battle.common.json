@@ -1,0 +1,36 @@
+{
+  "id": "bgm.battle.common",
+  "title": "普通战斗",
+  "status": "用户 2026-10-02 选定的工作稿；未剪循环、未统一响度",
+  "license": "ACE-Step 1.5 代码与权重 MIT，生成物可商用（README 要求核对原创性、披露 AI 参与）",
+  "machine": "家用台式机 RTX 4070 Ti SUPER 16 GB",
+  "format": "48000 Hz 2 声道 PCM_16，100.00 秒",
+  "sha256": "4ec4cd5d2767dc77db21bf78ee40fe4ded4eb6d3c421b4cf4afc8d007ca0925e",
+  "steps": [
+    {
+      "step": "文生曲",
+      "tool": "sample.py",
+      "job": "jobs/m1_bgm_samples.json",
+      "model": "acestep-v15-turbo（2B）+ LM 1.7B",
+      "seed": 11,
+      "sha256": "36d0b46c63af347c46d90df670c2e9b0cb00289980ad676372c5e3429a69af07"
+    },
+    {
+      "step": "XL cover 重渲染两版",
+      "tool": "sample.py",
+      "job": "jobs/m1_bgm_xl.json",
+      "model": "acestep-v15-xl-turbo",
+      "seeds": [
+        11,
+        22
+      ],
+      "cover_strength": 1.0
+    },
+    {
+      "step": "段落替换",
+      "tool": "edit.py",
+      "job": "jobs/m1_bgm_edit.json",
+      "detail": "以 XL 11 为底，60.021–92.694 秒换成 XL 22 同段（同一节拍网格 145.07 BPM），两端 30 ms 等功率交叉淡化；用户选“仅交叉淡化拼接”"
+    }
+  ]
+}

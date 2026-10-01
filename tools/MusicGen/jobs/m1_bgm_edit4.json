@@ -1,0 +1,42 @@
+{
+  "name": "m1_bgm_edit4",
+  "note": "用户 2026-10-02 第三次试听要求 0:03–0:09 开头弹拨乐换掉（太薄太亮、听不清；不用琵琶，0:29–0:35 已用琵琶）。实测 turbo 的 cover 换不了乐器（描述词不起作用，或音高跟着变），改用 XL sft 的 flow-edit：按“原稿描述 → 目标描述”改编，只取 0:03–0:09 换回，0:29–0:35 保持种子 11 原样。",
+  "model": "acestep-v15-xl-sft",
+  "lm": null,
+  "offload_to_cpu": true,
+  "quantization": null,
+  "edits": [
+    {
+      "id": "bgm.boss.old_ferry.open_ruan",
+      "title": "首领战 · 0:03–0:09 开头弹拨乐换中阮（flow-edit）",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "rerender": [{"start": 3.0, "end": 9.0}],
+      "flow_edit": {
+        "source_caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. A thin, bright, high-register plucked string melody over driving Chinese war drums and a staccato string ostinato. Tense and thrilling. No vocals.",
+        "n_max": [0.5, 0.7]
+      },
+      "seeds": [11, 22],
+      "caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. A warm, round, full-bodied plucked melody on zhongruan (Chinese moon lute) in the mid-low register, clearly articulated, over driving Chinese war drums and a staccato string ostinato. Tense and thrilling. No vocals.",
+      "keyscale": "D minor"
+    },
+    {
+      "id": "bgm.boss.old_ferry.open_zheng",
+      "title": "首领战 · 0:03–0:09 开头弹拨乐换中低音区古筝（flow-edit）",
+      "base": "edits/m1_bgm_edit/picks/bgm.boss.old_ferry_s11.wav",
+      "grid_from": "samples/m1_bgm_samples/picks/bgm.battle.common_33.wav",
+      "snap": true,
+      "bpm": 148,
+      "rerender": [{"start": 3.0, "end": 9.0}],
+      "flow_edit": {
+        "source_caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. A thin, bright, high-register plucked string melody over driving Chinese war drums and a staccato string ostinato. Tense and thrilling. No vocals.",
+        "n_max": [0.5, 0.7]
+      },
+      "seeds": [11, 22],
+      "caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. A deep, resonant plucked melody on guzheng in its low and middle register, full-bodied and clearly articulated, over driving Chinese war drums and a staccato string ostinato. Tense and thrilling. No vocals.",
+      "keyscale": "D minor"
+    }
+  ]
+}

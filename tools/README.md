@@ -7,6 +7,7 @@
 | `BattleSimulator/` | 固定种子批量战斗模拟（场景 × 流派 × 策略） | M1 |
 | `VoiceBuilder/` | AI 配音批量生成、审核状态与清单 | M1–M3 |
 | `ArtGen/` | 本地 SDXL 美术生成、任务文件与生成记录；环境复现见其 README | M0 起 |
+| `MusicGen/` | 本地 ACE-Step 1.5 配乐生成、任务文件与试听页；环境见其 README | M1 起 |
 
 Windows 导出：`$env:GODOT_BIN = '<Godot .NET 编辑器路径>'; ./tools/scripts/export-windows.ps1`（先运行内容编译器，再 `dotnet build` 与 Godot 导出）
 

@@ -1,0 +1,57 @@
+{
+  "id": "bgm.boss.old_ferry",
+  "title": "旧渡首领战",
+  "status": "用户 2026-10-02 选定的工作稿；未剪循环、未统一响度",
+  "license": "ACE-Step 1.5 代码与权重 MIT，生成物可商用（README 要求核对原创性、披露 AI 参与）",
+  "machine": "家用台式机 RTX 4070 Ti SUPER 16 GB",
+  "format": "48000 Hz 2 声道 FLOAT，100.00 秒",
+  "sha256": "15d9358f2ff65a7a8318ac4e6760acd0d80934e3054184aec59a6ea28d7eb0a0",
+  "steps": [
+    {
+      "step": "文生曲",
+      "tool": "sample.py",
+      "job": "jobs/m1_bgm_samples.json（普通战斗曲目）",
+      "model": "acestep-v15-turbo（2B）+ LM 1.7B",
+      "seed": 33,
+      "sha256": "6961e1ad0ad3f004b008710594249a28ae41ad5417139df67e07afcdaad0aa1e",
+      "note": "用户选普通战斗种子 33 作首领战"
+    },
+    {
+      "step": "重画两段旋律",
+      "tool": "edit.py",
+      "job": "jobs/m1_bgm_edit.json",
+      "model": "acestep-v15-xl-turbo",
+      "seed": 11,
+      "detail": "重画 29.110–53.641 与 80.183–100.000 秒，0:00–0:29、0:54–1:20 原样保留"
+    },
+    {
+      "step": "留白过渡",
+      "tool": "edit.py",
+      "job": "jobs/m1_bgm_edit5.json",
+      "model": "acestep-v15-xl-turbo",
+      "seed": 22,
+      "detail": "取同轮种子 44 自 39.968 秒起 5.63 秒放到 48.011–53.641（平移 20 拍），XL cover 加噪重渲染 47.609–53.641（cover_noise_strength 0.5）"
+    },
+    {
+      "step": "去 0:53 高音",
+      "tool": "edit.py",
+      "job": "jobs/m1_bgm_edit6.json",
+      "model": "acestep-v15-xl-turbo",
+      "seed": 3,
+      "detail": "重画 52.837–53.641 秒（旋律休止）"
+    },
+    {
+      "step": "删去类似二胡长音",
+      "tool": "tools/MusicGen/note_gate.py",
+      "detail": "--f0 560 630 --start 53.10 --end 54.55 --mode remove --depth -50 --harmonics 12（A 版，用户接受轻微裂缝）"
+    },
+    {
+      "step": "开头换大提琴",
+      "tool": "edit.py",
+      "job": "jobs/m1_bgm_edit11.json（edit id rp.cello）",
+      "model": "acestep-v15-xl-turbo",
+      "seed": 22,
+      "detail": "以重画种子 11 稿为底重画 0:03–0:09（2.970–9.002 秒）为大提琴独奏，所得差值叠到上一步结果（两者在该区间外逐采样相同）"
+    }
+  ]
+}

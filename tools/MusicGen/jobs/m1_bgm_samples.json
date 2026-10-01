@@ -1,0 +1,43 @@
+{
+  "name": "m1_bgm_samples",
+  "note": "第一章 BGM 样带（未定稿）：芦湾水镇探索、普通战斗、旧渡首领战。方向为民乐加轻管弦的现代国风，供用户试听选定听感。",
+  "model": "acestep-v15-turbo",
+  "lm": "acestep-5Hz-lm-1.7B",
+  "quantization": null,
+  "defaults": {
+    "timesignature": "4",
+    "inference_steps": 8,
+    "shift": 3.0,
+    "lm_temperature": 0.85,
+    "seeds": [11, 22, 33, 44]
+  },
+  "tracks": [
+    {
+      "id": "bgm.town.luwan",
+      "title": "芦湾水镇·探索",
+      "caption": "Instrumental Chinese folk-orchestral video game background music for a peaceful Jiangnan water town on a fresh, clear morning after rain. A bright bamboo flute (dizi) sings a gentle pentatonic melody over flowing guzheng arpeggios, light pipa plucks and a soft, warm string ensemble. Light woodblock and hand percussion keep an easy walking pulse. Airy, clean and unhurried with even dynamics. No vocals, no drum kit, no synthesizer.",
+      "structure": "[Intro - short guzheng arpeggio]\n\n[Theme A - dizi melody over guzheng]\n\n[Theme B - pipa and strings answer]\n\n[Theme A - dizi melody, fuller strings]\n\n[Bridge - guzheng solo with light woodblock]\n\n[Theme A - dizi melody]",
+      "bpm": 88,
+      "keyscale": "D major",
+      "duration": 120
+    },
+    {
+      "id": "bgm.battle.common",
+      "title": "普通战斗",
+      "caption": "Instrumental Chinese martial arts (wuxia) battle music for a video game. Driving Chinese war drums with fast rhythmic patterns, energetic pipa tremolo and rapid strumming, erhu and dizi trading a bold heroic melody, a staccato string ostinato and short low brass accents. Tense yet heroic with constant forward momentum and steady energy throughout. No vocals, no electric guitar, no synthesizer.",
+      "structure": "[Intro - war drums and string ostinato]\n\n[Theme A - erhu melody over pipa strumming]\n\n[Theme B - dizi answers, drums intensify]\n\n[Theme A - full ensemble]\n\n[Break - drums and pipa tremolo]\n\n[Theme B - erhu and dizi together]",
+      "bpm": 148,
+      "keyscale": "D minor",
+      "duration": 100
+    },
+    {
+      "id": "bgm.boss.old_ferry",
+      "title": "旧渡首领战",
+      "caption": "Instrumental epic Chinese orchestral boss battle music for a video game, set at a storm-battered old river ferry at dusk with chained boats and a sluice gate. Heavy low war drums and deep booming hits, an ominous low string and cello ostinato, dark crying erhu lines, bursts of pipa tremolo and swelling low brass. Menacing and urgent; the second half grows faster and more desperate, like racing to rescue captives. No vocals, no choir, no electric guitar, no synthesizer.",
+      "structure": "[Intro - deep drums and low string ostinato]\n\n[Phase 1 - erhu theme, menacing]\n\n[Phase 1 - pipa tremolo and low brass]\n\n[Phase 2 - faster drums, urgent strings]\n\n[Phase 2 - erhu and full ensemble climax]\n\n[Phase 2 - driving ostinato]",
+      "bpm": 156,
+      "keyscale": "C minor",
+      "duration": 120
+    }
+  ]
+}
