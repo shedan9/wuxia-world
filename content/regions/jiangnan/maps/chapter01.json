@@ -1,0 +1,89 @@
+[
+  {
+    "id": "map.jiangnan.luwan_shore",
+    "region": "region.jiangnan",
+    "scene": "wild",
+    "safe_spawn": "wake",
+    "spawns": ["wake", "path_end"],
+    "exits": [
+      { "id": "to_street", "to": "map.jiangnan.luwan_street", "spawn": "south_gate" }
+    ],
+    "interactables": [
+      {
+        "id": "stone_marks",
+        "kind": "inspect",
+        "dialogue": "dlg.ch01.inspect_stone_marks"
+      },
+      {
+        "id": "tide_line",
+        "kind": "inspect",
+        "when": { "type": "quest_state_is", "id": "quest.side.01.missing_ferryman", "status": "active", "stage": "tide" },
+        "dialogue": "dlg.ch01.side_tide_line"
+      }
+    ]
+  },
+  {
+    "id": "map.jiangnan.luwan_street",
+    "region": "region.jiangnan",
+    "scene": "town",
+    "safe_spawn": "south_gate",
+    "spawns": ["south_gate", "inn_door", "pier"],
+    "exits": [
+      { "id": "to_shore", "to": "map.jiangnan.luwan_shore", "spawn": "path_end" },
+      { "id": "to_inn", "to": "map.jiangnan.inn", "spawn": "door" }
+    ],
+    "interactables": [
+      {
+        "id": "ferry_notice",
+        "kind": "inspect",
+        "dialogue": "dlg.ch01.inspect_ferry_notice"
+      },
+      {
+        "id": "ferry_tags",
+        "kind": "inspect",
+        "when": { "type": "quest_state_is", "id": "quest.side.01.missing_ferryman", "status": "active", "stage": "tags" },
+        "dialogue": "dlg.ch01.side_ferry_tags"
+      }
+    ]
+  },
+  {
+    "id": "map.jiangnan.inn",
+    "region": "region.jiangnan",
+    "scene": "inn",
+    "safe_spawn": "door",
+    "spawns": ["door", "hall"],
+    "exits": [
+      { "id": "out", "to": "map.jiangnan.luwan_street", "spawn": "inn_door" }
+    ],
+    "interactables": [
+      {
+        "id": "rations_basket",
+        "kind": "pickup",
+        "once": true,
+        "effects": [{ "type": "grant_item", "id": "item.misc.dry_rations", "amount": 2 }]
+      }
+    ]
+  },
+  {
+    "id": "map.jiangnan.old_ferry",
+    "region": "region.jiangnan",
+    "scene": "wild",
+    "safe_spawn": "landing",
+    "spawns": ["landing", "sluice"],
+    "interactables": [
+      {
+        "id": "locked_boat",
+        "kind": "inspect",
+        "when": {
+          "type": "all",
+          "of": [
+            { "type": "quest_state_is", "id": "quest.side.01.missing_ferryman", "status": "active", "stage": "free" },
+            { "type": "fact_equals", "id": "fact.ch01.escort_beaten", "value": "true" },
+            { "type": "not", "of": [{ "type": "fact_equals", "id": "fact.ch01.ferryman_freed", "value": "true" }] }
+          ]
+        },
+        "dialogue": "dlg.ch01.side_locked_boat"
+      }
+    ]
+  }
+]

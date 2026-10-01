@@ -11,40 +11,39 @@ public static class GeneratedContent
 {
     private const string Dir = "res://generated/content/";
     private static CombatBundle? _combat;
+    private static WorldBundle? _world;
     private static string? _error;
 
     /// <summary>战斗内容包；读取失败返回 null，原因见 <see cref="Error"/>。</summary>
-    public static CombatBundle? Combat
+    public static CombatBundle? Combat => _combat ??= Load(CombatBundle.FileName, CombatBundle.Parse);
+
+    /// <summary>世界内容包（地图、任务、对白等）；读取失败返回 null，原因见 <see cref="Error"/>。</summary>
+    public static WorldBundle? World => _world ??= Load(WorldBundle.FileName, WorldBundle.Parse);
+
+    private static T? Load<T>(string file, Func<string, T> parse)
+        where T : class
     {
-        get
+        var path = Dir + file;
+        if (!Godot.FileAccess.FileExists(path))
         {
-            if (_combat is not null || _error is not null)
-            {
-                return _combat;
-            }
-
-            var path = Dir + CombatBundle.FileName;
-            if (!Godot.FileAccess.FileExists(path))
-            {
-                _error = $"找不到 {path}：请先运行 dotnet run --project tools/ContentCompiler 生成内容包。";
-                return null;
-            }
-
-            try
-            {
-                _combat = CombatBundle.Parse(Godot.FileAccess.GetFileAsString(path));
-            }
-            catch (InvalidDataException ex)
-            {
-                _error = ex.Message;
-            }
-            catch (System.Text.Json.JsonException ex)
-            {
-                _error = $"内容包格式错误：{ex.Message}";
-            }
-
-            return _combat;
+            _error = $"找不到 {path}：请先运行 dotnet run --project tools/ContentCompiler 生成内容包。";
+            return null;
         }
+
+        try
+        {
+            return parse(Godot.FileAccess.GetFileAsString(path));
+        }
+        catch (InvalidDataException ex)
+        {
+            _error = ex.Message;
+        }
+        catch (System.Text.Json.JsonException ex)
+        {
+            _error = $"内容包 {file} 格式错误：{ex.Message}";
+        }
+
+        return null;
     }
 
     public static string? Error => _error;

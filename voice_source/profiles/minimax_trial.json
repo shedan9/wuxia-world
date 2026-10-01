@@ -1,0 +1,16 @@
+{
+  "provider": "minimax",
+  "model": "speech-2.8-hd",
+  "status": "试听用临时档案（2026-10-01）：全部借用 MiniMax 系统音色，只为比较供应商与粗定声线，不是正式音色。正式档案改用音色设计生成原创音色，经用户试听后定版。",
+  "audio": { "sample_rate": 44100, "bitrate": 128000, "format": "mp3", "channel": 1 },
+  "voices": {
+    "char.hero": { "voice_id": "Chinese (Mandarin)_Sincere_Adult", "note": "主角：现代青年，真诚、略带迷茫" },
+    "char.lu_qinghe": { "voice_id": "Chinese (Mandarin)_Warm_Bestie", "note": "陆青禾：江南渡工学徒，清脆利落" },
+    "char.qiao_hongxiao": { "voice_id": "Chinese (Mandarin)_Mature_Woman", "note": "乔红绡：客栈掌柜，泼辣带几分妩媚" },
+    "char.du_sangao": { "voice_id": "Chinese (Mandarin)_Humorous_Elder", "note": "杜三篙：老渡工；系统音色带北方口音，与江南身份不符，仅占位" },
+    "char.tang_shouting": { "voice_id": "male-qn-badao-jingpin", "note": "唐守亭：押运头目，强硬" },
+    "char.linghu_chong": { "voice_id": "Chinese (Mandarin)_Unrestrained_Young_Man", "note": "令狐冲：松弛洒脱" },
+    "char.huang_rong": { "voice_id": "Chinese (Mandarin)_Crisp_Girl", "note": "黄蓉：清亮机敏" },
+    "char.xiao_feng": { "voice_id": "Chinese (Mandarin)_Reliable_Executive", "speed": 0.95, "note": "萧峰：浑厚沉稳" }
+  }
+}

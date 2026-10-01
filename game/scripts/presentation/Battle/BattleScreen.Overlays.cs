@@ -48,7 +48,7 @@ public sealed partial class BattleScreen
             var index = i;
             var id = EncounterIds[i];
             var locked = _engine.Content.Encounter(id).Locked;
-            var note = locked ? "首领机制战：水门开闸、蓄力预兆、半血增援；三人同行" : "普通战：满编六人（押运打手三名、飞钩手两名、护院一名）；可撤退";
+            var note = locked ? "首领机制战：水门开闸、蓄力预兆、半血增援；三人同行" : "普通战：押运打手两名、飞钩手一名；可撤退";
             var button = Ui.Toggle($"{_bundle.Name(id)}", UiTheme.ChoiceButton, encounterGroup, () => { _encounter = index; }, i == _encounter);
             button.TooltipText = note;
             button.CustomMinimumSize = new Vector2(300, 56);

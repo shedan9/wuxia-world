@@ -1,0 +1,110 @@
+[
+  {
+    "id": "event.ch01.opening_luwan",
+    "map": "map.jiangnan.luwan_shore",
+    "priority": "main_urgent",
+    "auto": true,
+    "participants": ["char.lu_qinghe"],
+    "dialogue": "dlg.ch01.opening_luwan",
+    "anchor": "wake"
+  },
+  {
+    "id": "event.ch01.inn_council",
+    "map": "map.jiangnan.inn",
+    "priority": "main_urgent",
+    "auto": true,
+    "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "council" },
+    "participants": ["char.qiao_hongxiao", "char.linghu_chong", "char.huang_rong", "char.xiao_feng"],
+    "dialogue": "dlg.ch01.inn_council",
+    "anchor": "hall"
+  },
+  {
+    "id": "event.ch01.mentor_choice",
+    "map": "map.jiangnan.inn",
+    "priority": "main_urgent",
+    "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "training" },
+    "participants": ["char.linghu_chong", "char.huang_rong", "char.xiao_feng"],
+    "dialogue": "dlg.ch01.mentor_choice",
+    "anchor": "hall"
+  },
+  {
+    "id": "event.ch01.side_offer",
+    "map": "map.jiangnan.inn",
+    "priority": "regional",
+    "once": false,
+    "when": { "type": "quest_state_is", "id": "quest.side.01.missing_ferryman", "status": "available" },
+    "participants": ["char.lu_qinghe"],
+    "dialogue": "dlg.ch01.side_offer",
+    "anchor": "door"
+  },
+  {
+    "id": "event.ch01.companion_choice",
+    "map": "map.jiangnan.inn",
+    "priority": "main_urgent",
+    "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "companion" },
+    "participants": ["char.linghu_chong", "char.huang_rong", "char.xiao_feng"],
+    "dialogue": "dlg.ch01.companion_choice",
+    "anchor": "hall"
+  },
+  {
+    "id": "event.ch01.old_ferry_arrival",
+    "map": "map.jiangnan.old_ferry",
+    "priority": "main_urgent",
+    "auto": true,
+    "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "rescue" },
+    "dialogue": "dlg.ch01.old_ferry_arrival",
+    "anchor": "landing"
+  },
+  {
+    "id": "event.ch01.escort_regroup",
+    "map": "map.jiangnan.old_ferry",
+    "priority": "main_urgent",
+    "once": false,
+    "when": {
+      "type": "all",
+      "of": [
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "rescue" },
+        { "type": "fact_equals", "id": "fact.ch01.arrived", "value": "true" },
+        { "type": "not", "of": [{ "type": "fact_equals", "id": "fact.ch01.escort_beaten", "value": "true" }] }
+      ]
+    },
+    "dialogue": "dlg.ch01.escort_regroup",
+    "anchor": "landing"
+  },
+  {
+    "id": "event.ch01.sluice_confrontation",
+    "map": "map.jiangnan.old_ferry",
+    "priority": "main_urgent",
+    "once": false,
+    "when": {
+      "type": "all",
+      "of": [
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "rescue" },
+        { "type": "fact_equals", "id": "fact.ch01.escort_beaten", "value": "true" }
+      ]
+    },
+    "participants": ["char.tang_shouting"],
+    "dialogue": "dlg.ch01.sluice_confrontation",
+    "anchor": "sluice"
+  },
+  {
+    "id": "event.ch01.copy_custody",
+    "map": "map.jiangnan.old_ferry",
+    "priority": "main_urgent",
+    "auto": true,
+    "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "custody" },
+    "participants": ["char.tang_shouting", "char.du_sangao"],
+    "dialogue": "dlg.ch01.copy_custody",
+    "anchor": "sluice"
+  },
+  {
+    "id": "event.ch01.epilogue",
+    "map": "map.jiangnan.inn",
+    "priority": "main_urgent",
+    "auto": true,
+    "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "report" },
+    "participants": ["char.qiao_hongxiao", "char.lu_qinghe"],
+    "dialogue": "dlg.ch01.epilogue",
+    "anchor": "hall"
+  }
+]

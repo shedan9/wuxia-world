@@ -1,0 +1,15 @@
+{
+  "arc": "arc.01",
+  "chapter": "chapter.01",
+  "map": "map.jiangnan.luwan_shore",
+  "spawn": "wake",
+  "party": ["char.hero"],
+  "silver": 30,
+  "seed": 20261001,
+  "effects": [
+    { "type": "grant_item", "id": "item.quest.modern_photo" },
+    { "type": "grant_item", "id": "item.medicine.golden_sore", "amount": 2 },
+    { "type": "grant_item", "id": "item.medicine.qi_pill" },
+    { "type": "start_quest", "id": "quest.main.01.jiangnan_guest" }
+  ]
+}

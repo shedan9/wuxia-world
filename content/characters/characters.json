@@ -1,0 +1,10 @@
+[
+  { "id": "char.hero", "origin": "hero", "combatant": "combatant.hero.sword" },
+  { "id": "char.lu_qinghe", "origin": "original", "combatant": "combatant.lu_qinghe" },
+  { "id": "char.qiao_hongxiao", "origin": "original" },
+  { "id": "char.tang_shouting", "origin": "original" },
+  { "id": "char.du_sangao", "origin": "original" },
+  { "id": "char.linghu_chong", "origin": "canon", "source_work": "work.xiaoao_jianghu", "story_anchor": "pending" },
+  { "id": "char.huang_rong", "origin": "canon", "source_work": "work.shediao_yingxiong_zhuan", "story_anchor": "pending" },
+  { "id": "char.xiao_feng", "origin": "canon", "source_work": "work.tianlong_babu", "story_anchor": "pending" }
+]

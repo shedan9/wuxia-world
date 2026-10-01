@@ -1,6 +1,6 @@
 # 武侠世界：游戏架构与系统设计
 
-版本：0.8 · 日期：2026-09-30 · 状态：探索式剧情设计基线；M0 展示工程实现中
+版本：0.10 · 日期：2026-10-01 · 状态：探索式剧情设计基线；M0 已验收，M1 战斗原型已于 2026-10-01 经用户试玩（刀、枪、弓排入 M4，见 8.3.1），M2 世界规则层第一批已实现（9.4、11）
 
 配套文档：[剧情与任务设计](./STORY.md) · [开发计划](./DEVELOPMENT_PLAN.md)
 
@@ -227,7 +227,6 @@ wuxia-world/
 │   ├── scenes/{boot,preview,world,battle,ui}/
 │   ├── scripts/{presentation,adapters,preview}/
 │   ├── assets/{maps,characters,portraits,vfx,audio,fonts,shaders}/
-│   ├── dialogue/arcXX/           # M0 展示对白（未锁稿，运行时读取；正式对白迁 content）
 │   └── generated/content/        # 校验工具生成，禁止手改
 ├── src/
 │   ├── WuxiaWorld.Domain/
@@ -237,7 +236,9 @@ wuxia-world/
 │   ├── schema/
 │   ├── shared/{skills,items,statuses}/
 │   ├── characters/              # 跨作品共享角色与关系定义
-│   └── regions/<region_id>/{maps,quests,dialogues}/
+│   ├── world/new_game.json       # 新游戏初始世界
+│   ├── dialogue/arcXX/chapterXX.json  # 逐章对白：唯一可编辑来源
+│   └── regions/<region_id>/{maps,routes,events,quests,text}/
 ├── art_source/                   # 分层绘画、动作源文件；LFS，不导出
 ├── tools/{ContentCompiler,BattleSimulator,VoiceBuilder}/
 ├── voice_source/                 # 台词清单、音色档案、发音词典与已选母带；音频进 LFS
@@ -264,6 +265,20 @@ M1（2026-09-30）实际落地的结构：
 | `tests/Domain/WuxiaWorld.Domain.Tests/` | 规则、确定性、重放与内容校验测试 |
 | `game/scripts/adapters/GeneratedContent.cs` | 经 Godot 文件接口读取内容包（导出包内同样可用） |
 | `game/scenes/battle/BattlePrototype.tscn` | M1 战斗原型页，场景目录末尾可进入 |
+
+M2 第一批（2026-10-01，世界规则层）实际落地的结构，规格见 9.4 与第 11 节：
+
+| 位置 | 内容 |
+|---|---|
+| `src/WuxiaWorld.Domain/World/` | `WorldState`（可存档世界状态、深拷贝与状态哈希）、`Condition` / `Conditions`（条件原语）、`WorldEffect`（效果原语与事务结果）、`Definitions`（任务、对白、地图、地区事件、路线、物品目录、人物、新游戏）、`WorldContent`（索引）、`WorldRules`（效果执行、任务状态机、事件筛选与人物占用）、`DialogueRunner`（对话图执行） |
+| `src/WuxiaWorld.Application/World/GameSession.cs` | 一局游戏的会话：对话、交互、场景切换与战斗结算均在副本上执行后整体提交 |
+| `src/WuxiaWorld.Application/Persistence/SaveGame.cs` | 存档槽、存档头、`ISaveStore` 端口、读档相容性检查 `SaveCompatibility` |
+| `src/WuxiaWorld.Infrastructure/Saves/FileSaveStore.cs` | JSON 文件存档：校验和、临时文件替换、备份回退、结构版本迁移 |
+| `src/WuxiaWorld.Infrastructure/Content/` | 新增 `ContentFiles`（文件枚举、共用内容版本、文本表合并）、`WorldBundle` 与 `WorldContentLoader`、`WorldContentValidator` |
+| `content/world/new_game.json`、`content/characters/characters.json`、`content/shared/items/catalog.json` | 新游戏、人物定义（经典人物剧情锚点暂为 `pending`）、物品目录（战斗物品须在目录中有条目） |
+| `content/regions/jiangnan/{maps,routes,events,quests,text}/` | 第一章四张地图、两条水路、十个地区事件、主线与失踪渡工支线、地区文本表 |
+| `content/dialogue/arc01/chapter01.json` | 第一章对白第一稿（15 段 104 句台词，其中主角心里话 5 句；26 个演出提示；未锁稿）；M0 对话展示页也从这里读取开场 |
+| `tests/Domain/WuxiaWorld.Domain.Tests/` | 新增世界规则、存档、第一章走查测试 |
 
 Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scripts/adapters`，纯文件与 JSON 适配留在 `Infrastructure`。避免将全部源代码塞进引擎项目导致规则测试必须启动编辑器。
 
@@ -436,7 +451,8 @@ Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scr
 
 - 可学习多个流派，但战斗装配限制为：主动招式 6 个、主修内功 1 门、辅助心法 1 门、轻功 1 门、被动天赋 3 个。
 - 主修与辅助心法的阴阳及运功条件可兼容或冲突；冲突时 UI 直接说明代价，不能藏在战斗结算中。
-- 武学分为拳掌、剑、刀、棍杖、指爪与暗器等标签；第二阶段 Demo 先完成拳掌、剑和内功辅助三类。
+- 武学分为拳掌、剑、刀、枪、棍杖、弓、指爪与暗器等兵器类别标签（内容标签依次为 `fist`、`sword`、`blade`、`spear`、`staff`、`bow`、`claw`、`hidden_weapon`）；第二阶段 Demo 先完成拳掌、剑和内功辅助三类，**刀、枪、弓三类排入 M4**（2026-10-01 用户决定，机制模板见 8.3 节），指爪与暗器按后续内容需要排期。
+- 兵器类别与流派是两件事：流派是机制模板（8.3 节），兵器类别决定招式能否施展。持某类兵器的招式须装备同类武器才能使用；拳掌、指爪与内功招式不需武器。每人同时只持一件武器，换武器只在战外进行；主角可兼修多类兵器，同样受“主动招式 6 个”的上限约束。该校验在 M4 随刀、枪、弓一并实现，M1–M3 的三套主角预设不检查兵器。敌方押运打手与唐守亭已在使用 `blade` 招式，陆青禾的长篙招式归 `staff`。
 - 招式由目标规则、资源消耗、伤害段、状态段和连携标签组合；新效果原语需要代码，常规新招式只需数据。
 - 熟练度设 5 阶，每阶可有二选一变化式；实际数值随模拟调整。全局升级经验与修为点分开，避免同一资源承担所有成长。
 - 悟性影响修习效率和领悟分支，设置合理上限，不让低悟性存档永久错过主线必要内容。
@@ -452,6 +468,21 @@ Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scr
 | 内功调息 | 资源恢复 → 驱散支援 → 内劲输出 | 长战和多状态敌人 | 开局爆发、点穴与调息被针对 |
 
 这是机制模板，不提前把任意经典武学硬套到不符合原著的效果上。具体经典招式在资料核对后映射到模板，保持辨识度。
+
+#### 8.3.1 M4 兵器扩展：刀、枪、弓
+
+2026-10-01 用户要求增加刀、枪和弓箭，排入 M4（[开发计划 M4-11](./DEVELOPMENT_PLAN.md#m4系统补全与内容工具w17w24)）。三类沿用现有选目标规则与状态，只为各自的核心手感新增少量规则原语；首批每类 4 招，与 M1 每个流派的招式数相同，招式名采用原创通用名。
+
+| 兵器 | 主要循环 | 强项 | 可被针对的弱点 | 沿用的现有规则 | 需新增的规则原语 |
+|---|---|---|---|---|---|
+| 刀 | 横扫、连斩积“刀势”→ 流血与削架势 → 收刀重斩兑现刀势 | 前排多敌、架势厚的对手 | 命中略低；被识破或撞上反击架势时损失大 | 横扫一排、流血、削架势、自身叠层状态 | 伤害倍率随自身状态层数提高 |
+| 枪 | 穿透一列同时压制前后排 → 摆“拒马”架势反击贴近者 → 挑破架势 | 前后排叠站的敌阵、突进型敌人 | 单体爆发低；重招需蓄力，可被破招或点穴打断 | 穿透一列、反击架势、蓄力 | 反击除近身攻击外，也可由突进类招式触发 |
+| 弓 | 蓄力瞄准 → 远程点杀后排 → 射穴造成迟滞 | 后排远程与脆弱目标、需要越过前排的场合 | 气血与防御低；站在前排或被控制时命中下降；蓄力可被打断 | 远程单体、蓄力、迟滞、暴击 | 按施展者所在排修正命中 |
+
+- 弓不设箭矢数量，节奏由内力消耗、冷却与蓄力约束；暗器后续可复用弓的远射模板。
+- 克制倍率仍限定 0.8–1.25；新兵器与三流派用同一套固定成长与装备预算比较（[开发计划 6.2](./DEVELOPMENT_PLAN.md#62-平衡验证)），模拟器增加对应挑战场景。
+- 美术沿用共享骨架的全身人物管线，每类兵器新增持兵姿势、兵器图层与出手、受击动作；正式动作管线以 M3-02 的结果为准。
+- 经典武学候选仅作后续映射方向，资料核对前一律待核，不写入人物数据：刀如胡家刀法、血刀门刀法；枪如杨家枪；弓如郭靖随哲别所学箭术。核对内容包括来源作品、版本、章节与使用者在所选剧情阶段是否已掌握。
 
 ### 8.4 伙伴、关系与经济
 
@@ -502,7 +533,7 @@ Godot 项目引用 `src` 类库；基础设施中的引擎适配留在 `game/scr
 | `CombatantTemplate` | `id, level, attributes, loadout, equipment, overrides, tags, ai, control_threshold, counts_for_victory, art_id`；M1 的主角与伙伴模板为预设，M2 起由成长状态生成 |
 | `EncounterDefinition` | `id, locked, enemies, victory, victory_unit, phases, experience`；阶段含触发条件、增援与状态施加 / 移除 |
 | `QuestDefinition` | `id, region_id, trigger_maps, prerequisites, visible_hints, priority, reservation_rules, stages, branches, guaranteed_clue, rewards, exclusive_group, expiry_notice, recovery_location`；记录失败/放弃结果与汇合事实 |
-| `DialogueDefinition` | `id, entry_node, nodes, lines`；台词行含 `line_id, character_id, text_key, voice_asset_id` |
+| `DialogueDefinition` | `id, status, entry, nodes`；台词节点含 `line_id, speaker, text, mood`，中文台词直接写在章节对白文件里（该文件即台词唯一来源），配音资产由 `VoiceAssetManifest` 按 `line_id` 对应 |
 | `VoiceProfile` | `character_id, voice_profile_version, provider, model_id, provider_voice_id, delivery_defaults, pronunciation_dict_version` |
 | `VoiceAssetManifest` | `line_id, locale, text_hash, voice_profile_version, generation_config_hash, asset_path, duration_ms, review_status` |
 | `MapDefinition` | `id, region_id, scene_id, spawn_points, exits, encounter_table_id` |
@@ -536,9 +567,26 @@ ID 用 ASCII 小写和点分层，例如 `skill.sword.break_guard`；显示名�
 
 校验器必须发现：重复 ID、无效引用、非法数值、缺失文本、孤立对话节点、无条件自循环、无出口地图、不存在的落点、角色重复实例、角色事件占用冲突、缺失资源、互斥任务同时激活、无提示限时条件及缺少汇合出口。复杂分支可达性用固定测试存档与条件图遍历验证；静态校验不宣称能证明所有剧情都无死锁。
 
-M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读取 `content/` 下的招式、状态、心法、物品、克制表、文本表、战斗单位与遭遇，`CombatContentValidator` 检查 ID 格式与重复、跨表引用、内核必需定义（`CoreIds`）、数值范围、阵位、阶段引用与缺失文本，通过后写出单一合成包 `game/generated/content/combat.json`（含 `content_version`：各源文件路径与内容的 SHA-256 前 16 位，及 `ruleset_version`）。游戏只读这份包，规则版本不符即拒绝加载；JSON 采用蛇形小写字段与枚举，未知字段报错。地图、任务与对白的编译在 M2 接入同一入口。
+M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读取 `content/` 下的招式、状态、心法、物品、克制表、文本表、战斗单位与遭遇，`CombatContentValidator` 检查 ID 格式与重复、跨表引用、内核必需定义（`CoreIds`）、数值范围、阵位、阶段引用与缺失文本，通过后写出单一合成包 `game/generated/content/combat.json`（含 `content_version`：各源文件路径与内容的 SHA-256 前 16 位，及 `ruleset_version`）。游戏只读这份包，规则版本不符即拒绝加载；JSON 采用蛇形小写字段与枚举，未知字段报错。2026-10-01 起地图、路线、地区事件、任务、对白、物品目录与人物也由同一入口校验，写出 `world.json`（见 9.4）。
 
 正式剧情修改要同时评审来源、人物动机、玩家选择和状态变化。人物内容校验检查剧情锚点引用、年龄范围格式及身份字段完整性；原著依据、年龄感和身份是否符合主要剧情由人工审核，不能宣称静态工具能自动判断原著事实。为年代兼容而偏离锚点的改动不得通过审核。M3 后新增普通任务应以数据与场景配置完成；若每个任务都新增专属脚本，说明原语或工具边界需要改进。
+
+### 9.4 M2 实现规格
+
+2026-10-01 在 `src/WuxiaWorld.Domain/World` 与 `Application/World` 按 9.1–9.3 实现世界规则层，以下为实际采用的取值与接口。界面接入（探索移动、对话页、任务日志、存读档界面）尚未开始。
+
+- **世界状态**：`WorldState` 保存篇章、关口、所在地图与落点、逻辑时辰（1 = 一个时辰）、修订号、事实（字符串键值）、已结算键、线索、相遇人物、队伍（首位主角，上限 4）、人物占用、任务进度、关系（好感、信任、承诺）、银两、可堆叠物品、已学武学、经验、地图差异、待开战斗、途中事件与世界随机流（PCG32，流选择量 `0x57A1D000`，与战斗流分开）。集合全部按序数排序；`Hash()` 以固定次序写入，存档往返与事务比对用。装备实例、等级成长与装配接入属 M2-05，尚未实现。
+- **条件原语**：`all / any / not`、`has_item`、`quest_state_is`（可指定阶段）、`relationship_at_least`、`fact_equals`、`character_available`、`party_contains`、`skill_learned`、`at_region`、`at_map`、`world_gate_reached`，另加 `clue_known`、`character_met`、`silver_at_least`。只读状态，不消耗随机数。
+- **效果原语**：设 / 清事实，得 / 失物品（不足则整个事务失败），银两增减，关系增减、记承诺，记线索、记相遇，接取 / 完成目标 / 失败 / 放弃任务，入队 / 离队，推进时辰，学武学，得经验，写关口，切篇章；`request_battle`（附胜利、战败效果与能否重试）和 `request_travel` 只交给应用层处理。
+- **一次性结算**：一组效果可带结算键，键已在 `settled` 中则整组跳过。对白效果节点默认键为 `dlg:对白/节点`、选项为 `dlg:对白/节点/line_id`（`repeatable: true` 的节点每次都执行，用于请求战斗等）；任务阶段 `quest:任务:阶段`、奖励 `quest:任务:rewards`；一次性交互 `interact:地图/交互物`；地区事件 `event:事件`；战斗实例 `battle:请求#次数`，胜利效果 `battle:请求:victory` 每个请求只发一次。重进对话、重播台词、重复结算同一战斗都不重复发奖。
+- **任务状态机**：锁定任务前置满足即转为可接，可接任务前置不再满足即收回锁定（如支线要救的人已被主线救出）；进行中任务的目标可由条件自动完成或由 `complete_objective` 效果完成，非可选目标齐全即结算阶段效果，按分支条件或 `next` 转入下一阶段，无下一阶段则完成并发奖。推进循环到稳定为止，上限 64 轮，超过视为内容自循环并让事务失败。主线不能失败或放弃；互斥组内已有进行中或已完成者时不能再接。每次提交事务（含换图）都推进一次，“抵达某地”类目标因此即时结算。
+- **对话图**：节点 `line / choice / branch / effect / jump / end / stage`。条件不满足的选项隐藏，带 `locked_hint` 的显示为不可选；没有可选项、自动节点超过 256 步都会让事务失败。台词文字直接写在章节对白文件里（该文件即中文文本的唯一来源），说话人只能是人物 ID。
+- **不设旁白（2026-10-01 用户决定，旁白出戏）**：场景交代、人物动作和物件细节都交给画面，写成演出提示节点 `stage`：`kind` 为 `scene`（场景建立、镜头）、`action`（人物动作与走位）、`closeup`（物件特写）或 `title`（章节标题卡）；`direction` 是给美术、动画与镜头的制作说明，玩家看不到；特写与标题卡可带 `caption` 和 `caption_id`，显示物件上的文字（告示、木牌）或章节标题，不配音，`caption_id` 与 `line_id` 共用唯一性检查。线索结论不能只靠画面暗示，须由人物说出（例如副页签押与转信章同出一人，由主角说出）。运行时停在 `stage` 上，等表现层播完再 `Continue`；`AwaitingChoice` 区分是否停在选项上。校验器拒绝 `narrator` 说话人、缺 `kind` 或 `direction` 的演出提示、无 `caption` 的标题卡，以及带台词字段的演出提示。
+- **心里话（2026-10-01 用户决定）**：台词节点标 `inner: true` 表示没说出口的心里话，只显示字幕、不配音（没说出口的话没有声音）。只允许主角（`origin: hero`）使用，其他角色一律不许；文字不带括号，由表现层以心里话样式显示；单句不超过 30 字（`DialogueNode.InnerMaxChars`），一句心里话之后（越过效果、演出提示与分流）的下一句台词不能还是心里话，全部对白中心里话不超过台词的一成。校验器对以上各条报错，并把整句包在全角括号里却没标 `inner` 的台词当作漏标报错。
+- `Transcript` 记录已显示台词与所选选项的 `line_id`，供对话记录与配音覆盖检查（心里话不计入必配台词）；`StagesPlayed` 记录已播放的演出提示，第一章走查要求每句台词和每个演出提示都至少能走到一次。
+- **地区事件与占用**：事件按“主线紧急 → 已接限时 → 普通地区故事”与 ID 排序；地点、条件、参与人物未被其他事件占用、一次性事件未结算同时满足才展示；`auto` 事件进图即开始。事件开始时在事务副本里预留参与人物，提交时释放并记为已结算，取消对话则什么都不留下。
+- **会话与事务**：`GameSession` 持有已提交状态；对话、交互、换图与战斗结算都先在副本上执行，成功后修订号加一整体替换，失败或取消丢弃副本。进行中的对话或换图期间不能开始另一项；有待开战斗时不能探索，须先打完、重试或放弃（放弃执行战败效果并回到当前图安全入口）。场景切换按 6.3 实现为票据：`BeginRoute`（校验条件与银两，在副本上扣费、推进时辰、按世界随机流抽途中事件）→ 表现层加载 → `CommitTransition`（重复提交、过期票据被拒绝）或 `AbortTransition`（世界不变）。`RepairSpawn` 把缺失的落点改回该图安全入口、缺失的地图改回新游戏起点并返回说明。`CanSave` 在对话、换图或待开战斗期间为假。
+- **世界内容包**：`ContentCompiler` 现同时写出 `combat.json` 与 `world.json`；内容版本改为 `content/` 下全部 JSON 文件的哈希，两份包共用（此前只算战斗相关文件）。世界内容校验覆盖：ID 格式与重复，条件与效果引用，落点与出口，无出口地图，交互物须有对白或效果，路线方式与途中事件（事件须在目的地），事件对白与参与人物，任务阶段与分支目标、目标须有完成途径、阶段无条件转回自身，主线不得失败 / 放弃 / 限时且须有保底线索并能在支线之外取得，对白入口、跳转目标、孤立节点、全带条件的选项组、`line_id` 全局唯一、说话人已定义，经典人物须写来源作品与剧情锚点，战斗物品须在物品目录中，缺失文本。剧情可达性另由第一章走查测试覆盖（12 种同行者 × 副页 × 支线组合走到章末，且全部台词都能被读到）。
 
 ## 10. 高清美术、UI 与音频
 
@@ -652,7 +700,7 @@ M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读
 - 背景 `Presentation/Scenery/Backdrop.cs` + `assets/shaders/landscape.gdshader`：程序化青绿山水（天空、日轮、流云、四重山、流雾、江面、近岸）与柳叶粒子，参数 `defocus`、`veil`、`left_wash`、`parallax`、`world_seed`、`mood`（0 晨昼、1 黄昏）；山脚染赭石、天际为暖绢色；标题页清晰、菜单虚化压暗、战斗用黄昏、存档缩略图按存档时辰取 `mood`。正式场景美术完成前它也作探索与战斗的占位远景。
 - `SceneRouter` 改为最上层 `CanvasLayer`，切换场景时经玄潭色幕淡出淡入；`GoTo(path, instant: true)` 立即切换、不走色幕，并置 `ArrivedInstantly` 让新场景跳过入场动效（菜单分区 Q / E 用此方式）；启动进入标题页 `scenes/preview/MainMenu.tscn`，任意展示页 Esc 回标题，标题页的“继续旅程”进入 M0 场景目录。
 - 菜单外框 `preview/PreviewScreen.cs`：虚化山水底、顶栏页名章 + 分区签（Q / E）+ 地点与铜钱、中部玉版与子页签（PgUp / PgDn）、底栏键帽提示。
-- 对话展示页读取 `game/dialogue/arc01/chapter01.md`（M0 未锁稿样例，导出预设 `include_filter="dialogue/*.md"` 打包），台词不写进代码；解析器在 `preview/Samples/DialogueSamples.cs`。
+- 对话展示页读取世界内容包里的开场对白 `dlg.ch01.opening_luwan`（源文件 `content/dialogue/arc01/chapter01.json`，未锁稿；2026-10-01 前为 `game/dialogue/arc01/chapter01.md`，已并入正式对白文件并删除），沿每组选项的第一项展开成线性序列，台词不写进代码；展开逻辑在 `preview/Samples/DialogueSamples.cs`。
 - 大地图展示页 `preview/Pages/WorldMapPreview.cs`（`scenes/preview/WorldMap.tscn`）：底图 `WorldMapCanvas` 在 CPU 上生成 768×426 高度图（每格 6 逻辑像素）（`Image.Format.Rf`），由 `assets/shaders/world_relief.gdshader` 在着色器内做三次 B 样条插值（兼容渲染器上 32 位浮点纹理不保证线性过滤）作俯视地面底色，山脉按用户要求以平视山峦矢量绘制（三角形数组，不经多边形三角化），江河、道路与题字同样矢量叠加，画布 4608×2560 逻辑像素（坐标按 2880×1600 设计稿书写，`WorldMapSamples.Scale` = 1.6 整体放大；山体、河宽与地名章不随之放大，世界更辽阔）、基准缩放 0.8 × 玩家缩放（最小值按视口算出、恰好容下全图，最大 1.15），舆图大于视口的方向平移夹在图内、小于视口的方向居中；舆图在进入页面时由离屏 `SubViewport` 画一次，`GetImage` 读回后生成多级纹理，以 `TextureRect`（线性 + 多级纹理过滤）显示，缩放平移只改这张贴图的变换，不再逐帧运行地形着色器与重绘矢量（兼容渲染器不支持 2D MSAA，烘焙视口不开）；地标 `MapLandmark`（`preview/Pages/MapLandmark.cs`）为圆章 + 地点图标（`MapNode.Icon` → `MapIcons` 程序化剪影占位），放在不缩放的图层，按“底图位置 + 地图坐标 × 缩放”摆放，竖排地名印只在悬停或 Tab 跳选时显示；交通面板点空白处或 Esc 关闭；所选路线 `RouteLayer` 随底图缩放。路线按方式在样例路网上求最短路（渡船只走水路、骑马与马车只走陆路，不经未开放节点），时辰与铜钱按路程估算。样例 `preview/Samples/WorldMapSamples.cs` 为第一篇第二章开始时的局势，门派节点沿用 `map.faction.*`，主线地域在 STORY 中尚无稳定节点 ID，暂以 `sample.*` 标出；它不是 6.2 节的正式路线数据，启程也只是表现预览，不走 6.3 节的旅行事务。
 - 开关文字同时写“开/关”；状态一律符号 + 名称 + 颜色。
 - 字体随包：`assets/fonts/` 下思源黑体 CN（正文）与霞鹜文楷 Medium（标题、印章、页签），`UiFonts` 加载；导出脚本把 OFL 许可与资产台账复制到 `build/windows/licenses/`。
@@ -666,12 +714,27 @@ M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读
 | 阶段 | 配音范围 | 验收边界 |
 |---|---|---|
 | M0 视觉 Demo | 可附带 3 位角色、每人约 3–5 句试听，覆盖平静交谈与一种情绪变化 | 音色试听不阻塞画风与视角核对；没有完成的小样移至 M1 |
-| M1–M3 约 60 分钟玩法 Demo | 主线对白全配音，覆盖所有可达分支中的实际发言，含主角已写定的发言及关键战斗语音 | 每句可定位、可试听；主线覆盖率和语音质量纳入 M3 验收；菜单标签、任务日志等不要求朗读 |
+| M1–M3 约 60 分钟玩法 Demo | 主线对白全配音，覆盖所有可达分支中的实际发言，含主角已写定的发言及关键战斗语音；主角心里话（`inner`）不配音 | 每句可定位、可试听；主线覆盖率和语音质量纳入 M3 验收；菜单标签、任务日志等不要求朗读 |
 | M4–M8 | 三篇主线对白和关键恋爱节点全配音，按实际产能扩展其他伙伴支线、普通 NPC 与环境对话 | M4 确定扩展清单，不把所有文字都配音作为无条件承诺 |
 
 **音色与供应商。** 每位主要角色固定一份音色档案，包含音色 ID、语速、咬字、情绪基调和发音词典。例如萧峰浑厚沉稳、令狐冲松弛洒脱、黄蓉清亮机敏，作为本作原创声音的创作方向。参考平台提供的音色设计或可用音色库，同一角色不同场景沿用已选档案。
 
-候选方案：MiniMax 提供中文语音合成及文字音色设计，见[官方介绍](https://www.minimaxi.com/audio)；ElevenLabs 提供多角色对话生成，见[官方文档](https://elevenlabs.io/docs/overview/capabilities/text-to-dialogue)。这些能力是选型依据，尚未完成项目试听，不据此断言哪家中文表演最佳。用相同台词对比发音、情绪、角色一致性和返工成本，再选定主供应商；所选音色与套餐的可用范围随资产入账。供应商只影响生成工具，不改变游戏播放接口。
+候选方案：MiniMax 提供中文语音合成及文字音色设计，见[官方介绍](https://www.minimaxi.com/audio)；ElevenLabs 提供多角色对话生成，见[官方文档](https://elevenlabs.io/docs/overview/capabilities/text-to-dialogue)。这些能力是选型依据，尚未完成项目试听，不据此断言哪家中文表演最佳。
+
+2026-10-01 按用户询问补充免费与收费方案的比较（价格与条款以查询当日的官方页面为准，正式选定前再核一次，并随资产台账记录）：
+
+| 方案 | 费用 | 发行可用性 | 定位 |
+|---|---|---|---|
+| MiniMax（speech-2.8-hd） | 按字符计费：国内站（项目采用，接口 `https://api.minimax.cn`）每万字符 3.5 元，音色设计每个 9.9 元（首次合成时扣）。实测中文约按每字 2 个计费字符计，第一章第一稿 3,522 字生成一遍约 2.5 元 | 付费账号生成的音频用于商业发行的具体条款待核 | **推荐主供应商**：中文模型、按量付费、可用文字设计原创音色，不必克隆真人 |
+| CosyVoice 3（本地开源） | 免费，在家用台式机 GPU 上运行 | 代码与权重均为 Apache-2.0，可商用 | **免费方案与对照组**：情绪与稳定性需试听，人工挑句与返工更多 |
+| ElevenLabs | 免费档每月约 1 万字符，但不可商用、须署名；商用最低每月 5 美元起 | 付费档可商用 | 备选：中文表现待试听，按月订阅不如按量付费灵活 |
+| IndexTTS2 | 免费 | 代码为 Apache-2.0，但模型权重另有许可，要求商用前取得书面授权，官方尚未澄清 | 不采用，除非取得书面授权 |
+
+不使用克隆真人（包括配音演员、影视剧角色）的声音；音色均为文字设计或原创合成，并在音色档案中记录来源。
+
+**表演方向（2026-10-01 用户试听后确定）。** 全部角色以“真实平常的说话”为准：日常口语的语速和抑扬顿挫，不用播音腔、朗诵腔或配音表演腔；情绪由台词本身带出，默认不手动指定情绪参数。音色档案与音色设计描述都按此要求撰写。不再用 `voice_modify` 微调音色（用户试听第三轮微调候选有卡顿）；主要角色用音色设计（每个 9.9 元），次要角色直接选用接近的系统音色，不花设计费。第一章工作选角见 `voice_source/profiles/minimax_cast.json`。每次用设计音色合成都须先经用户确认（用户 2026-10-01 要求）；档案中设计音色标 `designed: true`，`sample.py` 只合成 `--confirm-designed` 逐个列出的设计音色，否则拒绝运行。
+
+**开发工具（M1-09 起）。** `tools/VoiceBuilder/minimax.py` 是国内站接口的最小客户端，密钥从 `voice_source/secrets/minimax.env`（`MINIMAX_API_KEY`、`MINIMAX_API_HOST`，被 `.gitignore` 排除）读取，只放进请求头。`tools/VoiceBuilder/sample.py` 按 `voice_source/profiles/*.json` 音色档案为指定台词生成试听小样，写到 `build/voice/samples/<档案名>/`：每句一个音频、`manifest.json`（`line_id`、说话人、文本 SHA-256、模型、音色与音频参数、时长、计费字符、审核状态）与逐句对照的 `index.html`。文本、音色参数和模型都未变且文件还在的句子沿用旧结果，不重复计费；遇到限流（1002）按 20 秒递增等待重试。`sample.py` 还支持档案里的 `modify`（`voice_modify` 的音高、力度、明暗，各 [-100, 100]）。`tools/VoiceBuilder/design.py` 按 `voice_source/profiles/minimax_design_*.json` 的文字描述设计原创音色，只取回设计试听（按 2 元 / 万字符计费），结果写到 `build/voice/design/<档案名>/result.json`；设计出的 `voice_id` 首次用于合成时才扣 9.9 元，脚本不会自动用它合成。`tools/VoiceBuilder/compare.py` 把几轮试听按角色并排生成 `build/voice/compare.html`。音色设计描述须以“男声 / 女声”开头，档案标 `gender`；实测设计结果的性别并不稳定，`design.py` 用 `tools/VoiceBuilder/pitch.py` 估试听中位基频（男 < 165 Hz、女 > 180 Hz，之间交人工判断），不符自动重设（默认 2 次）；该检查依赖 `tools/VoiceBuilder/requirements.txt`（numpy、miniaudio），未安装时跳过并提示。正式批量生成、母带入库与审核流转仍按上面的流程，在选定供应商后建设。用相同台词对比发音、情绪、角色一致性和返工成本，再选定主供应商；所选音色与套餐的可用范围随资产入账。供应商只影响生成工具，不改变游戏播放接口。
 
 **生成与维护流程：**
 
@@ -713,6 +776,8 @@ M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读
 - 槽位缩略图与存档数据分开；缩略图坏了不影响存档加载。校验和用于检测损坏，不宣称具备防作弊能力。
 
 首期不接入云存档，后续在文件适配器上增加同步，不改变领域存档结构。
+
+M2 第一批实现（2026-10-01，`FileSaveStore`）：存档文件为 `{"checksum":…,"payload":{"header":…,"world":…}}`，校验和为 payload 原文的 SHA-256，存档头另记世界状态哈希，读档后复核。槽位文件 `manual_01`–`manual_10`、`quick`、`auto_1`–`auto_3`，各带 `.bak`；自动槽取空槽或写入序号最旧者。写入顺序：写 `.tmp` 并落盘 → 回读复核 → 正式文件有效时用 `File.Replace` 把它转为 `.bak`，正式文件已损坏时直接覆盖、不让坏文件顶掉有效备份；任何失败保留原有效存档并返回原因。读取：正式文件损坏、截断或被改动时退回 `.bak` 并在结果中说明；结构版本更新者拒绝加载；旧版本按 `ISaveMigration` 逐版迁移 JSON，原文件另存 `.vN.bak`（当前结构版本 1，尚无正式迁移，测试用样本迁移验证流程）。`SaveCompatibility` 列出当前内容中已不存在的地图、物品、任务、任务阶段、人物与途中事件，读档界面据此拒绝或要求映射。时间戳只作显示；断电式中断以截断文件模拟，真实掉电与缩略图尚未测试。
 
 ## 12. 性能、测试与工程约束
 

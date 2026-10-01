@@ -1,0 +1,16 @@
+{
+  "provider": "minimax",
+  "model": "speech-2.8-hd",
+  "status": "第二轮试听（2026-10-01）：用户反馈第一轮“太端着、表演味重”。本档换用偏日常的系统音色，语速略提，不指定情绪（交给模型按文本自动匹配），力度略放轻；仍是借用系统音色的临时方案。",
+  "audio": { "sample_rate": 44100, "bitrate": 128000, "format": "mp3", "channel": 1 },
+  "voices": {
+    "char.hero": { "voice_id": "Chinese (Mandarin)_Gentle_Youth", "speed": 1.08, "modify": { "intensity": 20 }, "note": "主角：温和青年音，放轻、提速，像随口说话" },
+    "char.lu_qinghe": { "voice_id": "Chinese (Mandarin)_Soft_Girl", "speed": 1.1, "note": "陆青禾：带南方口音的年轻女声，提速" },
+    "char.qiao_hongxiao": { "voice_id": "Chinese (Mandarin)_Wise_Women", "speed": 1.12, "modify": { "timbre": -15 }, "note": "乔红绡：阅历女声，提速、略压暗，取泼辣利落" },
+    "char.du_sangao": { "voice_id": "Chinese (Mandarin)_Kind-hearted_Elder", "speed": 1.0, "modify": { "pitch": -60, "timbre": -30 }, "note": "杜三篙：换掉北方口音的大爷音，暂用老年音大幅压低，效果待听" },
+    "char.tang_shouting": { "voice_id": "Chinese (Mandarin)_Stubborn_Friend", "speed": 1.05, "modify": { "pitch": -30, "intensity": -25 }, "note": "唐守亭：压低、加力度，冷硬但不吼" },
+    "char.linghu_chong": { "voice_id": "Chinese (Mandarin)_Stubborn_Friend", "speed": 1.1, "note": "令狐冲：嘴硬不羁的青年音，提速，取松弛" },
+    "char.huang_rong": { "voice_id": "Chinese (Mandarin)_Warm_Bestie", "speed": 1.12, "modify": { "timbre": 15 }, "note": "黄蓉：清脆青年女声，提速、略提亮" },
+    "char.xiao_feng": { "voice_id": "Chinese (Mandarin)_Reliable_Executive", "speed": 1.05, "modify": { "pitch": -20 }, "note": "萧峰：沉稳男声，略提速、压低，去掉播报感" }
+  }
+}

@@ -2,12 +2,9 @@
   {
     "id": "battle.01.escort_skirmish",
     "enemies": [
-      { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_a", "row": 0, "slot": 0 },
-      { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_b", "row": 0, "slot": 1 },
-      { "template": "combatant.enemy.yard_guard", "unit_id": "enemy.yard_guard", "row": 0, "slot": 2 },
-      { "template": "combatant.enemy.hookman", "unit_id": "enemy.hookman_a", "row": 1, "slot": 0 },
-      { "template": "combatant.enemy.hookman", "unit_id": "enemy.hookman_b", "row": 1, "slot": 1 },
-      { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_c", "row": 1, "slot": 2 }
+      { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_a", "row": 0, "slot": 1 },
+      { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_b", "row": 0, "slot": 2 },
+      { "template": "combatant.enemy.hookman", "unit_id": "enemy.hookman", "row": 1, "slot": 1 }
     ],
     "experience": 60
   },

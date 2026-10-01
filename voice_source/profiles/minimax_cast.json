@@ -1,0 +1,65 @@
+{
+  "provider": "minimax",
+  "model": "speech-2.8-hd",
+  "status": "工作选角（2026-10-01 用户试听后选定，非最终定稿）：陆青禾、乔红绡、令狐冲、萧峰取第二轮系统音色（按用户听过的原样，乔红绡、萧峰含第二轮的轻度 voice_modify）；主角取音色设计第一版，黄蓉取音色设计第二版 d；唐守亭按用户决定不用设计音色，改用系统音色；杜三篙为次要角色，直接用系统老年男声。第三轮 voice_modify 微调候选用户试听有卡顿，全部弃用，之后不再做微调。设计音色首次用于合成时各扣 9.9 元；用户要求每次用设计音色合成前都先确认，sample.py 须用 --confirm-designed 逐个列出。整章首跑在用户提出该要求后中止：主角、黄蓉已用于合成（各 9.9 元已扣），唐守亭的设计音色未使用、未扣费，已弃用。",
+  "audio": {
+    "sample_rate": 44100,
+    "bitrate": 128000,
+    "format": "mp3",
+    "channel": 1
+  },
+  "voices": {
+    "char.lu_qinghe": {
+      "voice_id": "Chinese (Mandarin)_Soft_Girl",
+      "speed": 1.1,
+      "note": "陆青禾：带南方口音的年轻女声，提速",
+      "source": "minimax_natural"
+    },
+    "char.qiao_hongxiao": {
+      "voice_id": "Chinese (Mandarin)_Wise_Women",
+      "speed": 1.12,
+      "modify": {
+        "timbre": -15
+      },
+      "note": "乔红绡：阅历女声，提速、略压暗，取泼辣利落",
+      "source": "minimax_natural"
+    },
+    "char.linghu_chong": {
+      "voice_id": "Chinese (Mandarin)_Stubborn_Friend",
+      "speed": 1.1,
+      "note": "令狐冲：嘴硬不羁的青年音，提速，取松弛",
+      "source": "minimax_natural"
+    },
+    "char.hero": {
+      "voice_id": "ttv-voice-2026100114014626-LIHIWaaR",
+      "source": "minimax_design_v1",
+      "designed": true,
+      "note": "主角：音色设计，试听音高 137 Hz"
+    },
+    "char.tang_shouting": {
+      "voice_id": "male-qn-badao",
+      "source": "system",
+      "note": "唐守亭：用户决定不用设计音色，改用系统音色（霸道青年），不微调"
+    },
+    "char.xiao_feng": {
+      "voice_id": "Chinese (Mandarin)_Reliable_Executive",
+      "speed": 1.05,
+      "modify": {
+        "pitch": -20
+      },
+      "note": "萧峰：沉稳男声，略提速、压低，去掉播报感",
+      "source": "minimax_natural"
+    },
+    "char.huang_rong": {
+      "voice_id": "ttv-voice-2026100114191726-dLDCBpC9",
+      "source": "minimax_design_v2@d",
+      "designed": true,
+      "note": "黄蓉：音色设计（聪明干练、清亮有力、不娇柔），试听音高 320 Hz"
+    },
+    "char.du_sangao": {
+      "voice_id": "Chinese (Mandarin)_Humorous_Elder",
+      "source": "system",
+      "note": "杜三篙：次要角色，用户要求直接用系统老年男声，不做音色设计"
+    }
+  }
+}

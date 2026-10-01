@@ -1,0 +1,180 @@
+[
+  {
+    "id": "quest.main.01.jiangnan_guest",
+    "kind": "main",
+    "region": "region.jiangnan",
+    "trigger_maps": ["map.jiangnan.luwan_shore"],
+    "priority": 0,
+    "guaranteed_clue": "clue.ch01.water_tag_mismatch",
+    "stages": [
+      {
+        "id": "wake",
+        "next": "to_inn",
+        "objectives": [
+          { "id": "meet_lu", "kind": "talk", "map": "map.jiangnan.luwan_shore" },
+          {
+            "id": "inspect_stones",
+            "kind": "investigate",
+            "map": "map.jiangnan.luwan_shore",
+            "when": { "type": "clue_known", "id": "clue.ch01.stone_marks" }
+          }
+        ]
+      },
+      {
+        "id": "to_inn",
+        "next": "council",
+        "objectives": [
+          { "id": "reach_inn", "kind": "reach", "map": "map.jiangnan.inn", "when": { "type": "at_map", "id": "map.jiangnan.inn" } }
+        ]
+      },
+      {
+        "id": "council",
+        "next": "training",
+        "objectives": [{ "id": "hear_letters", "kind": "talk", "map": "map.jiangnan.inn" }]
+      },
+      {
+        "id": "training",
+        "next": "companion",
+        "objectives": [
+          {
+            "id": "choose_mentor",
+            "kind": "talk",
+            "map": "map.jiangnan.inn",
+            "when": {
+              "type": "any",
+              "of": [
+                { "type": "fact_equals", "id": "fact.ch01.mentor", "value": "linghu" },
+                { "type": "fact_equals", "id": "fact.ch01.mentor", "value": "huang" },
+                { "type": "fact_equals", "id": "fact.ch01.mentor", "value": "xiao" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "companion",
+        "next": "travel",
+        "objectives": [
+          {
+            "id": "choose_companion",
+            "kind": "talk",
+            "map": "map.jiangnan.inn",
+            "when": {
+              "type": "any",
+              "of": [
+                { "type": "fact_equals", "id": "fact.ch01.companion", "value": "linghu" },
+                { "type": "fact_equals", "id": "fact.ch01.companion", "value": "huang" },
+                { "type": "fact_equals", "id": "fact.ch01.companion", "value": "xiao" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "travel",
+        "next": "rescue",
+        "objectives": [
+          { "id": "reach_old_ferry", "kind": "reach", "map": "map.jiangnan.old_ferry", "when": { "type": "at_map", "id": "map.jiangnan.old_ferry" } }
+        ]
+      },
+      {
+        "id": "rescue",
+        "next": "custody",
+        "objectives": [{ "id": "win_sluice", "kind": "defeat", "map": "map.jiangnan.old_ferry" }],
+        "on_complete": [
+          { "type": "add_clue", "id": "clue.ch01.relay_signature" }
+        ]
+      },
+      {
+        "id": "custody",
+        "next": "report",
+        "objectives": [
+          {
+            "id": "decide_copy",
+            "kind": "talk",
+            "map": "map.jiangnan.old_ferry",
+            "when": {
+              "type": "any",
+              "of": [
+                { "type": "fact_equals", "id": "fact.ch01.copy_custody", "value": "public" },
+                { "type": "fact_equals", "id": "fact.ch01.copy_custody", "value": "sealed" }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "report",
+        "objectives": [{ "id": "return_inn", "kind": "talk", "map": "map.jiangnan.inn" }],
+        "on_complete": [
+          { "type": "add_clue", "id": "clue.ch01.next_leads" },
+          { "type": "reach_gate", "id": "gate.part1.ch01_done" },
+          { "type": "set_chapter", "id": "arc.01", "value": "chapter.02" }
+        ]
+      }
+    ],
+    "rewards": [
+      { "type": "change_silver", "amount": 30 },
+      { "type": "grant_experience", "amount": 60 }
+    ]
+  },
+  {
+    "id": "quest.side.01.missing_ferryman",
+    "kind": "side",
+    "region": "region.jiangnan",
+    "trigger_maps": ["map.jiangnan.inn"],
+    "priority": 10,
+    "prerequisites": {
+      "type": "all",
+      "of": [
+        { "type": "fact_equals", "id": "fact.ch01.council_done", "value": "true" },
+        { "type": "not", "of": [{ "type": "fact_equals", "id": "fact.ch01.ferryman_freed", "value": "true" }] }
+      ]
+    },
+    "hints": ["quest.side.01.missing_ferryman.hint"],
+    "recovery_map": "map.jiangnan.inn",
+    "stages": [
+      {
+        "id": "tags",
+        "next": "tide",
+        "objectives": [{ "id": "check_tags", "kind": "investigate", "map": "map.jiangnan.luwan_street" }]
+      },
+      {
+        "id": "tide",
+        "next": "free",
+        "objectives": [{ "id": "find_tide_line", "kind": "investigate", "map": "map.jiangnan.luwan_shore" }]
+      },
+      {
+        "id": "free",
+        "next": "thanks_late",
+        "branches": [
+          { "when": { "type": "fact_equals", "id": "fact.ch01.ferryman_freed_early", "value": "true" }, "next": "thanks_full" }
+        ],
+        "objectives": [
+          {
+            "id": "free_ferryman",
+            "kind": "composite",
+            "map": "map.jiangnan.old_ferry",
+            "when": { "type": "fact_equals", "id": "fact.ch01.ferryman_freed", "value": "true" }
+          }
+        ]
+      },
+      {
+        "id": "thanks_full",
+        "on_complete": [
+          { "type": "change_silver", "amount": 30 },
+          { "type": "change_relationship", "id": "char.lu_qinghe", "axis": "trust", "amount": 10 },
+          { "type": "set_fact", "id": "fact.ch01.side01_result", "value": "full" }
+        ]
+      },
+      {
+        "id": "thanks_late",
+        "on_complete": [
+          { "type": "change_silver", "amount": 10 },
+          { "type": "change_relationship", "id": "char.lu_qinghe", "axis": "trust", "amount": 3 },
+          { "type": "set_fact", "id": "fact.ch01.side01_result", "value": "late" }
+        ]
+      }
+    ]
+  }
+]

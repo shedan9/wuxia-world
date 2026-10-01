@@ -6,4 +6,4 @@
 
 菜单类页面继承 `scripts/preview/PreviewScreen.cs`（虚化山水底、顶栏页名章与分区签、绢本子页签、键帽底栏）；
 标题、对话、战斗、探索 HUD 等全屏页直接继承 `Control`。脚本放 `scripts/preview/Pages/`，固定样例放
-`scripts/preview/Samples/`，样例对白放 `game/dialogue/`。视觉规范见 [docs/art/UI_DESIGN.md](../../../docs/art/UI_DESIGN.md)。
+`scripts/preview/Samples/`；对话页台词取自正式对白文件 `content/dialogue/`（经内容包读取），不另存样例对白。视觉规范见 [docs/art/UI_DESIGN.md](../../../docs/art/UI_DESIGN.md)。

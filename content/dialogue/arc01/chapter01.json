@@ -1,0 +1,2045 @@
+{
+  "arc": "arc.01",
+  "chapter": "chapter.01",
+  "status": "第一稿，未锁稿：供 M2 对话图、分支与节奏验证；2026-10-01 按用户要求删去旁白，改为演出提示（stage）由画面表现；心里话只限主角、标 inner、不配音、单句不超过 30 字且不连续。正式台词须经试玩修订与人物锚点核验后锁稿，再进入配音。",
+  "dialogues": [
+    {
+      "id": "dlg.ch01.opening_luwan",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "scene",
+          "direction": "雨后芦湾河滩：芦苇伏在水里，远处传来渡船的橹声（环境音）。镜头从主角醒来处摇向河面，照片里那座桥的位置空着，只有渡船。",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "醒了？水还没退，你别往滩里走。你是从上游冲下来的？",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.hero.001",
+          "speaker": "char.hero",
+          "text": "……这是哪儿？我记得河上该有一座桥。",
+          "next": "lu.002"
+        },
+        {
+          "id": "lu.002",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.002",
+          "speaker": "char.lu_qinghe",
+          "text": "桥？芦湾从来只有渡船。你说的那座，我在这条河上撑篙这些年，从没见过。",
+          "next": "ask"
+        },
+        {
+          "id": "ask",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.opening_luwan.choice.a",
+              "text": "拿出衣袋里的旧照片给她看",
+              "next": "hero.002",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.showed_photo",
+                  "value": "true"
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.opening_luwan.choice.b",
+              "text": "先问附近哪里能避雨",
+              "next": "lu.005"
+            },
+            {
+              "line_id": "ch01.opening_luwan.choice.c",
+              "text": "先不说话，看一看岸边的石痕",
+              "next": "cue.002"
+            }
+          ]
+        },
+        {
+          "id": "hero.002",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.hero.002",
+          "speaker": "char.hero",
+          "text": "你看这张照片——这条河，还有河上这座桥。",
+          "next": "lu.004"
+        },
+        {
+          "id": "lu.004",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.004",
+          "speaker": "char.lu_qinghe",
+          "text": "这纸……光得像水面，画得也真细。可这桥我没见过。你收好，别叫旁人瞧见，江边人多嘴杂。",
+          "next": "lu.003"
+        },
+        {
+          "id": "lu.005",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.005",
+          "speaker": "char.lu_qinghe",
+          "text": "客栈就在街口，乔婶那儿有热汤。",
+          "next": "hero.003"
+        },
+        {
+          "id": "hero.003",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.hero.003",
+          "speaker": "char.hero",
+          "text": "多谢。我身上……好像没什么能付账的。",
+          "next": "lu.006"
+        },
+        {
+          "id": "lu.006",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.006",
+          "speaker": "char.lu_qinghe",
+          "text": "先活下来再说账。",
+          "next": "lu.003"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "岸边青石特写：几道深浅不一的刻痕，被水泡得发黑；主角的视线停在上面。",
+          "next": "lu.007"
+        },
+        {
+          "id": "lu.007",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.007",
+          "speaker": "char.lu_qinghe",
+          "text": "那是旧渡的水痕，老辈人刻的。你盯着它做什么？",
+          "next": "hero.004"
+        },
+        {
+          "id": "hero.004",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.hero.004",
+          "speaker": "char.hero",
+          "text": "……没什么。只是觉得眼熟。",
+          "next": "lu.003"
+        },
+        {
+          "id": "lu.003",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.003",
+          "speaker": "char.lu_qinghe",
+          "text": "别在河滩站着了。先去客栈避一避，那里人来人往，兴许有人认得你的来路。",
+          "next": "lu.008"
+        },
+        {
+          "id": "lu.008",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.008",
+          "speaker": "char.lu_qinghe",
+          "text": "我叫陆青禾，在这渡口撑船。你呢？",
+          "next": "hero.005"
+        },
+        {
+          "id": "hero.005",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.hero.005",
+          "speaker": "char.hero",
+          "text": "我从很远的地方来。名字……以后再说吧，说了你也未必信。",
+          "next": "lu.009"
+        },
+        {
+          "id": "lu.009",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.009",
+          "speaker": "char.lu_qinghe",
+          "text": "行，那我先叫你外乡人。",
+          "next": "met"
+        },
+        {
+          "id": "met",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "meet_character",
+              "id": "char.lu_qinghe"
+            },
+            {
+              "type": "join_party",
+              "id": "char.lu_qinghe"
+            },
+            {
+              "type": "complete_objective",
+              "id": "quest.main.01.jiangnan_guest",
+              "value": "meet_lu"
+            }
+          ],
+          "next": "lu.010"
+        },
+        {
+          "id": "lu.010",
+          "type": "line",
+          "line_id": "ch01.opening_luwan.lu.010",
+          "speaker": "char.lu_qinghe",
+          "text": "客栈往北走，过了街口便是。你要是想再看看那块石头，也随你。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.inspect_stone_marks",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "青石半埋在泥里，刻着一道道横线和年份似的记号；最下面一道已没入水中，水面正贴着刻痕轻晃。",
+          "next": "seen"
+        },
+        {
+          "id": "seen",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "clue.ch01.stone_marks"
+            }
+          ],
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.inspect_stone_marks.hero.001",
+          "speaker": "char.hero",
+          "inner": true,
+          "text": "这断口，和展馆里那块残片很像……也只是像。",
+          "next": "guess"
+        },
+        {
+          "id": "guess",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "clue.ch01.fragment_guess"
+            }
+          ],
+          "next": "with_lu"
+        },
+        {
+          "id": "with_lu",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "party_contains",
+                "id": "char.lu_qinghe"
+              },
+              "next": "lu.001"
+            }
+          ]
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.inspect_stone_marks.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "水到了最下面那道。往年这时候还差两指，今年的水，怪。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.inspect_ferry_notice",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "渡口告示特写：纸面还湿亮，墨迹很新。",
+          "caption": "赈粮船三只，船牌甲七、甲八、甲九，初三夜泊芦湾旧渡。",
+          "caption_id": "ch01.inspect_ferry_notice.caption.notice",
+          "next": "knows_stones"
+        },
+        {
+          "id": "knows_stones",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "clue_known",
+                "id": "clue.ch01.stone_marks"
+              },
+              "next": "hero.001"
+            }
+          ],
+          "next": "hero.002"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.inspect_ferry_notice.hero.001",
+          "speaker": "char.hero",
+          "inner": true,
+          "text": "照石上的刻痕，初三夜里旧渡泊不住这么深的粮船。",
+          "next": "mismatch"
+        },
+        {
+          "id": "mismatch",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "add_clue",
+              "id": "clue.ch01.water_tag_mismatch"
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "hero.002",
+          "type": "line",
+          "line_id": "ch01.inspect_ferry_notice.hero.002",
+          "speaker": "char.hero",
+          "inner": true,
+          "text": "船号、日子写得这么清楚，倒像怕人不知道。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.inn_council",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "scene",
+          "direction": "客栈大堂灯火通明。乔红绡在柜台后一手拨算盘，一手把三封信拍在桌上（拍桌声）。",
+          "next": "qiao.001"
+        },
+        {
+          "id": "qiao.001",
+          "type": "line",
+          "line_id": "ch01.inn_council.qiao.001",
+          "speaker": "char.qiao_hongxiao",
+          "text": "驿站那帮人，办事要有收钱一半利索，老娘也不用替他们挨骂。三封信，一模一样的求援，写给三位，偏偏全送到我这小店来。",
+          "next": "qiao.002"
+        },
+        {
+          "id": "qiao.002",
+          "type": "line",
+          "line_id": "ch01.inn_council.qiao.002",
+          "speaker": "char.qiao_hongxiao",
+          "text": "青禾，这位是？落水的？先坐，汤在灶上。",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.inn_council.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "乔婶，他在河滩上醒过来的，像是从上游冲下来的。",
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "镜头扫过三人：靠窗的令狐冲提着酒葫芦，懒懒地朝这边举了举；灯下的黄蓉对着光翻看信纸；门边的萧峰身形魁梧，面前那碗一口没动。",
+          "next": "linghu.001"
+        },
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.inn_council.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "又来一位落难的？乔掌柜这里今夜倒热闹。",
+          "next": "qiao.003"
+        },
+        {
+          "id": "qiao.003",
+          "type": "line",
+          "line_id": "ch01.inn_council.qiao.003",
+          "speaker": "char.qiao_hongxiao",
+          "text": "令狐少侠，黄姑娘，萧大侠——信上说芦湾旧渡丢了三船赈粮，船夫下落不明。信送到我这儿，我就得问一句：你们谁先去救人？",
+          "next": "huang.001"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.inn_council.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "先别急。这信纸是本地驿站的竹纸，摸着还潮；封口盖的却是北边的转信章。从北边转来的信，用的倒是江南的纸，有意思。",
+          "next": "linghu.002"
+        },
+        {
+          "id": "linghu.002",
+          "type": "line",
+          "line_id": "ch01.inn_council.linghu.002",
+          "speaker": "char.linghu_chong",
+          "text": "我看的是语气。写信的人装作我的旧识，称兄道弟，却连我平日怎么说话都没学像。我那些朋友，可没一个写得出这么规矩的字。",
+          "next": "xiao.001"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.inn_council.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "纸是谁的、字像谁，都可以慢慢查。我只想知道，那几个船夫现在是死是活。",
+          "next": "qiao.004"
+        },
+        {
+          "id": "qiao.004",
+          "type": "line",
+          "line_id": "ch01.inn_council.qiao.004",
+          "speaker": "char.qiao_hongxiao",
+          "text": "信末还有一句：“救援行程已为人所知，诸位之中恐有人走漏。”这一句，三位怎么说？",
+          "next": "cue.003"
+        },
+        {
+          "id": "cue.003",
+          "type": "stage",
+          "kind": "action",
+          "direction": "停顿一拍：众人一时无话，灯花轻响，镜头在四人脸上依次停留。",
+          "next": "linghu.003"
+        },
+        {
+          "id": "linghu.003",
+          "type": "line",
+          "line_id": "ch01.inn_council.linghu.003",
+          "speaker": "char.linghu_chong",
+          "text": "这话说得妙，三个人里挑一个出来疑。倘若有人信了，咱们今夜就各守各的桌子，谁也不出门。",
+          "next": "huang.002"
+        },
+        {
+          "id": "huang.002",
+          "type": "line",
+          "line_id": "ch01.inn_council.huang.002",
+          "speaker": "char.huang_rong",
+          "text": "我可没说不信呀。萧大侠一进门就问船夫，倒像早知道船夫出了事。",
+          "next": "xiao.002"
+        },
+        {
+          "id": "xiao.002",
+          "type": "line",
+          "line_id": "ch01.inn_council.xiao.002",
+          "speaker": "char.xiao_feng",
+          "text": "黄姑娘若疑我，尽管疑。疑完了，人还是要救。",
+          "next": "stance"
+        },
+        {
+          "id": "stance",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.inn_council.choice.insight",
+              "text": "这句话就是要你们互相猜疑，写信的人想拖住所有人。",
+              "next": "huang.003",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.council_stance",
+                  "value": "insight"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.huang_rong",
+                  "axis": "trust",
+                  "amount": 3
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.linghu_chong",
+                  "axis": "trust",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.inn_council.choice.rescue",
+              "text": "船夫等不起。先救人，谁泄密以后再查。",
+              "next": "xiao.003",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.council_stance",
+                  "value": "rescue"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.xiao_feng",
+                  "axis": "trust",
+                  "amount": 3
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.inn_council.choice.courier",
+              "text": "乔掌柜，信是谁送来的？送信的人还在吗？",
+              "next": "qiao.005",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.council_stance",
+                  "value": "courier"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.qiao_hongxiao",
+                  "axis": "trust",
+                  "amount": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "huang.003",
+          "type": "line",
+          "line_id": "ch01.inn_council.huang.003",
+          "speaker": "char.huang_rong",
+          "text": "嗯，你倒不笨。真有人泄密，写信的人何必提醒咱们？只有想看咱们自己乱起来的人，才会写这一句。",
+          "next": "qiao.006"
+        },
+        {
+          "id": "xiao.003",
+          "type": "line",
+          "line_id": "ch01.inn_council.xiao.003",
+          "speaker": "char.xiao_feng",
+          "text": "说得好。查人的事，救完人再说。",
+          "next": "qiao.006"
+        },
+        {
+          "id": "qiao.005",
+          "type": "line",
+          "line_id": "ch01.inn_council.qiao.005",
+          "speaker": "char.qiao_hongxiao",
+          "text": "是个面生的脚夫，送完就走，连口水都没喝。驿站的脚夫我个个认得，他不是。",
+          "next": "qiao.006"
+        },
+        {
+          "id": "qiao.006",
+          "type": "line",
+          "line_id": "ch01.inn_council.qiao.006",
+          "speaker": "char.qiao_hongxiao",
+          "text": "还有一桩。告示上写，三只粮船初三夜泊在旧渡——可青禾说，初三那夜旧渡浅滩的水，连条空船都泊不稳。",
+          "next": "lu.002"
+        },
+        {
+          "id": "lu.002",
+          "type": "line",
+          "line_id": "ch01.inn_council.lu.002",
+          "speaker": "char.lu_qinghe",
+          "text": "船牌也不对。甲字号是吃水深的大船，从来不走芦湾旧渡。",
+          "next": "facts"
+        },
+        {
+          "id": "facts",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "meet_character",
+              "id": "char.qiao_hongxiao"
+            },
+            {
+              "type": "meet_character",
+              "id": "char.linghu_chong"
+            },
+            {
+              "type": "meet_character",
+              "id": "char.huang_rong"
+            },
+            {
+              "type": "meet_character",
+              "id": "char.xiao_feng"
+            },
+            {
+              "type": "add_clue",
+              "id": "clue.ch01.forged_plea"
+            },
+            {
+              "type": "add_clue",
+              "id": "clue.ch01.water_tag_mismatch"
+            },
+            {
+              "type": "grant_item",
+              "id": "item.quest.plea_letter_copy",
+              "amount": 1
+            },
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.council_done",
+              "value": "true"
+            },
+            {
+              "type": "complete_objective",
+              "id": "quest.main.01.jiangnan_guest",
+              "value": "hear_letters"
+            }
+          ],
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.inn_council.hero.001",
+          "speaker": "char.hero",
+          "text": "水位和船牌都对不上……要么船根本没去旧渡，要么有人想让我们以为它们在那里。",
+          "next": "linghu.004"
+        },
+        {
+          "id": "linghu.004",
+          "type": "line",
+          "line_id": "ch01.inn_council.linghu.004",
+          "speaker": "char.linghu_chong",
+          "text": "这位兄弟脑子转得快。那就是个陷阱了——陷阱也得有人去踩，才知道底下埋的是什么。",
+          "next": "huang.004"
+        },
+        {
+          "id": "huang.004",
+          "type": "line",
+          "line_id": "ch01.inn_council.huang.004",
+          "speaker": "char.huang_rong",
+          "text": "去是要去的，可不能空着手去。你身上一点功夫也没有吧？这么去旧渡，只会多一个要救的人。",
+          "next": "xiao.004"
+        },
+        {
+          "id": "xiao.004",
+          "type": "line",
+          "line_id": "ch01.inn_council.xiao.004",
+          "speaker": "char.xiao_feng",
+          "text": "离天亮还有些时候。你若愿学，我们三个各有些看家的法子，挑一样练练，总比赤手空拳好。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.mentor_choice",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "scene",
+          "direction": "客栈后院，夜。令狐冲、黄蓉、萧峰各占一角，等主角自己走过去（接玩家选择讨教对象）。",
+          "next": "mentor"
+        },
+        {
+          "id": "mentor",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.mentor_choice.choice.linghu",
+              "text": "向令狐冲请教：怎样看出对手的破绽",
+              "next": "linghu.001",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.mentor",
+                  "value": "linghu"
+                },
+                {
+                  "type": "set_fact",
+                  "id": "fact.hero.style",
+                  "value": "sword"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.sword.break_guard"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.linghu_chong",
+                  "axis": "trust",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.mentor_choice.choice.huang",
+              "text": "向黄蓉请教：怎样借地势与站位取巧",
+              "next": "huang.001",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.mentor",
+                  "value": "huang"
+                },
+                {
+                  "type": "set_fact",
+                  "id": "fact.hero.style",
+                  "value": "inner"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.inner.pressure_point"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.huang_rong",
+                  "axis": "trust",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.mentor_choice.choice.xiao",
+              "text": "向萧峰请教：怎样护住身边的人",
+              "next": "xiao.001",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.mentor",
+                  "value": "xiao"
+                },
+                {
+                  "type": "set_fact",
+                  "id": "fact.hero.style",
+                  "value": "fist"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.fist.shield_palm"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.xiao_feng",
+                  "axis": "trust",
+                  "amount": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "招式没有一成不变的。对手出手之前，肩先动，脚先沉，你看准了，一剑点过去就是。来，我慢慢出招，你只看，不躲。",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.hero.001",
+          "speaker": "char.hero",
+          "text": "……你的剑一下也没碰到我，我却已经输了三次。",
+          "next": "linghu.002"
+        },
+        {
+          "id": "linghu.002",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.linghu.002",
+          "speaker": "char.linghu_chong",
+          "text": "能看出自己输了三次，就算入门了。",
+          "next": "cue.002"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "打不过就别硬打。你瞧这院子，井、柴堆、晾衣绳，哪样不能用？站对了地方，三个人也只能一个一个来找你。",
+          "next": "huang.002"
+        },
+        {
+          "id": "huang.002",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.huang.002",
+          "speaker": "char.huang_rong",
+          "text": "人身上还有几处，一按就麻。我教你认，不教你打——打要自己练。",
+          "next": "cue.002"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "旧渡那边，咱们是去救人，不是去比武。你挡在船夫前面挨一掌不倒，比打倒一个人更要紧。",
+          "next": "xiao.002"
+        },
+        {
+          "id": "xiao.002",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.xiao.002",
+          "speaker": "char.xiao_feng",
+          "text": "沉肩，坐胯，掌不要往外推，要往下压。再来。",
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "时间流逝过场：月影西移，主角反复练招到后半夜；收势时甩了甩酸痛的手臂，神色比先前笃定。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.side_offer",
+      "status": "draft",
+      "entry": "lu.001",
+      "nodes": [
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.side_offer.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "外乡人，有件事……本不该麻烦你。我师傅杜三篙，三天前出船，到今天没回来。",
+          "next": "lu.002"
+        },
+        {
+          "id": "lu.002",
+          "type": "line",
+          "line_id": "ch01.side_offer.lu.002",
+          "speaker": "char.lu_qinghe",
+          "text": "旁人都说他贪了赈粮跑了。可他那条船的船牌，我昨天在街口牌架上看见了。船牌在岸上，人和船又在哪儿？",
+          "next": "ask"
+        },
+        {
+          "id": "ask",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.side_offer.choice.accept",
+              "text": "我帮你查。",
+              "next": "lu.003",
+              "effects": [
+                {
+                  "type": "start_quest",
+                  "id": "quest.side.01.missing_ferryman"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.lu_qinghe",
+                  "axis": "affection",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.side_offer.choice.later",
+              "text": "眼下得先顾着求援书的事，过后再说。",
+              "next": "lu.004"
+            }
+          ]
+        },
+        {
+          "id": "lu.003",
+          "type": "line",
+          "line_id": "ch01.side_offer.lu.003",
+          "speaker": "char.lu_qinghe",
+          "text": "……多谢。先去街口牌架，看看那块船牌。",
+          "next": "end"
+        },
+        {
+          "id": "lu.004",
+          "type": "line",
+          "line_id": "ch01.side_offer.lu.004",
+          "speaker": "char.lu_qinghe",
+          "text": "嗯，我明白。你要是改了主意，我就在这儿。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.side_ferry_tags",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "牌架上挂着一排木牌，镜头推近写着“乙三”的那块：绳结是新打的，牌背有一道刀刮过的痕迹，原本的烙印被刮掉了。",
+          "caption": "乙三",
+          "caption_id": "ch01.side_ferry_tags.caption.tag",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.side_ferry_tags.hero.001",
+          "speaker": "char.hero",
+          "inner": true,
+          "text": "烙印被刮了——有人把船牌挂回岸上，装作船已回来。",
+          "next": "found"
+        },
+        {
+          "id": "found",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "grant_item",
+              "id": "item.quest.ferry_tag",
+              "amount": 1
+            },
+            {
+              "type": "complete_objective",
+              "id": "quest.side.01.missing_ferryman",
+              "value": "check_tags"
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.side_tide_line",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "芦苇根下一道新鲜泥痕，是船底在退潮时拖过的印子；镜头顺着泥痕一路拉向旧渡方向。",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.side_tide_line.hero.001",
+          "speaker": "char.hero",
+          "inner": true,
+          "text": "船是夜里涨潮时拖走的。杜师傅多半也在旧渡。",
+          "next": "found"
+        },
+        {
+          "id": "found",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "complete_objective",
+              "id": "quest.side.01.missing_ferryman",
+              "value": "find_tide_line"
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.companion_choice",
+      "status": "draft",
+      "entry": "linghu.001",
+      "nodes": [
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.companion_choice.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "天快亮了。旧渡不远，坐渡船一顿饭的工夫。只是咱们一伙人一起去，太扎眼。",
+          "next": "huang.001"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.companion_choice.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "我想去驿站查那枚转信章。",
+          "next": "xiao.001"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.companion_choice.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "我去下游渡口问问，有没有人见过粮船。",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.companion_choice.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "渡船我来撑。你挑一位一同上船吧，其余的人，路上自会碰头。",
+          "next": "companion"
+        },
+        {
+          "id": "companion",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.companion_choice.choice.linghu",
+              "text": "请令狐冲同行",
+              "next": "linghu.002",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.companion",
+                  "value": "linghu"
+                },
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.helper",
+                  "value": "xiao"
+                },
+                {
+                  "type": "join_party",
+                  "id": "char.linghu_chong"
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.companion_choice.choice.huang",
+              "text": "请黄蓉同行",
+              "next": "huang.002",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.companion",
+                  "value": "huang"
+                },
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.helper",
+                  "value": "linghu"
+                },
+                {
+                  "type": "join_party",
+                  "id": "char.huang_rong"
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.companion_choice.choice.xiao",
+              "text": "请萧峰同行",
+              "next": "xiao.002",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.companion",
+                  "value": "xiao"
+                },
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.helper",
+                  "value": "huang"
+                },
+                {
+                  "type": "join_party",
+                  "id": "char.xiao_feng"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "linghu.002",
+          "type": "line",
+          "line_id": "ch01.companion_choice.linghu.002",
+          "speaker": "char.linghu_chong",
+          "text": "好极，船上正好喝两口。萧兄，下游那边有劳了。",
+          "next": "xiao.003"
+        },
+        {
+          "id": "xiao.003",
+          "type": "line",
+          "line_id": "ch01.companion_choice.xiao.003",
+          "speaker": "char.xiao_feng",
+          "text": "我问完便来。",
+          "next": "qiao.001"
+        },
+        {
+          "id": "huang.002",
+          "type": "line",
+          "line_id": "ch01.companion_choice.huang.002",
+          "speaker": "char.huang_rong",
+          "text": "那驿站我晚些再去。令狐大哥，章子的事先交给你，查完赶来旧渡。",
+          "next": "linghu.003"
+        },
+        {
+          "id": "linghu.003",
+          "type": "line",
+          "line_id": "ch01.companion_choice.linghu.003",
+          "speaker": "char.linghu_chong",
+          "text": "得令。",
+          "next": "qiao.001"
+        },
+        {
+          "id": "xiao.002",
+          "type": "line",
+          "line_id": "ch01.companion_choice.xiao.002",
+          "speaker": "char.xiao_feng",
+          "text": "走。",
+          "next": "huang.003"
+        },
+        {
+          "id": "huang.003",
+          "type": "line",
+          "line_id": "ch01.companion_choice.huang.003",
+          "speaker": "char.huang_rong",
+          "text": "我查完驿站就去寻你们。萧大侠可别一个人把架都打完了。",
+          "next": "qiao.001"
+        },
+        {
+          "id": "qiao.001",
+          "type": "line",
+          "line_id": "ch01.companion_choice.qiao.001",
+          "speaker": "char.qiao_hongxiao",
+          "text": "都去吧。店我守着，有人回来报信，我给他留门。",
+          "next": "lu.002"
+        },
+        {
+          "id": "lu.002",
+          "type": "line",
+          "line_id": "ch01.companion_choice.lu.002",
+          "speaker": "char.lu_qinghe",
+          "text": "渡船在街南码头。走吧。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.old_ferry_arrival",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "scene",
+          "direction": "旧渡全景：浅滩上停着一条被铁链锁住的大船，岸边石砌水门闸板半开，水声闷响；几名押运打扮的汉子守在船边。",
+          "next": "who"
+        },
+        {
+          "id": "who",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.companion",
+                "value": "linghu"
+              },
+              "next": "linghu.001"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.companion",
+                "value": "huang"
+              },
+              "next": "huang.001"
+            }
+          ],
+          "next": "xiao.001"
+        },
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.old_ferry_arrival.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "那几个押运的，腰里别着官驿的牌子，脚上穿的却是渔户的草鞋。真押运哪有这么寒碜？",
+          "next": "disguise"
+        },
+        {
+          "id": "disguise",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.disguise_seen",
+              "value": "true"
+            }
+          ],
+          "next": "cue.003"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.old_ferry_arrival.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "水门的闸绳拴在那根木桩上。我去松一松，待会儿他们想开闸，可没那么快。",
+          "next": "jammed"
+        },
+        {
+          "id": "jammed",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.sluice_jammed",
+              "value": "true"
+            }
+          ],
+          "next": "cue.003"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.old_ferry_arrival.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "船舱里有人。我从后面下水，先把人带出来。",
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "片刻后，萧峰扶着一个浑身湿透的老渡工，从船边走回岸上。",
+          "next": "du.001"
+        },
+        {
+          "id": "du.001",
+          "type": "line",
+          "line_id": "ch01.old_ferry_arrival.du.001",
+          "speaker": "char.du_sangao",
+          "text": "……青禾？你怎么来了！",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.old_ferry_arrival.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "师傅！",
+          "next": "freed"
+        },
+        {
+          "id": "freed",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "meet_character",
+              "id": "char.du_sangao"
+            },
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.ferryman_freed",
+              "value": "true"
+            },
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.ferryman_freed_early",
+              "value": "true"
+            }
+          ],
+          "next": "cue.003"
+        },
+        {
+          "id": "cue.003",
+          "type": "stage",
+          "kind": "action",
+          "direction": "守船的汉子发现众人，提刀围上来，转入战斗。",
+          "next": "fight"
+        },
+        {
+          "id": "fight",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.arrived",
+              "value": "true"
+            },
+            {
+              "type": "request_battle",
+              "id": "battle.01.escort_skirmish",
+              "value": "req.ch01.escort_skirmish",
+              "on_victory": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.escort_beaten",
+                  "value": "true"
+                }
+              ]
+            }
+          ],
+          "repeatable": true,
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.escort_regroup",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "action",
+          "direction": "押运队仍守在锁船旁，见众人折返，重新拔刀，转入战斗。",
+          "next": "fight"
+        },
+        {
+          "id": "fight",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "request_battle",
+              "id": "battle.01.escort_skirmish",
+              "value": "req.ch01.escort_skirmish",
+              "on_victory": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.escort_beaten",
+                  "value": "true"
+                }
+              ]
+            }
+          ],
+          "repeatable": true,
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.side_locked_boat",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "船头木桩上的铁链特写，锁眼塞满了泥；舱板底下传来一阵咳嗽（音效）。",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.side_locked_boat.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "是师傅的声音！",
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "主角对照牌架上那块船牌的刮痕，在舱门边摸到暗扣，撬开舱板，扶出浑身湿透的老渡工。",
+          "next": "du.001"
+        },
+        {
+          "id": "du.001",
+          "type": "line",
+          "line_id": "ch01.side_locked_boat.du.001",
+          "speaker": "char.du_sangao",
+          "text": "……青禾。我就知道，船牌一挂回岸上，你准会起疑。",
+          "next": "freed"
+        },
+        {
+          "id": "freed",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "meet_character",
+              "id": "char.du_sangao"
+            },
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.ferryman_freed",
+              "value": "true"
+            },
+            {
+              "type": "set_fact",
+              "id": "fact.ch01.ferryman_freed_early",
+              "value": "true"
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.sluice_confrontation",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "action",
+          "direction": "络腮胡的唐守亭提着一柄带钩的长刀，从水门上走下来。",
+          "next": "tang.001"
+        },
+        {
+          "id": "tang.001",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.tang.001",
+          "speaker": "char.tang_shouting",
+          "text": "身手不坏。可惜来晚了一步。",
+          "next": "met_tang"
+        },
+        {
+          "id": "met_tang",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "meet_character",
+              "id": "char.tang_shouting"
+            }
+          ],
+          "next": "tang.002"
+        },
+        {
+          "id": "tang.002",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.tang.002",
+          "speaker": "char.tang_shouting",
+          "text": "唐某只要那几封信。交出来，船和人都还你们。不交——这闸一开，船舱里的人先喝饱了水。",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.hero.001",
+          "speaker": "char.hero",
+          "text": "信上说我们之中有人泄密。是你们写的吧？",
+          "next": "tang.003"
+        },
+        {
+          "id": "tang.003",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.tang.003",
+          "speaker": "char.tang_shouting",
+          "text": "谁写的有什么要紧？要紧的是你们信了没有。",
+          "next": "helper"
+        },
+        {
+          "id": "helper",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.helper",
+                "value": "linghu"
+              },
+              "next": "linghu.001"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.helper",
+                "value": "huang"
+              },
+              "next": "huang.001"
+            }
+          ],
+          "next": "xiao.001"
+        },
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "信是信了一半——信你们这字写得真丑。",
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "令狐冲从芦苇里跃出，落在主角身侧，剑尖斜指水门。",
+          "next": "join_linghu"
+        },
+        {
+          "id": "join_linghu",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "join_party",
+              "id": "char.linghu_chong"
+            }
+          ],
+          "next": "jam_check"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "唐头领，你的闸绳我早瞧过啦，再拉两下就要断。",
+          "next": "cue.003"
+        },
+        {
+          "id": "cue.003",
+          "type": "stage",
+          "kind": "action",
+          "direction": "黄蓉不知何时已坐在水门的石栏上，晃着脚朝主角眨了眨眼。",
+          "next": "join_huang"
+        },
+        {
+          "id": "join_huang",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "join_party",
+              "id": "char.huang_rong"
+            }
+          ],
+          "next": "jam_check"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "人在船上，你还敢开闸？",
+          "next": "cue.004"
+        },
+        {
+          "id": "cue.004",
+          "type": "stage",
+          "kind": "action",
+          "direction": "萧峰大步踏过浅滩，水花溅起老高，几名护院不自觉地退了半步。",
+          "next": "join_xiao"
+        },
+        {
+          "id": "join_xiao",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "join_party",
+              "id": "char.xiao_feng"
+            }
+          ],
+          "next": "jam_check"
+        },
+        {
+          "id": "jam_check",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.sluice_jammed",
+                "value": "true"
+              },
+              "next": "tang.004"
+            }
+          ],
+          "next": "tang.005"
+        },
+        {
+          "id": "tang.004",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.tang.004",
+          "speaker": "char.tang_shouting",
+          "text": "闸绳……谁动过！",
+          "next": "tang.005"
+        },
+        {
+          "id": "tang.005",
+          "type": "line",
+          "line_id": "ch01.sluice_confrontation.tang.005",
+          "speaker": "char.tang_shouting",
+          "text": "好，那就别怪唐某了。",
+          "next": "fight"
+        },
+        {
+          "id": "fight",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "request_battle",
+              "id": "battle.01.old_ferry_sluice",
+              "value": "req.ch01.old_ferry_sluice",
+              "on_victory": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.ferryman_freed",
+                  "value": "true"
+                },
+                {
+                  "type": "grant_item",
+                  "id": "item.quest.relay_copy",
+                  "amount": 1
+                },
+                {
+                  "type": "complete_objective",
+                  "id": "quest.main.01.jiangnan_guest",
+                  "value": "win_sluice"
+                }
+              ]
+            }
+          ],
+          "repeatable": true,
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.copy_custody",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "action",
+          "direction": "战后：水门闸板落下，唐守亭被按在泥地里，长刀滚到一边。",
+          "next": "ferryman"
+        },
+        {
+          "id": "ferryman",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.ferryman_freed_early",
+                "value": "true"
+              },
+              "next": "du.001"
+            }
+          ],
+          "next": "cue.002"
+        },
+        {
+          "id": "du.001",
+          "type": "line",
+          "line_id": "ch01.copy_custody.du.001",
+          "speaker": "char.du_sangao",
+          "text": "这人把我锁在舱里三天，就为了等你们上门。",
+          "next": "tang.001"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "众人从船舱里拖出一个半昏的老渡工。",
+          "next": "lu.003"
+        },
+        {
+          "id": "lu.003",
+          "type": "line",
+          "line_id": "ch01.copy_custody.lu.003",
+          "speaker": "char.lu_qinghe",
+          "text": "杜师傅！",
+          "next": "du.002"
+        },
+        {
+          "id": "du.002",
+          "type": "line",
+          "line_id": "ch01.copy_custody.du.002",
+          "speaker": "char.du_sangao",
+          "text": "……水。给我口水。",
+          "next": "met_du"
+        },
+        {
+          "id": "met_du",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "meet_character",
+              "id": "char.du_sangao"
+            }
+          ],
+          "next": "tang.001"
+        },
+        {
+          "id": "tang.001",
+          "type": "line",
+          "line_id": "ch01.copy_custody.tang.001",
+          "speaker": "char.tang_shouting",
+          "text": "罢了。信是从转信处来的，我只管押送。这一页……是上头给的凭证。",
+          "next": "cue.003"
+        },
+        {
+          "id": "cue.003",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "唐守亭从怀里摸出一张折得方方正正的纸：转信副页。特写纸上的签押，再与三封求援书上的转信章叠化对比，笔势相同。",
+          "next": "hero.003"
+        },
+        {
+          "id": "hero.003",
+          "type": "line",
+          "line_id": "ch01.copy_custody.hero.003",
+          "speaker": "char.hero",
+          "text": "这枚签押……和三封求援书上的转信章，出自同一个人的手。",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.copy_custody.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "副页上……还有船夫们的名字，连家住哪里都写着。",
+          "next": "custody"
+        },
+        {
+          "id": "custody",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.copy_custody.choice.public",
+              "text": "带回客栈当众念出来，让大家一起作证。",
+              "next": "hero.001",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.copy_custody",
+                  "value": "public"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.qiao_hongxiao",
+                  "axis": "trust",
+                  "amount": 2
+                }
+              ]
+            },
+            {
+              "line_id": "ch01.copy_custody.choice.sealed",
+              "text": "交给杜三篙密封保管，先护住这些船夫的名字。",
+              "next": "hero.002",
+              "effects": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.copy_custody",
+                  "value": "sealed"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.lu_qinghe",
+                  "axis": "trust",
+                  "amount": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.copy_custody.hero.001",
+          "speaker": "char.hero",
+          "text": "藏着掖着，只会让写信的人继续躲在暗处。让大家都看见。",
+          "next": "du.003"
+        },
+        {
+          "id": "du.003",
+          "type": "line",
+          "line_id": "ch01.copy_custody.du.003",
+          "speaker": "char.du_sangao",
+          "text": "……名字也要给人看？罢了，只要能把人都救回来。",
+          "next": "lu.002"
+        },
+        {
+          "id": "hero.002",
+          "type": "line",
+          "line_id": "ch01.copy_custody.hero.002",
+          "speaker": "char.hero",
+          "text": "这上面的人已经被拿来当过一回诱饵，不能再让他们的名字到处传。",
+          "next": "du.004"
+        },
+        {
+          "id": "du.004",
+          "type": "line",
+          "line_id": "ch01.copy_custody.du.004",
+          "speaker": "char.du_sangao",
+          "text": "好，我收着。谁要看，先得来问我。",
+          "next": "lu.002"
+        },
+        {
+          "id": "lu.002",
+          "type": "line",
+          "line_id": "ch01.copy_custody.lu.002",
+          "speaker": "char.lu_qinghe",
+          "text": "回客栈吧。乔婶还等着报信呢。",
+          "next": "return"
+        },
+        {
+          "id": "return",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "advance_clock",
+              "amount": 2
+            },
+            {
+              "type": "request_travel",
+              "id": "map.jiangnan.inn",
+              "value": "hall"
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.epilogue",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "closeup",
+          "direction": "客栈门口新贴一张红纸，陆青禾一笔一画写着获救者的名字（名单随救援结果变化）。",
+          "next": "lu.001"
+        },
+        {
+          "id": "lu.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.lu.001",
+          "speaker": "char.lu_qinghe",
+          "text": "七个人，全回来了。……我从没一口气写过这么多字。",
+          "next": "qiao.001"
+        },
+        {
+          "id": "qiao.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.qiao.001",
+          "speaker": "char.qiao_hongxiao",
+          "text": "写得好看。往后谁再说芦湾的渡工贪了粮跑了，就叫他来这门口念一遍。",
+          "next": "custody"
+        },
+        {
+          "id": "custody",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.copy_custody",
+                "value": "public"
+              },
+              "next": "qiao.002"
+            }
+          ],
+          "next": "qiao.003"
+        },
+        {
+          "id": "qiao.002",
+          "type": "line",
+          "line_id": "ch01.epilogue.qiao.002",
+          "speaker": "char.qiao_hongxiao",
+          "text": "副页我当着街坊的面念了，人人都看见那枚签押。只是当夜就有人出了城——八成是去报信的。",
+          "next": "who"
+        },
+        {
+          "id": "qiao.003",
+          "type": "line",
+          "line_id": "ch01.epilogue.qiao.003",
+          "speaker": "char.qiao_hongxiao",
+          "text": "副页在杜师傅手里，名字没传出去。只是往后要拿它作证，得先去找他点头，多跑一趟。",
+          "next": "who"
+        },
+        {
+          "id": "who",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.companion",
+                "value": "linghu"
+              },
+              "next": "linghu.001"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.companion",
+                "value": "huang"
+              },
+              "next": "huang.001"
+            }
+          ],
+          "next": "xiao.001"
+        },
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "这一回酒没喝痛快，架倒打得痛快。下回那封假信要再冒我朋友的名，我可要亲自去会会写信的人。",
+          "next": "side"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "那枚转信章我托人问过了，北边驿站说从没发过这几封。有人在半路把信换了——这才有意思。",
+          "next": "side"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "人救回来就好。至于是谁设的局，总有一天要他当面说清楚。",
+          "next": "side"
+        },
+        {
+          "id": "side",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.side01_result",
+                "value": "full"
+              },
+              "next": "du.001"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.side01_result",
+                "value": "late"
+              },
+              "next": "lu.002"
+            }
+          ],
+          "next": "hero.001"
+        },
+        {
+          "id": "du.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.du.001",
+          "speaker": "char.du_sangao",
+          "text": "青禾，你这位朋友交得对。",
+          "next": "lu.003"
+        },
+        {
+          "id": "lu.003",
+          "type": "line",
+          "line_id": "ch01.epilogue.lu.003",
+          "speaker": "char.lu_qinghe",
+          "text": "……嗯。",
+          "next": "hero.001"
+        },
+        {
+          "id": "lu.002",
+          "type": "line",
+          "line_id": "ch01.epilogue.lu.002",
+          "speaker": "char.lu_qinghe",
+          "text": "师傅能回来就好。只是……要是我早些去找就好了。",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.epilogue.hero.001",
+          "speaker": "char.hero",
+          "text": "签押的主人、那枚转信章，还有北边的驿站……这事远没有完。",
+          "next": "qiao.004"
+        },
+        {
+          "id": "qiao.004",
+          "type": "line",
+          "line_id": "ch01.epilogue.qiao.004",
+          "speaker": "char.qiao_hongxiao",
+          "text": "江南粮仓那头，最近也在闹收粮的账对不上。山门路上还有条旧路，我年轻时走过，能绕开驿站。你们挑一条，先去看看。",
+          "next": "close"
+        },
+        {
+          "id": "close",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "complete_objective",
+              "id": "quest.main.01.jiangnan_guest",
+              "value": "return_inn"
+            },
+            {
+              "type": "leave_party",
+              "id": "char.linghu_chong"
+            },
+            {
+              "type": "leave_party",
+              "id": "char.huang_rong"
+            },
+            {
+              "type": "leave_party",
+              "id": "char.xiao_feng"
+            }
+          ],
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "title",
+          "direction": "章末标题卡，画面淡出。",
+          "caption": "第一章　江南会客　完",
+          "caption_id": "ch01.epilogue.caption.chapter_end",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    }
+  ]
+}

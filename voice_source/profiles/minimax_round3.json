@@ -1,0 +1,98 @@
+{
+  "provider": "minimax",
+  "model": "speech-2.8-hd",
+  "status": "第三轮（2026-10-01）：在第二轮选中的系统音色上做微调候选。乔红绡再妩媚一些但不过头；黄蓉更硬朗；萧峰更粗犷。voice_modify：力度越低越刚劲、越高越轻柔，明暗越低越浑厚、越高越清脆。",
+  "audio": {
+    "sample_rate": 44100,
+    "bitrate": 128000,
+    "format": "mp3",
+    "channel": 1
+  },
+  "voices": {
+    "char.qiao_hongxiao@a": {
+      "voice_id": "Chinese (Mandarin)_Wise_Women",
+      "speed": 1.12,
+      "modify": {
+        "timbre": -15,
+        "intensity": 15
+      },
+      "note": "略放柔"
+    },
+    "char.qiao_hongxiao@b": {
+      "voice_id": "Chinese (Mandarin)_Wise_Women",
+      "speed": 1.12,
+      "modify": {
+        "timbre": -10,
+        "intensity": 25,
+        "pitch": 8
+      },
+      "note": "更柔、略提亮"
+    },
+    "char.qiao_hongxiao@c": {
+      "voice_id": "Chinese (Mandarin)_Wise_Women",
+      "speed": 1.12,
+      "modify": {
+        "timbre": -5,
+        "intensity": 35
+      },
+      "note": "最柔，看是否过头"
+    },
+    "char.huang_rong@a": {
+      "voice_id": "Chinese (Mandarin)_Warm_Bestie",
+      "speed": 1.12,
+      "modify": {
+        "timbre": 15,
+        "intensity": -20
+      },
+      "note": "略硬"
+    },
+    "char.huang_rong@b": {
+      "voice_id": "Chinese (Mandarin)_Warm_Bestie",
+      "speed": 1.12,
+      "modify": {
+        "timbre": 20,
+        "intensity": -35
+      },
+      "note": "更硬、更脆"
+    },
+    "char.huang_rong@c": {
+      "voice_id": "Chinese (Mandarin)_Warm_Bestie",
+      "speed": 1.12,
+      "modify": {
+        "timbre": 10,
+        "intensity": -50,
+        "pitch": -10
+      },
+      "note": "最硬、略压低"
+    },
+    "char.xiao_feng@a": {
+      "voice_id": "Chinese (Mandarin)_Reliable_Executive",
+      "speed": 1.05,
+      "modify": {
+        "pitch": -25,
+        "intensity": -35
+      },
+      "note": "略粗、更刚"
+    },
+    "char.xiao_feng@b": {
+      "voice_id": "Chinese (Mandarin)_Reliable_Executive",
+      "speed": 1.05,
+      "modify": {
+        "pitch": -30,
+        "intensity": -50,
+        "timbre": 10
+      },
+      "note": "更刚、去圆润"
+    },
+    "char.xiao_feng@c": {
+      "voice_id": "Chinese (Mandarin)_Reliable_Executive",
+      "speed": 1.05,
+      "modify": {
+        "pitch": -35,
+        "intensity": -65,
+        "timbre": 20
+      },
+      "note": "最刚最粗"
+    }
+  }
+}

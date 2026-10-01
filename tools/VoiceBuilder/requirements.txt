@@ -1,0 +1,3 @@
+# VoiceBuilder 的音高检查依赖；合成与音色设计只用标准库。
+numpy
+miniaudio

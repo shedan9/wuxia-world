@@ -1,0 +1,34 @@
+[
+  {
+    "id": "route.jiangnan.luwan_to_old_ferry",
+    "region": "region.jiangnan",
+    "from": "map.jiangnan.luwan_street",
+    "to": "map.jiangnan.old_ferry",
+    "spawn": "landing",
+    "when": {
+      "type": "any",
+      "of": [
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "travel" },
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "rescue" },
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "custody" },
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "completed" }
+      ]
+    },
+    "locked_hint": "route.jiangnan.luwan_to_old_ferry.locked",
+    "modes": [
+      { "mode": "ferry", "silver": 5, "ticks": 1 },
+      { "mode": "walk", "ticks": 3 }
+    ]
+  },
+  {
+    "id": "route.jiangnan.old_ferry_to_luwan",
+    "region": "region.jiangnan",
+    "from": "map.jiangnan.old_ferry",
+    "to": "map.jiangnan.luwan_street",
+    "spawn": "pier",
+    "modes": [
+      { "mode": "ferry", "silver": 5, "ticks": 1 },
+      { "mode": "walk", "ticks": 3 }
+    ]
+  }
+]

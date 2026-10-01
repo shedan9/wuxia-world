@@ -1,5 +1,6 @@
-using System.Text.RegularExpressions;
 using Godot;
+using WuxiaWorld.Domain.World;
+using WuxiaWorld.Game.Adapters;
 
 namespace WuxiaWorld.Game.Preview.Samples;
 
@@ -8,42 +9,52 @@ public sealed record SampleChoice(string LineId, string Text);
 public sealed record SampleLine(string LineId, string Speaker, string Text, List<SampleChoice> Choices);
 
 /// <summary>
-/// 从对白章节文件读取 M0 展示台词（唯一可编辑来源是 game/dialogue 下的 Markdown，
-/// 格式写在文件开头）。只供对话展示页使用；正式对白由 M2 的对话图加载。
+/// 对话展示页的台词：从世界内容包读取一段正式对白图（唯一可编辑来源是 content/dialogue 下的章节文件，未锁稿），
+/// 沿每个选项组的第一个选项展开成一条线性台词序列。只供展示页使用；可玩对话由 M2 的 <c>GameSession</c> 驱动。
 /// </summary>
-public static partial class DialogueSamples
+public static class DialogueSamples
 {
-    public const string Chapter01 = "res://dialogue/arc01/chapter01.md";
+    /// <summary>开场“芦湾醒来”，沿用 M0 展示样例的 line_id。</summary>
+    public const string Opening = "dlg.ch01.opening_luwan";
 
-    public static IReadOnlyList<SampleLine> Load(string path)
+    private const int MaxNodes = 64;
+
+    public static IReadOnlyList<SampleLine> Load(string dialogueId)
     {
         var lines = new List<SampleLine>();
-        using var file = Godot.FileAccess.Open(path, Godot.FileAccess.ModeFlags.Read);
-        if (file is null)
+        var world = GeneratedContent.World;
+        var def = world?.Dialogues.FirstOrDefault(d => d.Id == dialogueId);
+        if (world is null || def is null)
         {
-            GD.PushError($"对白文件无法读取：{path}");
+            GD.PushError($"对白 {dialogueId} 无法读取：{GeneratedContent.Error ?? "内容包里没有这段对白"}");
             return lines;
         }
 
-        foreach (var raw in file.GetAsText().Split('\n'))
+        var node = def.Node(def.Entry);
+        for (var step = 0; node is not null && step < MaxNodes; step++)
         {
-            var text = raw.TrimEnd('\r');
-            if (ChoicePattern().Match(text) is { Success: true } choice && lines.Count > 0)
+            string? next;
+            switch (node.Type)
             {
-                lines[^1].Choices.Add(new SampleChoice(choice.Groups[1].Value, choice.Groups[2].Value.Trim()));
+                case DialogueNodeType.Line:
+                    lines.Add(new SampleLine(node.LineId!, world.Name(node.Speaker!), node.Text!, []));
+                    next = node.Next;
+                    break;
+                case DialogueNodeType.Choice when lines.Count > 0:
+                    lines[^1].Choices.AddRange(node.Options.Select(o => new SampleChoice(o.LineId, o.Text)));
+                    next = node.Options[0].Next;
+                    break;
+                case DialogueNodeType.End:
+                    next = null;
+                    break;
+                default:
+                    next = node.Next;
+                    break;
             }
-            else if (LinePattern().Match(text) is { Success: true } line)
-            {
-                lines.Add(new SampleLine(line.Groups[1].Value, line.Groups[2].Value, line.Groups[3].Value.Trim(), []));
-            }
+
+            node = def.Node(next);
         }
 
         return lines;
     }
-
-    [GeneratedRegex(@"^- `([^`]+)` \*\*([^*]+)\*\*：(.+)$")]
-    private static partial Regex LinePattern();
-
-    [GeneratedRegex(@"^- 〔选项〕 `([^`]+)` (.+)$")]
-    private static partial Regex ChoicePattern();
 }

@@ -8,8 +8,8 @@ using WuxiaWorld.Game.Preview.Samples;
 namespace WuxiaWorld.Game.Preview.Pages;
 
 /// <summary>
-/// 人物对话展示页，版式见 docs/art/UI_DESIGN.md 第 5.4 节。台词读自
-/// game/dialogue/arc01/chapter01.md（未锁稿样例）。Enter / 空格 / 点击推进，数字键选择，
+/// 人物对话展示页，版式见 docs/art/UI_DESIGN.md 第 5.4 节。台词读自世界内容包里的开场对白
+/// （源文件 content/dialogue/arc01/chapter01.json，未锁稿）。Enter / 空格 / 点击推进，数字键选择，
 /// L 打开对话记录，H 隐藏界面。截图参数 <c>--tab</c>：0 台词、1 选项、2 对话记录。
 /// </summary>
 public partial class DialoguePreview : Control
@@ -42,7 +42,7 @@ public partial class DialoguePreview : Control
     public override void _Ready()
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        _lines = DialogueSamples.Load(DialogueSamples.Chapter01);
+        _lines = DialogueSamples.Load(DialogueSamples.Opening);
 
         AddChild(new Backdrop { Mood = 0.3f });
         _portrait = new TextureRect
@@ -147,12 +147,9 @@ public partial class DialoguePreview : Control
         var line = _lines[_index];
         _history.Add($"{line.Speaker}|{line.Text}");
 
-        var narration = line.Speaker == "旁白";
-        _plate.Visible = !narration;
         _name.Text = line.Speaker;
         _role.Text = Speakers.TryGetValue(line.Speaker, out var s) ? s.Role : "";
         _text.Text = line.Text;
-        _text.AddThemeColorOverride("default_color", narration ? UiPalette.TextOnDarkMuted : UiPalette.TextOnDark);
         _lineId.Text = $"{line.LineId}　·　未锁稿样例";
         _next.Visible = false;
         _choices.Visible = false;
@@ -177,7 +174,7 @@ public partial class DialoguePreview : Control
         }
     }
 
-    /// <summary>说话人有立绘时亮起；旁白与主角说话时保留上一位人物但压暗，表示其不在说话。</summary>
+    /// <summary>说话人有立绘时亮起；主角说话时保留上一位人物但压暗，表示其不在说话。</summary>
     private void UpdatePortrait(string speaker)
     {
         if (Speakers.TryGetValue(speaker, out var s) && s.Portrait is { } path)
@@ -315,6 +312,7 @@ public partial class DialoguePreview : Control
         };
         _text.AddThemeFontSizeOverride("normal_font_size", 30);
         _text.AddThemeConstantOverride("line_separation", 12);
+        _text.AddThemeColorOverride("default_color", UiPalette.TextOnDark);
 
         _lineId = Ui.Text("", UiTheme.DarkMutedLabel, 15);
         _lineId.Modulate = new Color(1, 1, 1, 0.7f);
@@ -380,8 +378,8 @@ public partial class DialoguePreview : Control
                 continue;
             }
 
-            var name = Ui.MinSize(Ui.Text(parts[0] == "旁白" ? "" : parts[0], UiTheme.DarkTitleLabel, 24), 140);
-            var text = Ui.Text(parts[1], parts[0] == "旁白" ? UiTheme.DarkMutedLabel : UiTheme.DarkLabel, 24, wrap: true);
+            var name = Ui.MinSize(Ui.Text(parts[0], UiTheme.DarkTitleLabel, 24), 140);
+            var text = Ui.Text(parts[1], UiTheme.DarkLabel, 24, wrap: true);
             list.AddChild(Ui.Row(UiPalette.SpaceL, name, text));
         }
 

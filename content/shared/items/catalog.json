@@ -1,0 +1,10 @@
+[
+  { "id": "item.medicine.golden_sore", "category": "medicine", "stack": 20, "price": 12 },
+  { "id": "item.medicine.qi_pill", "category": "medicine", "stack": 20, "price": 15 },
+  { "id": "item.medicine.clear_heart", "category": "medicine", "stack": 20, "price": 18 },
+  { "id": "item.misc.dry_rations", "category": "misc", "stack": 20, "price": 2 },
+  { "id": "item.quest.modern_photo", "category": "quest", "stack": 1, "key": true },
+  { "id": "item.quest.plea_letter_copy", "category": "quest", "stack": 1, "key": true },
+  { "id": "item.quest.ferry_tag", "category": "quest", "stack": 1 },
+  { "id": "item.quest.relay_copy", "category": "quest", "stack": 1, "key": true }
+]
