@@ -4,6 +4,7 @@ using WuxiaWorld.Application.World;
 using WuxiaWorld.Domain.Characters;
 using WuxiaWorld.Domain.World;
 using WuxiaWorld.Game.Adapters;
+using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Infrastructure.Content;
 using WuxiaWorld.Infrastructure.Saves;
 
@@ -41,8 +42,8 @@ public sealed class PlaySession
     /// <summary>本局已显示的台词与选择（对话记录用，不存档）。</summary>
     public List<(string Speaker, string Text)> History { get; } = [];
 
-    /// <summary>存档目录：<c>user://saves</c>（Windows 下在 %APPDATA%\Godot\app_userdata\武侠世界\saves）。</summary>
-    public static ISaveStore OpenStore() => new FileSaveStore(ProjectSettings.GlobalizePath("user://saves"));
+    /// <summary>存档目录：<c>user://saves</c>（Windows 下在 %APPDATA%\Godot\app_userdata\武侠世界\saves）；开发参数 <c>--saves</c> 可改到别处。</summary>
+    public static ISaveStore OpenStore() => new FileSaveStore(DevCapture.SaveDirectory ?? ProjectSettings.GlobalizePath("user://saves"));
 
     public static PlaySession? NewGame(out string? error)
     {
@@ -130,8 +131,19 @@ public sealed class PlaySession
 
     // ── 存档 ─────────────────────────────────────────────
 
-    /// <summary>写入槽位。对话、换图或待开战斗期间拒绝（架构文档 3）。</summary>
-    public SaveWriteResult Save(SaveSlot slot)
+    private readonly List<(SaveSlot Slot, long Sequence)> _awaitingThumbnail = [];
+
+    /// <summary>打开暂停菜单那一帧抓下的画面（菜单里手动保存用它作缩略图，画面里没有菜单）。</summary>
+    public byte[]? MenuFrame { get; set; }
+
+    /// <summary>有存档还等着补缩略图（换图与战斗后的自动存档在新画面揭开后由探索页补上）。</summary>
+    public bool AwaitingThumbnail => _awaitingThumbnail.Count > 0;
+
+    /// <summary>
+    /// 写入槽位。对话、换图或待开战斗期间拒绝（架构文档 3）。
+    /// <paramref name="thumbnail"/> 为空时记下待补，探索页画面就绪后经 <see cref="FlushThumbnails"/> 补写。
+    /// </summary>
+    public SaveWriteResult Save(SaveSlot slot, byte[]? thumbnail = null)
     {
         if (!Game.CanSave)
         {
@@ -151,11 +163,32 @@ public sealed class PlaySession
             MapId = w.MapId,
             Clock = w.Clock,
         };
-        return Saves.Write(slot, new SaveGame { Header = header, World = w });
+        var result = Saves.Write(slot, new SaveGame { Header = header, World = w });
+        if (result.Ok)
+        {
+            _awaitingThumbnail.RemoveAll(a => a.Slot == slot);
+            if (thumbnail is null || !Saves.WriteThumbnail(slot, header.Sequence, thumbnail))
+            {
+                _awaitingThumbnail.Add((slot, header.Sequence));
+            }
+        }
+
+        return result;
     }
 
     /// <summary>自动存档：轮换写入空槽或最旧的自动槽；不能保存时跳过。</summary>
-    public SaveWriteResult? AutoSave() => Game.CanSave ? Save(Saves.NextAutoSlot()) : null;
+    public SaveWriteResult? AutoSave(byte[]? thumbnail = null) => Game.CanSave ? Save(Saves.NextAutoSlot(), thumbnail) : null;
+
+    /// <summary>把当前画面补作待补存档的缩略图。</summary>
+    public void FlushThumbnails(byte[] jpeg)
+    {
+        foreach (var (slot, sequence) in _awaitingThumbnail)
+        {
+            Saves.WriteThumbnail(slot, sequence, jpeg);
+        }
+
+        _awaitingThumbnail.Clear();
+    }
 
     /// <summary>最近写入的一份有效存档（标题页“继续旅程”）。</summary>
     public static SlotSummary? Latest(ISaveStore store) =>

@@ -39,6 +39,9 @@ public partial class PauseMenu : CanvasLayer
             return;
         }
 
+        // 视口里还是上一帧的游戏画面（菜单尚未画出）：抓下来，菜单里手动保存时作缩略图。
+        AppHost.Instance.Play!.MenuFrame = SaveThumbnail.Grab(GetViewport());
+
         // CanvasLayer 截断了主题的向上查找，菜单层须自己挂上全局主题（暗色面板、菜单项样式）。
         var layer = new Control { Theme = GetTree().Root.Theme };
         layer.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);

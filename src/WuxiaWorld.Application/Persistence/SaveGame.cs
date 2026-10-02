@@ -77,6 +77,8 @@ public sealed record SaveWriteResult(bool Ok, string? Error, SaveSlot Slot)
     public static SaveWriteResult Fail(SaveSlot slot, string error) => new(false, error, slot);
 }
 
+public sealed record SaveDeleteResult(bool Ok, string? Error);
+
 public sealed record SaveReadResult(SaveGame? Game, string? Error, bool FromBackup, bool Migrated, IReadOnlyList<string> Notes)
 {
     public bool Ok => Game is not null;
@@ -98,6 +100,15 @@ public interface ISaveStore
 
     /// <summary>下一份写入应使用的序号。</summary>
     long NextSequence();
+
+    /// <summary>删除槽位：正式文件、备份、迁移前原件与缩略图一并删除。槽位本来为空也算成功。</summary>
+    SaveDeleteResult Delete(SaveSlot slot);
+
+    /// <summary>写入槽位缩略图（JPEG）。缩略图按存档写入序号对应，与存档数据分开；写不成不影响存档。</summary>
+    bool WriteThumbnail(SaveSlot slot, long sequence, byte[] jpeg);
+
+    /// <summary>读取与该序号对应的缩略图；没有或读不出时返回 null，由界面以程序化山水代替。</summary>
+    byte[]? ReadThumbnail(SaveSlot slot, long sequence);
 }
 
 /// <summary>读档前检查存档与当前内容是否相容：删除或改名的 ID 不得静默丢弃（架构文档 11）。</summary>

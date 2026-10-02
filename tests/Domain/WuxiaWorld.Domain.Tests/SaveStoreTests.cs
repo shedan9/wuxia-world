@@ -154,6 +154,60 @@ public sealed class SaveStoreTests : IDisposable
     }
 
     [Fact]
+    public void Delete_clears_the_slot_with_its_backup_and_thumbnails_but_leaves_other_slots()
+    {
+        var store = new FileSaveStore(_dir);
+        var w = RichWorld();
+        store.Write(SaveSlot.Manual(1), Game(w, 1));
+        store.Write(SaveSlot.Manual(1), Game(w, 2));
+        store.Write(SaveSlot.Manual(10), Game(w, 3));
+        Assert.True(store.WriteThumbnail(SaveSlot.Manual(1), 2, [1, 2, 3]));
+        Assert.True(store.WriteThumbnail(SaveSlot.Manual(10), 3, [4]));
+        Assert.True(File.Exists(store.PathOf(SaveSlot.Manual(1)) + ".bak"));
+
+        Assert.True(store.Delete(SaveSlot.Manual(1)).Ok);
+        Assert.Empty(Directory.GetFiles(_dir, "manual_01.*"));
+        var list = store.List().ToDictionary(s => s.Slot);
+        Assert.Null(list[SaveSlot.Manual(1)].Header);
+        Assert.Null(list[SaveSlot.Manual(1)].Problem);
+        Assert.True(store.Read(SaveSlot.Manual(10)).Ok);
+        Assert.Equal([4], store.ReadThumbnail(SaveSlot.Manual(10), 3));
+
+        // 空槽再删也算成功；删掉的槽位可以重新写入。
+        Assert.True(store.Delete(SaveSlot.Manual(1)).Ok);
+        Assert.True(store.Write(SaveSlot.Manual(1), Game(w, 4)).Ok);
+    }
+
+    [Fact]
+    public void Thumbnails_follow_the_save_sequence_and_keep_only_main_and_backup()
+    {
+        var store = new FileSaveStore(_dir);
+        var w = RichWorld();
+        var slot = SaveSlot.Auto(1);
+        store.Write(slot, Game(w, 1));
+        store.WriteThumbnail(slot, 1, [1]);
+        store.Write(slot, Game(w, 2));
+        store.WriteThumbnail(slot, 2, [2]);
+
+        // 正式存档序号 2、备份序号 1：两张都在。
+        Assert.Equal([2], store.ReadThumbnail(slot, 2));
+        Assert.Equal([1], store.ReadThumbnail(slot, 1));
+
+        // 第三次写入后备份变成序号 2，序号 1 的缩略图在下次写缩略图时清掉。
+        store.Write(slot, Game(w, 3));
+        Assert.Null(store.ReadThumbnail(slot, 3));
+        store.WriteThumbnail(slot, 3, [3]);
+        Assert.Null(store.ReadThumbnail(slot, 1));
+        Assert.Equal([2], store.ReadThumbnail(slot, 2));
+        Assert.Equal([3], store.ReadThumbnail(slot, 3));
+
+        // 缩略图损坏或缺失不影响读档。
+        File.Delete(store.ThumbnailPathOf(slot, 3));
+        Assert.True(store.Read(slot).Ok);
+        Assert.False(store.WriteThumbnail(slot, 4, []));
+    }
+
+    [Fact]
     public void Compatibility_check_names_ids_missing_from_current_content()
     {
         var w = RichWorld();

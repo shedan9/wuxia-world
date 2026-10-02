@@ -29,6 +29,9 @@ public static class DevCapture
     /// </summary>
     private static readonly List<(Vector2? At, Key Key)> Steps = [];
 
+    /// <summary>存档目录改到别处（<c>--saves=目录</c>），走查与存档界面测试不读写玩家真实存档。</summary>
+    public static string? SaveDirectory { get; private set; }
+
     /// <summary>启动即开新游戏。</summary>
     public static bool NewGame { get; private set; }
 
@@ -115,6 +118,9 @@ public static class DevCapture
                     break;
                 case "--dev":
                     AppHost.DevInfo = true;
+                    break;
+                case "--saves":
+                    SaveDirectory = value;
                     break;
                 case "--newgame":
                     NewGame = true;

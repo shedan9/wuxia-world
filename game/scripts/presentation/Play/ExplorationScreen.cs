@@ -204,12 +204,16 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     // ── 自动走查（--autoplay，开发用）────────────────────
 
+    private int _thumbnailFrames;
+
     public override void _Process(double delta)
     {
         if (_play is not null && _hud is not null && _modal is null && _dialogue is null && !_leaving && _hudRevision != World.Revision)
         {
             RebuildHud();
         }
+
+        FlushThumbnails();
 
         if (DevCapture.Autoplay <= 0 || _play is null || _staging is null || _autoplayFinished)
         {
@@ -755,7 +759,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
                 OpenInventory();
                 break;
             case Key.F5:
-                var r = _play.Save(SaveSlot.Quick);
+                var r = _play.Save(SaveSlot.Quick, SaveThumbnail.Grab(GetViewport()));
                 _view.Toast("存档", r.Ok ? "已快速存档" : $"存档失败：{r.Error}", "");
                 break;
             case Key.F9:
@@ -832,6 +836,24 @@ public partial class ExplorationScreen : Control, IExploreDriver
             _modal = null;
             layer.QueueFree();
             RebuildHud();
+        }
+    }
+
+    /// <summary>
+    /// 换图与战斗后的自动存档在进图时写下，那时新画面还没画出、色幕还盖着：等色幕收起、进图过场对话与弹层都结束、
+    /// 再画两帧，抓当前探索画面补作缩略图。中途离开（读档、回标题）则不补，卡片退回程序化山水。
+    /// </summary>
+    private void FlushThumbnails()
+    {
+        if (_play is not { AwaitingThumbnail: true } || _leaving || _dialogue is not null || _modal is not null || AppHost.Instance.Router.Busy)
+        {
+            _thumbnailFrames = 0;
+            return;
+        }
+
+        if (++_thumbnailFrames >= 3 && SaveThumbnail.Grab(GetViewport()) is { } jpeg)
+        {
+            _play.FlushThumbnails(jpeg);
         }
     }
 

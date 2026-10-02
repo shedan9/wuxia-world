@@ -77,7 +77,7 @@ public static class ChapterEnd
         var stayButton = Ui.Button("继续游历", UiTheme.PrimaryButton, stay);
         var titleButton = Ui.Button("返回标题", UiTheme.DarkButton, () =>
         {
-            play.AutoSave();
+            play.AutoSave(SaveThumbnail.Grab(AppHost.Instance.GetViewport()));
             AppHost.Instance.Play = null;
             AppHost.Instance.Router.GoTo(ScenePaths.MainMenu);
         });

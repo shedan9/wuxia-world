@@ -30,6 +30,9 @@ public sealed class GameMenu
     public const float Width = 760;
     public const float Height = 860;
 
+    /// <summary>存读档页更宽，放得下带缩略图的存档卡。</summary>
+    public const float SlotsWidth = 1180;
+
     public Control Root => _body;
 
     /// <summary>当前在子页时返回主页的动作；在主页时为 null（Esc 即关闭菜单）。</summary>
@@ -142,64 +145,43 @@ public sealed class GameMenu
         no.CallDeferred(Control.MethodName.GrabFocus);
     }
 
-    private void ShowSlots(bool save, string? notice = null)
+    /// <summary>存读档页：与标题页存档弹层同一套存档卡（缩略图、删除、覆盖确认）。</summary>
+    private void ShowSlots(bool save)
     {
-        Page(Width, 700);
+        Page(SlotsWidth, Height);
+        var list = SaveSlotList.Build(_play.Saves, save, slot =>
+        {
+            if (!save)
+            {
+                return LoadSlot(slot);
+            }
+
+            var r = _play.Save(slot, _play.MenuFrame);
+            return r.Ok ? $"已保存到{SlotName(slot)}" : $"保存失败：{r.Error}";
+        }, save ? "只能保存到手动槽；快速槽由 F5 写入，自动槽在换图后轮换写入。" : "正式存档损坏时会读取上一份备份并提示。删除不影响当前进度。");
+
+        // 底栏正在确认删除或覆盖时，Esc 先取消确认，再按一次才回主页。
+        Back = () =>
+        {
+            if (!list.CancelConfirm())
+            {
+                ShowMain();
+            }
+        };
         _body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Text(save ? "保存进度" : "读取进度", UiTheme.DarkTitleLabel, 40), Ui.Spacer(),
             Ui.Button("返回", UiTheme.DarkButton, ShowMain)));
         _body.AddChild(Ui.Rule(dark: true));
-        var list = Ui.Column(UiPalette.SpaceS);
-        Button? first = null;
-        var summaries = _play.Saves.List().ToDictionary(s => s.Slot);
-        var status = Ui.Text(save ? "快速槽由 F5 写入，自动槽在换图后轮换写入。" : "正式存档损坏时会读取上一份备份并提示。", UiTheme.DarkMutedLabel, 16, wrap: true);
+        _body.AddChild(Ui.Expand(list.Cards, vertical: true));
+        _body.AddChild(list.Status);
+        _body.AddChild(list.Footer);
+    }
 
-        // 存读档的结果写在面板里（菜单的暗幕会盖住上方通知）。
-        void Say(string text)
-        {
-            status.Text = text;
-            status.AddThemeColorOverride("font_color", UiPalette.Gilt);
-        }
-
-        foreach (var slot in SaveSlot.All)
-        {
-            var summary = summaries.GetValueOrDefault(slot);
-            var usable = save ? slot.Kind == SlotKind.Manual : summary?.Header is not null;
-            var row = Ui.Button(SlotLine(_play, slot, summary), UiTheme.ChoiceButton, usable ? () =>
-            {
-                if (save)
-                {
-                    var r = _play.Save(slot);
-                    ShowSlots(save, r.Ok ? $"已保存到{SlotName(slot)}" : $"保存失败：{r.Error}");
-                }
-                else
-                {
-                    LoadInto(slot, Say);
-                }
-            } : null, disabled: !usable);
-            row.Alignment = HorizontalAlignment.Left;
-            row.CustomMinimumSize = new Vector2(0, 46);
-            row.AddThemeFontSizeOverride("font_size", 20);
-            row.MouseEntered += () =>
-            {
-                if (!row.Disabled)
-                {
-                    row.GrabFocus();
-                }
-            };
-            list.AddChild(row);
-            first ??= usable ? row : null;
-        }
-
-        var scroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled };
-        scroll.AddChild(Ui.Expand(list));
-        _body.AddChild(Ui.Expand(scroll, vertical: true));
-        _body.AddChild(status);
-        if (notice is not null)
-        {
-            Say(notice);
-        }
-
-        first?.CallDeferred(Control.MethodName.GrabFocus);
+    /// <summary>读档并进入探索；读不成时返回失败原因（不改当前进度），读成时离开当前页、返回 null。</summary>
+    public static string? LoadSlot(SaveSlot slot)
+    {
+        string? message = null;
+        LoadInto(slot, m => message = m);
+        return message;
     }
 
     public static string SlotName(SaveSlot slot) => slot.Kind switch

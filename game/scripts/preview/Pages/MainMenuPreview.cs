@@ -26,8 +26,9 @@ public partial class MainMenuPreview : Control
     private Control _footer = null!;
     private Control? _saves;
     private Button _first = null!;
+    private Button _continue = null!;
     private Label _status = null!;
-    private SaveSlot? _selected;
+    private SaveSlotList? _slotList;
     private Vector2 _parallax;
 
     public override void _Ready()
@@ -92,14 +93,12 @@ public partial class MainMenuPreview : Control
 
         if (@event.IsActionPressed("ui_cancel") && _saves is not null)
         {
-            CloseSaves();
-            GetViewport().SetInputAsHandled();
-            return;
-        }
+            // 底栏正在确认删除时 Esc 只取消确认。
+            if (_slotList?.CancelConfirm() != true)
+            {
+                CloseSaves();
+            }
 
-        if (_saves is not null && _selected is { } slot && @event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.Enter or Key.KpEnter })
-        {
-            GameMenu.LoadInto(slot, Status);
             GetViewport().SetInputAsHandled();
         }
     }
@@ -208,13 +207,8 @@ public partial class MainMenuPreview : Control
         var menu = Ui.Column(4);
         Ui.Place(menu, 0, 0, 104, 420, 720, 1000);
         var router = AppHost.Instance.Router;
-        var latest = PlaySession.Latest(PlaySession.OpenStore());
-
-        _first = Item(menu, "继续旅程", latest is null ? null : () => GameMenu.LoadInto(latest.Slot, Status), "还没有存档：请开始新的旅程");
-        var summary = latest?.Header is { } h
-            ? $"{ChapterText(h.ChapterId)}　·　{MapName(h.MapId)}　·　{PlaySession.ClockText(h.Clock)}" + "\n" + $"{GameMenu.SlotName(latest.Slot)}存档　{h.CreatedAt}"
-            : "尚无存档";
-        _status = Ui.Text(summary, UiTheme.MutedLabel, 18);
+        _continue = Item(menu, "继续旅程", ContinueLatest);
+        _status = Ui.Text("", UiTheme.MutedLabel, 18);
         _status.AddThemeConstantOverride("line_spacing", 2);
         menu.AddChild(Indent(_status, 48, 10));
 
@@ -223,12 +217,28 @@ public partial class MainMenuPreview : Control
         Item(menu, "场景目录", () => router.GoTo(ScenePaths.PreviewCatalog));
         Item(menu, "江湖设置", OpenSettings);
         Item(menu, "退出游戏", () => GetTree().Quit());
-        if (latest is null)
-        {
-            _first = start;
-        }
-
+        _first = RefreshLatest() ? _continue : start;
         return menu;
+    }
+
+    /// <summary>按最近一份有效存档更新“继续旅程”与其下的摘要（存档弹层里删除存档后关闭时再调一次）；有存档时返回 true。</summary>
+    private bool RefreshLatest()
+    {
+        var latest = PlaySession.Latest(PlaySession.OpenStore());
+        _continue.Disabled = latest is null;
+        _continue.TooltipText = latest is null ? "还没有存档：请开始新的旅程" : "";
+        _status.Text = latest?.Header is { } h
+            ? $"{SaveSlotList.ChapterText(h.ChapterId)}　·　{SaveSlotList.MapName(h.MapId)}　·　{PlaySession.ClockText(h.Clock)}" + "\n" + $"{GameMenu.SlotName(latest.Slot)}存档　{h.CreatedAt}"
+            : "尚无存档";
+        return latest is not null;
+    }
+
+    private void ContinueLatest()
+    {
+        if (PlaySession.Latest(PlaySession.OpenStore()) is { } latest)
+        {
+            GameMenu.LoadInto(latest.Slot, Status);
+        }
     }
 
     private void NewGame()
@@ -244,14 +254,6 @@ public partial class MainMenuPreview : Control
     }
 
     private void Status(string text) => _status.Text = text;
-
-    private static string MapName(string mapId) => GeneratedContent.World?.Name(mapId) ?? mapId;
-
-    /// <summary>章节 ID 的显示：chapter.02 → 第二章。</summary>
-    private static string ChapterText(string chapterId) =>
-        int.TryParse(chapterId.AsSpan(chapterId.LastIndexOf('.') + 1), out var n) && n is > 0 and < 10
-            ? $"第{"一二三四五六七八九"[n - 1]}章"
-            : chapterId;
 
     private static Button Item(Container menu, string text, Action? onPressed, string? disabledReason = null)
     {
@@ -300,80 +302,27 @@ public partial class MainMenuPreview : Control
         layer.AddChild(panel);
         Motion.Enter(panel, 0, Motion.Normal, rise: 0, fromX: 60);
 
-        var group = new ButtonGroup();
-        var cards = Ui.Column(12);
-        Button? firstCard = null;
-        var summaries = PlaySession.OpenStore().List();
-        var used = summaries.Count(x => x.Header is not null);
-        Button load = null!;
-        foreach (var summary in summaries.OrderByDescending(x => x.Header?.Sequence ?? -1).ThenBy(x => x.Slot.Kind).ThenBy(x => x.Slot.Index))
-        {
-            var card = SaveCard(summary, group);
-            var slot = summary.Slot;
-            var readable = summary.Header is not null;
-            card.FocusEntered += () =>
-            {
-                _selected = readable ? slot : null;
-                load.Disabled = !readable;
-            };
-            card.GuiInput += e =>
-            {
-                if (readable && e is InputEventMouseButton { Pressed: true, DoubleClick: true, ButtonIndex: MouseButton.Left })
-                {
-                    GameMenu.LoadInto(slot, Status);
-                }
-            };
-            cards.AddChild(card);
-            firstCard ??= card;
-        }
+        var list = SaveSlotList.Build(PlaySession.OpenStore(), save: false, GameMenu.LoadSlot,
+            "正式存档损坏时读取上一份备份并提示；删除会连同备份与缩略图一并删除。");
+        _slotList = list;
 
-        Motion.Stagger(cards.GetChildren().OfType<Control>(), 0.08f, 0.05f, rise: 12);
-
+        var used = Ui.Text("", UiTheme.GiltLabel);
+        void Count() => used.Text = $"已用 {list.UsedCount} / {SaveSlot.All.Count()}";
+        Count();
+        list.Refreshed += Count;
         var header = Ui.Row(UiPalette.SpaceL,
             Ui.Seal("存档"),
             Ui.Column(UiPalette.SpaceS,
                 Ui.Text("读取存档", UiTheme.DarkTitleLabel, 40),
-                Ui.Text("手动 10、快速 1、自动 3；正式存档损坏时读取上一份备份", UiTheme.DarkMutedLabel)),
+                Ui.Text("手动 10、快速 1、自动 3", UiTheme.DarkMutedLabel)),
             Ui.Spacer(),
-            Ui.Text($"已用 {used} / {SaveSlot.All.Count()}", UiTheme.GiltLabel));
+            used);
         header.GetChild<Control>(1).SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
-        load = Ui.MinSize(Ui.Button("读取", UiTheme.PrimaryButton, () =>
-        {
-            if (_selected is { } slot)
-            {
-                GameMenu.LoadInto(slot, Status);
-            }
-        }, disabled: true), 180, 56);
-        var remove = Ui.MinSize(Ui.Button("删除", UiTheme.DarkButton, disabled: true, tooltip: "删除存档尚未开放"), 140, 56);
-        var footer = Ui.Row(UiPalette.SpaceM,
-            Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "读取"), ("Esc", "关闭")),
-            Ui.Spacer(), remove, load);
-
-        // 存档卡放进滚动区：存档位共 14 个，面板高度固定在 72–972，内容再多也不会撑出面板、压到标题页底栏。
-        // 内缩一圈留给卡片的焦点折角与投影，免得被滚动区裁掉。
-        var inset = new MarginContainer();
-        foreach (var side in new[] { "left", "right", "top", "bottom" })
-        {
-            inset.AddThemeConstantOverride($"margin_{side}", 10);
-        }
-
-        inset.AddChild(Ui.Expand(cards));
-        var scroll = new ScrollContainer
-        {
-            HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled, FollowFocus = true,
-            SizeFlagsVertical = SizeFlags.ExpandFill,
-        };
-        scroll.AddChild(Ui.Expand(inset));
-        panel.AddChild(Ui.Column(UiPalette.SpaceM, header, Ui.Rule(dark: true), scroll, footer));
+        panel.AddChild(Ui.Column(UiPalette.SpaceM, header, Ui.Rule(dark: true), list.Cards, list.Status, list.Footer));
         AddChild(layer);
         _saves = layer;
 
-        firstCard!.ButtonPressed = true;
-        firstCard.GrabFocus();
-
-        // 首次布局前取焦点会让滚动区按未定的尺寸跟随焦点，最新的一份存档被滚出视野；布局后回到顶端。
-        scroll.SetDeferred(ScrollContainer.PropertyName.ScrollVertical, 0);
         // 弹层打开时立绘淡到 25%，标题页底栏（声明、键帽、版本号）隐去，由弹层自己的键帽栏接替。
         FadeTo(_portrait, 0.25f);
         FadeTo(_footer, 0);
@@ -399,7 +348,7 @@ public partial class MainMenuPreview : Control
         Motion.Enter(panel, 0, Motion.Normal, rise: 20);
         AddChild(layer);
         _saves = layer;
-        _selected = null;
+        _slotList = null;
         FadeTo(_portrait, 0.3f);
     }
 
@@ -411,75 +360,16 @@ public partial class MainMenuPreview : Control
         }
 
         _saves = null;
+        _slotList = null;
         Motion.FadeOut(layer, Motion.Quick, layer.QueueFree);
         FadeTo(_portrait, 1);
         FadeTo(_footer, 1);
+        if (!RefreshLatest() && _first == _continue)
+        {
+            _first = _menu.GetChildren().OfType<Button>().First(b => !b.Disabled);
+        }
+
         _first.GrabFocus();
-    }
-
-    private static Button SaveCard(SlotSummary summary, ButtonGroup group)
-    {
-        var card = new Button
-        {
-            ThemeTypeVariation = UiTheme.CardButton, ToggleMode = true, ButtonGroup = group,
-            CustomMinimumSize = new Vector2(0, 156), FocusMode = FocusModeEnum.All,
-        };
-        card.MouseEntered += card.GrabFocus;
-        card.FocusEntered += () => card.ButtonPressed = true;
-
-        var content = new MarginContainer();
-        content.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        foreach (var (side, value) in new[] { ("left", 18), ("right", 24), ("top", 16), ("bottom", 16) })
-        {
-            content.AddThemeConstantOverride($"margin_{side}", value);
-        }
-
-        card.AddChild(content);
-
-        if (summary.Header is not { } h)
-        {
-            var text = summary.Problem is { } problem ? $"{GameMenu.SlotName(summary.Slot)}　·　无法读取：{problem}" : $"—　{GameMenu.SlotName(summary.Slot)}　空白存档位　—";
-            var empty = Ui.Text(text, UiTheme.DarkMutedLabel, 22);
-            empty.HorizontalAlignment = HorizontalAlignment.Center;
-            empty.VerticalAlignment = VerticalAlignment.Center;
-            content.AddChild(empty);
-            Ui.IgnoreMouse(content);
-            card.CustomMinimumSize = new Vector2(0, 84);
-            return card;
-        }
-
-        // 存档缩略图尚未生成（与存档数据分开保存，属 M2-07 余项）：先以按地图取色的山水代替。
-        // string.GetHashCode 每次运行随机，这里按字符累加取稳定的取色种子。
-        var seed = h.MapId.Aggregate(17, (acc, c) => (acc * 31 + c) % 1000) / 1000f;
-        var thumbFrame = new PanelContainer { CustomMinimumSize = new Vector2(224, 126) };
-        thumbFrame.AddThemeStyleboxOverride("panel", new OrnateBox
-        {
-            Border = UiPalette.Gilt with { A = 0.75f }, BorderWidth = 1.1f, Brush = true, Overshoot = 0.4f, Seed = 69,
-            Corners = CornerStyle.Bracket, CornerSize = 12, CornerWidth = 1.6f,
-        }.Margins(3, 3));
-        var thumb = Backdrop.Still(0.2f + seed * 0.6f, seed * 7, 0.2f);
-        thumb.ClipContents = true;
-        thumbFrame.AddChild(thumb);
-        thumbFrame.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-
-        var tag = Ui.Text(GameMenu.SlotName(summary.Slot) + (summary.BackupOnly ? "　·　正式存档损坏，可读备份" : ""), UiTheme.GiltLabel, 18);
-        var chapter = Ui.Text(ChapterText(h.ChapterId), UiTheme.DarkTitleLabel, 28);
-        var place = Ui.Text(MapName(h.MapId), UiTheme.DarkMutedLabel, 18);
-        var info = Ui.Expand(Ui.Column(6, tag, chapter, place));
-        info.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-
-        var time = Ui.Text(PlaySession.ClockText(h.Clock), UiTheme.DarkLabel, 26);
-        time.AddThemeFontOverride("font", UiFonts.Title);
-        time.HorizontalAlignment = HorizontalAlignment.Right;
-        var date = Ui.Text(h.CreatedAt, UiTheme.DarkMutedLabel, 17);
-        date.HorizontalAlignment = HorizontalAlignment.Right;
-        var meta = Ui.Column(4, Ui.Text("江湖时辰", UiTheme.DarkMutedLabel, 16), time, date);
-        meta.GetChild<Label>(0).HorizontalAlignment = HorizontalAlignment.Right;
-        meta.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-
-        content.AddChild(Ui.Row(UiPalette.SpaceL, thumbFrame, info, meta));
-        Ui.IgnoreMouse(content);
-        return card;
     }
 
     // ── 底栏 ─────────────────────────────────────────────

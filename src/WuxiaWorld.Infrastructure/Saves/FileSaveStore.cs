@@ -153,6 +153,87 @@ public sealed class FileSaveStore : ISaveStore
 
     public long NextSequence() => List().Select(s => s.Header?.Sequence ?? 0).DefaultIfEmpty(0).Max() + 1;
 
+    /// <summary>缩略图文件：<c>&lt;槽位&gt;.s&lt;写入序号&gt;.jpg</c>。按序号对应存档，正式存档换了而缩略图没跟上时不会张冠李戴。</summary>
+    public string ThumbnailPathOf(SaveSlot slot, long sequence) =>
+        Path.Combine(Directory, $"{slot.Stem}.s{sequence.ToString(System.Globalization.CultureInfo.InvariantCulture)}.jpg");
+
+    public SaveDeleteResult Delete(SaveSlot slot)
+    {
+        if (!slot.IsValid)
+        {
+            return new SaveDeleteResult(false, $"无效槽位 {slot}");
+        }
+
+        if (!System.IO.Directory.Exists(Directory))
+        {
+            return new SaveDeleteResult(true, null);
+        }
+
+        try
+        {
+            // 正式文件、.bak、.tmp、迁移前原件 .vN.bak 与各序号的缩略图；槽位主干互不为前缀（manual_01、quick、auto_1）。
+            foreach (var file in System.IO.Directory.GetFiles(Directory, slot.Stem + ".*"))
+            {
+                File.Delete(file);
+            }
+
+            return new SaveDeleteResult(true, null);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return new SaveDeleteResult(false, $"删除失败：{ex.Message}");
+        }
+    }
+
+    public bool WriteThumbnail(SaveSlot slot, long sequence, byte[] jpeg)
+    {
+        if (!slot.IsValid || jpeg.Length == 0)
+        {
+            return false;
+        }
+
+        var path = ThumbnailPathOf(slot, sequence);
+        var temp = path + ".tmp";
+        try
+        {
+            System.IO.Directory.CreateDirectory(Directory);
+            File.WriteAllBytes(temp, jpeg);
+            File.Move(temp, path, overwrite: true);
+
+            // 只留正式存档与备份对应的两张，其余旧序号的缩略图删掉。
+            var keep = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { path };
+            if (TryRead(PathOf(slot) + ".bak").Game is { } backup)
+            {
+                keep.Add(ThumbnailPathOf(slot, backup.Header.Sequence));
+            }
+
+            foreach (var old in System.IO.Directory.GetFiles(Directory, slot.Stem + ".s*.jpg").Where(f => !keep.Contains(f)))
+            {
+                TryDelete(old);
+            }
+
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            TryDelete(temp);
+            return false;
+        }
+    }
+
+    public byte[]? ReadThumbnail(SaveSlot slot, long sequence)
+    {
+        var path = ThumbnailPathOf(slot, sequence);
+        try
+        {
+            return File.Exists(path) ? File.ReadAllBytes(path) : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return null;
+        }
+    }
+
     private sealed record Loaded(SaveGame? Game, string? Error, int FromVersion);
 
     private Loaded TryRead(string path)
@@ -257,9 +338,9 @@ public sealed class FileSaveStore : ISaveStore
         {
             File.Delete(path);
         }
-        catch (IOException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            // 临时文件删不掉不影响正式存档；下次写入会覆盖它。
+            // 临时文件或旧缩略图删不掉不影响正式存档；下次写入会覆盖或再清理。
         }
     }
 
