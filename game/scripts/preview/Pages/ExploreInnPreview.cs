@@ -16,6 +16,8 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// </summary>
 public partial class ExploreInnPreview : ExploreStage
 {
+    protected override string StepSurface => "wood";
+
     protected override Rect2 Bounds => InnSamples.Bounds;
 
     protected override IReadOnlyList<TownInteraction> Interactions => InnSamples.Interactions;

@@ -28,6 +28,7 @@ public sealed class WorldRules
         s.SetRng(new Common.Pcg32(ng.Seed, WorldStream));
         s.Party.AddRange(ng.Party);
         s.Met.UnionWith(ng.Party);
+        Wear(s, BuildOf(s, Content.Progression.Hero));
         var r = new EffectResult();
         Apply(s, ng.Effects, r, "new_game");
         if (!r.Ok)
@@ -36,6 +37,180 @@ public sealed class WorldRules
         }
 
         return s;
+    }
+
+    // ── 成长（只需世界内容的部分；装配与修炼的合法性检查在 GrowthRules） ──────────
+
+    /// <summary>累计经验对应的等级（1 起，不超过上限）。</summary>
+    public int LevelOf(int experience)
+    {
+        var level = 1;
+        foreach (var need in Content.Progression.Experience)
+        {
+            if (experience < need)
+            {
+                break;
+            }
+
+            level++;
+        }
+
+        return level;
+    }
+
+    /// <summary>升到下一级所需的累计经验；已满级为 null。</summary>
+    public int? NextLevelAt(int level) =>
+        level >= 1 && level - 1 < Content.Progression.Experience.Count ? Content.Progression.Experience[level - 1] : null;
+
+    /// <summary>取（必要时建立）人物的成长构成。</summary>
+    public static CharacterBuild BuildOf(WorldState s, string characterId)
+    {
+        if (!s.Builds.TryGetValue(characterId, out var b))
+        {
+            b = new CharacterBuild();
+            s.Builds[characterId] = b;
+        }
+
+        return b;
+    }
+
+    /// <summary>开局穿在身上的衣物直接进槽位，不经行囊。</summary>
+    private void Wear(WorldState s, CharacterBuild build)
+    {
+        foreach (var id in Content.Progression.StartingEquipment)
+        {
+            if (Content.Items.TryGetValue(id, out var item) && item.Slot is { } slot)
+            {
+                build.Equipped[slot] = id;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 新学的武学自动装上空位：招式放进未满的出手栏，心法在主修空着时装为主修，轻功与天赋同理。
+    /// 不自动装辅修（可能阴阳相冲，交给玩家决定）。武学种类按 ID 前缀区分，内容校验保证前缀与定义一致。
+    /// </summary>
+    private void AutoEquip(WorldState s, string id)
+    {
+        var b = BuildOf(s, Content.Progression.Hero);
+        if (id.StartsWith("skill.", StringComparison.Ordinal))
+        {
+            if (!b.Skills.Contains(id, StringComparer.Ordinal) && b.Skills.Count < Combat.Definitions.Loadout.MaxSkills)
+            {
+                b.Skills.Add(id);
+            }
+        }
+        else if (id.StartsWith("art.inner.", StringComparison.Ordinal))
+        {
+            if (b.MainArt is null && b.SupportArt != id)
+            {
+                b.MainArt = id;
+            }
+        }
+        else if (id.StartsWith("art.qinggong.", StringComparison.Ordinal))
+        {
+            b.Qinggong ??= id;
+        }
+        else if (id.StartsWith("art.talent.", StringComparison.Ordinal)
+                 && !b.Talents.Contains(id, StringComparer.Ordinal) && b.Talents.Count < Combat.Definitions.Loadout.MaxTalents)
+        {
+            b.Talents.Add(id);
+        }
+    }
+
+    // ── 店铺 ─────────────────────────────────────────────
+
+    /// <summary>当前地图上开着的店铺（店铺交互物可见即开门）。</summary>
+    public ShopDefinition? ShopAt(WorldState s, string shopId) =>
+        InteractablesAt(s).Any(i => i.Kind == InteractableKind.Shop && i.Shop == shopId) && Content.Shops.TryGetValue(shopId, out var shop)
+            ? shop
+            : null;
+
+    public int PriceOf(ShopDefinition shop, string itemId) =>
+        shop.Stock.FirstOrDefault(e => e.Item == itemId) is { } entry
+            ? entry.Price ?? (Content.Items.TryGetValue(itemId, out var i) ? i.Price : 0)
+            : 0;
+
+    /// <summary>店铺收购价；主线必要物品、无价物品不收，返回 0。</summary>
+    public int BuyBackOf(ShopDefinition shop, string itemId) =>
+        Content.Items.TryGetValue(itemId, out var i) && !i.Key && i.Price > 0 ? (int)((long)i.Price * shop.BuyBackBp / 10_000) : 0;
+
+    /// <summary>买入：银两不足或不在货单上则失败，调用方丢弃状态。</summary>
+    public void Buy(WorldState s, string shopId, string itemId, int count, EffectResult r)
+    {
+        if (ShopAt(s, shopId) is not { } shop)
+        {
+            r.Fail($"店铺 {shopId} 不在此处或未开门");
+            return;
+        }
+
+        if (count < 1 || shop.Stock.All(e => e.Item != itemId))
+        {
+            r.Fail($"{shopId} 不卖 {itemId}");
+            return;
+        }
+
+        var cost = PriceOf(shop, itemId) * count;
+        Apply(s, [new WorldEffect { Type = WorldEffectType.ChangeSilver, Amount = -cost }, WorldEffect.Item(itemId, count)], r);
+    }
+
+    /// <summary>卖出行囊里的物品（已装上的须先卸下）。</summary>
+    public void Sell(WorldState s, string shopId, string itemId, int count, EffectResult r)
+    {
+        if (ShopAt(s, shopId) is not { } shop)
+        {
+            r.Fail($"店铺 {shopId} 不在此处或未开门");
+            return;
+        }
+
+        var price = BuyBackOf(shop, itemId);
+        if (price <= 0 || count < 1)
+        {
+            r.Fail($"{itemId} 不能出售");
+            return;
+        }
+
+        Apply(s, [new WorldEffect { Type = WorldEffectType.RemoveItem, Id = itemId, Amount = count },
+            new WorldEffect { Type = WorldEffectType.ChangeSilver, Amount = price * count }], r);
+    }
+
+    // ── 旧档升级 ─────────────────────────────────────────
+
+    /// <summary>讨教选定的主角流派（<c>sword</c> / <c>fist</c> / <c>inner</c>）。</summary>
+    public const string StyleFact = "fact.hero.style";
+
+    /// <summary>
+    /// 存档来自加入成长系统之前（没有主角的成长构成）时补齐：建立构成、穿上开局衣物、
+    /// 按讨教流派补学整套入门武学、把已学武学装上空位，再按追赶表把经验与修为补到下限。
+    /// 新游戏一开始就有主角构成，不会走到这里。返回给玩家的说明；无需升级时返回 null。
+    /// </summary>
+    public string? UpgradeLegacy(WorldState s)
+    {
+        var p = Content.Progression;
+        if (s.Builds.ContainsKey(p.Hero))
+        {
+            return null;
+        }
+
+        Wear(s, BuildOf(s, p.Hero));
+        if (s.Facts.TryGetValue(StyleFact, out var styleId) && p.Styles.FirstOrDefault(x => x.Id == styleId) is { } style)
+        {
+            s.Skills.UnionWith(style.Skills);
+            s.Skills.UnionWith(style.Arts);
+        }
+
+        foreach (var id in s.Skills)
+        {
+            AutoEquip(s, id);
+        }
+
+        foreach (var c in p.CatchUp.Where(c => Check(c.When, s)))
+        {
+            s.Experience = Math.Max(s.Experience, c.Experience);
+            s.Cultivation = Math.Max(s.Cultivation, c.Cultivation);
+        }
+
+        return $"存档来自加入人物成长之前的版本：已按进度补齐武学、经验与修为（{LevelOf(s.Experience)} 级），可在人物页分配潜能";
     }
 
     /// <summary>世界随机流的流选择量，与战斗流（0xB4771E00）分开。</summary>
@@ -188,13 +363,24 @@ public sealed class WorldRules
             case WorldEffectType.LearnSkill:
                 if (s.Skills.Add(e.Id!))
                 {
+                    AutoEquip(s, e.Id!);
                     r.Notices.Add(new WorldNotice("skill", e.Id!));
                 }
 
                 break;
             case WorldEffectType.GrantExperience:
+                var before = LevelOf(s.Experience);
                 s.Experience += Math.Max(0, e.Amount);
                 r.Notices.Add(new WorldNotice("experience", "experience", e.Amount));
+                if (LevelOf(s.Experience) is var after && after > before)
+                {
+                    r.Notices.Add(new WorldNotice("level_up", Content.Progression.Hero, after));
+                }
+
+                break;
+            case WorldEffectType.GrantCultivation:
+                s.Cultivation += Math.Max(0, e.Amount);
+                r.Notices.Add(new WorldNotice("cultivation", "cultivation", e.Amount));
                 break;
             case WorldEffectType.ReachGate:
                 s.Gates.Add(e.Id!);

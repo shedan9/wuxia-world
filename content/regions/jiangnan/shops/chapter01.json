@@ -1,0 +1,18 @@
+[
+  {
+    "id": "shop.luwan.general",
+    "stock": [
+      { "item": "item.medicine.golden_sore" },
+      { "item": "item.medicine.qi_pill" },
+      { "item": "item.medicine.clear_heart" },
+      { "item": "item.misc.dry_rations" },
+      { "item": "item.weapon.iron_sword" },
+      { "item": "item.weapon.iron_bracers" },
+      { "item": "item.charm.warm_jade" },
+      { "item": "item.armor.leather_vest" },
+      { "item": "item.boots.cloth_shoes" },
+      { "item": "item.accessory.red_cord" }
+    ],
+    "buy_back_bp": 5000
+  }
+]

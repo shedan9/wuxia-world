@@ -43,6 +43,11 @@
         "kind": "inspect",
         "when": { "type": "quest_state_is", "id": "quest.side.01.missing_ferryman", "status": "active", "stage": "tags" },
         "dialogue": "dlg.ch01.side_ferry_tags"
+      },
+      {
+        "id": "general_store",
+        "kind": "shop",
+        "shop": "shop.luwan.general"
       }
     ]
   },

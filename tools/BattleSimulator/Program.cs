@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using WuxiaWorld.Application.Combat;
+using WuxiaWorld.Domain.Characters;
 using WuxiaWorld.Domain.Combat;
 using WuxiaWorld.Domain.Combat.Ai;
 using WuxiaWorld.Domain.Combat.Definitions;
@@ -9,12 +10,18 @@ using WuxiaWorld.Infrastructure.Content;
 using WuxiaWorld.Tools.BattleSimulator;
 
 // 用法：dotnet run --project tools/BattleSimulator -- [--runs 200] [--seed 1] [--scenario <id>] [--csv build/sim/result.csv]
+//        [--hero-level N] [--no-weapon] [--unallocated]
 // 每个场景 × 主角流派 × 策略跑 runs 个连续种子；陆青禾固定用贪心评分出招。输出胜率、平均轮数、剩余气血、内力消耗与用药。
+// 成长档（M2-05）：默认用 5 级预设；给了 --hero-level / --no-weapon / --unallocated 时，主角改为按游戏内成长规则换算的模板——
+// 指定等级、潜能按预设的分配比例分完（--unallocated 则一点不分）、穿开局衣物，并按需去掉流派兵器。
 var runs = 200;
 ulong seed0 = 1;
 string? only = null;
 string? csvPath = null;
 string? root = null;
+int? heroLevel = null;
+var noWeapon = false;
+var unallocated = false;
 for (var i = 0; i < args.Length; i++)
 {
     switch (args[i])
@@ -24,6 +31,9 @@ for (var i = 0; i < args.Length; i++)
         case "--scenario": only = args[++i]; break;
         case "--csv": csvPath = args[++i]; break;
         case "--content": root = args[++i]; break;
+        case "--hero-level": heroLevel = int.Parse(args[++i], CultureInfo.InvariantCulture); break;
+        case "--no-weapon": noWeapon = true; break;
+        case "--unallocated": unallocated = true; break;
         default: throw new ArgumentException($"未知参数 {args[i]}");
     }
 }
@@ -40,6 +50,17 @@ if (errors.Count > 0)
 var content = new CombatContent(bundle.Skills.Concat(Scenarios.Skills), bundle.Statuses.Concat(Scenarios.Statuses), bundle.Arts, bundle.Items,
     bundle.Combatants.Concat(Scenarios.Combatants), bundle.Encounters.Concat(Scenarios.Encounters), bundle.Counters);
 var engine = new BattleEngine(content);
+Func<CombatantTemplate, CombatantTemplate> heroOf = t => t;
+if (heroLevel is not null || noWeapon || unallocated)
+{
+    var world = WorldContentLoader.LoadDirectory(Path.Combine(root, "content"));
+    var progression = world.Progression!;
+    var worn = world.Items.Where(i => progression.StartingEquipment.Contains(i.Id)).Aggregate(StatBonus.None, (b, i) => b.Plus(i.Bonus));
+    var level = heroLevel ?? 5;
+    heroOf = preset => HeroVariant(preset, progression.BaseAttributes, level, worn, noWeapon, unallocated);
+    Console.WriteLine($"成长档：主角 {level} 级，{(unallocated ? "潜能未分配" : "潜能按预设比例分配")}，{(noWeapon ? "无流派兵器" : "带流派兵器")}，穿开局衣物");
+}
+
 var builds = new[] { "sword", "fist", "inner" };
 var csv = new StringBuilder("scenario,build,policy,runs,win_rate,avg_rounds,p90_rounds,avg_party_hp_pct,avg_inner_spent,avg_items,timeouts\n");
 
@@ -54,7 +75,7 @@ foreach (var scenario in Scenarios.All.Where(s => only is null || s.Id == only))
         foreach (var policyName in new[] { build, "greedy", "basic" })
         {
             var policy = Policies.ByName(policyName);
-            var stats = Run(engine, content, scenario, build, policy, runs, seed0);
+            var stats = Run(engine, content, scenario, build, policy, runs, seed0, heroOf);
             Console.WriteLine(string.Create(CultureInfo.InvariantCulture,
                 $"  {build,-7} {policyName,-7} {stats.WinRate,6:P0}  {stats.AvgRounds,6:F1}  {stats.P90Rounds,5}  {stats.AvgHpPct,7:P0}  {stats.AvgInner,8:F0}  {stats.AvgItems,4:F1}  {stats.Timeouts,4}"));
             csv.Append(CultureInfo.InvariantCulture,
@@ -72,7 +93,32 @@ if (csvPath is not null)
 
 return 0;
 
-static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario scenario, string build, IPolicy policy, int runs, ulong seed0)
+// 按游戏内成长规则换算主角：基础属性 + 指定等级的潜能（按预设的加点比例，最大余数法），开局衣物，可选去掉流派兵器。
+static CombatantTemplate HeroVariant(CombatantTemplate preset, Attributes baseline, int level, StatBonus worn, bool noWeapon, bool unallocated)
+{
+    int[] weights =
+    [
+        preset.Attributes.Physique - baseline.Physique, preset.Attributes.Strength - baseline.Strength, preset.Attributes.Root - baseline.Root,
+        preset.Attributes.Agility - baseline.Agility, preset.Attributes.Insight - baseline.Insight,
+    ];
+    var points = unallocated ? 0 : StatFormula.PotentialAt(level);
+    var sum = Math.Max(1, weights.Sum());
+    var give = weights.Select(w => points * w / sum).ToArray();
+    foreach (var i in Enumerable.Range(0, 5).OrderByDescending(i => points * weights[i] % sum).ThenBy(i => i).Take(points - give.Sum()))
+    {
+        give[i]++;
+    }
+
+    return preset with
+    {
+        Level = level,
+        Attributes = baseline.Plus(new Attributes(give[0], give[1], give[2], give[3], give[4])),
+        Equipment = (noWeapon ? StatBonus.None : preset.Equipment).Plus(worn),
+    };
+}
+
+static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario scenario, string build, IPolicy policy, int runs, ulong seed0,
+    Func<CombatantTemplate, CombatantTemplate> heroOf)
 {
     var greedy = Policies.ByName("greedy");
     int wins = 0, timeouts = 0;
@@ -86,7 +132,7 @@ static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario 
             Seed = seed0 + (ulong)r,
             Allies =
             [
-                new AllyEntry(content.Combatant($"combatant.hero.{build}"), "char.hero", new Position(0, 1)),
+                new AllyEntry(heroOf(content.Combatant($"combatant.hero.{build}")), "char.hero", new Position(0, 1)),
                 new AllyEntry(content.Combatant("combatant.lu_qinghe"), "char.lu_qinghe", new Position(1, 1)),
                 .. scenario.Guest ? [new AllyEntry(content.Combatant("combatant.placeholder.companion"), "char.guest", new Position(0, 2))] : Array.Empty<AllyEntry>(),
             ],

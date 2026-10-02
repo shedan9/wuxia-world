@@ -51,7 +51,8 @@ public sealed class PlaySession
             return null;
         }
 
-        var game = GameSession.NewGame(new WorldRules(world.ToContent()));
+        var rules = new WorldRules(world.ToContent());
+        var game = GameSession.NewGame(rules, new GrowthRules(rules, combat.ToContent()));
         return new PlaySession(game, world, combat, OpenStore());
     }
 
@@ -80,7 +81,7 @@ public sealed class PlaySession
             return null;
         }
 
-        var game = new GameSession(rules, save.World);
+        var game = new GameSession(rules, save.World, new GrowthRules(rules, combat.ToContent()));
         var list = new List<string>(read.Notes);
         if (read.FromBackup)
         {
@@ -95,6 +96,11 @@ public sealed class PlaySession
         if (game.RepairSpawn() is { } repaired)
         {
             list.Add(repaired);
+        }
+
+        if (game.UpgradeLegacy() is { } upgraded)
+        {
+            list.Add(upgraded);
         }
 
         notes = list;
@@ -192,7 +198,10 @@ public sealed class PlaySession
         "joined" => ("同行", $"{Name(n.Id)} 加入队伍"),
         "left" => ("同行", $"{Name(n.Id)} 离开队伍"),
         "skill" => ("武学", $"习得 {Combat.Name(n.Id)}"),
-        "experience" => ("修为", $"经验 +{n.Amount}"),
+        "experience" => ("成长", $"经验 +{n.Amount}"),
+        "cultivation" => ("成长", $"修为 +{n.Amount}"),
+        "level_up" => ("成长", $"升到第 {n.Amount} 级：得 {StatFormula.PotentialPerLevel} 点潜能（C 人物页分配）"),
+        "mastery" => ("武学", $"{Combat.Name(n.Id)} 熟练度提升"),
         "quest_started" => ("任务", $"开始：{Name(n.Id)}"),
         "quest_available" => ("任务", Text(n.Id + ".hint") ?? $"可接：{Name(n.Id)}"),
         "quest_completed" => ("任务", $"完成：{Name(n.Id)}"),

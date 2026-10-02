@@ -23,11 +23,23 @@ public static class DevCapture
     public static int Tab { get; private set; }
     public static string? Output { get; private set; }
 
+    /// <summary>
+    /// 截图前依次模拟的输入：鼠标左键点击（逻辑画布坐标，<c>--click=x,y;x,y</c>）与按键（<c>--keys=Escape,C</c>）。
+    /// 两个参数可各给多次，按命令行先后顺序执行，用于核对点击与按键交替的操作路径。
+    /// </summary>
+    private static readonly List<(Vector2? At, Key Key)> Steps = [];
+
     /// <summary>启动即开新游戏。</summary>
     public static bool NewGame { get; private set; }
 
     /// <summary>启动即读最近一份存档（同标题页“继续旅程”）。</summary>
     public static bool Continue { get; private set; }
+
+    /// <summary>每 3 秒打印各音频总线的峰值电平（开发用，核对声音确实在播放）。</summary>
+    public static bool AudioMeter { get; private set; }
+
+    /// <summary>自动走查改为真实行走：寻路走到目标、注入 E / Enter / 数字键，而不是瞬移与直接调用（见 ExplorationScreen.Walk）。</summary>
+    public static bool Walk { get; private set; }
 
     /// <summary>自动走查时先做支线（接委托、查船牌与潮痕、抢先救人）。</summary>
     public static bool Side { get; private set; }
@@ -84,11 +96,37 @@ public static class DevCapture
                         int.Parse(w, System.Globalization.CultureInfo.InvariantCulture),
                         int.Parse(h, System.Globalization.CultureInfo.InvariantCulture));
                     break;
+                case "--click":
+                    foreach (var pair in value.Split(';', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        var xy = pair.Split(',');
+                        Steps.Add((new Vector2(
+                            float.Parse(xy[0], System.Globalization.CultureInfo.InvariantCulture),
+                            float.Parse(xy[1], System.Globalization.CultureInfo.InvariantCulture)), Key.None));
+                    }
+
+                    break;
+                case "--keys":
+                    foreach (var name in value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        Steps.Add((null, Enum.Parse<Key>(name, ignoreCase: true)));
+                    }
+
+                    break;
+                case "--dev":
+                    AppHost.DevInfo = true;
+                    break;
                 case "--newgame":
                     NewGame = true;
                     break;
                 case "--continue":
                     Continue = true;
+                    break;
+                case "--audio-meter":
+                    AudioMeter = true;
+                    break;
+                case "--walk":
+                    Walk = true;
                     break;
                 case "--side":
                     Side = true;
@@ -146,20 +184,59 @@ public static class DevCapture
             await tree.ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
         }
 
+        await PressSteps(tree);
         var image = tree.Root.GetTexture().GetImage();
         var error = image.SavePng(Output);
         GD.Print(error == Error.Ok ? $"截图已保存：{Output}" : $"截图失败：{error}");
         tree.Quit(error == Error.Ok ? 0 : 1);
     }
 
+    /// <summary>
+    /// 按命令行顺序注入 <c>--click</c> 与 <c>--keys</c>：点击把逻辑画布坐标换算成窗口坐标，按键用 Godot 键名，
+    /// 都与真实输入走同一条路径，每步之后等 20 帧。
+    /// </summary>
+    private static async Task PressSteps(SceneTree tree)
+    {
+        foreach (var (at, key) in Steps)
+        {
+            if (at is { } point)
+            {
+                var screen = tree.Root.GetFinalTransform() * point;
+                foreach (var pressed in new[] { true, false })
+                {
+                    Input.ParseInputEvent(new InputEventMouseButton { ButtonIndex = MouseButton.Left, Pressed = pressed, Position = screen, GlobalPosition = screen });
+                }
+
+                GD.Print($"模拟点击 {point}");
+            }
+            else
+            {
+                foreach (var pressed in new[] { true, false })
+                {
+                    Input.ParseInputEvent(new InputEventKey { Keycode = key, PhysicalKeycode = key, Pressed = pressed });
+                }
+
+                GD.Print($"模拟按键 {key}");
+            }
+
+            for (var i = 0; i < 20; i++)
+            {
+                await tree.ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+            }
+        }
+    }
+
     /// <summary>自动走查结束：等画面落定后截图（若给了 --capture）并退出。</summary>
     public static async void FinishAutoplay(SceneTree tree, int exitCode)
     {
+        var start = Time.GetTicksMsec();
         for (var i = 0; i < _settleFrames; i++)
         {
             await tree.ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
         }
 
+        GD.Print($"走查结束后等待 {_settleFrames} 帧，用时 {(Time.GetTicksMsec() - start) / 1000.0:0.0} 秒");
+        await PressSteps(tree);
         if (Output is not null)
         {
             var error = tree.Root.GetTexture().GetImage().SavePng(Output);

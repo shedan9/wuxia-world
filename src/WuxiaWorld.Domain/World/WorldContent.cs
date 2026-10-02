@@ -1,6 +1,6 @@
 namespace WuxiaWorld.Domain.World;
 
-/// <summary>已校验的世界内容索引：地图、路线、地区事件、任务、对白、物品、人物与新游戏设置。</summary>
+/// <summary>已校验的世界内容索引：地图、路线、地区事件、任务、对白、物品、人物、店铺、成长设置与新游戏设置。</summary>
 public sealed class WorldContent
 {
     public WorldContent(
@@ -11,7 +11,9 @@ public sealed class WorldContent
         IEnumerable<DialogueDefinition> dialogues,
         IEnumerable<ItemDefinition> items,
         IEnumerable<CharacterDefinition> characters,
-        NewGameDefinition newGame)
+        NewGameDefinition newGame,
+        ProgressionDefinition? progression = null,
+        IEnumerable<ShopDefinition>? shops = null)
     {
         Maps = Index(maps, m => m.Id);
         Routes = Index(routes, r => r.Id);
@@ -21,6 +23,8 @@ public sealed class WorldContent
         Items = Index(items, i => i.Id);
         Characters = Index(characters, c => c.Id);
         NewGame = newGame;
+        Progression = progression ?? new ProgressionDefinition();
+        Shops = Index(shops ?? [], s => s.Id);
         EventsByMap = Events.Values.GroupBy(e => e.Map, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<StoryEventDefinition>)[.. g.OrderBy(e => e.Priority).ThenBy(e => e.Id, StringComparer.Ordinal)],
                 StringComparer.Ordinal);
@@ -34,6 +38,8 @@ public sealed class WorldContent
     public IReadOnlyDictionary<string, ItemDefinition> Items { get; }
     public IReadOnlyDictionary<string, CharacterDefinition> Characters { get; }
     public NewGameDefinition NewGame { get; }
+    public ProgressionDefinition Progression { get; }
+    public IReadOnlyDictionary<string, ShopDefinition> Shops { get; }
 
     /// <summary>地图 → 该图的地区事件，已按优先级与 ID 排好。</summary>
     public IReadOnlyDictionary<string, IReadOnlyList<StoryEventDefinition>> EventsByMap { get; }

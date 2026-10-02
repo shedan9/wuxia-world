@@ -42,6 +42,7 @@ public partial class DialoguePreview : Control
     public override void _Ready()
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        MouseFilter = MouseFilterEnum.Ignore;
         _lines = DialogueSamples.Load(DialogueSamples.Opening);
 
         AddChild(new Backdrop { Mood = 0.3f });
@@ -342,6 +343,8 @@ public partial class DialoguePreview : Control
         hints.Modulate = new Color(1, 1, 1, 0.85f);
         root.AddChild(Ui.Place(hints, 1, 1, -900, -38, -150, -6));
         hints.Alignment = BoxContainer.AlignmentMode.End;
+        // 对话框底板（PanelContainer）默认拦鼠标，点在框内推进不了台词；框内没有按钮，整块放行。
+        Ui.IgnoreMouse(root);
         return root;
     }
 

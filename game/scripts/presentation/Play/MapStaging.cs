@@ -34,6 +34,18 @@ public sealed record MapStage(StageLayout Layout, string Region, string Caption)
 
     /// <summary>布景本身已画出的人物（客栈掌柜），作为事件参与者时不再另画一个。</summary>
     public IReadOnlySet<string> Residents { get; init; } = new HashSet<string>();
+
+    /// <summary>剧情人物在本图的固定站位（人物 ID → 位置、朝向）；未列出的围着事件锚点站。用于避开屏风、柱子等遮挡。</summary>
+    public IReadOnlyDictionary<string, (Vector2 At, int Facing)> Stand { get; init; } = new Dictionary<string, (Vector2, int)>();
+
+    /// <summary>借用山路布景时的改装（河滩、旧渡）。</summary>
+    public WildVariant Wild { get; init; }
+
+    /// <summary>本图的配乐（只配主要场景，次要场景为 null、只有环境声）。</summary>
+    public string? Music { get; init; }
+
+    /// <summary>本图的环境声层。</summary>
+    public string[] Ambience { get; init; } = [];
 }
 
 /// <summary>
@@ -56,6 +68,8 @@ public static class MapStaging
     {
         ["map.jiangnan.luwan_shore"] = new(StageLayout.Wild, "芦湾", "芦湾河滩暂借山路布景的溪涧谷底（专属河滩布景属 M3-01）；人物为 AI 全身样稿，无样稿者为占位剪影")
         {
+            Wild = WildVariant.Shore,
+            Ambience = ["amb.river", "amb.reeds"],
             Spawns = new Dictionary<string, SpawnPoint>
             {
                 ["wake"] = new(W(1000, 860), FrameLeft),
@@ -71,6 +85,8 @@ public static class MapStaging
         },
         ["map.jiangnan.luwan_street"] = new(StageLayout.Town, "芦湾", "芦湾街：M0 已验收的河街布景；人物为 AI 全身样稿")
         {
+            Music = "bgm.town.luwan",
+            Ambience = ["amb.town"],
             Spawns = new Dictionary<string, SpawnPoint>
             {
                 ["south_gate"] = new(new Vector2(300, 1600), North),
@@ -84,10 +100,12 @@ public static class MapStaging
                 ["route:route.jiangnan.luwan_to_old_ferry"] = new(1390, 1905),
                 ["interact:ferry_notice"] = new(760, 1600),
                 ["interact:ferry_tags"] = new(1000, 1450),
+                ["interact:general_store"] = new(2560, 1620), // M0 布景里的杂货摊
             },
         },
         ["map.jiangnan.inn"] = new(StageLayout.Inn, "芦湾", "江南客栈：M0 已验收的大堂布景；令狐冲、黄蓉、萧峰与杜三篙暂为占位剪影（AI 形象待人物锚点核验后制作）")
         {
+            Ambience = ["amb.inn"],
             Spawns = new Dictionary<string, SpawnPoint>
             {
                 ["door"] = new(InnSamples.FrontDoor, North),
@@ -101,9 +119,19 @@ public static class MapStaging
                 ["anchor:door"] = new(630, 640),
             },
             Residents = new HashSet<string> { "char.qiao_hongxiao" },
+
+            // 三位侠客站在屏风右侧的空地上，不被屏风挡住；令狐冲靠柱、黄蓉居中、萧峰在外侧。
+            Stand = new Dictionary<string, (Vector2, int)>
+            {
+                ["char.linghu_chong"] = (new Vector2(995, 850), -1),
+                ["char.huang_rong"] = (new Vector2(920, 672), -1),
+                ["char.xiao_feng"] = (new Vector2(1110, 614), -1),
+            },
         },
         ["map.jiangnan.old_ferry"] = new(StageLayout.Wild, "芦湾", "芦湾旧渡暂借山路布景的溪涧谷底，木桥北岸代水门（旧渡与水门布景属 M3-01）；人物为 AI 全身样稿，无样稿者为占位剪影")
         {
+            Wild = WildVariant.OldFerry,
+            Ambience = ["amb.river", "amb.reeds"],
             Spawns = new Dictionary<string, SpawnPoint>
             {
                 ["landing"] = new(W(560, 860), FrameLeft),

@@ -1,0 +1,47 @@
+{
+  "hero": "char.hero",
+  "base_attributes": { "physique": 5, "strength": 5, "root": 5, "agility": 5, "insight": 5 },
+  "art_id": "figure.hero",
+  "experience": [20, 50, 90, 140, 200, 280, 380],
+  "mastery_costs": [30, 60, 100, 150],
+  "mastery_power_bp": 500,
+  "starting_equipment": ["item.armor.cloth_jacket"],
+  "styles": [
+    {
+      "id": "sword",
+      "skills": ["skill.sword.probe", "skill.sword.break_guard", "skill.sword.chain_thrust", "skill.sword.pierce"],
+      "arts": ["art.inner.clear_mind", "art.qinggong.reed_step"],
+      "recommended": { "physique": 0, "strength": 6, "root": 0, "agility": 2, "insight": 4 }
+    },
+    {
+      "id": "fist",
+      "skills": ["skill.fist.shield_palm", "skill.fist.counter_stance", "skill.fist.heavy_palm", "skill.fist.sweep"],
+      "arts": ["art.inner.iron_shirt", "art.talent.parry"],
+      "recommended": { "physique": 6, "strength": 4, "root": 2, "agility": 0, "insight": 0 }
+    },
+    {
+      "id": "inner",
+      "skills": ["skill.inner.qi_bolt", "skill.inner.mend", "skill.inner.pressure_point", "skill.inner.surge"],
+      "arts": ["art.inner.calm_breath", "art.qinggong.reed_step"],
+      "recommended": { "physique": 2, "strength": 0, "root": 8, "agility": 0, "insight": 2 }
+    }
+  ],
+  "catch_up": [
+    { "when": { "type": "fact_equals", "id": "fact.ch01.council_done", "value": "true" }, "experience": 50 },
+    {
+      "when": {
+        "type": "any",
+        "of": [
+          { "type": "skill_learned", "id": "skill.sword.break_guard" },
+          { "type": "skill_learned", "id": "skill.inner.pressure_point" },
+          { "type": "skill_learned", "id": "skill.fist.shield_palm" }
+        ]
+      },
+      "experience": 140,
+      "cultivation": 40
+    },
+    { "when": { "type": "fact_equals", "id": "fact.ch01.escort_beaten", "value": "true" }, "experience": 200, "cultivation": 70 },
+    { "when": { "type": "clue_known", "id": "clue.ch01.relay_signature" }, "experience": 340, "cultivation": 130 },
+    { "when": { "type": "world_gate_reached", "id": "gate.part1.ch01_done" }, "experience": 400, "cultivation": 130 }
+  ]
+}

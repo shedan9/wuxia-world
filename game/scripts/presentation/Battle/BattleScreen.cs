@@ -277,6 +277,10 @@ public sealed partial class BattleScreen : Control
         CloseOverlay();
         _seed = setup.Seed;
         _session = new BattleSession(_engine, setup, _bundle.ContentVersion);
+        AppHost.Instance.Sound.PlayMusic(setup.EncounterId.EndsWith("sluice", StringComparison.Ordinal) ? "bgm.boss.old_ferry" : "bgm.battle.common", 0.8f);
+        // 第一章两场战斗都在河边（押运队登岸、旧渡水门）：配乐底下留一层河水声；开场拔刃一响。
+        AppHost.Instance.Sound.PlayAmbience("amb.river");
+        AppHost.Instance.Sound.Play("battle.draw", -4);
         ResetPlayback();
         _popupUnit = null;
         _popup.Visible = false;
@@ -333,14 +337,6 @@ public sealed partial class BattleScreen : Control
                 GetViewport().SetInputAsHandled();
             }
 
-            return;
-        }
-
-        if (_story is not null && key.Keycode == Key.Escape)
-        {
-            // 剧情战中不回标题：战果须经结算提交，半途离开会让世界停在待开战斗上。
-            Toast("剧情战须分出结果；可按 X 撤退（剧情战不可撤退时请力战到底）。");
-            GetViewport().SetInputAsHandled();
             return;
         }
 

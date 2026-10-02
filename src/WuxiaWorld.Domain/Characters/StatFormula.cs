@@ -6,8 +6,11 @@ namespace WuxiaWorld.Domain.Characters;
 /// </summary>
 public static class StatFormula
 {
-    /// <summary>规则版本：公式或常数一改即递增，并写入战斗记录与存档（架构文档 12.3）。2：同速先比身法；新增“穿透一列”选目标规则。</summary>
-    public const int RulesetVersion = 2;
+    /// <summary>
+    /// 规则版本：公式或常数一改即递增，并写入战斗记录与存档（架构文档 12.3）。2：同速先比身法；新增“穿透一列”选目标规则。
+    /// 3：武学熟练度按阶提高主动招式的效果强度（模板 <c>SkillPowerBp</c>）。
+    /// </summary>
+    public const int RulesetVersion = 3;
 
     public const int MaxLevel = 8;
 

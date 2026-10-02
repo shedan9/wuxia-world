@@ -6,8 +6,17 @@
     {
       "id": "dlg.ch01.opening_luwan",
       "status": "draft",
-      "entry": "cue.001",
+      "entry": "cue.000",
       "nodes": [
+        {
+          "id": "cue.000",
+          "type": "stage",
+          "kind": "title",
+          "direction": "开篇标题卡：黑场中浮现章名，随后淡入雨后河滩。",
+          "caption": "第一章　江南会客",
+          "caption_id": "ch01.opening_luwan.caption.chapter_start",
+          "next": "cue.001"
+        },
         {
           "id": "cue.001",
           "type": "stage",
@@ -677,6 +686,26 @@
                   "id": "skill.sword.break_guard"
                 },
                 {
+                  "type": "learn_skill",
+                  "id": "skill.sword.probe"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.sword.chain_thrust"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.sword.pierce"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "art.inner.clear_mind"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "art.qinggong.reed_step"
+                },
+                {
                   "type": "change_relationship",
                   "id": "char.linghu_chong",
                   "axis": "trust",
@@ -704,6 +733,26 @@
                   "id": "skill.inner.pressure_point"
                 },
                 {
+                  "type": "learn_skill",
+                  "id": "skill.inner.qi_bolt"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.inner.mend"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.inner.surge"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "art.inner.calm_breath"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "art.qinggong.reed_step"
+                },
+                {
                   "type": "change_relationship",
                   "id": "char.huang_rong",
                   "axis": "trust",
@@ -729,6 +778,26 @@
                 {
                   "type": "learn_skill",
                   "id": "skill.fist.shield_palm"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.fist.counter_stance"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.fist.heavy_palm"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "skill.fist.sweep"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "art.inner.iron_shirt"
+                },
+                {
+                  "type": "learn_skill",
+                  "id": "art.talent.parry"
                 },
                 {
                   "type": "change_relationship",

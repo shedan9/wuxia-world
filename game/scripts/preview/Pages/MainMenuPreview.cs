@@ -33,6 +33,11 @@ public partial class MainMenuPreview : Control
     public override void _Ready()
     {
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+
+        // 回到标题即结束当前这一局（未存的进度由菜单的确认提示过）；场景目录与展示页不属于游戏进行中。
+        AppHost.Instance.Play = null;
+        AppHost.Instance.Sound.PlayMusic("bgm.town.luwan");
+        AppHost.Instance.Sound.PlayAmbience();
         AddChild(Backdrop.Clear());
         AddChild(BuildPortrait());
         AddChild(BuildFooterShade());
@@ -216,7 +221,7 @@ public partial class MainMenuPreview : Control
         var start = Item(menu, "新的旅程", NewGame);
         Item(menu, "读取存档", OpenSaves);
         Item(menu, "场景目录", () => router.GoTo(ScenePaths.PreviewCatalog));
-        Item(menu, "江湖设置", () => router.GoTo("res://scenes/preview/Settings.tscn"));
+        Item(menu, "江湖设置", OpenSettings);
         Item(menu, "退出游戏", () => GetTree().Quit());
         if (latest is null)
         {
@@ -374,6 +379,30 @@ public partial class MainMenuPreview : Control
         FadeTo(_footer, 0);
     }
 
+    /// <summary>江湖设置：与游戏菜单共用的设置面板，叠在标题页中央；Esc 或“关闭”收起。</summary>
+    private void OpenSettings()
+    {
+        if (_saves is not null)
+        {
+            return;
+        }
+
+        var layer = new Control();
+        layer.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        var veil = new ColorRect { Color = UiPalette.Abyss with { A = 0.6f } };
+        veil.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        layer.AddChild(veil);
+        Motion.FadeIn(veil, Motion.Normal);
+        var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
+        panel.AddChild(SettingsPanel.Build(CloseSaves));
+        layer.AddChild(Ui.Place(panel, 0.5f, 0.5f, -560, -480, 560, 480));
+        Motion.Enter(panel, 0, Motion.Normal, rise: 20);
+        AddChild(layer);
+        _saves = layer;
+        _selected = null;
+        FadeTo(_portrait, 0.3f);
+    }
+
     private void CloseSaves()
     {
         if (_saves is not { } layer)
@@ -478,7 +507,7 @@ public partial class MainMenuPreview : Control
 
     private static Control BuildFooter()
     {
-        var note = Ui.Text("M2 开发版　·　第一章可从开场玩到章末；部分布景、人物形象与动作仍为占位", UiTheme.DarkMutedLabel, 18);
+        var note = Ui.Text("开发试玩版　·　第一篇第一章“江南会客”", UiTheme.DarkMutedLabel, 18);
         var version = Ui.Text("v0.0.2-m2", UiTheme.GiltLabel, 18);
         var bar = Ui.Row(UiPalette.SpaceXl, note, Ui.Spacer(),
             Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "确认"), ("Esc", "返回")), version);

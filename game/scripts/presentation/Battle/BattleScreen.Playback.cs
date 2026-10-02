@@ -2,6 +2,7 @@ using Godot;
 using WuxiaWorld.Domain.Combat;
 using Side = WuxiaWorld.Domain.Combat.Side;
 using WuxiaWorld.Domain.Combat.Definitions;
+using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Presentation.Battle;
@@ -85,7 +86,7 @@ public sealed partial class BattleScreen
             if (duration > 0 && !_skipping && Motion.Enabled)
             {
                 _playing = true;
-                GetTree().CreateTimer(duration / _speed).Timeout += () => _playing = false;
+                GetTree().CreateTimer(duration / _speed, processAlways: false).Timeout += () => _playing = false;
             }
         }
 
@@ -144,6 +145,11 @@ public sealed partial class BattleScreen
     /// <summary>播放一条事件并返回它占用的时长（秒，1 倍速）。</summary>
     private float Play(BattleEvent e, bool animate)
     {
+        if (animate)
+        {
+            Sound(e);
+        }
+
         switch (e)
         {
             case RoundStarted r:
@@ -556,5 +562,47 @@ public sealed partial class BattleScreen
         tween.TweenProperty(_banner, "modulate", Colors.White, 0.15f / _speed);
         tween.TweenInterval(0.55f / _speed);
         tween.TweenProperty(_banner, "modulate", Colors.Transparent, 0.3f / _speed);
+    }
+
+    private string? _lastSkill;
+
+    /// <summary>
+    /// 战斗音效（跳过与快进时不响）：出招破空、按兵刃 / 拳掌分出劈砍与钝击、招架与破架的金铁声、疗伤与增益、
+    /// 首领蓄力、倒地。兵刃类型按最近一次出招的招式 ID 判断。
+    /// </summary>
+    private void Sound(BattleEvent e)
+    {
+        var sound = AppHost.Instance.Sound;
+        switch (e)
+        {
+            case SkillUsed u:
+                _lastSkill = u.SkillId;
+                var hostile = u.Targets.Count > 0 && _views.TryGetValue(u.Actor, out var a) && _views.TryGetValue(u.Targets[0], out var t) && a.Side != t.Side;
+                sound.Play(hostile ? "battle.swing" : "battle.buff", hostile ? -5 : -8, 0.08f);
+                break;
+            case Damaged d:
+                var blade = _lastSkill is { } id && (id.Contains("sword", StringComparison.Ordinal) || id.Contains("blade", StringComparison.Ordinal)
+                    || id.Contains("hook", StringComparison.Ordinal) || id.Contains("saber", StringComparison.Ordinal) || id.Contains("spear", StringComparison.Ordinal));
+                sound.Play(blade ? "battle.hit.blade" : "battle.hit.blunt", d.Crit ? 0 : -3, 0.06f);
+                break;
+            case StanceBroken or Parried:
+                sound.Play("battle.block", -3, 0.05f);
+                break;
+            case GuardIntercepted:
+                sound.Play("battle.block", -6, 0.05f);
+                break;
+            case Healed:
+                sound.Play("battle.heal", -5);
+                break;
+            case Meditated or Defended:
+                sound.Play("battle.buff", -10, 0.05f);
+                break;
+            case ChargeStarted:
+                sound.Play("battle.charge", -3);
+                break;
+            case UnitDowned:
+                sound.Play("battle.down", -2, 0.05f);
+                break;
+        }
     }
 }

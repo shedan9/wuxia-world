@@ -26,7 +26,7 @@ public sealed partial class BattleEngine
 
                 SetCooldown(ctx, actor, skill);
                 var targets = Targeting.Resolve(s, actor, skill.TargetRule, use.Target) ?? [];
-                ResolveSkill(ctx, actor, skill, targets, isReaction: false, powerBp: Bp.One);
+                ResolveSkill(ctx, actor, skill, targets, isReaction: false, powerBp: actor.Template.PowerOf(skill.Id));
                 return;
             }
 
@@ -145,7 +145,7 @@ public sealed partial class BattleEngine
             targets = fallback.Count > 0 ? Targeting.Resolve(ctx.State, actor, skill.TargetRule, fallback[0].Id) : [];
         }
 
-        ResolveSkill(ctx, actor, skill, targets ?? [], isReaction: false, powerBp: Bp.One);
+        ResolveSkill(ctx, actor, skill, targets ?? [], isReaction: false, powerBp: actor.Template.PowerOf(skill.Id));
     }
 
     /// <summary>

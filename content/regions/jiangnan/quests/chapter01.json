@@ -10,6 +10,7 @@
       {
         "id": "wake",
         "next": "to_inn",
+        "on_complete": [{ "type": "grant_experience", "amount": 20 }],
         "objectives": [
           { "id": "meet_lu", "kind": "talk", "map": "map.jiangnan.luwan_shore" },
           {
@@ -30,11 +31,16 @@
       {
         "id": "council",
         "next": "training",
+        "on_complete": [{ "type": "grant_experience", "amount": 30 }],
         "objectives": [{ "id": "hear_letters", "kind": "talk", "map": "map.jiangnan.inn" }]
       },
       {
         "id": "training",
         "next": "companion",
+        "on_complete": [
+          { "type": "grant_experience", "amount": 90 },
+          { "type": "grant_cultivation", "amount": 40 }
+        ],
         "objectives": [
           {
             "id": "choose_mentor",
@@ -163,6 +169,8 @@
         "id": "thanks_full",
         "on_complete": [
           { "type": "change_silver", "amount": 30 },
+          { "type": "grant_experience", "amount": 40 },
+          { "type": "grant_cultivation", "amount": 30 },
           { "type": "change_relationship", "id": "char.lu_qinghe", "axis": "trust", "amount": 10 },
           { "type": "set_fact", "id": "fact.ch01.side01_result", "value": "full" }
         ]
@@ -171,6 +179,8 @@
         "id": "thanks_late",
         "on_complete": [
           { "type": "change_silver", "amount": 10 },
+          { "type": "grant_experience", "amount": 20 },
+          { "type": "grant_cultivation", "amount": 10 },
           { "type": "change_relationship", "id": "char.lu_qinghe", "axis": "trust", "amount": 3 },
           { "type": "set_fact", "id": "fact.ch01.side01_result", "value": "late" }
         ]

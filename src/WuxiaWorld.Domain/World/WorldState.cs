@@ -75,6 +75,95 @@ public sealed class PendingBattle
 }
 
 /// <summary>
+/// 可养成人物的成长与装配（架构文档 8.1–8.2、8.4）：已分配的潜能、装备槽、战斗装配与武学熟练度。
+/// 派生战斗属性不存档，开战时由等级、属性、装备与装配重新推导（架构文档 11）。
+/// 装备没有随机词条与耐久，按物品定义计数：装上时从行囊移入槽位，卸下时放回行囊，任何时刻“行囊 + 槽位”即拥有总数。
+/// </summary>
+public sealed class CharacterBuild
+{
+    // 已分配的潜能点（加在基础属性之上）。
+    public int Physique { get; set; }
+    public int Strength { get; set; }
+    public int Root { get; set; }
+    public int Agility { get; set; }
+    public int Insight { get; set; }
+
+    /// <summary>装备槽 → 物品 ID。</summary>
+    public SortedDictionary<EquipSlot, string> Equipped { get; init; } = [];
+
+    /// <summary>装配的主动招式，按出手栏次序；最多 6 个。</summary>
+    public List<string> Skills { get; init; } = [];
+
+    public string? MainArt { get; set; }
+    public string? SupportArt { get; set; }
+    public string? Qinggong { get; set; }
+    public List<string> Talents { get; init; } = [];
+
+    /// <summary>招式 → 熟练度阶数（未记录即第 1 阶）。</summary>
+    public SortedDictionary<string, int> Mastery { get; init; } = new(StringComparer.Ordinal);
+
+    public Characters.Attributes Allocated => new(Physique, Strength, Root, Agility, Insight);
+
+    public int Spent => Allocated.Total;
+
+    public int MasteryOf(string skillId) => Mastery.TryGetValue(skillId, out var t) ? t : 1;
+
+    public void SetAllocated(Characters.Attributes a)
+    {
+        (Physique, Strength, Root, Agility, Insight) = (a.Physique, a.Strength, a.Root, a.Agility, a.Insight);
+    }
+
+    public CharacterBuild Clone()
+    {
+        var c = new CharacterBuild
+        {
+            Physique = Physique, Strength = Strength, Root = Root, Agility = Agility, Insight = Insight,
+            MainArt = MainArt, SupportArt = SupportArt, Qinggong = Qinggong,
+            Skills = [.. Skills], Talents = [.. Talents],
+        };
+        foreach (var (k, v) in Equipped)
+        {
+            c.Equipped[k] = v;
+        }
+
+        foreach (var (k, v) in Mastery)
+        {
+            c.Mastery[k] = v;
+        }
+
+        return c;
+    }
+
+    internal void AddTo(StateHasher h)
+    {
+        h.Add(Physique).Add(Strength).Add(Root).Add(Agility).Add(Insight).Add(MainArt).Add(SupportArt).Add(Qinggong);
+        h.Add("equipped");
+        foreach (var (k, v) in Equipped)
+        {
+            h.Add((int)k).Add(v);
+        }
+
+        h.Add("skills");
+        foreach (var v in Skills)
+        {
+            h.Add(v);
+        }
+
+        h.Add("talents");
+        foreach (var v in Talents)
+        {
+            h.Add(v);
+        }
+
+        h.Add("mastery");
+        foreach (var (k, v) in Mastery)
+        {
+            h.Add(k).Add(v);
+        }
+    }
+}
+
+/// <summary>
 /// 统一世界的完整可存档状态（架构文档 9.2 <c>WorldState</c>、11）。领域规则只改这一份数据；
 /// 应用层在副本上执行事务，成功后整体替换，失败则丢弃副本。集合一律按序数排序，哈希与存档次序稳定。
 /// </summary>
@@ -120,13 +209,20 @@ public sealed class WorldState
 
     public int Silver { get; set; }
 
-    /// <summary>可堆叠物品数量（定义 ID → 数量）。装备实例在 M2-05 的物品模块补上。</summary>
+    /// <summary>行囊里的物品数量（定义 ID → 数量）；已装上的装备不在这里，见 <see cref="Builds"/>。</summary>
     public SortedDictionary<string, int> Items { get; init; } = new(StringComparer.Ordinal);
 
-    /// <summary>主角已学武学；成长与装配在 M2-05 接入。</summary>
+    /// <summary>主角已学武学：招式（<c>skill.*</c>）与心法、轻功、天赋（<c>art.*</c>）。</summary>
     public SortedSet<string> Skills { get; init; } = new(StringComparer.Ordinal);
 
+    /// <summary>累计经验，不随升级清零；等级由成长表换算。</summary>
     public int Experience { get; set; }
+
+    /// <summary>修为：用于提升武学熟练度，与经验分开累计（架构文档 8.2）。</summary>
+    public int Cultivation { get; set; }
+
+    /// <summary>可养成人物的成长与装配（人物 ID → 构成）。</summary>
+    public SortedDictionary<string, CharacterBuild> Builds { get; init; } = new(StringComparer.Ordinal);
 
     /// <summary>地图差异：已消耗的一次性交互物，键为 <c>map_id/interactable_id</c>（架构文档 6.4）。</summary>
     public SortedSet<string> MapDeltas { get; init; } = new(StringComparer.Ordinal);
@@ -172,7 +268,7 @@ public sealed class WorldState
         var c = new WorldState
         {
             WorldId = WorldId, ArcId = ArcId, ChapterId = ChapterId, MapId = MapId, SpawnId = SpawnId, Clock = Clock,
-            Revision = Revision, Silver = Silver, Experience = Experience, RngState = RngState, RngIncrement = RngIncrement,
+            Revision = Revision, Silver = Silver, Experience = Experience, Cultivation = Cultivation, RngState = RngState, RngIncrement = RngIncrement,
             Battle = Battle?.Clone(), QueuedEvent = QueuedEvent,
             Party = [.. Party],
         };
@@ -205,6 +301,11 @@ public sealed class WorldState
         foreach (var (k, v) in Relationships)
         {
             c.Relationships[k] = v.Clone();
+        }
+
+        foreach (var (k, v) in Builds)
+        {
+            c.Builds[k] = v.Clone();
         }
 
         return c;
@@ -262,6 +363,13 @@ public sealed class WorldState
         {
             h.Add(k).Add(r.Affection).Add(r.Trust);
             Set("commitments", r.Commitments);
+        }
+
+        h.Add("builds").Add(Cultivation);
+        foreach (var (k, build) in Builds)
+        {
+            h.Add(k);
+            build.AddTo(h);
         }
 
         h.Add(QueuedEvent).Add("battle");

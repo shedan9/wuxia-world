@@ -111,14 +111,14 @@ public sealed class SaveStoreTests : IDisposable
     public void Newer_schema_is_refused_and_older_schema_is_migrated_with_a_backup()
     {
         var w = RichWorld();
-        var newer = new FileSaveStore(_dir, schemaVersion: 2, migrations: [new RenameFactMigration()]);
+        const int current = FileSaveStore.CurrentSchemaVersion;
+        var newer = new FileSaveStore(_dir, schemaVersion: current + 1, migrations: [.. FileSaveStore.Migrations, new RenameFactMigration()]);
         newer.Write(SaveSlot.Manual(3), Game(w));
-        var current = new FileSaveStore(_dir);
-        var refused = current.Read(SaveSlot.Manual(3));
+        var refused = new FileSaveStore(_dir).Read(SaveSlot.Manual(3));
         Assert.False(refused.Ok);
         Assert.Contains("更新的版本", refused.Error);
 
-        // 迁移样本：版本 1 的存档在“版本 2”程序里读取，事实键改名。
+        // 迁移样本：当前版本的存档在“下一版”程序里读取，事实键改名。
         var old = new FileSaveStore(_dir);
         var oldWorld = w.Clone();
         oldWorld.Facts["fact.test.old_name"] = "kept";
@@ -128,9 +128,9 @@ public sealed class SaveStoreTests : IDisposable
         Assert.True(read.Migrated);
         Assert.Equal("kept", read.Game!.World.Facts["fact.test.new_name"]);
         Assert.False(read.Game.World.Facts.ContainsKey("fact.test.old_name"));
-        Assert.True(File.Exists(newer.PathOf(SaveSlot.Manual(4)) + ".v1.bak"));
+        Assert.True(File.Exists(newer.PathOf(SaveSlot.Manual(4)) + $".v{current}.bak"));
 
-        var missing = new FileSaveStore(_dir, schemaVersion: 3, migrations: [new RenameFactMigration()]);
+        var missing = new FileSaveStore(_dir, schemaVersion: current + 2, migrations: [.. FileSaveStore.Migrations, new RenameFactMigration()]);
         Assert.Contains("迁移", missing.Read(SaveSlot.Manual(4)).Error);
     }
 
@@ -167,7 +167,7 @@ public sealed class SaveStoreTests : IDisposable
 
     private sealed class RenameFactMigration : ISaveMigration
     {
-        public int From => 1;
+        public int From => FileSaveStore.CurrentSchemaVersion;
 
         public void Migrate(JsonObject payload)
         {

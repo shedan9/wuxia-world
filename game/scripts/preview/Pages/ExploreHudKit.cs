@@ -22,8 +22,8 @@ public static class ExploreHudKit
         return Ui.Place(panel, 0, 0, 40, 32, 480, 180);
     }
 
-    /// <summary>右上：泥金卷云角框小地图，下方地区名与 M 大地图。</summary>
-    public static Control MiniMapFrame(Control map, string region)
+    /// <summary>右上：泥金卷云角框小地图，下方地区名与 M 大地图（<paramref name="mapKey"/> 为 false 时不写按键：游戏内大地图尚未接入，不留按了没反应的提示）。</summary>
+    public static Control MiniMapFrame(Control map, string region, bool mapKey = true)
     {
         map.CustomMinimumSize = new Vector2(280, 280);
         var frame = new PanelContainer();
@@ -33,7 +33,9 @@ public static class ExploreHudKit
             Grain = Colors.White with { A = 0.04f }, Border = UiPalette.Gilt with { A = 0.6f }, BorderWidth = 1.4f, Brush = true,
             Corners = CornerStyle.Cloud, CornerSize = 34, CornerWidth = 2,
         }.Margins(8, 8));
-        var caption = Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint("M", "大地图"));
+        var caption = mapKey
+            ? Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint("M", "大地图"))
+            : Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18));
         frame.AddChild(Ui.Column(UiPalette.SpaceS, map, caption));
         return Ui.Place(frame, 1, 0, -336, 32, -40, 380);
     }
@@ -170,14 +172,45 @@ public partial class InteractPrompt : PanelContainer
     public override void _Ready() => Motion.Pulse(this, 0.75f, 2.2f);
 }
 
-/// <summary>上中通知：朱砂竖笔 + 类别、内容、去处；最多 3 条，新条目上浮淡入。</summary>
+/// <summary>上中通知：朱砂竖笔 + 类别、内容、去处；最多 3 条，新条目上浮淡入，停留 <see cref="Hold"/> 秒后淡出移除。</summary>
 public partial class ToastColumn : VBoxContainer
 {
+    /// <summary>每条通知停留的秒数（2026-10-02 用户要求通知自动消失）。</summary>
+    public const float Hold = 4.5f;
+
     public ToastColumn()
     {
         AddThemeConstantOverride("separation", UiPalette.SpaceS);
         Alignment = AlignmentMode.Begin;
         MouseFilter = MouseFilterEnum.Ignore;
+    }
+
+    private readonly Dictionary<Node, Tween> _expiry = [];
+    private bool _paused;
+
+    /// <summary>
+    /// 暂停通知：隐去整列并停住各条的计时（对话、菜单打开时），恢复后从停住处继续计时，
+    /// 免得进图提示在对话期间被压在立绘后面、或在玩家看见前就已过期。
+    /// </summary>
+    public bool Paused
+    {
+        get => _paused;
+        set
+        {
+            _paused = value;
+            Visible = !value;
+            foreach (var tween in _expiry.Values)
+            {
+                if (value)
+                {
+                    tween.Pause();
+                }
+                else
+                {
+                    tween.Play();
+                }
+            }
+        }
     }
 
     public static ToastColumn Placed(Control parent)
@@ -199,6 +232,23 @@ public partial class ToastColumn : VBoxContainer
             Ui.Spacer(), Ui.Text(where, UiTheme.DarkMutedLabel, 16)));
         AddChild(toast);
         Motion.Enter(toast, 0, Motion.Normal, rise: -12);
+
+        // 停留后淡出移除；同一批的几条依次错开一点，不一齐消失。
+        var expire = toast.CreateTween();
+        expire.TweenInterval(Hold + GetChildCount() * 0.25f);
+        if (Motion.Enabled)
+        {
+            expire.TweenProperty(toast, "modulate:a", 0f, Motion.Normal);
+        }
+
+        expire.TweenCallback(Callable.From(toast.QueueFree));
+        if (_paused)
+        {
+            expire.Pause();
+        }
+
+        _expiry[toast] = expire;
+        toast.TreeExiting += () => _expiry.Remove(toast);
         while (GetChildCount() > 3)
         {
             var old = GetChild(0);

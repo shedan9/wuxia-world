@@ -17,6 +17,12 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// </summary>
 public partial class ExploreWildPreview : ExploreStage
 {
+    /// <summary>
+    /// 游戏借景的改装（M2）：<see cref="WildVariant.None"/> 为 M0 山路原样；河滩与旧渡去掉山门、茶亭、路碑与木牌，
+    /// 河滩连木桥也去掉（剧情里芦湾从来只有渡船），并加渡船、刻痕石、锁船与水门等道具，限制可走范围。
+    /// </summary>
+    public WildVariant Variant { get; init; }
+
     private WildBackdrop _backdrop = null!;
     private WildMist _mist = null!;
 
@@ -34,6 +40,8 @@ public partial class ExploreWildPreview : ExploreStage
         [("到东岔药庐问明缺哪些药", StageState.Current)],
         null, null);
 
+    protected override string StepSurface => "dirt";
+
     protected override Rect2 Bounds
     {
         get
@@ -45,7 +53,7 @@ public partial class ExploreWildPreview : ExploreStage
     }
 
     /// <summary>画面水平 0–3600；上到远山山顶、下到谷底前沿的前景树。</summary>
-    protected override Rect2? CameraArea => new(0, -1640, 3600, 2220);
+    protected override Rect2? CameraArea => Variant == WildVariant.None ? new(0, -1640, 3600, 2220) : new(0, -700, 3600, 1280);
 
     protected override IReadOnlyList<TownInteraction> Interactions => WildSamples.Interactions;
 
@@ -85,7 +93,11 @@ public partial class ExploreWildPreview : ExploreStage
         GroundLayer.AddChild(new WildShore());
         Path(WildSamples.PathSouth, WildSamples.Z0, 1);
         Path(WildSamples.PathNorth, WildSamples.Z0, 2);
-        GroundLayer.AddChild(new WildBridgeNode());
+        if (Variant != WildVariant.Shore)
+        {
+            GroundLayer.AddChild(new WildBridgeNode());
+        }
+
 
         var s1 = WildSamples.Steps1;
         GroundLayer.AddChild(new WildWall { Edge = WildSamples.Edge1, Z0 = WildSamples.Z0, Z1 = WildSamples.Z1, Gaps = [(s1.A0, s1.A1)], Seed = 11 });
@@ -107,10 +119,17 @@ public partial class ExploreWildPreview : ExploreStage
         foreach (var tree in WildSamples.Trees) Add(new WildTreeNode(tree));
         foreach (var rock in WildSamples.Rocks) Add(new WildRockNode(rock));
         foreach (var shrub in WildSamples.Shrubs) Add(new WildShrubNode(shrub), blocks: false);
-        foreach (var part in WildPavilionPart.Build()) Add(part);
-        foreach (var part in WildGatePart.Build()) Add(part);
-        Add(WildMarkerNode.Stele());
-        Add(WildMarkerNode.Signpost());
+        if (Variant == WildVariant.None)
+        {
+            foreach (var part in WildPavilionPart.Build()) Add(part);
+            foreach (var part in WildGatePart.Build()) Add(part);
+            Add(WildMarkerNode.Stele());
+            Add(WildMarkerNode.Signpost());
+        }
+        else
+        {
+            AddRiverProps();
+        }
 
         _mist = new WildMist();
         OverheadLayer.AddChild(_mist);
@@ -148,7 +167,52 @@ public partial class ExploreWildPreview : ExploreStage
     private void Path(Vector2[] line, float z, int seed, float width = WildSamples.PathWidth) =>
         Ground(4, WildLayout.Ribbon(line, width, seed), z);
 
-    public override bool InWalkArea(Vector2 q) => WildLayout.InWalkArea(q);
+    public override bool InWalkArea(Vector2 q)
+    {
+        if (!WildLayout.InWalkArea(q))
+        {
+            return false;
+        }
+
+        var f = WildSamples.Frame(q);
+        return Variant switch
+        {
+            // 河滩：只在南岸（没有桥，过不了溪）。
+            WildVariant.Shore => f.Y > WildSamples.StreamSouth(f.X) + 4,
+
+            // 旧渡：谷底、木桥与半山，不上通往山门的第二道石阶。
+            WildVariant.OldFerry => f.Y > WildSamples.Edge2(f.X) + 6,
+            _ => true,
+        };
+    }
+
+    /// <summary>河岸道具：船停在溪里随水轻晃，岸边刻痕石、锁着的大船与水门闸架。</summary>
+    private void AddRiverProps()
+    {
+        var water = WildSamples.WaterZ;
+        if (Variant == WildVariant.Shore)
+        {
+            // 陆青禾的渡船泊在醒来处上游；刻痕青石在调查点旁。
+            _boats.Add(AddPiece(new RelocatedPiece("town.prop.boat.ferry", new Vector3(1640, 2080, -80), Lift(WildSamples.W(1240, 610), water), new Vector2(300, 110), occluder: false), blocks: false));
+            AddPiece(new RelocatedPiece("town.prop.stone_mark", new Vector3(1180, 1790, 0), Lift(WildSamples.W(2110, 720), 0), new Vector2(110, 60)));
+        }
+        else
+        {
+            _boats.Add(AddPiece(new RelocatedPiece("town.prop.boat.ferry", new Vector3(1640, 2080, -80), Lift(WildSamples.W(540, 615), water), new Vector2(300, 110), occluder: false), blocks: false));
+            _boats.Add(AddPiece(new RelocatedPiece("town.prop.boat.2", new Vector3(3900, 2450, -80), Lift(WildSamples.W(1760, 620), water), new Vector2(300, 110), occluder: false), blocks: false));
+            AddPiece(new TexturePiece("res://assets/art/battle/battle.sluice_gate.png", WildSamples.W(1120, 330), 0, 330, new Vector2(150, 70)));
+        }
+    }
+
+    private static Vector3 Lift(Vector2 ground, float z) => new(ground.X, ground.Y, z);
+
+    private readonly List<TownPiece> _boats = [];
+
+    private TownPiece AddPiece(TownPiece piece, bool blocks = true)
+    {
+        Add(piece, blocks);
+        return piece;
+    }
 
     protected override float StepZ(Vector2 p) => WildLayout.GroundZ(p);
 
@@ -157,10 +221,75 @@ public partial class ExploreWildPreview : ExploreStage
     protected override void Animate(float seconds)
     {
         _backdrop.Scroll(CameraCenter);
+        for (var i = 0; i < _boats.Count; i++)
+        {
+            if (_boats[i] is RelocatedPiece boat)
+            {
+                boat.Bob(Motion.Enabled ? Mathf.Sin(seconds * 1.3f + i * 1.7f) * 2.5f : 0);
+            }
+        }
+
         if (Motion.Enabled)
         {
             _mist.Seconds = seconds;
             _mist.QueueRedraw();
+        }
+    }
+}
+
+/// <summary>山路布景在游戏里的改装方式（见 <see cref="ExploreWildPreview.Variant"/>）。</summary>
+public enum WildVariant
+{
+    None,
+    Shore,
+    OldFerry,
+}
+
+/// <summary>
+/// 挪到别处的 AI 出件：出件按原布景的投影坐标对齐，这里整体平移到新位置（含高度差），占地按新位置重算。
+/// 用于把城镇的船、刻痕石借到河岸改装里。
+/// </summary>
+public partial class RelocatedPiece : TownPiece
+{
+    private readonly Vector2 _offset;
+
+    public RelocatedPiece(string artId, Vector3 authored, Vector3 placed, Vector2 foot, bool occluder = true)
+    {
+        Occluder = occluder;
+        UseArt(artId);
+        _offset = TownView.P(placed) - TownView.P(authored);
+        Position = _offset;
+        Foot = new Rect2(new Vector2(placed.X, placed.Y) - foot / 2, foot);
+        ScreenBox = Art is { } art ? new Rect2(art.Frame.Position + _offset, art.Frame.Size) : new Rect2(TownView.P(placed) - new Vector2(60, 120), new Vector2(120, 120));
+    }
+
+    /// <summary>船随水轻晃：屏幕纵向偏移。</summary>
+    public void Bob(float dy) => Position = _offset + new Vector2(0, dy);
+}
+
+/// <summary>立着的一张贴图（脚底中点对齐地面，按世界高度缩放），用于把战斗道具图借到探索里（水门闸架）。</summary>
+public partial class TexturePiece : TownPiece
+{
+    private readonly Texture2D? _texture;
+    private readonly Vector2 _size;
+
+    public TexturePiece(string path, Vector2 ground, float z, float height, Vector2 foot)
+    {
+        _texture = ResourceLoader.Exists(path) ? GD.Load<Texture2D>(path) : null;
+        var h = height * TownView.Upright;
+        var aspect = _texture is null ? 0.6f : _texture.GetWidth() / (float)_texture.GetHeight();
+        _size = new Vector2(h * aspect, h);
+        Position = TownView.P(ground, z);
+        Foot = new Rect2(ground - foot / 2, foot);
+        ScreenBox = new Rect2(Position - new Vector2(_size.X / 2, _size.Y), _size);
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+    }
+
+    public override void _Draw()
+    {
+        if (_texture is not null)
+        {
+            DrawTextureRect(_texture, new Rect2(new Vector2(-_size.X / 2, -_size.Y), _size), false);
         }
     }
 }

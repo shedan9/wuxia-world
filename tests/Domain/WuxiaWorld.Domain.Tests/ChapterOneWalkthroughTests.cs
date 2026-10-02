@@ -15,9 +15,9 @@ public class ChapterOneWalkthroughTests
     private const string Main = "quest.main.01.jiangnan_guest";
     private const string Side = "quest.side.01.missing_ferryman";
 
-    private static readonly Lazy<WorldBundle> Bundle = new(() => WorldContentLoader.LoadDirectory(Path.Combine(TestContent.RepoRoot(), "content")));
+    internal static readonly Lazy<WorldBundle> Bundle = new(() => WorldContentLoader.LoadDirectory(Path.Combine(TestContent.RepoRoot(), "content")));
 
-    private static WorldRules Rules() => new(Bundle.Value.ToContent());
+    internal static WorldRules Rules() => new(Bundle.Value.ToContent());
 
     [Fact]
     public void Repository_world_content_validates_without_errors()
@@ -134,6 +134,16 @@ public class ChapterOneWalkthroughTests
         Assert.Equal(["char.du_sangao", "char.hero", "char.huang_rong", "char.linghu_chong", "char.lu_qinghe", "char.qiao_hongxiao",
             "char.tang_shouting", "char.xiao_feng"], s.Met);
 
+        // 成长：讨教学到整套流派武学并装上；整章走完到第二阶段 Demo 的等级上限。
+        var style = new Dictionary<string, string> { ["linghu"] = "sword", ["huang"] = "inner", ["xiao"] = "fist" }[companion];
+        Assert.Equal(style, s.Facts["fact.hero.style"]);
+        var hero = s.Builds["char.hero"];
+        Assert.Equal(4, hero.Skills.Count);
+        Assert.All(hero.Skills, id => Assert.StartsWith($"skill.{style}.", id, StringComparison.Ordinal));
+        Assert.NotNull(hero.MainArt);
+        Assert.Equal(8, w.Game.Rules.LevelOf(s.Experience));
+        Assert.True(s.Cultivation >= 130, $"修为 {s.Cultivation}");
+
         // 三条同行路径都有另一部作品的人物到场参战。
         var helper = new Dictionary<string, string> { ["linghu"] = "xiao", ["huang"] = "linghu", ["xiao"] = "huang" }[companion];
         Assert.Equal(helper, s.Facts["fact.ch01.helper"]);
@@ -195,6 +205,27 @@ public class ChapterOneWalkthroughTests
         w.PlayEvent("event.ch01.sluice_confrontation");
         Assert.Equal("battle.01.old_ferry_sluice", w.Game.World.Battle!.Encounter);
         Assert.Equal(["char.hero", "char.lu_qinghe", "char.huang_rong", "char.linghu_chong"], w.Game.World.Party);
+    }
+
+    [Fact]
+    public void Medicine_used_in_a_story_battle_is_taken_from_the_pack_once()
+    {
+        var w = new Walker(Rules());
+        w.PlayUntilFerry("linghu", side: false);
+        w.PlayAuto(); // 登岸，押运队冲突
+        var battle = w.Game.World.Battle!;
+        var before = w.Game.World.CountOf("item.medicine.golden_sore");
+        Assert.True(before >= 1);
+        var used = new Dictionary<string, int> { ["item.medicine.golden_sore"] = 1, ["item.medicine.qi_pill"] = 9 };
+
+        // 战败可重试：用掉的药照样扣除；数量超过行囊现有的按现有扣完，不让结算失败。
+        Assert.True(w.Game.SettleBattle(battle.InstanceId, BattleEnd.Defeat, consumed: used).Ok);
+        Assert.Equal(before - 1, w.Game.World.CountOf("item.medicine.golden_sore"));
+        Assert.Equal(0, w.Game.World.CountOf("item.medicine.qi_pill"));
+
+        // 同一实例重复结算被拒，不重复扣。
+        Assert.False(w.Game.SettleBattle(battle.InstanceId, BattleEnd.Victory, consumed: used).Ok);
+        Assert.Equal(before - 1, w.Game.World.CountOf("item.medicine.golden_sore"));
     }
 
     [Fact]
@@ -319,7 +350,7 @@ public class ChapterOneWalkthroughTests
     private static string StageKey(string dialogue, string node) => $"stage:{dialogue}/{node}";
 
     /// <summary>按固定选择驱动 <see cref="GameSession"/> 的走查器。</summary>
-    private sealed class Walker
+    internal sealed class Walker
     {
         public Walker(WorldRules rules, GameSession? game = null) => Game = game ?? GameSession.NewGame(rules);
 
@@ -438,7 +469,9 @@ public class ChapterOneWalkthroughTests
         public void WinBattle()
         {
             var b = Game.World.Battle ?? throw new InvalidOperationException("没有待开战斗");
-            var r = Game.SettleBattle(b.InstanceId, BattleEnd.Victory, experience: 20);
+            // 按遭遇定义发经验与修为，与游戏内剧情战一致。
+            var encounter = TestContent.Bundle.Encounters.First(e => e.Id == b.Encounter);
+            var r = Game.SettleBattle(b.InstanceId, BattleEnd.Victory, experience: encounter.Experience, cultivation: encounter.Cultivation);
             Assert.True(r.Ok, r.Error);
         }
 

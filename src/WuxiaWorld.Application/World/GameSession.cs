@@ -1,3 +1,4 @@
+using WuxiaWorld.Domain.Characters;
 using WuxiaWorld.Domain.World;
 
 namespace WuxiaWorld.Application.World;
@@ -81,15 +82,19 @@ public sealed class GameSession
     private DialogueSession? _dialogue;
     private Transition? _transition;
 
-    public GameSession(WorldRules rules, WorldState world)
+    /// <param name="growth">成长与装配规则（需要战斗内容）；为 null 时养成类操作被拒绝。</param>
+    public GameSession(WorldRules rules, WorldState world, GrowthRules? growth = null)
     {
         Rules = rules;
         World = world;
+        Growth = growth;
     }
 
-    public static GameSession NewGame(WorldRules rules) => new(rules, rules.NewGame());
+    public static GameSession NewGame(WorldRules rules, GrowthRules? growth = null) => new(rules, rules.NewGame(), growth);
 
     public WorldRules Rules { get; }
+
+    public GrowthRules? Growth { get; }
 
     /// <summary>最近一次提交的世界状态。不要直接修改。</summary>
     public WorldState World { get; private set; }
@@ -359,13 +364,99 @@ public sealed class GameSession
         return null;
     }
 
+    /// <summary>旧档补齐成长数据（见 <see cref="WorldRules.UpgradeLegacy"/>）；无需补齐时返回 null。读档后调用一次。</summary>
+    public string? UpgradeLegacy()
+    {
+        var c = World.Clone();
+        if (Rules.UpgradeLegacy(c) is not { } note)
+        {
+            return null;
+        }
+
+        Commit(c, new EffectResult());
+        return note;
+    }
+
+    // ── 养成、行囊与店铺 ──────────────────────────────────
+
+    /// <summary>
+    /// 分配潜能、换装备、改装配、修炼与买卖只在稳定点进行：对话、换图或待开战斗期间不可（同存档的条件），
+    /// 免得战斗中改了装配却不影响已开打的这一场、让玩家误会。
+    /// </summary>
+    public bool CanManage => _dialogue is null && _transition is null && World.Battle is null;
+
+    public CommitResult Allocate(string who, Attributes add) => Manage(g => g.Allocate(Candidate, who, add));
+
+    public CommitResult Equip(string who, string itemId) => Manage(g => g.Equip(Candidate, who, itemId));
+
+    public CommitResult Unequip(string who, EquipSlot slot) => Manage(g => g.Unequip(Candidate, who, slot));
+
+    public CommitResult SetSkills(string who, IReadOnlyList<string> skills) => Manage(g => g.SetSkills(Candidate, who, skills));
+
+    public CommitResult SetArt(string who, ArtSlot slot, string? artId) => Manage(g => g.SetArt(Candidate, who, slot, artId));
+
+    public CommitResult ToggleTalent(string who, string talentId) => Manage(g => g.ToggleTalent(Candidate, who, talentId));
+
+    public CommitResult Cultivate(string who, string skillId) =>
+        Manage(g => g.Cultivate(Candidate, who, skillId), new WorldNotice("mastery", skillId));
+
+    public CommitResult Buy(string shopId, string itemId, int count = 1) => Trade(r => Rules.Buy(Candidate, shopId, itemId, count, r));
+
+    public CommitResult Sell(string shopId, string itemId, int count = 1) => Trade(r => Rules.Sell(Candidate, shopId, itemId, count, r));
+
+    // 养成操作在这份副本上执行；成功才提交。
+    private WorldState Candidate { get; set; } = null!;
+
+    private CommitResult Manage(Func<GrowthRules, string?> change, WorldNotice? notice = null)
+    {
+        if (Growth is null)
+        {
+            return CommitResult.Reject("未载入战斗内容，不能调整人物");
+        }
+
+        if (!CanManage)
+        {
+            return CommitResult.Reject("对话、换图或战斗进行中，告一段落后再调整");
+        }
+
+        Candidate = World.Clone();
+        if (change(Growth) is { } error)
+        {
+            return CommitResult.Reject(error);
+        }
+
+        var r = new EffectResult();
+        if (notice is not null)
+        {
+            r.Notices.Add(notice);
+        }
+
+        return Commit(Candidate, r);
+    }
+
+    private CommitResult Trade(Action<EffectResult> trade)
+    {
+        if (!CanManage)
+        {
+            return CommitResult.Reject("对话、换图或战斗进行中，告一段落后再买卖");
+        }
+
+        Candidate = World.Clone();
+        var r = new EffectResult();
+        trade(r);
+        return r.Ok ? Commit(Candidate, r) : CommitResult.From(r);
+    }
+
     // ── 战斗结算 ──────────────────────────────────────────
 
     /// <summary>
     /// 以 <c>battle_instance_id</c> 一次性结算（架构文档 11）：胜利效果按请求只发一次，
     /// 同一实例重复结算被忽略。可重试的战败保留请求并递增次数；不可重试的执行战败效果。
+    /// <paramref name="consumed"/> 是战斗中用掉的行囊物品（无论胜负都扣除，随同一事务提交，重复结算不重复扣）；
+    /// 数量超过行囊现有的按现有扣完，不让事务失败。
     /// </summary>
-    public CommitResult SettleBattle(string instanceId, BattleEnd end, int experience = 0)
+    public CommitResult SettleBattle(string instanceId, BattleEnd end, int experience = 0, IReadOnlyDictionary<string, int>? consumed = null,
+        int cultivation = 0)
     {
         EnsureIdle();
         if (World.Battle is not { } battle || battle.InstanceId != instanceId)
@@ -376,12 +467,30 @@ public sealed class GameSession
         var c = World.Clone();
         var r = new EffectResult();
         c.Settled.Add("battle:" + instanceId);
+        foreach (var (item, used) in consumed ?? new Dictionary<string, int>())
+        {
+            var have = c.Items.GetValueOrDefault(item);
+            var take = Math.Min(have, used);
+            if (take > 0)
+            {
+                Rules.Apply(c, [new WorldEffect { Type = WorldEffectType.RemoveItem, Id = item, Amount = take }], r, $"battle:{instanceId}:item:{item}");
+            }
+        }
+
         if (end == BattleEnd.Victory)
         {
             c.Battle = null;
-            var effects = experience > 0
-                ? [.. battle.OnVictory, new WorldEffect { Type = WorldEffectType.GrantExperience, Amount = experience }]
-                : battle.OnVictory;
+            IEnumerable<WorldEffect> effects = battle.OnVictory;
+            if (experience > 0)
+            {
+                effects = effects.Append(new WorldEffect { Type = WorldEffectType.GrantExperience, Amount = experience });
+            }
+
+            if (cultivation > 0)
+            {
+                effects = effects.Append(new WorldEffect { Type = WorldEffectType.GrantCultivation, Amount = cultivation });
+            }
+
             Rules.Apply(c, effects, r, $"battle:{battle.RequestId}:victory");
         }
         else if (battle.Retry)

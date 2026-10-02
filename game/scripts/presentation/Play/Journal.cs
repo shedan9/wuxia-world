@@ -8,7 +8,7 @@ namespace WuxiaWorld.Game.Presentation.Play;
 using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 
 /// <summary>
-/// 江湖札记（J）：任务（走过的阶段与当前阶段）、线索、行囊、人物与武学，全部读已提交的世界状态。
+/// 江湖札记（J）：任务（走过的阶段与当前阶段）、线索与人物关系，全部读已提交的世界状态；行囊与武学另有专页（I、C）。
 /// 正式的分区菜单版式（UI_DESIGN 5.2 菜单外框）属 M3-05；此处先以一页暗色面板呈现，便于试玩核对状态。
 /// </summary>
 public static class Journal
@@ -38,11 +38,6 @@ public static class Journal
             clues.AddChild(Ui.Text("尚无线索", UiTheme.DarkMutedLabel, 18));
         }
 
-        var items = Ui.Column(UiPalette.SpaceS, Ui.Section("行囊", dark: true), Ui.Text($"银 {w.Silver} 两", UiTheme.GiltLabel, 20));
-        foreach (var (id, count) in w.Items)
-        {
-            items.AddChild(Entry(play.Name(id) + (count > 1 ? $" ×{count}" : ""), play.Text(id + ".desc")));
-        }
 
         var people = Ui.Column(UiPalette.SpaceS, Ui.Section("人物", dark: true));
         foreach (var id in w.Met.Where(id => id != w.Hero))
@@ -54,21 +49,13 @@ public static class Journal
                 Ui.Text(note, UiTheme.DarkMutedLabel, 18)));
         }
 
-        var skills = Ui.Column(UiPalette.SpaceS, Ui.Section("武学", dark: true));
-        foreach (var id in w.Skills)
-        {
-            skills.AddChild(Entry(play.Combat.Name(id), play.Combat.Text.TryGetValue(id + ".desc", out var d) ? d : null));
-        }
-
-        if (w.Skills.Count == 0)
-        {
-            skills.AddChild(Ui.Text("尚未习得新招", UiTheme.DarkMutedLabel, 18));
-        }
-
-        skills.AddChild(Ui.Text($"经验 {w.Experience}", UiTheme.DarkMutedLabel, 18));
+        var level = play.Game.Rules.LevelOf(w.Experience);
+        var growth = Ui.Column(UiPalette.SpaceS, Ui.Section("成长", dark: true),
+            Ui.Text($"第 {level} 级　经验 {w.Experience}　修为 {w.Cultivation}　银 {w.Silver} 两", UiTheme.DarkLabel, 20),
+            Ui.Text("属性、武学与装备见人物页（C），物品见行囊（I）。", UiTheme.DarkMutedLabel, 18, wrap: true));
 
         var left = Scroll(quests);
-        var right = Scroll(Ui.Column(UiPalette.SpaceXl, clues, items, people, skills));
+        var right = Scroll(Ui.Column(UiPalette.SpaceXl, growth, clues, people));
         var header = Ui.Row(UiPalette.SpaceL, Ui.Seal("札记"), Ui.Column(4,
                 Ui.Text("江湖札记", UiTheme.DarkTitleLabel, 40),
                 Ui.Text($"{play.Name(w.MapId)}　·　{PlaySession.ClockText(w.Clock)}", UiTheme.DarkMutedLabel, 18)),

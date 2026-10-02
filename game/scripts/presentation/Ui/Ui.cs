@@ -265,6 +265,38 @@ public static class Ui
         return Row(UiPalette.SpaceS, capPanel, Text(action, dark ? UiTheme.DarkMutedLabel : UiTheme.MutedLabel));
     }
 
+    /// <summary>
+    /// 可点击的按键提示：外观同 <see cref="KeyHint"/>，鼠标悬停高亮、点击执行同一动作，
+    /// 让只用鼠标的玩家也能完成“Enter 继续”“R 再战”这类只写了按键的操作。
+    /// </summary>
+    public static Button KeyAction(string key, string action, Action onPressed, bool dark = true)
+    {
+        var button = new Button { Flat = true, FocusMode = Control.FocusModeEnum.None, MouseDefaultCursorShape = Control.CursorShape.PointingHand };
+        var hint = KeyHint(key, action, dark);
+        hint.MouseFilter = Control.MouseFilterEnum.Ignore;
+        IgnoreMouse(hint);
+        button.AddChild(hint);
+        hint.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
+        button.CustomMinimumSize = hint.GetCombinedMinimumSize() + new Vector2(16, 10);
+        hint.OffsetLeft = 8;
+        button.Pressed += onPressed;
+        button.MouseEntered += () => hint.Modulate = new Color(1.25f, 1.2f, 1.05f);
+        button.MouseExited += () => hint.Modulate = Colors.White;
+        return button;
+    }
+
+    /// <summary>一组可点击的按键提示。</summary>
+    public static HBoxContainer KeyActions(bool dark, params (string Key, string Action, Action Do)[] hints)
+    {
+        var row = Row(UiPalette.SpaceL);
+        foreach (var (key, action, act) in hints)
+        {
+            row.AddChild(KeyAction(key, action, act, dark));
+        }
+
+        return row;
+    }
+
     /// <summary>一组按键提示，项间留出较宽间距。</summary>
     public static HBoxContainer KeyHints(bool dark, params (string Key, string Action)[] hints)
     {

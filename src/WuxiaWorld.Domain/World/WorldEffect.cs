@@ -44,8 +44,13 @@ public enum WorldEffectType
     /// <summary>推进 <c>amount</c> 个时辰。</summary>
     AdvanceClock,
 
+    /// <summary>学会武学 <c>id</c>（招式或心法、轻功、天赋）；有空位时自动装上。</summary>
     LearnSkill,
+
     GrantExperience,
+
+    /// <summary>得修为 <c>amount</c>（武学熟练度用）。</summary>
+    GrantCultivation,
 
     /// <summary>写入世界关口 <c>id</c>。</summary>
     ReachGate,

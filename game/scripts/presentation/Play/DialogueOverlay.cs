@@ -2,6 +2,7 @@ using Godot;
 using WuxiaWorld.Application.World;
 using WuxiaWorld.Domain.World;
 using WuxiaWorld.Game.Presentation.App;
+using WuxiaWorld.Game.Presentation.Audio;
 using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Presentation.Play;
@@ -14,25 +15,27 @@ using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 /// 逐节点显示 <see cref="DialogueRunner"/> 停下的台词、演出提示与选项。规则结算全在会话副本上，
 /// 走到结束后交回探索页提交；中途不提交任何东西。
 /// 心里话（<c>inner</c>）不挂姓名牌、以淡色显示；演出提示的制作说明玩家看不到——特写与标题卡显示画面文字，
-/// 场景与动作镜头尚未制作，顶部短暂标出“演出待制作”后自动继续。
-/// Enter / 空格 / 点击推进，数字键选择，L 对话记录，H 隐藏界面。
+/// 场景、动作与无字特写收起对话框、拉上电影黑边停一拍（场景镜头更长，开场的场景镜头从黑场淡入）后自动继续，点击可跳过。
+/// 台词编号、锁稿与配音状态只在开发信息打开时显示（F12 / <c>--dev</c>）。
+/// 配音（M2-09）：台词显示时按 <c>line_id</c> 播放，换句、选择、演出或结束时停止；R 重播当前句；
+/// 心里话不播放；缺音或文字已改（音频过期）时只显示字幕，并在台词编号旁注明。
+/// Enter / 空格 / 点击推进，数字键选择，R 重播，L 对话记录，H 隐藏界面。
 /// </summary>
 public partial class DialogueOverlay : Control
 {
-    private const float CharsPerSecond = 38;
-    private const float StageHold = 0.9f;
+    private const float BarHeight = 96;
 
-    /// <summary>有立绘的人物；其余只切换姓名牌。</summary>
-    private static readonly Dictionary<string, string> Portraits = new()
-    {
-        ["char.lu_qinghe"] = "res://assets/portraits/lu_qinghe_v1.png",
-    };
+    /// <summary>人物立绘：<c>res://assets/portraits/&lt;人物&gt;_v1.png</c>（主角不设立绘）；没有的人物只切换姓名牌。</summary>
+    private static string? PortraitOf(string speaker) =>
+        speaker.StartsWith("char.", StringComparison.Ordinal) && speaker != "char.hero"
+        && $"res://assets/portraits/{speaker["char.".Length..]}_v1.png" is var path && ResourceLoader.Exists(path) ? path : null;
 
     private readonly PlaySession _play;
     private readonly DialogueSession _session;
     private readonly Action<DialogueSession> _ended;
     private Tween? _typing;
     private double _stageTimer = -1;
+    private double _walkKeyDelay = 0.3;
     private bool _done;
 
     private Control _ui = null!;
@@ -45,10 +48,14 @@ public partial class DialogueOverlay : Control
     private Control _next = null!;
     private VBoxContainer _choices = null!;
     private Control _card = null!;
+    private PanelContainer _cardPanel = null!;
     private Label _cardText = null!;
     private Label _cardKind = null!;
-    private Control _cue = null!;
-    private Label _cueText = null!;
+    private Control _barTop = null!;
+    private Control _barBottom = null!;
+    private bool _barsShown;
+    private ColorRect _blackout = null!;
+    private Tween? _blackoutTween;
     private Control? _log;
 
     public DialogueOverlay(PlaySession play, DialogueSession session, Action<DialogueSession> ended)
@@ -81,7 +88,13 @@ public partial class DialogueOverlay : Control
         _ui.AddChild(_box);
         _ui.AddChild(BuildChoices());
         _ui.AddChild(BuildCard());
-        _ui.AddChild(BuildCue());
+        BuildBars();
+
+        // 黑场压在立绘与黑边之上、对话界面之下：标题卡浮在黑场里。
+        _blackout = new ColorRect { Color = Colors.Black, MouseFilter = MouseFilterEnum.Ignore, Visible = false };
+        _blackout.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+        AddChild(_blackout);
+        MoveChild(_blackout, _ui.GetIndex());
         Show(first: true);
     }
 
@@ -95,6 +108,19 @@ public partial class DialogueOverlay : Control
                 FinishTyping();
                 _done = true;
                 DevCapture.FinishAutoplay(GetTree(), 0);
+                return;
+            }
+
+            if (DevCapture.Walk)
+            {
+                // 真实行走走查：注入按键推进（第一下补全逐字、第二下继续），选项按 1。
+                _walkKeyDelay -= delta;
+                if (_walkKeyDelay <= 0)
+                {
+                    _walkKeyDelay = 0.15;
+                    ExplorationScreen.PressKey(Runner.AwaitingChoice && _choices.Visible ? Key.Key1 : Key.Enter);
+                }
+
                 return;
             }
 
@@ -150,6 +176,9 @@ public partial class DialogueOverlay : Control
             case InputEventKey { Pressed: true, Echo: false, Keycode: Key.H }:
                 _ui.Visible = !_ui.Visible;
                 break;
+            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.R }:
+                AppHost.Instance.Voice.Replay();
+                break;
             case InputEventKey { Pressed: true, Echo: false } key when key.Keycode is >= Key.Key1 and <= Key.Key9:
                 Choose((int)(key.Keycode - Key.Key1));
                 break;
@@ -164,9 +193,6 @@ public partial class DialogueOverlay : Control
                     Step();
                 }
 
-                break;
-            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.Escape }:
-                // 对话中不开菜单、不回标题：吞掉取消键，免得半截对话被丢弃。
                 break;
             default:
                 return;
@@ -195,6 +221,7 @@ public partial class DialogueOverlay : Control
     private void Advance()
     {
         _stageTimer = -1;
+        AppHost.Instance.Voice.Stop();
         Runner.Continue();
         Show(first: false);
     }
@@ -214,6 +241,7 @@ public partial class DialogueOverlay : Control
 
         _play.History.Add(("选择", view.Option.Text));
         _choices.Visible = false;
+        AppHost.Instance.Voice.Stop();
         Runner.Choose(view.Index);
         Show(first: false);
     }
@@ -226,6 +254,7 @@ public partial class DialogueOverlay : Control
         if (Runner.Current is not { } node)
         {
             _done = true;
+            AppHost.Instance.Voice.Stop();
             _ended(_session);
             return;
         }
@@ -233,10 +262,15 @@ public partial class DialogueOverlay : Control
         switch (node.Type)
         {
             case DialogueNodeType.Stage:
-                ShowStage(node);
+                ShowStage(node, first);
                 break;
             case DialogueNodeType.Choice:
-                _box.Visible = true;
+                Bars(false);
+                Blackout(false, instant: false);
+
+                // 一段对话以选项开头（前面还没有台词）时不摆空对话框，选项单独浮在画面上。
+                _box.Visible = _text.Text.Length > 0;
+                _plate.Visible = _name.Text.Length > 0 && _box.Visible;
                 ShowChoices();
                 break;
             default:
@@ -244,7 +278,7 @@ public partial class DialogueOverlay : Control
                 break;
         }
 
-        if (first)
+        if (first && _box.Visible)
         {
             Motion.Enter(_box, 0, Motion.Normal, rise: 20);
         }
@@ -252,8 +286,9 @@ public partial class DialogueOverlay : Control
 
     private void ShowLine(DialogueNode node)
     {
+        Bars(false);
+        Blackout(false, instant: false);
         _box.Visible = true;
-        _cue.Visible = false;
         var speaker = node.Speaker ?? "";
         var name = _play.Name(speaker);
         var text = node.Text ?? "";
@@ -263,15 +298,41 @@ public partial class DialogueOverlay : Control
         _name.Text = name;
         _text.Text = text;
         _text.AddThemeColorOverride("default_color", node.Inner ? UiPalette.TextOnDarkMuted : UiPalette.TextOnDark);
-        _lineId.Text = node.Inner ? $"{node.LineId}　·　心里话，不配音　·　未锁稿" : $"{node.LineId}　·　未锁稿";
+        var voice = node.Inner ? "心里话，不配音" : VoiceNote(node);
+        _lineId.Text = $"{node.LineId}　·　未锁稿　·　{voice}";
         _next.Visible = false;
         UpdatePortrait(speaker, node.Inner);
 
         _text.VisibleRatio = 0;
         _typing?.Kill();
+        var cps = GameSettings.CharsPerSecond;
+        if (cps <= 0)
+        {
+            FinishTyping();
+            return;
+        }
+
         _typing = CreateTween();
-        _typing.TweenProperty(_text, "visible_ratio", 1f, Math.Max(0.2f, text.Length / CharsPerSecond));
+        _typing.TweenProperty(_text, "visible_ratio", 1f, Math.Max(0.2f, text.Length / cps));
         _typing.TweenCallback(Callable.From(FinishTyping));
+    }
+
+    /// <summary>播放这句配音（自动走查时不出声），返回写在台词编号旁的说明。</summary>
+    private static string VoiceNote(DialogueNode node)
+    {
+        var voice = AppHost.Instance.Voice;
+        if (DevCapture.Autoplay > 0 && DevCapture.Output is not null)
+        {
+            return "自动走查不播放配音";
+        }
+
+        return voice.Play(node.LineId!, node.Text ?? "") switch
+        {
+            VoiceState.Playing => voice.Status == "final" ? "配音" : "试听配音",
+            VoiceState.Stale => "配音过期（文字已改），只显示字幕",
+            VoiceState.Broken => "配音文件损坏，只显示字幕",
+            _ => "缺配音，只显示字幕",
+        };
     }
 
     private void FinishTyping()
@@ -282,51 +343,166 @@ public partial class DialogueOverlay : Control
     }
 
     /// <summary>
-    /// 演出提示：标题卡与带文字的特写停下等玩家读完；其余（场景、动作、无字特写）是待制作的镜头，
-    /// 只在顶部短暂标注后自动继续，制作说明不显示。
+    /// 演出提示：标题卡与带文字的特写停下等玩家读完；场景、动作与无字特写收起对话框、拉上黑边停一拍后自动继续
+    /// （正式镜头与动作属 M3，这里先给出节奏上的停顿），制作说明不显示。
     /// </summary>
-    private void ShowStage(DialogueNode node)
+    private void ShowStage(DialogueNode node, bool first)
     {
         _typing?.Kill();
+        _box.Visible = false;
         if (node.Caption is { Length: > 0 } caption && node.Kind is StageKind.Title or StageKind.Closeup)
         {
-            _box.Visible = node.Kind != StageKind.Title;
-            _cardKind.Text = node.Kind == StageKind.Title ? "" : "特写";
+            Bars(node.Kind == StageKind.Title);
+            if (node.Kind == StageKind.Title)
+            {
+                // 章名标题卡：黑场托底，开篇直接黑场，章末从画面淡入黑场。
+                Blackout(true, instant: first);
+            }
+
+            _cardKind.Text = "◇";
+            _cardKind.Visible = node.Kind != StageKind.Title;
             _cardText.Text = caption;
             _cardText.AddThemeFontSizeOverride("font_size", node.Kind == StageKind.Title ? 64 : 34);
+            if (node.Kind == StageKind.Title)
+            {
+                // 章名：黑场上的大字，不套纸卡。
+                _cardPanel.AddThemeStyleboxOverride("panel", new StyleBoxEmpty());
+                _cardText.AddThemeColorOverride("font_color", UiPalette.Surface);
+                _card.OffsetTop = -120;
+                _card.OffsetBottom = 60;
+            }
+            else
+            {
+                _cardPanel.RemoveThemeStyleboxOverride("panel");
+                _cardText.RemoveThemeColorOverride("font_color");
+                _card.OffsetTop = -300;
+                _card.OffsetBottom = 40;
+            }
+
             _card.Visible = true;
             Motion.Enter(_card, 0, Motion.Normal, rise: 12);
-            _text.Text = "";
-            _plate.Visible = false;
-            _lineId.Text = node.CaptionId is { } id ? $"{id}　·　画面文字　·　未锁稿" : "";
-            _next.Visible = true;
+            if (node.Kind == StageKind.Title)
+            {
+                Tint(_portrait, Colors.Transparent);
+            }
+
             _play.History.Add(("画面", caption));
             return;
         }
 
-        _cueText.Text = node.Kind switch
+        Bars(true);
+        if (node.Kind == StageKind.Scene)
         {
-            StageKind.Scene => "演出 · 场景镜头（待制作）",
-            StageKind.Action => "演出 · 人物动作（待制作）",
-            StageKind.Closeup => "演出 · 物件特写（待制作）",
-            _ => "演出（待制作）",
+            // 场景镜头：人物退到一边，让出画面。
+            Tint(_portrait, Colors.Transparent);
+        }
+        else if (_portrait.Texture is not null && _portrait.Modulate.A > 0.01f)
+        {
+            Tint(_portrait, new Color(0.62f, 0.7f, 0.72f));
+        }
+
+        if (first && node.Kind == StageKind.Scene)
+        {
+            // 一段对话以场景镜头开头（进客栈）：从黑场淡入。
+            Blackout(true, instant: true);
+        }
+
+        Blackout(false, instant: false);
+
+        var hold = node.Kind switch
+        {
+            StageKind.Scene => first ? 2.2 : 1.6,
+            StageKind.Action => 1.1,
+            _ => 0.9,
         };
-        _cue.Visible = true;
-        _cue.Modulate = Colors.White;
-        _stageTimer = Motion.Enabled ? StageHold : 0.01;
+        _stageTimer = Motion.Enabled ? hold : 0.01;
+    }
+
+    /// <summary>黑场淡入 / 淡出。</summary>
+    private void Blackout(bool on, bool instant)
+    {
+        _blackoutTween?.Kill();
+        if (instant || !Motion.Enabled)
+        {
+            _blackout.Visible = on;
+            _blackout.Modulate = on ? Colors.White : Colors.Transparent;
+            return;
+        }
+
+        if (!on && !_blackout.Visible)
+        {
+            return;
+        }
+
+        _blackout.Visible = true;
+        _blackoutTween = _blackout.CreateTween();
+        _blackoutTween.TweenProperty(_blackout, "modulate:a", on ? 1f : 0f, on ? 0.8f : 1.1f).SetEase(Tween.EaseType.Out);
+        if (!on)
+        {
+            _blackoutTween.TweenCallback(Callable.From(() => _blackout.Visible = false));
+        }
+    }
+
+    /// <summary>电影黑边：演出时从上下拉入，回到台词时收起。</summary>
+    private void Bars(bool show)
+    {
+        if (_barsShown == show)
+        {
+            return;
+        }
+
+        _barsShown = show;
+        var h = show ? BarHeight : 0;
+        if (!Motion.Enabled)
+        {
+            _barTop.OffsetBottom = h;
+            _barBottom.OffsetTop = -h;
+            return;
+        }
+
+        var tween = CreateTween().SetParallel().SetTrans(Tween.TransitionType.Cubic).SetEase(Tween.EaseType.Out);
+        tween.TweenProperty(_barTop, "offset_bottom", h, Motion.Normal);
+        tween.TweenProperty(_barBottom, "offset_top", -h, Motion.Normal);
+    }
+
+    /// <summary>上下黑边：压在立绘之上、对话界面之下。</summary>
+    private void BuildBars()
+    {
+        _barTop = new ColorRect { Color = Colors.Black with { A = 0.92f }, MouseFilter = MouseFilterEnum.Ignore };
+        _barTop.AnchorRight = 1;
+        _barBottom = new ColorRect { Color = Colors.Black with { A = 0.92f }, MouseFilter = MouseFilterEnum.Ignore };
+        _barBottom.AnchorTop = 1;
+        _barBottom.AnchorBottom = 1;
+        _barBottom.AnchorRight = 1;
+        AddChild(_barTop);
+        AddChild(_barBottom);
+        MoveChild(_barTop, 1);
+        MoveChild(_barBottom, 2);
     }
 
     private void UpdatePortrait(string speaker, bool inner)
     {
-        if (!inner && Portraits.TryGetValue(speaker, out var path))
+        if (!inner && PortraitOf(speaker) is { } path)
         {
             _portrait.Texture = GD.Load<Texture2D>(path);
             Tint(_portrait, Colors.White);
         }
-        else if (_portrait.Texture is not null)
+        else if (_portrait.Texture is null)
         {
-            // 主角或无立绘者说话：保留上一位人物但压暗。
-            Tint(_portrait, new Color(0.62f, 0.7f, 0.72f));
+            return;
+        }
+        else if (inner || speaker == "char.hero")
+        {
+            // 主角说话（含心里话）：保留对面那位人物但压暗，像在听他说。
+            if (_portrait.Modulate.A > 0.01f)
+            {
+                Tint(_portrait, new Color(0.62f, 0.7f, 0.72f));
+            }
+        }
+        else
+        {
+            // 换了一位还没有立绘的人物说话：上一位的立绘退下，免得看着像她在说。
+            Tint(_portrait, Colors.Transparent);
         }
     }
 
@@ -343,7 +519,6 @@ public partial class DialogueOverlay : Control
 
     private void ShowChoices()
     {
-        _cue.Visible = false;
         _next.Visible = false;
         Ui.ClearChildren(_choices);
         var title = Ui.Panel(UiTheme.GlassPanel, Ui.Text("◆　如何回应", UiTheme.GiltLabel, 22));
@@ -451,6 +626,8 @@ public partial class DialogueOverlay : Control
         _lineId.Modulate = new Color(1, 1, 1, 0.7f);
         _next = Ui.Text("◆", UiTheme.GiltLabel, 22);
         Motion.Pulse(_next, 0.2f, 1.0f);
+        // 台词编号一行只在开发信息打开时显示；继续标记始终在右下。
+        _lineId.Visible = AppHost.DevInfo;
         box.AddChild(Ui.Column(UiPalette.SpaceS, _text, Ui.Row(UiPalette.SpaceM, _lineId, Ui.Spacer(), _next)));
 
         // 姓名牌：压在对话框左上沿的一方朱砂印。
@@ -468,10 +645,12 @@ public partial class DialogueOverlay : Control
         _plate.GrowHorizontal = GrowDirection.End;
         root.AddChild(_plate);
 
-        var hints = Ui.KeyHints(true, ("Enter", "继续"), ("1–3", "选择"), ("L", "记录"), ("H", "隐藏"));
+        var hints = Ui.KeyHints(true, ("Enter", "继续"), ("1–3", "选择"), ("R", "重播"), ("L", "记录"), ("H", "隐藏"));
         hints.Modulate = new Color(1, 1, 1, 0.85f);
         root.AddChild(Ui.Place(hints, 1, 1, -900, -38, -150, -6));
         hints.Alignment = BoxContainer.AlignmentMode.End;
+        // 对话框底板（PanelContainer）默认拦鼠标，点在框内会被吃掉、推进不了台词；框内没有按钮，整块放行。
+        Ui.IgnoreMouse(root);
         return root;
     }
 
@@ -489,24 +668,17 @@ public partial class DialogueOverlay : Control
         _cardKind = Ui.Text("", UiTheme.GiltLabel, 18);
         _cardText = Ui.Text("", UiTheme.DisplayLabel, 34, wrap: true);
         _cardText.HorizontalAlignment = HorizontalAlignment.Center;
-        var column = Ui.Column(UiPalette.SpaceM, _cardKind, _cardText);
+        _cardKind.HorizontalAlignment = HorizontalAlignment.Center;
+        var more = Ui.Text("◆", UiTheme.GiltLabel, 20);
+        more.HorizontalAlignment = HorizontalAlignment.Center;
+        Motion.Pulse(more, 0.2f, 1.0f);
+        var column = Ui.Column(UiPalette.SpaceM, _cardKind, _cardText, more);
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.SheetPanel, MouseFilter = MouseFilterEnum.Ignore };
+        _cardPanel = panel;
         panel.AddChild(column);
         _card = Ui.Place(panel, 0.5f, 0.5f, -520, -300, 520, 40);
         _card.Visible = false;
         return _card;
-    }
-
-    /// <summary>顶部小签：标出此处有一段待制作的演出镜头。</summary>
-    private Control BuildCue()
-    {
-        _cueText = Ui.Text("", UiTheme.DarkMutedLabel, 18);
-        var tag = Ui.Panel(UiTheme.GlassPanel, _cueText);
-        var center = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
-        center.AddChild(tag);
-        _cue = Ui.Place(center, 0.5f, 0, -300, 40, 300, 90);
-        _cue.Visible = false;
-        return _cue;
     }
 
     // ── 对话记录 ─────────────────────────────────────────

@@ -13,8 +13,9 @@ namespace WuxiaWorld.Game.Presentation.Battle;
 /// 剧情战（M2，架构文档 3 的 Exploration → Battle → Result → Exploration）：世界状态里有待开战斗时，本页不显示配置，
 /// 按请求的遭遇与当前队伍开打；结算页确认后经 <see cref="GameSession.SettleBattle"/> 以 <c>battle_instance_id</c> 一次性提交，
 /// 再回探索页。战败可再战（新实例）或暂退（执行战败收束、回本图安全入口）。
-/// 主角流派按已学的讨教招式取 M1 三套预设之一；经典人物援手在人物锚点核验（M2-10）前用占位同行者模板，显示真名。
-/// 战斗用药读行囊里的数量，但战后消耗尚未回写世界（属 M2-05 物品）。
+/// 主角由世界状态现推战斗模板（等级、潜能、装备、装配与熟练度，见 <see cref="Domain.World.GrowthRules.Template"/>）；
+/// 经典人物援手在人物锚点核验（M2-10）前用占位同行者模板，显示真名。
+/// 战斗用药读行囊里的数量，用掉的随结算一并从行囊扣除（无论胜负，重复结算不重复扣）。
 /// </summary>
 public sealed partial class BattleScreen
 {
@@ -31,10 +32,11 @@ public sealed partial class BattleScreen
         _pending = w.Battle!;
         var content = _engine.Content;
 
-        // 讨教所学决定主角流派：令狐冲剑术、黄蓉内功（点穴）、萧峰拳掌；尚未讨教时按剑术。
+        // 讨教所学的流派只用于开发说明；主角的数值与招式一律来自世界状态里的成长构成（M2-05）。
         _build = w.Skills.Any(s => s.StartsWith("skill.fist.", StringComparison.Ordinal)) ? 1
             : w.Skills.Any(s => s.StartsWith("skill.inner.", StringComparison.Ordinal)) ? 2 : 0;
-        var allies = new List<AllyEntry> { new(content.Combatant($"combatant.hero.{Builds[_build].Id}"), "char.hero", new Position(0, 1)) };
+        var growth = play.Game.Growth!;
+        var allies = new List<AllyEntry> { new(growth.Template(w, growth.Hero), growth.Hero, new Position(0, 1)) };
         var slot = 0;
         foreach (var id in w.Party.Skip(1).Take(BattleSetup.MaxAllies - 1))
         {
@@ -45,7 +47,9 @@ public sealed partial class BattleScreen
 
         var items = w.Items.Where(i => content.Items.ContainsKey(i.Key) && i.Value > 0).ToDictionary(i => i.Key, i => i.Value);
         var setup = new BattleSetup { EncounterId = _pending.Encounter, Seed = StorySeed(_pending.InstanceId, w.RngState), Allies = allies, Items = items };
-        Begin(setup, $"{_bundle.Name(setup.EncounterId)}：主角（{Builds[_build].Label}）· 第 {_pending.Attempt} 次 · 种子 {setup.Seed}");
+        Begin(setup, AppHost.DevInfo
+            ? $"{_bundle.Name(setup.EncounterId)}：主角 {growth.Level(w)} 级（{Builds[_build].Label}）· 第 {_pending.Attempt} 次 · 种子 {setup.Seed}"
+            : _pending.Attempt > 1 ? $"再战{_bundle.Name(setup.EncounterId)}" : $"{_bundle.Name(setup.EncounterId)}，开战");
         if (DevCapture.Holding("battle"))
         {
             // 停在第 2 轮轮到我方时截图。
@@ -112,6 +116,17 @@ public sealed partial class BattleScreen
         }
     }
 
+    /// <summary>本场用掉的行囊物品：开战带入的数量减去战场上剩下的。</summary>
+    private Dictionary<string, int> Consumed()
+    {
+        var session = _session!;
+        var left = session.State.Items;
+        return session.Record.Setup.Items
+            .Select(i => (i.Key, Used: i.Value - left.GetValueOrDefault(i.Key)))
+            .Where(i => i.Used > 0)
+            .ToDictionary(i => i.Key, i => i.Used);
+    }
+
     private BattleEnd Ended() => _session!.State.Outcome == BattleOutcome.Defeat ? BattleEnd.Defeat : BattleEnd.Retreated;
 
     /// <summary>
@@ -123,8 +138,10 @@ public sealed partial class BattleScreen
         var play = _story!;
         var game = play.Game;
         var pending = _pending!;
-        var experience = end == BattleEnd.Victory ? _engine.Content.Encounter(pending.Encounter).Experience : 0;
-        var r = game.SettleBattle(pending.InstanceId, end, experience);
+        var encounter = _engine.Content.Encounter(pending.Encounter);
+        var victory = end == BattleEnd.Victory;
+        var consumed = Consumed();
+        var r = game.SettleBattle(pending.InstanceId, end, victory ? encounter.Experience : 0, consumed, victory ? encounter.Cultivation : 0);
         var notes = new List<(string, string)>();
         if (!r.Ok)
         {
@@ -132,7 +149,9 @@ public sealed partial class BattleScreen
         }
         else
         {
-            notes.AddRange(r.Notices.Select(play.Describe).OfType<(string, string)>());
+            // 战斗里用掉的药写成“用去”，不当作交出物品。
+            notes.AddRange(r.Notices.Where(n => n.Kind != "item_lost" || !consumed.ContainsKey(n.Id)).Select(play.Describe).OfType<(string, string)>());
+            notes.AddRange(consumed.Select(c => ("物品", $"用去 {play.Name(c.Key)}{(c.Value > 1 ? $" ×{c.Value}" : "")}")));
         }
 
         if (end != BattleEnd.Victory && game.World.Battle is not null)

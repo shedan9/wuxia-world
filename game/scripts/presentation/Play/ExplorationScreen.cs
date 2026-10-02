@@ -35,7 +35,14 @@ public partial class ExplorationScreen : Control, IExploreDriver
     private Control _overlay = null!;
     private DialogueOverlay? _dialogue;
     private Control? _modal;
+
+    /// <summary>HUD 建立时的世界修订号；暂停菜单里分配潜能、换装备、买卖后回到探索页时据此刷新 HUD。</summary>
+    private long _hudRevision = -1;
+
+    /// <summary>自动走查已结束（停在要截图的画面上）。</summary>
+    private bool _autoplayFinished;
     private bool _leaving;
+    private bool _travelOpen;
     private string _partyKey = "";
     private (string Key, Vector2 Ground, float Height, string Label)? _goal;
     private double _autoWait = 0.5;
@@ -85,13 +92,15 @@ public partial class ExplorationScreen : Control, IExploreDriver
         }
 
         _staging = staging;
+        AppHost.Instance.Sound.PlayMusic(staging.Music, 2.5f);
+        AppHost.Instance.Sound.PlayAmbience(staging.Ambience);
         _partyKey = string.Join(",", World.Party);
         _goal = ComputeGoal();
         _view = staging.Layout switch
         {
             StageLayout.Town => new ExploreTownPreview { Driver = this },
             StageLayout.Inn => new ExploreInnPreview { Driver = this },
-            _ => new ExploreWildPreview { Driver = this },
+            _ => new ExploreWildPreview { Driver = this, Variant = staging.Wild },
         };
         _view.MouseFilter = MouseFilterEnum.Ignore;
         AddChild(_view);
@@ -105,10 +114,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         _overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_overlay);
 
-        foreach (var (kind, text) in play.PendingToasts.Concat(arrivalNotes))
-        {
-            _view.Toast(kind, text, "");
-        }
+        Toasts(play.PendingToasts.Concat(arrivalNotes).ToList());
 
         play.PendingToasts.Clear();
         if (DevCapture.CheckStaging)
@@ -200,7 +206,25 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     public override void _Process(double delta)
     {
-        if (DevCapture.Autoplay <= 0 || _play is null || _staging is null || InputLocked)
+        if (_play is not null && _hud is not null && _modal is null && _dialogue is null && !_leaving && _hudRevision != World.Revision)
+        {
+            RebuildHud();
+        }
+
+        if (DevCapture.Autoplay <= 0 || _play is null || _staging is null || _autoplayFinished)
+        {
+            return;
+        }
+
+        var main = Game.Rules.Content.Quests.Values.First(q => q.Kind == QuestKind.Main);
+        var done = World.QuestStatusOf(main.Id) == QuestStatus.Completed;
+        if (DevCapture.Walk && !_leaving && _dialogue is null && (StepTravelPanel(delta) || (!InputLocked && StepWalk(delta))))
+        {
+            return;
+        }
+
+        // 主线完成后停在章终回顾上截图；其余弹层、对话与换图期间不动。
+        if (InputLocked && !(done && _modal is not null && _dialogue is null && !_leaving))
         {
             return;
         }
@@ -212,9 +236,17 @@ public partial class ExplorationScreen : Control, IExploreDriver
         }
 
         _autoWait = 0.25;
-        var main = Game.Rules.Content.Quests.Values.First(q => q.Kind == QuestKind.Main);
-        var done = World.QuestStatusOf(main.Id) == QuestStatus.Completed;
-        var holdInScene = DevCapture.Hold is "journal" or "menu" or "saves" or "travel";
+
+        // 像玩家一样：升级后去人物页按流派推荐把潜能分完（走查也借此经过分配潜能的事务）。
+        // 截人物页时留着未分配的潜能，好看到加点界面。
+        if (Game.Growth is { } growth && growth.Unspent(World, growth.Hero) > 0 && Game.CanManage && DevCapture.Hold != "character")
+        {
+            var add = growth.Recommend(World, growth.Hero);
+            var allocated = Game.Allocate(growth.Hero, add);
+            GD.Print($"[autoplay] 分配潜能 {string.Join("/", GrowthText.Values(add))}：{(allocated.Ok ? "成功" : allocated.Error)}，{growth.Level(World)} 级");
+        }
+
+        var holdInScene = DevCapture.Hold is "journal" or "menu" or "saves" or "travel" or "character" or "martial" or "equipment" or "inventory" or "shop";
         var next = AutoTarget();
         if (done || DevCapture.AutoplaySteps >= DevCapture.Autoplay + (DevCapture.Hold is null || holdInScene ? 0 : 3) || next is null)
         {
@@ -224,31 +256,57 @@ public partial class ExplorationScreen : Control, IExploreDriver
                     OpenJournal();
                     break;
                 case "menu":
-                    ShowModal(GameMenu.Build(_play, CloseModal, OpenJournal, ShowModalMessage), 720, 640);
+                    AppHost.Instance.Menu.Open();
                     break;
                 case "saves":
                     _play.Save(SaveSlot.Manual(1));
-                    ShowModal(GameMenu.Build(_play, CloseModal, OpenJournal, ShowModalMessage, slots: true), 720, 640);
+                    AppHost.Instance.Menu.Open(slots: true);
                     break;
                 case "travel" when Game.Rules.Content.Routes.Values.FirstOrDefault(r => r.From == World.MapId) is { } route:
                     OpenTravel(route);
                     break;
+                case "character":
+                    OpenCharacter(0);
+                    break;
+                case "martial":
+                    OpenCharacter(1);
+                    break;
+                case "equipment":
+                    OpenCharacter(2);
+                    break;
+                case "inventory":
+                    OpenInventory();
+                    break;
+                case "shop" when Game.Rules.Content.Shops.Keys.FirstOrDefault() is { } shopId:
+                    OpenShop(shopId);
+                    break;
             }
 
-            _leaving = true;
+            // 走查到此为止：不再自动推进，但页面照常响应按键与点击（截图前注入的 --keys / --click 走真实输入路径）。
+            _autoplayFinished = true;
             var side = Game.Rules.Content.Quests.Values.Where(q => q.Kind == QuestKind.Side).Select(q => $"{q.Id} {World.QuestStatusOf(q.Id)}");
             var facts = World.Facts.Where(f => f.Key.Contains("side01") || f.Key.Contains("ferryman") || f.Key.Contains("custody") || f.Key.Contains("helper"));
             GD.Print($"[autoplay] 结束：{(done ? "主线完成" : next is null ? "没有可指向的目标" : "步数用完")}；支线 {string.Join("、", side)}；"
                 + $"事实 {string.Join("、", facts.Select(f => $"{f.Key}={f.Value}"))}；"
                 + $"地图 {World.MapId}，主线 {World.QuestStatusOf(main.Id)}/{World.Quests[main.Id].Stage}，队伍 {string.Join("、", World.Party.Select(_play.Name))}，"
                 + $"银 {World.Silver}，经验 {World.Experience}，线索 {World.Clues.Count}，时辰 {World.Clock}，修订 {World.Revision}");
-            DevCapture.FinishAutoplay(GetTree(), done || next is not null ? 0 : 2);
+            if (DevCapture.Walk)
+            {
+                GD.Print($"[walk] 结束：问题 {WalkProblems} 处");
+            }
+
+            DevCapture.FinishAutoplay(GetTree(), !(done || next is not null) ? 2 : DevCapture.Walk && WalkProblems > 0 ? 4 : 0);
             return;
         }
 
         var (key, ground, _, label) = next.Value;
         DevCapture.AutoplaySteps++;
         GD.Print($"[autoplay] 第 {DevCapture.AutoplaySteps} 步：{World.MapId} → {key}（{label}）");
+        if (DevCapture.Walk && BeginWalk(key, ground))
+        {
+            return;
+        }
+
         _view.PlaceHero(ground + new Vector2(60, 60));
         if (key.StartsWith("route:", StringComparison.Ordinal))
         {
@@ -296,6 +354,12 @@ public partial class ExplorationScreen : Control, IExploreDriver
                         continue;
                     }
 
+                    if (_staging.Stand.TryGetValue(who, out var stand))
+                    {
+                        actors.Add(new ExploreActor(Looks.Of(who), stand.At, stand.Facing));
+                        continue;
+                    }
+
                     var offset = MapStaging.AroundAnchor[i++ % MapStaging.AroundAnchor.Length];
                     actors.Add(new ExploreActor(Looks.Of(who), at + offset, offset.X > 0 ? -1 : 1));
                 }
@@ -317,7 +381,10 @@ public partial class ExplorationScreen : Control, IExploreDriver
             var list = new List<TownInteraction>();
             foreach (var item in Game.Interactables)
             {
-                var verb = item.Kind switch { InteractableKind.Pickup => "拾取", InteractableKind.Talk => "交谈", _ => "查看" };
+                var verb = item.Kind switch
+                {
+                    InteractableKind.Pickup => "拾取", InteractableKind.Talk => "交谈", InteractableKind.Shop => "买卖", _ => "查看",
+                };
                 Add(list, "interact:" + item.Id, MarkerItem, verb, _play.Text($"{Map.Id}.{item.Id}.name") ?? item.Id);
             }
 
@@ -363,7 +430,8 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     public (Vector2 Ground, float Height, string Label)? Goal => _goal is { } g ? (g.Ground, g.Height, g.Label) : null;
 
-    public string Caption => _staging.Caption;
+    /// <summary>借景说明只在开发信息打开时显示（F12 / --dev），玩家看不到。</summary>
+    public string Caption => AppHost.DevInfo ? _staging.Caption : "";
 
     public bool InputLocked => _dialogue is not null || _modal is not null || _leaving;
 
@@ -381,7 +449,11 @@ public partial class ExplorationScreen : Control, IExploreDriver
         {
             switch (kind)
             {
+                case "interact" when Game.Interactables.FirstOrDefault(i => i.Id == id) is { Kind: InteractableKind.Shop, Shop: { } shop }:
+                    OpenShop(shop);
+                    break;
                 case "interact":
+                    AppHost.Instance.Sound.Play("interact", -6, 0.05f);
                     var dialogue = Game.Interact(id, out var result);
                     if (dialogue is not null)
                     {
@@ -436,6 +508,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         _dialogue = new DialogueOverlay(_play, session, Finish);
         _hudLayer.Visible = false;
         _view.HudVisible = false;
+        _view.ToastsPaused = true;
         _overlay.AddChild(_dialogue);
     }
 
@@ -446,6 +519,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         _dialogue = null;
         _hudLayer.Visible = true;
         _view.HudVisible = true;
+        _view.ToastsPaused = false;
         Handle(r);
     }
 
@@ -475,13 +549,44 @@ public partial class ExplorationScreen : Control, IExploreDriver
             return;
         }
 
+        Toasts(notes);
+        Refresh();
+        var main = Game.Rules.Content.Quests.Values.FirstOrDefault(q => q.Kind == QuestKind.Main);
+        if (main is not null && r.Notices.Any(n => n.Kind == "quest_completed" && n.Id == main.Id))
+        {
+            // 主线完成：章终回顾。
+            ShowModal(ChapterEnd.Build(_play, CloseModal), 1240, 820);
+            return;
+        }
+
+        CallDeferred(MethodName.Resume);
+    }
+
+    /// <summary>推一批通知，并按其中最要紧的一类响一声（任务 > 武学 > 物品 > 线索）。</summary>
+    private void Toasts(IReadOnlyCollection<(string Kind, string Text)> notes)
+    {
         foreach (var (kind, text) in notes)
         {
             _view.Toast(kind, text, "");
         }
 
-        Refresh();
-        CallDeferred(MethodName.Resume);
+        if (notes.Count == 0)
+        {
+            return;
+        }
+
+        var sound = notes.Select(n => n.Kind switch
+        {
+            "任务" => (3, "notify.quest"),
+            "武学" or "成长" => (2, "notify.skill"),
+            "物品" or "银两" => (1, "notify.item"),
+            "线索" or "目标" => (0, "notify.clue"),
+            _ => (-1, ""),
+        }).MaxBy(x => x.Item1);
+        if (sound.Item1 >= 0)
+        {
+            AppHost.Instance.Sound.Play(sound.Item2, -3);
+        }
     }
 
     private IEnumerable<(string Kind, string Text)> Describe(CommitResult r)
@@ -525,6 +630,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         _hud?.QueueFree();
         _hud = PlayHud.Build(_play);
         _hudLayer.AddChild(_hud);
+        _hudRevision = World.Revision;
     }
 
     // ── 换图与战斗 ───────────────────────────────────────
@@ -585,6 +691,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         column.AddChild(Ui.Rule(dark: true));
         column.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Spacer(), Ui.KeyHints(true, ("Enter", "出发"), ("Esc", "取消"))));
         ShowModal(column, 760, 420);
+        _travelOpen = true;
         buttons.FirstOrDefault()?.CallDeferred(Control.MethodName.GrabFocus);
     }
 
@@ -600,6 +707,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
     private void Depart(RouteDefinition route, TravelMode mode)
     {
         CloseModal();
+        AppHost.Instance.Sound.Play(mode == TravelMode.Ferry ? "travel.oar" : "travel.whoosh", -2);
         try
         {
             Go(Game.BeginRoute(route.Id, mode));
@@ -637,11 +745,14 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
         switch (key.Keycode)
         {
-            case Key.Escape:
-                ShowModal(GameMenu.Build(_play, CloseModal, OpenJournal, ShowModalMessage), 720, 640);
-                break;
             case Key.J:
                 OpenJournal();
+                break;
+            case Key.C:
+                OpenCharacter(0);
+                break;
+            case Key.I:
+                OpenInventory();
                 break;
             case Key.F5:
                 var r = _play.Save(SaveSlot.Quick);
@@ -657,7 +768,34 @@ public partial class ExplorationScreen : Control, IExploreDriver
         GetViewport().SetInputAsHandled();
     }
 
-    private void OpenJournal() => ShowModal(Journal.Build(_play), 1500, 860);
+    private void OpenJournal()
+    {
+        ShowModal(Journal.Build(_play), 1500, 860);
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
+    /// <summary>人物页（C）：在探索中可分配潜能、换装备、调整装配与修炼。</summary>
+    private void OpenCharacter(int tab)
+    {
+        ShowModal(CharacterPage.Build(_play, tab), PageWidth, PageHeight);
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
+    private void OpenInventory()
+    {
+        ShowModal(InventoryPage.Build(_play), PageWidth, PageHeight);
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
+    private void OpenShop(string shopId)
+    {
+        ShowModal(ShopPanel.Build(_play, shopId), PageWidth, PageHeight);
+    }
+
+    /// <summary>人物、行囊与店铺页的面板尺寸（1920×1080 画布）。</summary>
+    public const float PageWidth = 1720;
+
+    public const float PageHeight = 960;
 
     private void ShowModalMessage(string text) => _view.Toast("提示", text, "");
 
@@ -682,12 +820,15 @@ public partial class ExplorationScreen : Control, IExploreDriver
         Motion.Enter(panel, 0, Motion.Normal, rise: 20);
         _overlay.AddChild(layer);
         _modal = layer;
+        AppHost.Instance.Sound.Play("ui.open", -6);
     }
 
     private void CloseModal()
     {
+        _travelOpen = false;
         if (_modal is { } layer)
         {
+            AppHost.Instance.Sound.Play("ui.close", -8);
             _modal = null;
             layer.QueueFree();
             RebuildHud();

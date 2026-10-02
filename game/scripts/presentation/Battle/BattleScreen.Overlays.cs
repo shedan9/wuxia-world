@@ -1,6 +1,7 @@
 using Godot;
 using WuxiaWorld.Application.Combat;
 using WuxiaWorld.Domain.Combat;
+using WuxiaWorld.Game.Presentation.App;
 using Side = WuxiaWorld.Domain.Combat.Side;
 using WuxiaWorld.Game.Presentation.Ui;
 
@@ -124,6 +125,8 @@ public sealed partial class BattleScreen
     {
         var session = _session!;
         _resultOpen = true;
+        AppHost.Instance.Sound.PlayMusic(null, 3f);
+        AppHost.Instance.Sound.Play(session.State.Outcome == BattleOutcome.Victory ? "battle.victory" : "battle.defeat", -2);
         HideTargeting();
         Veil();
 
@@ -138,7 +141,7 @@ public sealed partial class BattleScreen
         heading.AddThemeColorOverride("font_color", UiPalette.TextOnDark);
         heading.AddThemeColorOverride("font_outline_color", (state.Outcome == BattleOutcome.Victory ? UiPalette.Accent : UiPalette.Warm) with { A = 0.6f });
         heading.HorizontalAlignment = HorizontalAlignment.Center;
-        var subtitle = Ui.Text($"{sub}　·　第 {state.Round} 轮　·　{session.Record.Entries.Count} 条命令", UiTheme.GiltLabel, 24);
+        var subtitle = Ui.Text(_story is null ? $"{sub}　·　第 {state.Round} 轮　·　{session.Record.Entries.Count} 条命令" : $"{sub}　·　历 {state.Round} 轮", UiTheme.GiltLabel, 24);
         subtitle.HorizontalAlignment = HorizontalAlignment.Center;
 
         var party = Ui.Column(UiPalette.SpaceS, Ui.Section("我方", dark: true));
@@ -148,24 +151,58 @@ public sealed partial class BattleScreen
         }
 
         var encounter = _engine.Content.Encounter(state.EncounterId);
-        var replay = BattleSession.Replay(_engine, session.Record);
-        var record = Ui.Column(UiPalette.SpaceS, Ui.Section("战斗记录", dark: true),
-            Line("随机种子", $"{session.Record.Setup.Seed}", ""),
-            Line("内容版本", session.Record.ContentVersion, $"规则版本 {session.Record.RulesetVersion}"),
-            Line("终局哈希", session.Record.FinalHash, ""),
-            Line("重放校验", replay is null ? "一致" : $"第 {replay} 条命令不一致", "同一输入重算一遍比对逐条哈希"),
-            Line("所得", state.Outcome == BattleOutcome.Victory ? $"经验 {encounter.Experience}" : "—",
-                _story is null ? "原型不写存档" : "确认后以战斗实例一次性提交，重复确认不重复发奖"));
+        var record = Ui.Column(UiPalette.SpaceS);
+        if (_story is not null)
+        {
+            // 剧情战：给玩家看所得与消耗；技术记录只在开发信息打开时附在下面。
+            record.AddChild(Ui.Section(state.Outcome == BattleOutcome.Victory ? "所得" : "战况", dark: true));
+            var won = state.Outcome == BattleOutcome.Victory;
+            record.AddChild(Line("经验", won ? $"+{encounter.Experience}" : "—", ""));
+            record.AddChild(Line("修为", won && encounter.Cultivation > 0 ? $"+{encounter.Cultivation}" : "—", ""));
+            if (won && _story.Game.Growth is { } growth)
+            {
+                // 结算后会不会升级：按提交前的经验预先算出，提示去人物页分配潜能。
+                var before = growth.Level(_story.Game.World);
+                var after = _story.Game.Rules.LevelOf(_story.Game.World.Experience + encounter.Experience);
+                if (after > before)
+                {
+                    record.AddChild(Line("升级", $"第 {before} 级 → 第 {after} 级", "C 人物页分配潜能"));
+                }
+            }
+
+            var used = Consumed();
+            record.AddChild(Line("用去", used.Count == 0 ? "无" : string.Join("、", used.Select(u => $"{_story.Name(u.Key)}{(u.Value > 1 ? $" ×{u.Value}" : "")}")), ""));
+            if (state.Outcome != BattleOutcome.Victory)
+            {
+                record.AddChild(Ui.Text("再战会从头重开这一场；暂退回到此地的安全处，随时可以回来再打。", UiTheme.DarkMutedLabel, 18, wrap: true));
+            }
+        }
+
+        if (_story is null || AppHost.DevInfo)
+        {
+            var replay = BattleSession.Replay(_engine, session.Record);
+            record.AddChild(Ui.Section("战斗记录", dark: true));
+            record.AddChild(Line("随机种子", $"{session.Record.Setup.Seed}", ""));
+            record.AddChild(Line("内容版本", session.Record.ContentVersion, $"规则版本 {session.Record.RulesetVersion}"));
+            record.AddChild(Line("终局哈希", session.Record.FinalHash, ""));
+            record.AddChild(Line("重放校验", replay is null ? "一致" : $"第 {replay} 条命令不一致", "同一输入重算一遍比对逐条哈希"));
+            if (_story is null)
+            {
+                record.AddChild(Line("所得", state.Outcome == BattleOutcome.Victory ? $"经验 {encounter.Experience}" : "—", "原型不写存档"));
+            }
+        }
+
+        Control actions = _story is null
+            ? Ui.KeyActions(true, ("R", "同种子重来", () => ResultKey(Key.R)), ("N", "换种子再战", () => ResultKey(Key.N)), ("B", "重新配置", () => ResultKey(Key.B)))
+            : state.Outcome == BattleOutcome.Victory
+                ? Ui.KeyActions(true, ("Enter", "继续", () => StoryResultKey(Key.Enter)))
+                : Ui.KeyActions(true, ("R", "再战", () => StoryResultKey(Key.R)), ("B", "暂退", () => StoryResultKey(Key.B)));
 
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
         panel.AddChild(Ui.Column(UiPalette.SpaceL, heading, subtitle, Ui.Rule(dark: true),
             Ui.Row(UiPalette.SpaceXxl, Ui.Expand(party), Ui.Expand(record)),
             Ui.Rule(dark: true),
-            Ui.Row(UiPalette.SpaceM, Ui.Spacer(), _story is null
-                ? Ui.KeyHints(true, ("R", "同种子重来"), ("N", "换种子再战"), ("B", "重新配置"), ("Esc", "返回标题"))
-                : state.Outcome == BattleOutcome.Victory
-                    ? Ui.KeyHints(true, ("Enter", "继续"))
-                    : Ui.KeyHints(true, ("R", "再战"), ("B", "暂退")))));
+            Ui.Row(UiPalette.SpaceM, Ui.Spacer(), actions)));
         _overlay.AddChild(Ui.Place(panel, 0.5f, 0.5f, -800, -330, 800, 330));
         Motion.Enter(panel, 0.1f, Motion.Slow, rise: 30);
     }

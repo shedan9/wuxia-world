@@ -1,4 +1,5 @@
 using Godot;
+using WuxiaWorld.Game.Presentation.Audio;
 using WuxiaWorld.Game.Presentation.Play;
 using WuxiaWorld.Game.Presentation.Ui;
 
@@ -14,8 +15,23 @@ public partial class AppHost : Node
 
     public SceneRouter Router { get; private set; } = null!;
 
+    /// <summary>台词配音播放（音频管理挂在宿主下，不另设单例）。</summary>
+    public VoicePlayer Voice { get; private set; } = null!;
+
+    /// <summary>配乐、环境声与音效。</summary>
+    public SoundDirector Sound { get; private set; } = null!;
+
+    /// <summary>一局进行中按 Esc 打开的暂停菜单（保存、读取、札记、设置、返回标题、退出游戏）。</summary>
+    public PauseMenu Menu { get; private set; } = null!;
+
     /// <summary>进行中的一局游戏（M2）；标题页、场景目录与 M0 展示页时为 null。</summary>
     public PlaySession? Play { get; set; }
+
+    /// <summary>
+    /// 显示开发信息（台词编号与锁稿状态、配音状态、借景说明、战斗种子等）。玩家默认看不到；
+    /// 启动参数 <c>--dev</c> 打开，游戏中 F12 切换（各页在下次建立时生效）。
+    /// </summary>
+    public static bool DevInfo { get; set; }
 
     public override void _EnterTree()
     {
@@ -24,6 +40,23 @@ public partial class AppHost : Node
         GetTree().Root.Theme = UiTheme.Build();
         Router = new SceneRouter();
         AddChild(Router);
+        Voice = new VoicePlayer();
+        AddChild(Voice);
+        // 暂停菜单打开时配乐、环境声与界面音效照常（配音随场景树暂停）。
+        Sound = new SoundDirector { ProcessMode = ProcessModeEnum.Always };
+        AddChild(Sound);
+        Menu = new PauseMenu();
+        AddChild(Menu);
+    }
+
+    public override void _Ready()
+    {
+        // 总线由 SoundDirector / VoicePlayer 建好后再读设置、套音量；截图模式不改窗口。
+        GameSettings.Load();
+        if (!GameSettings.Fullscreen && DevCapture.Output is null)
+        {
+            EnterWindowed();
+        }
     }
 
     public override void _Input(InputEvent @event)
@@ -33,15 +66,16 @@ public partial class AppHost : Node
             && key.Keycode is Key.Enter or Key.KpEnter)
         {
             var fullscreen = DisplayServer.WindowGetMode() is DisplayServer.WindowMode.Fullscreen or DisplayServer.WindowMode.ExclusiveFullscreen;
-            if (fullscreen)
-            {
-                EnterWindowed();
-            }
-            else
-            {
-                DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
-            }
+            SetFullscreen(!fullscreen);
 
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
+        if (@event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.F12 })
+        {
+            DevInfo = !DevInfo;
+            GD.Print($"开发信息：{(DevInfo ? "显示" : "隐藏")}");
             GetViewport().SetInputAsHandled();
         }
     }
@@ -50,6 +84,21 @@ public partial class AppHost : Node
     /// 切到窗口：窗口按所在屏幕可用区域（扣除任务栏）的 80% 宽高取尺寸并居中，不固定像素，4K 与 1080p 屏上观感一致；
     /// 逻辑画布按 expand 适配窗口宽高比。模式切换要过几帧才落定，之后再设尺寸，否则会被还原成切换前记下的窗口尺寸。
     /// </summary>
+    /// <summary>切换全屏 / 窗口并记入设置。</summary>
+    public void SetFullscreen(bool on)
+    {
+        GameSettings.Fullscreen = on;
+        GameSettings.Save();
+        if (on)
+        {
+            DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+        }
+        else
+        {
+            EnterWindowed();
+        }
+    }
+
     private async void EnterWindowed()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
@@ -66,9 +115,22 @@ public partial class AppHost : Node
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        if (!@event.IsActionPressed("ui_cancel"))
+        {
+            return;
+        }
+
+        // 一局进行中：各页没有要取消的东西时，取消键打开暂停菜单（探索、对话、剧情战、结算页都一样）；
+        // 不直接回标题，回标题只经菜单确认，免得误按丢掉进度。
+        if (Play is not null)
+        {
+            Menu.Open();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
         // M0 展示包：任意预览页按取消键都回到标题；标题页自己处理取消键（关闭弹层）。
-        // 游戏内的探索与剧情战斗自己处理取消键（菜单），不会落到这里。
-        if (@event.IsActionPressed("ui_cancel") && !Router.IsAt(ScenePaths.MainMenu))
+        if (!Router.IsAt(ScenePaths.MainMenu))
         {
             Router.GoTo(ScenePaths.MainMenu);
             GetViewport().SetInputAsHandled();

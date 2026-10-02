@@ -296,13 +296,22 @@ public sealed partial class BattleScreen
     private Control BuildSceneTag()
     {
         _sceneTitle = Ui.Text("", UiTheme.DarkLabel, 20);
-        var note = AppHost.Instance.Play is { Game.World.Battle: not null }
+        var story = AppHost.Instance.Play is { Game.World.Battle: not null };
+        var note = story
             ? "剧情战：结算写回世界；动作为补间占位，经典人物暂用占位模板"
             : "M1 战斗原型：结算来自规则内核；动作为补间占位";
-        var tag = Ui.Panel(UiTheme.GlassPanel, Ui.Column(2,
-            _sceneTitle,
-            Ui.Text(note, UiTheme.DarkMutedLabel, 15, wrap: true)));
-        return Ui.Place(tag, 0, 0, 40, 30, 430, 140);
+        var column = Ui.Column(2, _sceneTitle);
+        if (!story || AppHost.DevInfo)
+        {
+            // 剧情战的开发说明只在开发信息打开时显示（F12 / --dev）；原型页本身就是开发页，照常显示。
+            column.AddChild(Ui.Text(note, UiTheme.DarkMutedLabel, 15, wrap: true));
+        }
+
+        var tag = Ui.Panel(UiTheme.GlassPanel, column);
+        tag.SizeFlagsVertical = SizeFlags.ShrinkBegin;
+        var holder = new VBoxContainer { MouseFilter = MouseFilterEnum.Ignore };
+        holder.AddChild(tag);
+        return Ui.Place(holder, 0, 0, 40, 30, 430, 140);
     }
 
     // ── 指令区 ───────────────────────────────────────────

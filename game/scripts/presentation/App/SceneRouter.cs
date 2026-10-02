@@ -29,6 +29,9 @@ public partial class SceneRouter : CanvasLayer
 
     public bool IsAt(string scenePath) => CurrentPath == scenePath;
 
+    /// <summary>色幕正在淡出淡入（此时不开暂停菜单，免得把幕布停在半截）。</summary>
+    public bool Busy => _busy;
+
     public static bool CanGoTo(string scenePath) => ResourceLoader.Exists(scenePath);
 
     /// <summary>当前场景是否经 <c>instant</c> 切换进入；为 true 时新场景应跳过入场动效，直接呈现终态。</summary>

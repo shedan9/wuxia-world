@@ -10,7 +10,8 @@ using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 
 /// <summary>
 /// 探索 HUD 的游戏版（版式同 docs/art/UI_DESIGN.md 第 5.3 节、M0 已验收的 <see cref="ExploreHudKit"/>）：
-/// 地点与时辰、目标追踪、队伍、快捷键全部读已提交的世界状态，每次提交后整体重建。
+/// 地点与时辰、目标追踪、队伍全部读已提交的世界状态，每次提交后整体重建。
+/// 不设常驻快捷键栏（2026-10-02 用户要求）：按键只在需要时出现（交互提示的 E、追踪框的 J）。
 /// </summary>
 public static class PlayHud
 {
@@ -22,7 +23,6 @@ public static class PlayHud
         root.AddChild(ExploreHudKit.Place("芦湾", play.Name(w.MapId), PlaySession.ClockText(w.Clock)));
         root.AddChild(Tracker(play));
         root.AddChild(Party(play));
-        root.AddChild(ExploreHudKit.Shortcuts(("WASD", "行走"), ("E", "交互"), ("J", "札记"), ("F5", "快存"), ("Esc", "菜单")));
         return root;
     }
 

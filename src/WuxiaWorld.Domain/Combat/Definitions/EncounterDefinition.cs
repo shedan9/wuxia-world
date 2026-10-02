@@ -70,4 +70,6 @@ public sealed record EncounterDefinition
 
     /// <summary>胜利结算后的经验与修为（战后成长在 M2 的应用事务里一次性提交）。</summary>
     public int Experience { get; init; }
+
+    public int Cultivation { get; init; }
 }

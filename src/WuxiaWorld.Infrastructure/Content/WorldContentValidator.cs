@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using WuxiaWorld.Domain.Characters;
 using WuxiaWorld.Domain.World;
 
 namespace WuxiaWorld.Infrastructure.Content;
@@ -31,10 +32,39 @@ public static partial class WorldContentValidator
         var regions = w.Maps.Select(m => m.Region).ToHashSet(StringComparer.Ordinal);
         var encounters = combat?.Encounters.Select(e => e.Id).ToHashSet(StringComparer.Ordinal);
         var combatants = combat?.Combatants.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
+        var itemDefs = w.Items.GroupBy(i => i.Id).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
+        var shops = w.Shops.Select(x => x.Id).ToHashSet(StringComparer.Ordinal);
+
+        // 武学 ID 的前缀即种类（世界规则据此自动装配，见 WorldRules.AutoEquip）：招式 skill.*，心法 art.inner.*，轻功 art.qinggong.*，天赋 art.talent.*。
+        string? MartialProblem(string id)
+        {
+            if (combat is null)
+            {
+                return IdPattern().IsMatch(id) ? null : "ID 格式不对";
+            }
+
+            if (id.StartsWith("skill.", StringComparison.Ordinal))
+            {
+                return combat.Skills.Any(x => x.Id == id) ? null : "招式未定义";
+            }
+
+            if (combat.Arts.FirstOrDefault(a => a.Id == id) is not { } art)
+            {
+                return "不是已定义的招式或心法";
+            }
+
+            var prefix = art.Kind switch
+            {
+                ArtKind.Inner => "art.inner.",
+                ArtKind.Qinggong => "art.qinggong.",
+                _ => "art.talent.",
+            };
+            return id.StartsWith(prefix, StringComparison.Ordinal) ? null : $"种类与 ID 前缀不符（应以 {prefix} 开头）";
+        }
 
         var all = w.Maps.Select(x => x.Id).Concat(w.Routes.Select(x => x.Id)).Concat(w.Events.Select(x => x.Id))
             .Concat(w.Quests.Select(x => x.Id)).Concat(w.Dialogues.Select(x => x.Id)).Concat(w.Items.Select(x => x.Id))
-            .Concat(w.Characters.Select(x => x.Id));
+            .Concat(w.Characters.Select(x => x.Id)).Concat(w.Shops.Select(x => x.Id));
         foreach (var group in all.GroupBy(id => id, StringComparer.Ordinal))
         {
             if (group.Count() > 1)
@@ -104,7 +134,8 @@ public static partial class WorldContentValidator
                 {
                     WorldEffectType.SetFact or WorldEffectType.ClearFact => e.Id is not null && IdPattern().IsMatch(e.Id),
                     WorldEffectType.GrantItem or WorldEffectType.RemoveItem => e.Id is not null && items.Contains(e.Id) && e.Amount > 0,
-                    WorldEffectType.ChangeSilver or WorldEffectType.AdvanceClock or WorldEffectType.GrantExperience => true,
+                    WorldEffectType.ChangeSilver or WorldEffectType.AdvanceClock or WorldEffectType.GrantExperience
+                        or WorldEffectType.GrantCultivation => true,
                     WorldEffectType.ChangeRelationship or WorldEffectType.MeetCharacter or WorldEffectType.JoinParty
                         or WorldEffectType.LeaveParty => e.Id is not null && characters.Contains(e.Id),
                     WorldEffectType.AddCommitment => e.Id is not null && characters.Contains(e.Id) && e.Value is not null,
@@ -113,7 +144,8 @@ public static partial class WorldContentValidator
                         e.Id is not null && quests.ContainsKey(e.Id),
                     WorldEffectType.CompleteObjective => e.Id is not null && quests.TryGetValue(e.Id, out var q)
                         && q.Stages.Any(s => s.Objectives.Any(o => o.Id == e.Value)),
-                    WorldEffectType.LearnSkill or WorldEffectType.ReachGate => e.Id is not null && IdPattern().IsMatch(e.Id),
+                    WorldEffectType.LearnSkill => e.Id is not null && MartialProblem(e.Id) is null,
+                    WorldEffectType.ReachGate => e.Id is not null && IdPattern().IsMatch(e.Id),
                     WorldEffectType.SetChapter => e.Id is not null && e.Value is not null,
                     WorldEffectType.RequestBattle => e.Id is not null && (encounters is null || encounters.Contains(e.Id)),
                     WorldEffectType.RequestTravel => e.Id is not null && maps.ContainsKey(e.Id),
@@ -187,6 +219,125 @@ public static partial class WorldContentValidator
             {
                 Err($"{i.Id}：主线必要物品不可出售，不应有价格");
             }
+
+            if (i.Slot is not null && (i.Stack != 1 || i.Bonus == StatBonus.None))
+            {
+                Err($"{i.Id}：装备须单件（stack 1）并有加成");
+            }
+
+            if (i.Slot is null && i.Bonus != StatBonus.None)
+            {
+                Err($"{i.Id}：只有装备可带属性加成");
+            }
+
+            if (i.Slot is not null)
+            {
+                RequireText(i.Id + ".desc");
+            }
+        }
+
+        // 店铺
+        foreach (var shop in w.Shops)
+        {
+            RequireText(shop.Id + ".name");
+            if (shop.BuyBackBp is < 0 or > 10_000)
+            {
+                Err($"{shop.Id}：收购折率须在 0–10000 之间");
+            }
+
+            if (shop.Stock.Count == 0)
+            {
+                Err($"{shop.Id}：货单为空");
+            }
+
+            foreach (var entry in shop.Stock)
+            {
+                if (!itemDefs.TryGetValue(entry.Item, out var item))
+                {
+                    Err($"{shop.Id}：货单物品 {entry.Item} 不存在");
+                }
+                else if (item.Key || item.Category == ItemCategory.Quest)
+                {
+                    Err($"{shop.Id}：任务物品 {entry.Item} 不能上货单");
+                }
+                else if ((entry.Price ?? item.Price) <= 0)
+                {
+                    Err($"{shop.Id}：{entry.Item} 没有售价");
+                }
+            }
+
+            if (shop.Stock.GroupBy(e => e.Item).Any(g => g.Count() > 1))
+            {
+                Err($"{shop.Id}：货单物品重复");
+            }
+        }
+
+        // 成长设置
+        if (w.Progression is not { } prog)
+        {
+            Err("缺少成长设置 world/progression.json");
+        }
+        else
+        {
+            if (!heroes.Contains(prog.Hero))
+            {
+                Err($"成长设置：{prog.Hero} 不是主角人物");
+            }
+
+            if (prog.MaxLevel != StatFormula.MaxLevel)
+            {
+                Err($"成长设置：经验表给出 {prog.MaxLevel} 级，与规则等级上限 {StatFormula.MaxLevel} 不符");
+            }
+
+            if (prog.Experience.Count == 0 || prog.Experience[0] <= 0 || prog.Experience.Zip(prog.Experience.Skip(1)).Any(x => x.Second <= x.First))
+            {
+                Err("成长设置：经验表须为正且严格递增");
+            }
+
+            if (prog.MasteryCosts.Count == 0 || prog.MasteryCosts.Any(c => c <= 0) || prog.MasteryPowerBp <= 0)
+            {
+                Err("成长设置：熟练度消耗与加成须为正");
+            }
+
+            var b = prog.BaseAttributes;
+            if (b.Physique < 1 || b.Strength < 1 || b.Root < 1 || b.Agility < 1 || b.Insight < 1)
+            {
+                Err("成长设置：基础属性须至少为 1");
+            }
+
+            foreach (var style in prog.Styles)
+            {
+                foreach (var id in style.Skills.Concat(style.Arts))
+                {
+                    if (MartialProblem(id) is { } problem)
+                    {
+                        Err($"成长设置 流派 {style.Id}：{id} {problem}");
+                    }
+                }
+
+                if (style.Skills.Count > Domain.Combat.Definitions.Loadout.MaxSkills)
+                {
+                    Err($"成长设置 流派 {style.Id}：入门招式超过出手栏上限");
+                }
+            }
+
+            var slots = new HashSet<EquipSlot>();
+            foreach (var id in prog.StartingEquipment)
+            {
+                if (!itemDefs.TryGetValue(id, out var item) || item.Slot is not { } slot)
+                {
+                    Err($"成长设置：开局装备 {id} 不是已定义的装备");
+                }
+                else if (!slots.Add(slot))
+                {
+                    Err($"成长设置：开局装备 {id} 与其他开局装备同槽");
+                }
+            }
+
+            foreach (var c in prog.CatchUp)
+            {
+                CheckCondition("成长设置 旧档追赶", c.When);
+            }
         }
 
         foreach (var b in combat?.Items ?? [])
@@ -241,7 +392,23 @@ public static partial class WorldContentValidator
                     Err($"{where}：对白 {i.Dialogue} 不存在");
                 }
 
-                if (i.Dialogue is null && i.Effects.Count == 0)
+                if (i.Kind == InteractableKind.Shop)
+                {
+                    if (i.Shop is null || !shops.Contains(i.Shop))
+                    {
+                        Err($"{where}：店铺 {i.Shop} 不存在");
+                    }
+
+                    if (i.Dialogue is not null || i.Effects.Count > 0 || i.Once)
+                    {
+                        Err($"{where}：店铺交互物只开买卖面板，不带对白、效果，也不是一次性的");
+                    }
+                }
+                else if (i.Shop is not null)
+                {
+                    Err($"{where}：只有 shop 类交互物可指定店铺");
+                }
+                else if (i.Dialogue is null && i.Effects.Count == 0)
                 {
                     Err($"{where}：交互物既无对白也无效果");
                 }

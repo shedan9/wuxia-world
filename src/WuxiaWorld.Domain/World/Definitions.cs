@@ -1,3 +1,5 @@
+using WuxiaWorld.Domain.Characters;
+
 namespace WuxiaWorld.Domain.World;
 
 // 世界、任务、对白与地图的内容定义（架构文档 6.2、9.2）。字段为蛇形小写 JSON；显示名称与说明取文本表。
@@ -217,6 +219,9 @@ public enum InteractableKind
     Inspect,
     Talk,
     Pickup,
+
+    /// <summary>店铺：打开 <see cref="MapInteractable.Shop"/> 的买卖面板，不走对白。</summary>
+    Shop,
 }
 
 public sealed record MapInteractable
@@ -229,6 +234,9 @@ public sealed record MapInteractable
 
     /// <summary>一次性交互（宝箱、拾取）：用过记入地图差异，重进地图不刷新。</summary>
     public bool Once { get; init; }
+
+    /// <summary>店铺 ID（仅 <see cref="InteractableKind.Shop"/>）。</summary>
+    public string? Shop { get; init; }
 }
 
 public sealed record MapDefinition
@@ -342,6 +350,106 @@ public sealed record ItemDefinition
 
     /// <summary>主线必要物品：不可丢弃、出售（架构文档 9.1）。</summary>
     public bool Key { get; init; }
+
+    /// <summary>装备的固定加成（架构文档 8.4：每件 1–2 个功能词条，不做随机词条）。</summary>
+    public StatBonus Bonus { get; init; } = StatBonus.None;
+
+    /// <summary>装备槽；非装备为 null。</summary>
+    public EquipSlot? Slot => Category switch
+    {
+        ItemCategory.Weapon => EquipSlot.Weapon,
+        ItemCategory.Armor => EquipSlot.Armor,
+        ItemCategory.Boots => EquipSlot.Boots,
+        ItemCategory.Accessory => EquipSlot.Accessory,
+        ItemCategory.Charm => EquipSlot.Charm,
+        _ => null,
+    };
+}
+
+/// <summary>装备首发 5 槽（架构文档 8.4）：武器、衣甲、鞋、饰物、护符。</summary>
+public enum EquipSlot
+{
+    Weapon,
+    Armor,
+    Boots,
+    Accessory,
+    Charm,
+}
+
+public sealed record ShopEntry
+{
+    public required string Item { get; init; }
+
+    /// <summary>售价；缺省取物品目录价。</summary>
+    public int? Price { get; init; }
+}
+
+/// <summary>店铺：货单与收购折率。货单不限量（本阶段只有常规药品、干粮与基础装备，关键秘籍不在店里卖）。</summary>
+public sealed record ShopDefinition
+{
+    public required string Id { get; init; }
+    public IReadOnlyList<ShopEntry> Stock { get; init; } = [];
+
+    /// <summary>收购价 = 目录价 × 折率（万分比，向下取整）；主线必要物品与无价物品不收。</summary>
+    public int BuyBackBp { get; init; } = 5000;
+}
+
+/// <summary>主角流派的整套入门武学与推荐潜能分配（讨教三选一；旧档补齐与“推荐分配”按钮用）。</summary>
+public sealed record StyleDefinition
+{
+    /// <summary>与事实 <c>fact.hero.style</c> 的取值一致：<c>sword</c>、<c>fist</c>、<c>inner</c>。</summary>
+    public required string Id { get; init; }
+
+    public IReadOnlyList<string> Skills { get; init; } = [];
+
+    /// <summary>心法、轻功与天赋。</summary>
+    public IReadOnlyList<string> Arts { get; init; } = [];
+
+    /// <summary>推荐的潜能分配比例（按此权重分配可用潜能）。</summary>
+    public Attributes Recommended { get; init; } = new(1, 1, 1, 1, 1);
+}
+
+/// <summary>旧档追赶：存档来自加入成长系统之前时，满足条件即把经验与修为补到下限（只在迁移后的首次读取执行）。</summary>
+public sealed record CatchUpDefinition
+{
+    public required Condition When { get; init; }
+    public int Experience { get; init; }
+    public int Cultivation { get; init; }
+}
+
+/// <summary>
+/// 成长设置（架构文档 8.1–8.2）：等级经验表、主角基础属性、武学熟练度与流派。
+/// 经验累计不清零，等级由累计经验换算；每升一级得 <see cref="StatFormula.PotentialPerLevel"/> 点潜能。
+/// </summary>
+public sealed record ProgressionDefinition
+{
+    /// <summary>可由玩家养成的人物（目前只有主角）。</summary>
+    public string Hero { get; init; } = "char.hero";
+
+    /// <summary>主角 1 级、未分配潜能时的五项属性。</summary>
+    public Attributes BaseAttributes { get; init; } = new(5, 5, 5, 5, 5);
+
+    /// <summary>主角的战斗形象 ID。</summary>
+    public string? ArtId { get; init; }
+
+    /// <summary>升到第 2、3……级所需的累计经验；长度 = 等级上限 − 1。</summary>
+    public IReadOnlyList<int> Experience { get; init; } = [];
+
+    /// <summary>熟练度从第 n 阶升到 n+1 阶的修为消耗；长度 = 最高阶 − 1。</summary>
+    public IReadOnlyList<int> MasteryCosts { get; init; } = [];
+
+    /// <summary>熟练度每高一阶，该招式的效果强度增加的万分比（第 1 阶为基准）。</summary>
+    public int MasteryPowerBp { get; init; } = 500;
+
+    public IReadOnlyList<StyleDefinition> Styles { get; init; } = [];
+
+    /// <summary>新游戏时主角身上的装备（同时计入行囊再装上）。</summary>
+    public IReadOnlyList<string> StartingEquipment { get; init; } = [];
+
+    public IReadOnlyList<CatchUpDefinition> CatchUp { get; init; } = [];
+
+    public int MaxLevel => Experience.Count + 1;
+    public int MaxMastery => MasteryCosts.Count + 1;
 }
 
 public enum CharacterOrigin

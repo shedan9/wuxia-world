@@ -17,7 +17,7 @@ public sealed record DialogueChapter
 }
 
 /// <summary>
-/// 世界内容包：地图、路线、地区事件、任务、对白、物品目录、人物与新游戏设置，
+/// 世界内容包：地图、路线、地区事件、任务、对白、物品目录、人物、店铺、成长设置与新游戏设置，
 /// 由内容编译器合成为 <c>game/generated/content/world.json</c>（架构文档 9.3）。
 /// </summary>
 public sealed record WorldBundle
@@ -33,6 +33,10 @@ public sealed record WorldBundle
     public IReadOnlyList<DialogueChapter> Chapters { get; init; } = [];
     public IReadOnlyList<ItemDefinition> Items { get; init; } = [];
     public IReadOnlyList<CharacterDefinition> Characters { get; init; } = [];
+    public IReadOnlyList<ShopDefinition> Shops { get; init; } = [];
+
+    /// <summary>成长设置（<c>world/progression.json</c>）。</summary>
+    public ProgressionDefinition? Progression { get; init; }
 
     /// <summary>中文文本表：与战斗包读取同一批文件，世界包单独加载时也能显示名称。</summary>
     public IReadOnlyDictionary<string, string> Text { get; init; } = new Dictionary<string, string>();
@@ -40,7 +44,8 @@ public sealed record WorldBundle
     public IEnumerable<DialogueDefinition> Dialogues => Chapters.SelectMany(c => c.Dialogues);
 
     public WorldContent ToContent() =>
-        new(Maps, Routes, Events, Quests, Dialogues, Items, Characters, NewGame ?? throw new InvalidDataException("缺少新游戏设置 world/new_game.json"));
+        new(Maps, Routes, Events, Quests, Dialogues, Items, Characters, NewGame ?? throw new InvalidDataException("缺少新游戏设置 world/new_game.json"),
+            Progression ?? throw new InvalidDataException("缺少成长设置 world/progression.json"), Shops);
 
     public string Name(string id) => Text.TryGetValue(id + ".name", out var name) ? name : id;
 
@@ -62,6 +67,8 @@ public static class WorldContentLoader
         }
 
         NewGameDefinition? newGame = null;
+        ProgressionDefinition? progression = null;
+        var shops = new List<ShopDefinition>();
         var maps = new List<MapDefinition>();
         var routes = new List<RouteDefinition>();
         var events = new List<StoryEventDefinition>();
@@ -80,6 +87,12 @@ public static class WorldContentLoader
                 {
                     case ["world", "new_game.json"]:
                         newGame = Read<NewGameDefinition>(json);
+                        break;
+                    case ["world", "progression.json"]:
+                        progression = Read<ProgressionDefinition>(json);
+                        break;
+                    case ["regions", _, "shops", ..]:
+                        shops.AddRange(Read<List<ShopDefinition>>(json));
                         break;
                     case ["characters", "characters.json"]:
                         characters.AddRange(Read<List<CharacterDefinition>>(json));
@@ -120,7 +133,7 @@ public static class WorldContentLoader
         return new WorldBundle
         {
             ContentVersion = ContentFiles.Version(root),
-            NewGame = newGame, Maps = maps, Routes = routes, Events = events, Quests = quests,
+            NewGame = newGame, Progression = progression, Shops = shops, Maps = maps, Routes = routes, Events = events, Quests = quests,
             Chapters = chapters, Items = items, Characters = characters, Text = text,
         };
     }

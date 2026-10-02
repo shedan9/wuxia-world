@@ -53,6 +53,7 @@ public abstract partial class ExploreStage : Control
     private Vector2 _heading = new(1, 0);
     private float _zoom = 1;
     private bool _cameraPlaced;
+    private float _stride;
     private Rect2 _cameraBounds;
 
     protected WalkerFigure Hero { get; private set; } = null!;
@@ -62,6 +63,21 @@ public abstract partial class ExploreStage : Control
 
     /// <summary>主角当前所在（世界平面坐标）。</summary>
     public Vector2 HeroGround => Hero.Ground;
+
+    /// <summary>
+    /// 自动走查的“虚拟摇杆”（开发用，<c>--walk</c>）：给出世界平面上的行走方向，主角按快走速度走、照常碰撞与沿墙滑行；
+    /// 为 null 时读键盘。
+    /// </summary>
+    public Vector2? BotGround { get; set; }
+
+    /// <summary>当前高亮、按 E 会触发的交互点。</summary>
+    public TownInteraction? NearInteraction => _near;
+
+    /// <summary>布景的世界范围（自动走查寻路用）。</summary>
+    public Rect2 WorldBounds => Bounds;
+
+    /// <summary>交互距离（自动走查寻路用）。</summary>
+    public static float InteractReach => InteractRange;
 
     /// <summary>贴地层：画在所有排序件之下（地面、驳岸、室内的地砖与后墙）。</summary>
     protected Node2D GroundLayer { get; private set; } = null!;
@@ -110,6 +126,9 @@ public abstract partial class ExploreStage : Control
 
     /// <summary>站在某处时的高度（石阶上为负）。</summary>
     protected virtual float StepZ(Vector2 p) => 0;
+
+    /// <summary>脚步声的地面材质：<c>step.&lt;材质&gt;.N</c>（城镇石板、客栈木地板、野外泥土）。</summary>
+    protected virtual string StepSurface => "stone";
 
     /// <summary>每帧的布景小动效（船随水晃……）。</summary>
     protected virtual void Animate(float seconds)
@@ -293,7 +312,7 @@ public abstract partial class ExploreStage : Control
     {
         var region = Driver?.Region ?? PlaceInfo.Region;
         _mini = CreateMiniMap(() => (Hero.Ground, _heading), () => CurrentGoal?.Ground);
-        AddHud(ExploreHudKit.MiniMapFrame(_mini, region));
+        AddHud(ExploreHudKit.MiniMapFrame(_mini, region, mapKey: Driver is null));
         if (Driver is null)
         {
             var (_, name, time) = PlaceInfo;
@@ -347,6 +366,12 @@ public abstract partial class ExploreStage : Control
     /// <summary>左侧目标追踪；野外等不在第一章的布景换成本地的样例任务。</summary>
     protected virtual Control Tracker() => ExploreHudKit.Tracker();
 
+    /// <summary>暂停上方通知（对话、菜单打开时隐去并停住计时，关闭后继续）。</summary>
+    public bool ToastsPaused
+    {
+        set => _toasts.Paused = value;
+    }
+
     /// <summary>在上方通知栏推一条通知（见闻、物品……）。</summary>
     public void Toast(string kind, string text, string where) => _toasts.Push(kind, text, where);
 
@@ -356,6 +381,13 @@ public abstract partial class ExploreStage : Control
     {
         switch (@event)
         {
+            case InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left } click:
+                if (ClickWalk(click.Position))
+                {
+                    GetViewport().SetInputAsHandled();
+                }
+
+                break;
             case InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.WheelUp or MouseButton.WheelDown } wheel:
                 _zoom = Mathf.Clamp(_zoom * (wheel.ButtonIndex == MouseButton.WheelUp ? 1.05f : 1 / 1.05f), MinZoom, MaxZoom);
                 GetViewport().SetInputAsHandled();
@@ -393,6 +425,7 @@ public abstract partial class ExploreStage : Control
     public override void _Process(double delta)
     {
         var dt = (float)delta;
+        StepRoute(delta);
         MoveHero(dt);
         for (var i = 0; i < _followers.Count; i++)
         {
@@ -419,12 +452,24 @@ public abstract partial class ExploreStage : Control
             if (Input.IsPhysicalKeyPressed(Key.S) || Input.IsPhysicalKeyPressed(Key.Down)) input.Y += 1;
         }
 
-        var moving = input != Vector2.Zero;
+        if (input != Vector2.Zero && _route is not null)
+        {
+            // 按方向键接管：取消鼠标点地的自动行走。
+            StopAutoWalk();
+        }
+
+        var bot = Driver is not { InputLocked: true } ? BotGround : null;
+        var moving = input != Vector2.Zero || bot is { } b && b != Vector2.Zero;
         if (moving)
         {
             // 按屏幕方向走：换算成地面方向后按世界速度移动；分轴判定以便沿墙滑行。
-            var dir = TownView.GroundFromScreen(input).Normalized();
-            var speed = Input.IsPhysicalKeyPressed(Key.Shift) ? RunSpeed : WalkSpeed;
+            var dir = bot is { } g && g != Vector2.Zero ? g.Normalized() : TownView.GroundFromScreen(input).Normalized();
+            if (bot is not null)
+            {
+                input = new Vector2(TownView.ScreenX(dir), 0);
+            }
+
+            var speed = Input.IsPhysicalKeyPressed(Key.Shift) || bot is not null ? RunSpeed : WalkSpeed;
             var step = dir * speed * dt;
             var pos = Hero.Ground;
             if (Walkable(pos + new Vector2(step.X, 0))) pos.X += step.X;
@@ -432,6 +477,13 @@ public abstract partial class ExploreStage : Control
             if (input.X != 0) Hero.Facing = input.X > 0 ? 1 : -1;
             _heading = dir;
             Hero.Phase += (pos - Hero.Ground).Length() / 32;
+            _stride += (pos - Hero.Ground).Length();
+            if (_stride > speed * 0.42f)
+            {
+                _stride = 0;
+                AppHost.Instance.Sound.Play("step." + StepSurface, -13, 0.07f);
+            }
+
             Hero.Place(pos, StepZ(pos));
             if (_trail[^1].DistanceTo(pos) > 8)
             {

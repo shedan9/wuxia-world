@@ -60,7 +60,9 @@ public sealed class UnitView
         Standee = new BattleStandee
         {
             Tone = tone, FacingLeft = unit.Side == Side.Enemy, Mechanism = Mechanism, Height = height,
-            ArtId = unit.Template.ArtId,
+            // 占位模板没有形象时，剧情人物（char.*）用探索里同一张全身形象（figure.<人物>），没有才画剪影。
+            ArtId = unit.Template.ArtId ?? (unit.Id.StartsWith("char.", StringComparison.Ordinal)
+                && Art.FigureArt.Find("figure." + unit.Id["char.".Length..]) is not null ? "figure." + unit.Id["char.".Length..] : null),
         };
 
         // 头顶血条：薄黛底托一条气血，下接一道细架势线（架势是破招、打断蓄力的依据，保留为最细的一条）。

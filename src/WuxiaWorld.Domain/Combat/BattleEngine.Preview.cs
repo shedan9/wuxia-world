@@ -44,6 +44,7 @@ public sealed partial class BattleEngine
         }
 
         var hostile = target.Side != actor.Side;
+        var power = actor.Template.PowerOf(skill.Id);
         int min = 0, max = 0, critMax = 0, stance = 0, heal = 0;
         foreach (var e in skill.Effects)
         {
@@ -51,15 +52,15 @@ public sealed partial class BattleEngine
             switch (e.Type)
             {
                 case EffectType.Damage when who.Side != actor.Side:
-                    min += DamageMath.Compute(DamageInputs(actor, who, skill, e, Bp.One, false, CombatConstants.VarianceMinBp));
-                    max += DamageMath.Compute(DamageInputs(actor, who, skill, e, Bp.One, false, CombatConstants.VarianceMaxBp));
-                    critMax += DamageMath.Compute(DamageInputs(actor, who, skill, e, Bp.One, true, CombatConstants.VarianceMaxBp));
+                    min += DamageMath.Compute(DamageInputs(actor, who, skill, e, power, false, CombatConstants.VarianceMinBp));
+                    max += DamageMath.Compute(DamageInputs(actor, who, skill, e, power, false, CombatConstants.VarianceMaxBp));
+                    critMax += DamageMath.Compute(DamageInputs(actor, who, skill, e, power, true, CombatConstants.VarianceMaxBp));
                     break;
                 case EffectType.StanceDamage when who.Side != actor.Side:
-                    stance += StanceDamageOf(actor, who, e.Amount);
+                    stance += StanceDamageOf(actor, who, (int)Bp.Apply(e.Amount, power));
                     break;
                 case EffectType.Heal:
-                    heal += (int)Math.Min(e.Amount + Bp.Apply(actor.Stats.InternalAttack, e.AmountScaleBp), who.Stats.MaxHp - who.Hp);
+                    heal += (int)Math.Min(Bp.Apply(e.Amount + Bp.Apply(actor.Stats.InternalAttack, e.AmountScaleBp), power), who.Stats.MaxHp - who.Hp);
                     break;
             }
         }

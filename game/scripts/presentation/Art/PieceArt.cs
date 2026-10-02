@@ -13,6 +13,12 @@ public sealed class PieceArt
 {
     private static readonly Dictionary<string, PieceArt?> Cache = [];
 
+    /// <summary>
+    /// 地面纹理同样常驻缓存：只在 _Draw 里用一次的纹理（客栈方砖地）若不留引用，C# 包装对象被 GC 回收后
+    /// 引擎即释放该纹理，已录下的绘制命令退成缺省白图（导出包流程中进客栈后地面发白，2026-10-02）。
+    /// </summary>
+    private static readonly Dictionary<string, (Texture2D Texture, float WorldSize)?> TextureCache = [];
+
     private PieceArt(Texture2D texture, Vector2 origin, float px)
     {
         Texture = texture;
@@ -69,14 +75,21 @@ public sealed class PieceArt
             return null;
         }
 
-        var basePath = $"res://assets/art/{id.Split('.', 2)[0]}/{id}";
-        if (!ResourceLoader.Exists($"{basePath}.png") || !Godot.FileAccess.FileExists($"{basePath}.json"))
+        if (TextureCache.TryGetValue(id, out var cached))
         {
-            return null;
+            return cached;
         }
 
-        using var doc = JsonDocument.Parse(Godot.FileAccess.GetFileAsString($"{basePath}.json"));
-        return (GD.Load<Texture2D>($"{basePath}.png"), doc.RootElement.GetProperty("world_size").GetSingle());
+        var basePath = $"res://assets/art/{id.Split('.', 2)[0]}/{id}";
+        (Texture2D Texture, float WorldSize)? tex = null;
+        if (ResourceLoader.Exists($"{basePath}.png") && Godot.FileAccess.FileExists($"{basePath}.json"))
+        {
+            using var doc = JsonDocument.Parse(Godot.FileAccess.GetFileAsString($"{basePath}.json"));
+            tex = (GD.Load<Texture2D>($"{basePath}.png"), doc.RootElement.GetProperty("world_size").GetSingle());
+        }
+
+        TextureCache[id] = tex;
+        return tex;
     }
 
     /// <summary>

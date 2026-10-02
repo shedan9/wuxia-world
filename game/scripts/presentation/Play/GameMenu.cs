@@ -9,100 +9,171 @@ namespace WuxiaWorld.Game.Presentation.Play;
 using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 
 /// <summary>
-/// 探索中的菜单（Esc）：继续、保存、读取、札记、返回标题。保存只写手动槽（快速槽由 F5 写，自动槽由换图写）；
-/// 读取可读任何有效槽。对话、换图或待开战斗期间不能保存（架构文档 3、11），菜单本身也只在探索时打开。
+/// 游戏菜单的内容（由 <see cref="PauseMenu"/> 承载，一局中任意时刻按 Esc 打开）：继续、保存、读取、人物、行囊、札记、设置、返回标题、退出游戏。
+/// 保存只写手动槽（快速槽由 F5 写，自动槽由换图写）；对话、换图或战斗进行中不能保存（架构文档 3、11），按钮置灰并写明原因。
+/// 读取可读任何有效槽。子页（存读档、札记、设置、确认）按 Esc 回到主页，主页按 Esc 关闭菜单。
 /// </summary>
-public static class GameMenu
+public sealed class GameMenu
 {
-    /// <param name="slots">直接打开读取槽位页（截图用）。</param>
-    public static Control Build(PlaySession play, Action close, Action journal, Action<string> message, bool slots = false)
+    private readonly VBoxContainer _body = Ui.Column(UiPalette.SpaceM);
+    private readonly PlaySession _play;
+    private readonly Action _close;
+    private readonly Action<float, float> _resize;
+
+    private GameMenu(PlaySession play, Action close, Action<float, float> resize)
     {
-        var body = Ui.Column(UiPalette.SpaceM);
+        _play = play;
+        _close = close;
+        _resize = resize;
+    }
+
+    public const float Width = 760;
+    public const float Height = 860;
+
+    public Control Root => _body;
+
+    /// <summary>当前在子页时返回主页的动作；在主页时为 null（Esc 即关闭菜单）。</summary>
+    public Action? Back { get; private set; }
+
+    /// <param name="resize">切换页面时调整承载面板的宽高（札记页更宽）。</param>
+    /// <param name="slots">直接打开读取槽位页（截图用）。</param>
+    public static GameMenu Build(PlaySession play, Action close, Action<float, float> resize, bool slots = false)
+    {
+        var menu = new GameMenu(play, close, resize);
         if (slots)
         {
-            ShowSlots(body, play, close, journal, message, save: false);
+            menu.ShowSlots(save: false);
         }
         else
         {
-            ShowMain(body, play, close, journal, message);
+            menu.ShowMain();
         }
 
-        return body;
+        return menu;
     }
 
-    private static void ShowMain(VBoxContainer body, PlaySession play, Action close, Action journal, Action<string> message)
+    private void Page(float width = Width, float height = Height, bool sub = true)
     {
-        Ui.ClearChildren(body);
-        body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("暂歇"), Ui.Column(4,
+        Ui.ClearChildren(_body);
+        _resize(width, height);
+        Back = sub ? () => ShowMain() : null;
+    }
+
+    private void ShowMain()
+    {
+        Page(sub: false);
+        _body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("暂歇"), Ui.Column(4,
             Ui.Text("菜单", UiTheme.DarkTitleLabel, 40),
-            Ui.Text($"{play.Name(play.Game.World.MapId)}　·　{PlaySession.ClockText(play.Game.World.Clock)}", UiTheme.DarkMutedLabel, 18))));
-        body.AddChild(Ui.Rule(dark: true));
+            Ui.Text($"{_play.Name(_play.Game.World.MapId)}　·　{PlaySession.ClockText(_play.Game.World.Clock)}　·　游戏已暂停", UiTheme.DarkMutedLabel, 18))));
+        _body.AddChild(Ui.Rule(dark: true));
         Button? first = null;
-        void Item(string text, Action action, bool disabled = false, string? tooltip = null)
+        Button Item(string text, Action action, bool disabled = false, string? tooltip = null)
         {
             var b = Ui.Button(text, UiTheme.MenuItem, action, disabled, tooltip);
-            b.CustomMinimumSize = new Vector2(0, 60);
+            b.CustomMinimumSize = new Vector2(0, 58);
             b.MouseEntered += b.GrabFocus;
-            body.AddChild(b);
+            _body.AddChild(b);
             first ??= disabled ? null : b;
+            return b;
         }
 
-        Item("继续", close);
-        Item("保存进度", () => ShowSlots(body, play, close, journal, message, save: true), !play.Game.CanSave, "对话、换图或战斗进行中不能保存");
-        Item("读取进度", () => ShowSlots(body, play, close, journal, message, save: false));
-        Item("江湖札记", journal);
-        Item("返回标题", () => ConfirmTitle(body, play, close, journal, message));
-        body.AddChild(Ui.Spacer(horizontal: false));
-        body.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Spacer(), Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "确认"), ("Esc", "关闭"))));
+        var canSave = _play.Game.CanSave;
+        Item("继续", _close);
+        Item("保存进度", () => ShowSlots(save: true), !canSave);
+        if (!canSave)
+        {
+            // 置灰的原因直接写出来，不藏在悬停提示里（手柄、键盘都看得到）。
+            var why = Ui.Text("对话、换图或战斗进行中不能保存，告一段落后再存；换图时也会自动存档。", UiTheme.DarkMutedLabel, 16, wrap: true);
+            why.HorizontalAlignment = HorizontalAlignment.Center;
+            _body.AddChild(why);
+        }
+
+        Item("读取进度", () => ShowSlots(save: false));
+        Item("人物与武学", () => ShowPage(CharacterPage.Build(_play)));
+        Item("行囊", () => ShowPage(InventoryPage.Build(_play)));
+        Item("江湖札记", ShowJournal);
+        Item("江湖设置", () =>
+        {
+            Page();
+            _body.AddChild(SettingsPanel.Build(ShowMain));
+        });
+        Item("返回标题", () => Confirm("返回标题", "回到标题", () =>
+        {
+            _close();
+            AppHost.Instance.Play = null;
+            AppHost.Instance.Router.GoTo(ScenePaths.MainMenu);
+        }));
+        Item("退出游戏", () => Confirm("退出游戏", "退出", () => _body.GetTree().Quit()));
+        _body.AddChild(Ui.Spacer(horizontal: false));
+        _body.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Spacer(), Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "确认"), ("Esc", "继续"))));
         first?.CallDeferred(Control.MethodName.GrabFocus);
     }
 
-    private static void ConfirmTitle(VBoxContainer body, PlaySession play, Action close, Action journal, Action<string> message)
+    /// <summary>人物、行囊页：与探索中按 C / I 打开的是同一页；对话、换图或战斗中只能查看。</summary>
+    private void ShowPage(Control page)
     {
-        Ui.ClearChildren(body);
-        body.AddChild(Ui.Text("返回标题", UiTheme.DarkTitleLabel, 40));
-        body.AddChild(Ui.Rule(dark: true));
-        body.AddChild(Ui.Text("上次存档之后的进度不会保留。换图时会自动存档，也可以先手动保存。", UiTheme.DarkLabel, 22, wrap: true));
-        var yes = Ui.Button("回到标题", UiTheme.PrimaryButton, () =>
-        {
-            AppHost.Instance.Play = null;
-            AppHost.Instance.Router.GoTo(ScenePaths.MainMenu);
-        });
-        var no = Ui.Button("再想想", UiTheme.DarkButton, () => ShowMain(body, play, close, journal, message));
-        foreach (var b in new[] { yes, no })
+        Page(ExplorationScreen.PageWidth, ExplorationScreen.PageHeight);
+        _body.AddChild(Ui.Expand(page, vertical: true));
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
+    private void ShowJournal()
+    {
+        Page(1500, 860);
+        _body.AddChild(Ui.Expand(Journal.Build(_play), vertical: true));
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
+    private void Confirm(string title, string yesText, Action yes)
+    {
+        Page(Width, 420);
+        _body.AddChild(Ui.Text(title, UiTheme.DarkTitleLabel, 40));
+        _body.AddChild(Ui.Rule(dark: true));
+        _body.AddChild(Ui.Text("上次存档之后的进度不会保留。换图时会自动存档，也可以先手动保存。", UiTheme.DarkLabel, 22, wrap: true));
+        var ok = Ui.Button(yesText, UiTheme.PrimaryButton, yes);
+        var no = Ui.Button("再想想", UiTheme.DarkButton, ShowMain);
+        foreach (var b in new[] { ok, no })
         {
             b.CustomMinimumSize = new Vector2(200, 56);
         }
 
-        body.AddChild(Ui.Spacer(horizontal: false));
-        body.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Spacer(), no, yes));
+        _body.AddChild(Ui.Spacer(horizontal: false));
+        _body.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Spacer(), no, ok));
         no.CallDeferred(Control.MethodName.GrabFocus);
     }
 
-    private static void ShowSlots(VBoxContainer body, PlaySession play, Action close, Action journal, Action<string> message, bool save)
+    private void ShowSlots(bool save, string? notice = null)
     {
-        Ui.ClearChildren(body);
-        body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Text(save ? "保存进度" : "读取进度", UiTheme.DarkTitleLabel, 40), Ui.Spacer(),
-            Ui.Button("返回", UiTheme.DarkButton, () => ShowMain(body, play, close, journal, message))));
-        body.AddChild(Ui.Rule(dark: true));
+        Page(Width, 700);
+        _body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Text(save ? "保存进度" : "读取进度", UiTheme.DarkTitleLabel, 40), Ui.Spacer(),
+            Ui.Button("返回", UiTheme.DarkButton, ShowMain)));
+        _body.AddChild(Ui.Rule(dark: true));
         var list = Ui.Column(UiPalette.SpaceS);
         Button? first = null;
-        var summaries = play.Saves.List().ToDictionary(s => s.Slot);
+        var summaries = _play.Saves.List().ToDictionary(s => s.Slot);
+        var status = Ui.Text(save ? "快速槽由 F5 写入，自动槽在换图后轮换写入。" : "正式存档损坏时会读取上一份备份并提示。", UiTheme.DarkMutedLabel, 16, wrap: true);
+
+        // 存读档的结果写在面板里（菜单的暗幕会盖住上方通知）。
+        void Say(string text)
+        {
+            status.Text = text;
+            status.AddThemeColorOverride("font_color", UiPalette.Gilt);
+        }
+
         foreach (var slot in SaveSlot.All)
         {
             var summary = summaries.GetValueOrDefault(slot);
             var usable = save ? slot.Kind == SlotKind.Manual : summary?.Header is not null;
-            var row = Ui.Button(SlotLine(play, slot, summary), UiTheme.ChoiceButton, usable ? () =>
+            var row = Ui.Button(SlotLine(_play, slot, summary), UiTheme.ChoiceButton, usable ? () =>
             {
                 if (save)
                 {
-                    var r = play.Save(slot);
-                    message(r.Ok ? $"已保存到{SlotName(slot)}" : $"保存失败：{r.Error}");
-                    ShowSlots(body, play, close, journal, message, save);
+                    var r = _play.Save(slot);
+                    ShowSlots(save, r.Ok ? $"已保存到{SlotName(slot)}" : $"保存失败：{r.Error}");
                 }
                 else
                 {
-                    LoadInto(slot, message);
+                    LoadInto(slot, Say);
                 }
             } : null, disabled: !usable);
             row.Alignment = HorizontalAlignment.Left;
@@ -121,8 +192,13 @@ public static class GameMenu
 
         var scroll = new ScrollContainer { HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled };
         scroll.AddChild(Ui.Expand(list));
-        body.AddChild(Ui.Expand(scroll, vertical: true));
-        body.AddChild(Ui.Text(save ? "快速槽由 F5 写入，自动槽在换图后轮换写入。" : "正式存档损坏时会读取上一份备份并提示。", UiTheme.DarkMutedLabel, 16));
+        _body.AddChild(Ui.Expand(scroll, vertical: true));
+        _body.AddChild(status);
+        if (notice is not null)
+        {
+            Say(notice);
+        }
+
         first?.CallDeferred(Control.MethodName.GrabFocus);
     }
 
@@ -146,7 +222,7 @@ public static class GameMenu
         return $"{head}　·　{map}　·　{PlaySession.ClockText(h.Clock)}　·　{h.CreatedAt}{backup}";
     }
 
-    /// <summary>读档并进入探索；不相容或读取失败时只提示，不改当前进度。</summary>
+    /// <summary>读档并进入探索；不相容或读取失败时只提示，不改当前进度。从暂停菜单读档时先关菜单、解除暂停。</summary>
     public static void LoadInto(SaveSlot slot, Action<string> message)
     {
         var play = PlaySession.Load(slot, out var error, out var notes);
@@ -158,6 +234,7 @@ public static class GameMenu
 
         play.PendingToasts.Add(("存档", $"已读取{SlotName(slot)}"));
         play.PendingToasts.AddRange(notes.Select(n => ("提示", n)));
+        AppHost.Instance.Menu.Close();
         AppHost.Instance.Play = play;
         AppHost.Instance.Router.GoTo(ScenePaths.Exploration);
     }

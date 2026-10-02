@@ -56,6 +56,14 @@ public static class TownView
 
     public static bool Facing(Vector3 normal) => normal.Dot(ToCamera) > 1e-3f;
 
+    /// <summary>投影坐标（<see cref="P(Vector2, float)"/> 的结果）反求高度 z 处的地面点：鼠标点地用。</summary>
+    public static Vector2 GroundAt(Vector2 projected, float z = 0)
+    {
+        var u = projected.X / Scale;
+        var v = (projected.Y / Scale + z * _cp) / _sp;
+        return new Vector2(u * _c + v * _s, -u * _s + v * _c);
+    }
+
     /// <summary>屏幕方向（x 向右、y 向下）换成地面上的行走方向，未归一化。</summary>
     public static Vector2 GroundFromScreen(Vector2 screen) =>
         new(screen.X * _c + screen.Y * _s, -screen.X * _s + screen.Y * _c);

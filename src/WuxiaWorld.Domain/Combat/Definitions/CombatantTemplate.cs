@@ -50,8 +50,14 @@ public sealed record CombatantTemplate
     public Attributes Attributes { get; init; } = new(5, 5, 5, 5, 5);
     public Loadout Loadout { get; init; } = new();
 
-    /// <summary>装备固定加成；装备实例与槽位在 M2 的物品模块建立。</summary>
+    /// <summary>装备固定加成（可养成人物由已装备物品合计，见 <c>GrowthRules.Template</c>）。</summary>
     public StatBonus Equipment { get; init; } = StatBonus.None;
+
+    /// <summary>招式 → 效果强度加成（万分比，武学熟练度给出）；未列出的招式按原强度。</summary>
+    public IReadOnlyDictionary<string, int> SkillPowerBp { get; init; } = new Dictionary<string, int>();
+
+    /// <summary>主动施展某招式时的效果强度（万分比）。</summary>
+    public int PowerOf(string skillId) => Common.Bp.One + (SkillPowerBp.TryGetValue(skillId, out var bp) ? bp : 0);
 
     public StatOverride? Overrides { get; init; }
 

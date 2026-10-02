@@ -24,7 +24,7 @@ public interface ISaveMigration
 public sealed class FileSaveStore : ISaveStore
 {
     /// <summary>当前存档结构版本。改动存档结构时递增，并在 <see cref="Migrations"/> 中加入上一版的迁移。</summary>
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
 
     public static readonly JsonSerializerOptions Json = CreateOptions();
 
@@ -38,8 +38,8 @@ public sealed class FileSaveStore : ISaveStore
         _migrations = migrations ?? Migrations;
     }
 
-    /// <summary>正式迁移表；版本 1 是首版，尚无迁移。</summary>
-    public static IReadOnlyList<ISaveMigration> Migrations { get; } = [];
+    /// <summary>正式迁移表，按起始版本排列。</summary>
+    public static IReadOnlyList<ISaveMigration> Migrations { get; } = [new V1ToV2()];
 
     public string Directory { get; }
 
@@ -276,5 +276,25 @@ public sealed class FileSaveStore : ISaveStore
         };
         options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower, allowIntegerValues: false));
         return options;
+    }
+}
+
+/// <summary>
+/// v1 → v2（2026-10-02，M2-05 人物成长）：世界状态新增修为 <c>cultivation</c> 与人物成长构成 <c>builds</c>。
+/// 迁移只补空字段；主角构成留空，读档后由 <c>GameSession.UpgradeLegacy</c> 按内容补齐武学、开局衣物与追赶经验。
+/// </summary>
+internal sealed class V1ToV2 : ISaveMigration
+{
+    public int From => 1;
+
+    public void Migrate(JsonObject payload)
+    {
+        if (payload["world"] is not JsonObject world)
+        {
+            throw new InvalidDataException("存档缺少 world");
+        }
+
+        world["cultivation"] ??= 0;
+        world["builds"] ??= new JsonObject();
     }
 }

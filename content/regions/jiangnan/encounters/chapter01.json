@@ -6,7 +6,8 @@
       { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_b", "row": 0, "slot": 2 },
       { "template": "combatant.enemy.hookman", "unit_id": "enemy.hookman", "row": 1, "slot": 1 }
     ],
-    "experience": 60
+    "experience": 60,
+    "cultivation": 30
   },
   {
     "id": "battle.01.old_ferry_sluice",
@@ -43,6 +44,7 @@
         "spawn": [{ "template": "combatant.enemy.yard_guard", "unit_id": "enemy.yard_guard", "row": 0, "slot": 0 }]
       }
     ],
-    "experience": 140
+    "experience": 140,
+    "cultivation": 60
   }
 ]
