@@ -459,6 +459,63 @@ public enum CharacterOrigin
     Canon,
 }
 
+/// <summary>剧情锚点的核验程度。</summary>
+public enum AnchorStatus
+{
+    /// <summary>已查原著文本（网络文本），出版版本尚未逐字对校。</summary>
+    TextChecked,
+
+    /// <summary>已按选定出版版本对校章节与引文。</summary>
+    Verified,
+}
+
+/// <summary>
+/// 经典人物的原著剧情锚点（架构文档 2.1；考据档案见 docs/canon/ANCHORS.md）：所据文本、章节区间、原文年龄依据、
+/// 本作采用的年龄范围、身份、锚点前已发生的经历与尚未发生、人物不得预知的原著事件。
+/// 本作改编年龄（<see cref="AgeAdapted"/>）须写明改编说明，并与原文年龄分开记录，不得冒称原著设定。
+/// </summary>
+public sealed record StoryAnchorDefinition
+{
+    public required string Id { get; init; }
+    public required string Character { get; init; }
+    public required string Work { get; init; }
+
+    /// <summary>所据文本与版本说明（例：网络文本、出版版本待对校）。</summary>
+    public string TextSource { get; init; } = "";
+
+    /// <summary>选定的章节区间。</summary>
+    public string Chapters { get; init; } = "";
+
+    /// <summary>原文年龄依据：引文与回目。</summary>
+    public string CanonAge { get; init; } = "";
+
+    /// <summary>本作采用的年龄范围（岁）。</summary>
+    public int AgeMin { get; init; }
+    public int AgeMax { get; init; }
+
+    /// <summary>本作年龄与原文不同（用户决定的改编）。</summary>
+    public bool AgeAdapted { get; init; }
+
+    /// <summary>改编说明：原文年龄、本作年龄与决定日期；<see cref="AgeAdapted"/> 时必填。</summary>
+    public string? Adaptation { get; init; }
+
+    public string Identity { get; init; } = "";
+
+    /// <summary>锚点前已发生、人物知道的原著经历。</summary>
+    public IReadOnlyList<string> Known { get; init; } = [];
+
+    /// <summary>锚点之后才发生、人物不得预知的原著事件。</summary>
+    public IReadOnlyList<string> NotYet { get; init; } = [];
+
+    public AnchorStatus Status { get; init; }
+
+    /// <summary>仍待核对或待设计的事项。</summary>
+    public IReadOnlyList<string> OpenItems { get; init; } = [];
+
+    /// <summary>本作年龄已成年（可配置恋爱节点的前提之一）。</summary>
+    public bool Adult => AgeMin >= 18;
+}
+
 /// <summary>人物定义。经典人物须引用原著剧情锚点；锚点未核验时为 <c>pending</c>，不得开放恋爱或改写已知经历。</summary>
 public sealed record CharacterDefinition
 {

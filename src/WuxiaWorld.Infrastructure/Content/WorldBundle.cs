@@ -33,6 +33,9 @@ public sealed record WorldBundle
     public IReadOnlyList<DialogueChapter> Chapters { get; init; } = [];
     public IReadOnlyList<ItemDefinition> Items { get; init; } = [];
     public IReadOnlyList<CharacterDefinition> Characters { get; init; } = [];
+
+    /// <summary>经典人物的原著剧情锚点（<c>characters/anchors.json</c>），只供内容校验与审阅，运行时规则不读取。</summary>
+    public IReadOnlyList<StoryAnchorDefinition> Anchors { get; init; } = [];
     public IReadOnlyList<ShopDefinition> Shops { get; init; } = [];
 
     /// <summary>成长设置（<c>world/progression.json</c>）。</summary>
@@ -76,6 +79,7 @@ public static class WorldContentLoader
         var chapters = new List<DialogueChapter>();
         var items = new List<ItemDefinition>();
         var characters = new List<CharacterDefinition>();
+        var anchors = new List<StoryAnchorDefinition>();
         var text = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
         foreach (var file in ContentFiles.Enumerate(root))
@@ -96,6 +100,9 @@ public static class WorldContentLoader
                         break;
                     case ["characters", "characters.json"]:
                         characters.AddRange(Read<List<CharacterDefinition>>(json));
+                        break;
+                    case ["characters", "anchors.json"]:
+                        anchors.AddRange(Read<List<StoryAnchorDefinition>>(json));
                         break;
                     case ["shared", "items", "catalog.json"]:
                         items.AddRange(Read<List<ItemDefinition>>(json));
@@ -134,7 +141,7 @@ public static class WorldContentLoader
         {
             ContentVersion = ContentFiles.Version(root),
             NewGame = newGame, Progression = progression, Shops = shops, Maps = maps, Routes = routes, Events = events, Quests = quests,
-            Chapters = chapters, Items = items, Characters = characters, Text = text,
+            Chapters = chapters, Items = items, Characters = characters, Anchors = anchors, Text = text,
         };
     }
 

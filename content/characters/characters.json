@@ -4,7 +4,7 @@
   { "id": "char.qiao_hongxiao", "origin": "original" },
   { "id": "char.tang_shouting", "origin": "original" },
   { "id": "char.du_sangao", "origin": "original" },
-  { "id": "char.linghu_chong", "origin": "canon", "source_work": "work.xiaoao_jianghu", "story_anchor": "pending" },
-  { "id": "char.huang_rong", "origin": "canon", "source_work": "work.shediao_yingxiong_zhuan", "story_anchor": "pending" },
-  { "id": "char.xiao_feng", "origin": "canon", "source_work": "work.tianlong_babu", "story_anchor": "pending" }
+  { "id": "char.linghu_chong", "origin": "canon", "source_work": "work.xiaoao_jianghu", "story_anchor": "anchor.linghu_chong.xiaoao_27_28" },
+  { "id": "char.huang_rong", "origin": "canon", "source_work": "work.shediao_yingxiong_zhuan", "story_anchor": "anchor.huang_rong.shediao_40" },
+  { "id": "char.xiao_feng", "origin": "canon", "source_work": "work.tianlong_babu", "story_anchor": "anchor.xiao_feng.tianlong_21_23" }
 ]

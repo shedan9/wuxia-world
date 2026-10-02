@@ -17,6 +17,9 @@ public static partial class WorldContentValidator
     /// <summary>已弃用的旁白说话人；2026-10-01 起用演出提示节点代替，校验时报错。</summary>
     public const string Narrator = "narrator";
 
+    /// <summary>经典人物考据未完成时的剧情锚点占位。</summary>
+    public const string PendingAnchor = "pending";
+
     public static IReadOnlyList<string> Validate(WorldBundle w, CombatBundle? combat = null)
     {
         var errors = new List<string>();
@@ -34,6 +37,7 @@ public static partial class WorldContentValidator
         var combatants = combat?.Combatants.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
         var itemDefs = w.Items.GroupBy(i => i.Id).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
         var shops = w.Shops.Select(x => x.Id).ToHashSet(StringComparer.Ordinal);
+        var anchors = w.Anchors.GroupBy(a => a.Id).ToDictionary(g => g.Key, g => g.First(), StringComparer.Ordinal);
 
         // 武学 ID 的前缀即种类（世界规则据此自动装配，见 WorldRules.AutoEquip）：招式 skill.*，心法 art.inner.*，轻功 art.qinggong.*，天赋 art.talent.*。
         string? MartialProblem(string id)
@@ -64,7 +68,7 @@ public static partial class WorldContentValidator
 
         var all = w.Maps.Select(x => x.Id).Concat(w.Routes.Select(x => x.Id)).Concat(w.Events.Select(x => x.Id))
             .Concat(w.Quests.Select(x => x.Id)).Concat(w.Dialogues.Select(x => x.Id)).Concat(w.Items.Select(x => x.Id))
-            .Concat(w.Characters.Select(x => x.Id)).Concat(w.Shops.Select(x => x.Id));
+            .Concat(w.Characters.Select(x => x.Id)).Concat(w.Shops.Select(x => x.Id)).Concat(w.Anchors.Select(x => x.Id));
         foreach (var group in all.GroupBy(id => id, StringComparer.Ordinal))
         {
             if (group.Count() > 1)
@@ -200,10 +204,56 @@ public static partial class WorldContentValidator
             {
                 Err($"{c.Id}：经典人物须写来源作品与剧情锚点（未核验写 pending）");
             }
+            else if (c.StoryAnchor is { } anchorId && anchorId != PendingAnchor)
+            {
+                if (anchors.GetValueOrDefault(anchorId) is not { } a)
+                {
+                    Err($"{c.Id}：剧情锚点 {anchorId} 未定义");
+                }
+                else if (a.Character != c.Id || a.Work != c.SourceWork)
+                {
+                    Err($"{c.Id}：剧情锚点 {anchorId} 属于 {a.Character}（{a.Work}），与人物或来源作品不符");
+                }
+            }
 
             if (c.Combatant is not null && combatants is not null && !combatants.Contains(c.Combatant))
             {
                 Err($"{c.Id}：战斗模板 {c.Combatant} 不存在");
+            }
+        }
+
+        // 剧情锚点（ID 重复与格式在上面统一检查）：字段完整、年龄范围合理、改编年龄写明说明、每个锚点都有人物引用（架构文档 2.1、9.3）。
+        foreach (var a in w.Anchors)
+        {
+            var missing = new[] { ("所据文本", a.TextSource), ("章节", a.Chapters), ("原文年龄依据", a.CanonAge), ("身份", a.Identity) }
+                .Where(f => string.IsNullOrWhiteSpace(f.Item2)).Select(f => f.Item1).ToList();
+            if (missing.Count > 0)
+            {
+                Err($"{a.Id}：缺少{string.Join("、", missing)}");
+            }
+
+            if (a.AgeMin <= 0 || a.AgeMax < a.AgeMin || a.AgeMax > 120)
+            {
+                Err($"{a.Id}：年龄范围 {a.AgeMin}–{a.AgeMax} 不合理");
+            }
+
+            if (a.AgeAdapted && string.IsNullOrWhiteSpace(a.Adaptation))
+            {
+                Err($"{a.Id}：本作改编年龄须写改编说明（原文年龄、本作年龄与决定依据）");
+            }
+
+            if (a.Known.Count == 0)
+            {
+                Err($"{a.Id}：须列出锚点前已发生的经历");
+            }
+
+            if (!characters.Contains(a.Character))
+            {
+                Err($"{a.Id}：人物 {a.Character} 未定义");
+            }
+            else if (w.Characters.All(c => c.StoryAnchor != a.Id))
+            {
+                Err($"{a.Id}：没有人物引用这个锚点");
             }
         }
 

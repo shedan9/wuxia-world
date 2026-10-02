@@ -95,6 +95,62 @@ public class ChapterOneWalkthroughTests
         Assert.DoesNotContain(errors, e => e.Contains("event.ch01.opening_luwan.verb", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void Chapter_one_canon_characters_have_checked_story_anchors()
+    {
+        var b = Bundle.Value;
+        var anchors = b.Anchors.ToDictionary(a => a.Id);
+        foreach (var c in b.Characters.Where(c => c.Origin == CharacterOrigin.Canon))
+        {
+            Assert.NotEqual(WorldContentValidator.PendingAnchor, c.StoryAnchor);
+            var a = anchors[c.StoryAnchor!];
+            Assert.Equal(c.Id, a.Character);
+            Assert.Equal(AnchorStatus.TextChecked, a.Status);
+            Assert.True(a.Adult, $"{a.Id} 本作年龄未成年");
+            Assert.NotEmpty(a.NotYet);
+        }
+
+        // 黄蓉为用户决定的改编年龄：原文十五岁，本作 18 岁，两者分开记录。
+        var huang = anchors["anchor.huang_rong.shediao_40"];
+        Assert.True(huang.AgeAdapted);
+        Assert.Contains("十五", huang.CanonAge, StringComparison.Ordinal);
+        Assert.Contains("18 岁", huang.Adaptation, StringComparison.Ordinal);
+        Assert.All(anchors.Values.Where(a => a.Id != huang.Id), a => Assert.False(a.AgeAdapted));
+    }
+
+    [Fact]
+    public void Validator_checks_story_anchor_references_ages_and_adaptation_notes()
+    {
+        var b = Bundle.Value;
+        var huang = b.Anchors.Single(a => a.Character == "char.huang_rong");
+        var broken = b with
+        {
+            Anchors =
+            [
+                .. b.Anchors.Where(a => a != huang),
+                huang with { Adaptation = null, AgeMin = 20, AgeMax = 18 },
+                new StoryAnchorDefinition { Id = "anchor.test.unused", Character = "char.lu_qinghe", Work = "work.x" },
+            ],
+            Characters =
+            [
+                .. b.Characters.Select(c => c.Id switch
+                {
+                    "char.xiao_feng" => c with { StoryAnchor = "anchor.test.missing" },
+                    "char.linghu_chong" => c with { StoryAnchor = "anchor.huang_rong.shediao_40" },
+                    _ => c,
+                }),
+            ],
+        };
+        var errors = WorldContentValidator.Validate(broken, TestContent.Bundle);
+        Assert.Contains(errors, e => e.Contains("char.xiao_feng", StringComparison.Ordinal) && e.Contains("未定义", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("char.linghu_chong", StringComparison.Ordinal) && e.Contains("不符", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("anchor.huang_rong.shediao_40", StringComparison.Ordinal) && e.Contains("年龄范围", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("anchor.huang_rong.shediao_40", StringComparison.Ordinal) && e.Contains("改编说明", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("anchor.test.unused", StringComparison.Ordinal) && e.Contains("缺少", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("anchor.test.unused", StringComparison.Ordinal) && e.Contains("没有人物引用", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("anchor.xiao_feng.tianlong_21_23", StringComparison.Ordinal) && e.Contains("没有人物引用", StringComparison.Ordinal));
+    }
+
     public static TheoryData<string, string, bool> Paths()
     {
         var data = new TheoryData<string, string, bool>();
