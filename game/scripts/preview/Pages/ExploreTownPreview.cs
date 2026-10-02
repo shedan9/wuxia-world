@@ -113,9 +113,9 @@ public partial class ExploreTownPreview : ExploreStage
 
     private static Vector2[] Rect(Rect2 r) => [r.Position, new(r.End.X, r.Position.Y), r.End, new(r.Position.X, r.End.Y)];
 
-    protected override Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero) => new TownMiniMap { Hero = hero };
+    protected override Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero, Func<Vector2?> goal) => new TownMiniMap { Hero = hero, Goal = goal };
 
-    protected override bool InWalkArea(Vector2 q) => TownLayout.InWalkArea(q);
+    public override bool InWalkArea(Vector2 q) => TownLayout.InWalkArea(q);
 
     /// <summary>渡口石阶上的高度：自岸沿向河里逐级降到接近水面。</summary>
     protected override float StepZ(Vector2 p)
@@ -341,6 +341,9 @@ public partial class TownMiniMap : Control
 
     public Func<(Vector2 Position, Vector2 Heading)> Hero { get; init; } = () => (Vector2.Zero, Vector2.Right);
 
+    /// <summary>目标的世界平面坐标；为 null 时不画目标菱形。</summary>
+    public Func<Vector2?> Goal { get; init; } = () => null;
+
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Ignore;
@@ -369,9 +372,12 @@ public partial class TownMiniMap : Control
 
         DrawRect(TownSamples.Corridor, UiPalette.TextMuted with { A = 0.45f });
 
-        var g = TownSamples.Goal;
         var r = 9 / k;
-        DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
+        if (Goal() is { } g)
+        {
+            DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
+        }
+
         var a = 11 / k;
         var f = heading.Normalized();
         var side = new Vector2(-f.Y, f.X);

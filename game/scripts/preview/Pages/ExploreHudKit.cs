@@ -105,7 +105,7 @@ public static class ExploreHudKit
 /// <summary>画面边缘的目标方向：泥金圆章内一枚朝向目标的箭头，下写目标名；目标进入画面后隐去。</summary>
 public partial class GoalPointer : Control
 {
-    public string Label { get; init; } = "";
+    public string Label { get; set; } = "";
 
     public Vector2 Direction { get; set; } = Vector2.Up;
 

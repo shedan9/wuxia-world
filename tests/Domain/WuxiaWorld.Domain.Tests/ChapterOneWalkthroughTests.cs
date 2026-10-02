@@ -81,6 +81,20 @@ public class ChapterOneWalkthroughTests
         Assert.Contains(errors, e => e.Contains("bare", StringComparison.Ordinal) && e.Contains("须标 inner", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public void Validator_requires_prompt_text_for_interactables_and_player_started_events()
+    {
+        var b = Bundle.Value;
+        var text = b.Text.Where(t => t.Key is not ("map.jiangnan.inn.rations_basket.name" or "event.ch01.side_offer.verb"))
+            .ToDictionary(t => t.Key, t => t.Value);
+        var errors = WorldContentValidator.Validate(b with { Text = text }, TestContent.Bundle);
+        Assert.Contains(errors, e => e.Contains("map.jiangnan.inn.rations_basket.name", StringComparison.Ordinal));
+        Assert.Contains(errors, e => e.Contains("event.ch01.side_offer.verb", StringComparison.Ordinal));
+
+        // 进图自动开始的过场事件不需要交互提示。
+        Assert.DoesNotContain(errors, e => e.Contains("event.ch01.opening_luwan.verb", StringComparison.Ordinal));
+    }
+
     public static TheoryData<string, string, bool> Paths()
     {
         var data = new TheoryData<string, string, bool>();
@@ -278,11 +292,13 @@ public class ChapterOneWalkthroughTests
         seen.UnionWith(regroup.Lines);
 
         var all = Bundle.Value.Dialogues.SelectMany(d => d.Nodes.Where(n => n.Type == DialogueNodeType.Line).Select(n => n.LineId!));
-        Assert.Empty(all.Where(id => !seen.Contains(id)));
+        var unread = all.Where(id => !seen.Contains(id)).ToList();
+        Assert.True(unread.Count == 0, "走不到的台词：" + string.Join("、", unread));
 
         // 演出提示同样每个都要能走到（台词的 line_id 与演出提示键分开记）。
         var stages = Bundle.Value.Dialogues.SelectMany(d => d.Nodes.Where(n => n.Type == DialogueNodeType.Stage).Select(n => StageKey(d.Id, n.Id)));
-        Assert.Empty(stages.Where(id => !seen.Contains(id)));
+        var unplayed = stages.Where(id => !seen.Contains(id)).ToList();
+        Assert.True(unplayed.Count == 0, "走不到的演出提示：" + string.Join("、", unplayed));
     }
 
     [Fact]

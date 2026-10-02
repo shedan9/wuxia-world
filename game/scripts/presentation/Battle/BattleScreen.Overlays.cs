@@ -131,7 +131,7 @@ public sealed partial class BattleScreen
         var (title, sub) = state.Outcome switch
         {
             BattleOutcome.Victory => (session.Record.Setup.EncounterId.EndsWith("sluice", StringComparison.Ordinal) ? "旧渡解围" : "击退押运队", "战斗胜利"),
-            BattleOutcome.Defeat => ("力战不支", "我方全员失去战斗能力（原型不写存档，可同种子重试）"),
+            BattleOutcome.Defeat => ("力战不支", _story is null ? "我方全员失去战斗能力（原型不写存档，可同种子重试）" : "我方全员失去战斗能力"),
             _ => ("全身而退", "撤退成功"),
         };
         var heading = Ui.Text(title, UiTheme.DisplayLabel, 88);
@@ -154,13 +154,18 @@ public sealed partial class BattleScreen
             Line("内容版本", session.Record.ContentVersion, $"规则版本 {session.Record.RulesetVersion}"),
             Line("终局哈希", session.Record.FinalHash, ""),
             Line("重放校验", replay is null ? "一致" : $"第 {replay} 条命令不一致", "同一输入重算一遍比对逐条哈希"),
-            Line("所得", state.Outcome == BattleOutcome.Victory ? $"经验 {encounter.Experience}" : "—", "奖励与成长在 M2 的应用事务中一次性提交"));
+            Line("所得", state.Outcome == BattleOutcome.Victory ? $"经验 {encounter.Experience}" : "—",
+                _story is null ? "原型不写存档" : "确认后以战斗实例一次性提交，重复确认不重复发奖"));
 
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
         panel.AddChild(Ui.Column(UiPalette.SpaceL, heading, subtitle, Ui.Rule(dark: true),
             Ui.Row(UiPalette.SpaceXxl, Ui.Expand(party), Ui.Expand(record)),
             Ui.Rule(dark: true),
-            Ui.Row(UiPalette.SpaceM, Ui.Spacer(), Ui.KeyHints(true, ("R", "同种子重来"), ("N", "换种子再战"), ("B", "重新配置"), ("Esc", "返回标题")))));
+            Ui.Row(UiPalette.SpaceM, Ui.Spacer(), _story is null
+                ? Ui.KeyHints(true, ("R", "同种子重来"), ("N", "换种子再战"), ("B", "重新配置"), ("Esc", "返回标题"))
+                : state.Outcome == BattleOutcome.Victory
+                    ? Ui.KeyHints(true, ("Enter", "继续"))
+                    : Ui.KeyHints(true, ("R", "再战"), ("B", "暂退")))));
         _overlay.AddChild(Ui.Place(panel, 0.5f, 0.5f, -800, -330, 800, 330));
         Motion.Enter(panel, 0.1f, Motion.Slow, rise: 30);
     }

@@ -75,7 +75,7 @@ public partial class ExploreInnPreview : ExploreStage
         OverheadLayer.AddChild(new InnLanterns());
     }
 
-    protected override bool InWalkArea(Vector2 q)
+    public override bool InWalkArea(Vector2 q)
     {
         if (InnSamples.BehindCounter.HasPoint(q))
         {
@@ -92,7 +92,7 @@ public partial class ExploreInnPreview : ExploreStage
         return q.X > InnSamples.DoorWest + 18 && q.X < InnSamples.DoorEast - 18 && q.Y >= inside.End.Y - 1 && q.Y < InnSamples.Room.End.Y + 14;
     }
 
-    protected override Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero) => new InnMiniMap { Hero = hero };
+    protected override Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero, Func<Vector2?> goal) => new InnMiniMap { Hero = hero, Goal = goal };
 }
 
 /// <summary>墙外：四周暗场，门前一段雨后石板街向外渐隐。</summary>
@@ -137,6 +137,9 @@ public partial class InnMiniMap : Control
 
     public Func<(Vector2 Position, Vector2 Heading)> Hero { get; init; } = () => (Vector2.Zero, Vector2.Right);
 
+    /// <summary>目标的世界平面坐标；为 null 时不画目标菱形。</summary>
+    public Func<Vector2?> Goal { get; init; } = () => null;
+
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Ignore;
@@ -162,9 +165,12 @@ public partial class InnMiniMap : Control
         foreach (var t in InnSamples.Tables) DrawRect(new Rect2(t.Center - new Vector2(46, 46), new Vector2(92, 92)), furniture);
         foreach (var p in InnSamples.Pillars) DrawCircle(p, 22, furniture);
 
-        var g = InnSamples.Goal;
         var r = 9 / k;
-        DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
+        if (Goal() is { } g)
+        {
+            DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
+        }
+
         var a = 11 / k;
         var f = heading.Normalized();
         var side = new Vector2(-f.Y, f.X);

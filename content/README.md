@@ -9,7 +9,7 @@ ID 规则、对象字段与校验要求见[架构文档第 9 节](../docs/ARCHIT
 - `shared/arts/`：心法、轻功与被动天赋
 - `shared/items/`：`catalog.json` 物品目录（类别、堆叠、价格、主线必要物品）；`battle.json` 战斗消耗品的使用效果（每条须在目录中有条目）
 - `shared/combat/counters.json`：克制倍率表（限定 0.8–1.25）
-- `shared/text/zh-Hans.json`：中文文本表，键为 `<id>.name` / `<id>.desc` 等；各地区另有 `regions/<region_id>/text/zh-Hans.json`，键不得重复。任务阶段与目标的键为 `<任务>.stage.<阶段>`、`<任务>.objective.<目标>`
+- `shared/text/zh-Hans.json`：中文文本表，键为 `<id>.name` / `<id>.desc` 等；各地区另有 `regions/<region_id>/text/zh-Hans.json`，键不得重复。任务阶段与目标的键为 `<任务>.stage.<阶段>`、`<任务>.objective.<目标>`；地图交互物的交互提示对象名为 `<地图>.<交互物>.name`，需要走近按 E 开始的地区事件（非 `auto`）须有 `<事件>.verb`（动作，如“讨教”）与 `<事件>.name`（对象）——校验器缺一即报错
 - `characters/`：`characters.json` 人物定义（来源、剧情锚点，未核验写 `pending`，可选战斗模板）；`combat_presets.json` 为 M1 战斗预设（主角三流派、陆青禾与占位同行者）
 - `world/new_game.json`：新游戏的起点、队伍、银两、初始物品与开局效果
 - `dialogue/arcXX/chapterXX.json`：逐章对白，台词的唯一可编辑来源，格式见 [docs/dialogue/README.md](../docs/dialogue/README.md)

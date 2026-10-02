@@ -15,6 +15,7 @@ public partial class SceneRouter : CanvasLayer
 
     private readonly ColorRect _curtain = new() { Color = UiPalette.Abyss, MouseFilter = Control.MouseFilterEnum.Ignore };
     private bool _busy;
+    private (string Path, bool Instant)? _queued;
 
     public SceneRouter()
     {
@@ -47,6 +48,8 @@ public partial class SceneRouter : CanvasLayer
 
         if (_busy)
         {
+            // 幕布还没走完：记下最后一次请求，幕布收起后再切；不丢请求（游戏流程里换图票据已开，丢了会卡住）。
+            _queued = (scenePath, instant);
             return;
         }
 
@@ -69,6 +72,11 @@ public partial class SceneRouter : CanvasLayer
         {
             _busy = false;
             _curtain.MouseFilter = Control.MouseFilterEnum.Ignore;
+            if (_queued is { } next)
+            {
+                _queued = null;
+                GoTo(next.Path, next.Instant);
+            }
         }));
     }
 }

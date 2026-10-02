@@ -1465,6 +1465,9 @@ public partial class WildMiniMap : Control
 
     public Func<(Vector2 Position, Vector2 Heading)> Hero { get; init; } = () => (Vector2.Zero, Vector2.Right);
 
+    /// <summary>目标的世界平面坐标；为 null 时不画目标菱形。</summary>
+    public Func<Vector2?> Goal { get; init; } = () => null;
+
     public override void _Ready()
     {
         MouseFilter = MouseFilterEnum.Ignore;
@@ -1508,9 +1511,12 @@ public partial class WildMiniMap : Control
         DrawRect(new Rect2(pav - new Vector2(h, h), new Vector2(h * 2, h * 2)), UiPalette.TextMuted with { A = 0.8f });
         DrawLine(WildSamples.Gate - new Vector2(WildSamples.GateSpan / 2, 0), WildSamples.Gate + new Vector2(WildSamples.GateSpan / 2, 0), UiPalette.Text, 4 / k, true);
 
-        var g = WildSamples.Goal;
         var r = 9 / k;
-        DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
+        if (Goal() is { } g)
+        {
+            DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
+        }
+
         var a = 11 / k;
         var f = heading.Normalized();
         var side = new Vector2(-f.Y, f.X);

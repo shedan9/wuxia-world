@@ -233,6 +233,7 @@ public static partial class WorldContentValidator
             foreach (var i in m.Interactables)
             {
                 var where = $"{m.Id}/{i.Id}";
+                RequireText($"{m.Id}.{i.Id}.name"); // 交互提示“E 查看 某物”的对象名
                 CheckCondition(where, i.When);
                 CheckEffects(where, i.Effects);
                 if (i.Dialogue is not null && !dialogues.ContainsKey(i.Dialogue))
@@ -298,6 +299,13 @@ public static partial class WorldContentValidator
             foreach (var p in e.Participants.Where(p => !characters.Contains(p)))
             {
                 Err($"{e.Id}：未定义的参与人物 {p}");
+            }
+
+            if (!e.Auto)
+            {
+                // 需要玩家走近按 E 开始的事件：交互提示写“动作 + 对象”。
+                RequireText(e.Id + ".verb");
+                RequireText(e.Id + ".name");
             }
         }
 

@@ -2,6 +2,7 @@ using Godot;
 using WuxiaWorld.Domain.Combat;
 using Side = WuxiaWorld.Domain.Combat.Side;
 using WuxiaWorld.Domain.Combat.Definitions;
+using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Presentation.Battle;
@@ -295,10 +296,13 @@ public sealed partial class BattleScreen
     private Control BuildSceneTag()
     {
         _sceneTitle = Ui.Text("", UiTheme.DarkLabel, 20);
+        var note = AppHost.Instance.Play is { Game.World.Battle: not null }
+            ? "剧情战：结算写回世界；动作为补间占位，经典人物暂用占位模板"
+            : "M1 战斗原型：结算来自规则内核；动作为补间占位";
         var tag = Ui.Panel(UiTheme.GlassPanel, Ui.Column(2,
             _sceneTitle,
-            Ui.Text("M1 战斗原型：结算来自规则内核；动作为补间占位", UiTheme.DarkMutedLabel, 15)));
-        return Ui.Place(tag, 0, 0, 40, 30, 470, 110);
+            Ui.Text(note, UiTheme.DarkMutedLabel, 15, wrap: true)));
+        return Ui.Place(tag, 0, 0, 40, 30, 430, 140);
     }
 
     // ── 指令区 ───────────────────────────────────────────

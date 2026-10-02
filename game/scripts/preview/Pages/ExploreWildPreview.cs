@@ -148,11 +148,11 @@ public partial class ExploreWildPreview : ExploreStage
     private void Path(Vector2[] line, float z, int seed, float width = WildSamples.PathWidth) =>
         Ground(4, WildLayout.Ribbon(line, width, seed), z);
 
-    protected override bool InWalkArea(Vector2 q) => WildLayout.InWalkArea(q);
+    public override bool InWalkArea(Vector2 q) => WildLayout.InWalkArea(q);
 
     protected override float StepZ(Vector2 p) => WildLayout.GroundZ(p);
 
-    protected override Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero) => new WildMiniMap { Hero = hero };
+    protected override Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero, Func<Vector2?> goal) => new WildMiniMap { Hero = hero, Goal = goal };
 
     protected override void Animate(float seconds)
     {

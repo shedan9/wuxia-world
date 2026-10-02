@@ -1,4 +1,5 @@
 using Godot;
+using WuxiaWorld.Game.Presentation.Play;
 using WuxiaWorld.Game.Presentation.Ui;
 
 namespace WuxiaWorld.Game.Presentation.App;
@@ -12,6 +13,9 @@ public partial class AppHost : Node
     public static AppHost Instance { get; private set; } = null!;
 
     public SceneRouter Router { get; private set; } = null!;
+
+    /// <summary>进行中的一局游戏（M2）；标题页、场景目录与 M0 展示页时为 null。</summary>
+    public PlaySession? Play { get; set; }
 
     public override void _EnterTree()
     {
@@ -63,6 +67,7 @@ public partial class AppHost : Node
     public override void _UnhandledInput(InputEvent @event)
     {
         // M0 展示包：任意预览页按取消键都回到标题；标题页自己处理取消键（关闭弹层）。
+        // 游戏内的探索与剧情战斗自己处理取消键（菜单），不会落到这里。
         if (@event.IsActionPressed("ui_cancel") && !Router.IsAt(ScenePaths.MainMenu))
         {
             Router.GoTo(ScenePaths.MainMenu);

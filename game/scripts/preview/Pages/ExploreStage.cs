@@ -12,6 +12,8 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 全部布景经 <see cref="TownView"/> 的同一个2:1 等距正交投影画出（镜头在西南，东西向自左下到右上）。
 /// WASD / 方向键按屏幕方向行走（Shift 快走），陆青禾沿足迹跟随；靠近可交互物出现“E + 动作 + 对象”，
 /// E 推一条通知或切到交互点指定的布景页，不写存档；滚轮缩放 0.85–1.15（架构文档 10.2）。
+/// 设了 <see cref="Driver"/> 时进入游戏模式（M2）：落点、交互点、同行者、站位人物与目标都由驱动方
+/// （<c>ExplorationScreen</c>，背后是 <c>GameSession</c>）给出，E 交给驱动方处理；展示页的样例数据与 HUD 部件不再使用。
 /// </summary>
 public abstract partial class ExploreStage : Control
 {
@@ -33,26 +35,33 @@ public abstract partial class ExploreStage : Control
 
     private readonly List<TownPiece> _pieces = [];
     private readonly List<(TownInteraction Data, InteractMarker Marker)> _interactions = [];
+    private readonly List<Follower> _followers = [];
+    private readonly List<WalkerFigure> _actors = [];
     private readonly List<Vector2> _trail = [];
     private readonly List<Rect2> _blockers = [];
+    private readonly List<Control> _hud = [];
 
     private Node2D _world = null!;
     private Node2D _sorted = null!;
-    private InteractPrompt _prompt = null!;
+    private Node2D _markers = null!;
+    private InteractPrompt? _prompt;
     private ToastColumn _toasts = null!;
     private Control _mini = null!;
     private GoalPointer? _pointer;
     private TownInteraction? _near;
     private Vector2 _camera;
     private Vector2 _heading = new(1, 0);
-    private float _luIdle = 1;
     private float _zoom = 1;
     private bool _cameraPlaced;
     private Rect2 _cameraBounds;
 
     protected WalkerFigure Hero { get; private set; } = null!;
 
-    protected WalkerFigure Lu { get; private set; } = null!;
+    /// <summary>游戏模式的驱动方；为 null 时是 M0 展示页。须在加入场景树前设置。</summary>
+    public IExploreDriver? Driver { get; init; }
+
+    /// <summary>主角当前所在（世界平面坐标）。</summary>
+    public Vector2 HeroGround => Hero.Ground;
 
     /// <summary>贴地层：画在所有排序件之下（地面、驳岸、室内的地砖与后墙）。</summary>
     protected Node2D GroundLayer { get; private set; } = null!;
@@ -74,6 +83,8 @@ public abstract partial class ExploreStage : Control
     /// <summary>主线目标：世界平面坐标、离地高度与名称；在画面外时屏幕边缘出现指向它的箭头。</summary>
     protected virtual (Vector2 Ground, float Height, string Label)? Goal => null;
 
+    private (Vector2 Ground, float Height, string Label)? CurrentGoal => Driver is { } d ? d.Goal : Goal;
+
     /// <summary>布景的世界范围（x 东、y 南），镜头不越出其投影外框。</summary>
     protected abstract Rect2 Bounds { get; }
 
@@ -91,9 +102,11 @@ public abstract partial class ExploreStage : Control
     /// <summary>搭布景：往 <see cref="GroundLayer"/> 加地面，用 <see cref="Add"/> 加排序件。</summary>
     protected abstract void BuildScene();
 
-    protected abstract bool InWalkArea(Vector2 q);
+    /// <summary>世界平面坐标是否在可走区内（不含物件占地）。</summary>
+    public abstract bool InWalkArea(Vector2 q);
 
-    protected abstract Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero);
+    /// <summary>小地图；goal 给出当前目标的世界平面坐标（无目标为 null）。</summary>
+    protected abstract Control CreateMiniMap(Func<(Vector2 Position, Vector2 Heading)> hero, Func<Vector2?> goal);
 
     /// <summary>站在某处时的高度（石阶上为负）。</summary>
     protected virtual float StepZ(Vector2 p) => 0;
@@ -109,9 +122,29 @@ public abstract partial class ExploreStage : Control
         ClipContents = true;
         var arrival = PreviewSession.Current.Arrival;
         PreviewSession.Current.Arrival = null;
-        var (hero, lu, zoom) = Start(arrival);
-        _zoom = zoom;
-        _trail.Add(lu);
+        Vector2 hero;
+        var followers = new List<(FollowerLook Look, Vector2 At)>();
+        if (Driver is { } driver)
+        {
+            (hero, var back, _zoom) = driver.Start;
+            foreach (var (look, i) in driver.Followers.Select((l, i) => (l, i)))
+            {
+                var at = hero + back * FollowGap * (i + 1);
+                followers.Add((look, InWalkArea(at) ? at : hero));
+            }
+        }
+        else
+        {
+            (hero, var lu, _zoom) = Start(arrival);
+            followers.Add((new FollowerLook("figure.lu_qinghe", FigureLook.Boatwoman, UiPalette.Trim), lu));
+        }
+
+        // 足迹自最远的同行者排到主角，同行者一开始就站在足迹上。
+        foreach (var (_, at) in Enumerable.Reverse(followers))
+        {
+            _trail.Add(at);
+        }
+
         _trail.Add(hero);
 
         // 布景内部按 ZIndex 排前后；整体压到 -4000，保证在 HUD（ZIndex 0）之下。
@@ -125,21 +158,19 @@ public abstract partial class ExploreStage : Control
         _world.AddChild(OverheadLayer);
         BuildScene();
 
-        Lu = new WalkerFigure { Tone = UiPalette.Trim, Look = FigureLook.Boatwoman };
+        foreach (var (look, at) in followers)
+        {
+            AddFollower(look, at);
+        }
+
         Hero = new WalkerFigure { Tone = UiPalette.Accent.Lightened(0.1f) };
-        Lu.Place(lu, StepZ(lu));
         Hero.Place(hero, StepZ(hero));
-        _sorted.AddChild(Lu);
         _sorted.AddChild(Hero);
 
-        var markers = new Node2D { ZIndex = 1000 };
-        _world.AddChild(markers);
-        foreach (var item in Interactions)
-        {
-            var marker = new InteractMarker { Position = TownView.P(item.Position, StepZ(item.Position) + item.MarkerHeight) };
-            markers.AddChild(marker);
-            _interactions.Add((item, marker));
-        }
+        _markers = new Node2D { ZIndex = 1000 };
+        _world.AddChild(_markers);
+        RefreshInteractions();
+        RefreshActors();
 
         if (CameraArea is { } area)
         {
@@ -167,42 +198,157 @@ public abstract partial class ExploreStage : Control
         }
     }
 
+    // ── 游戏模式：随世界状态刷新 ──────────────────────────
+
+    /// <summary>按当前交互点重建头顶菱形（游戏模式下每次提交世界状态后调用）。</summary>
+    public void RefreshInteractions()
+    {
+        foreach (var (_, marker) in _interactions)
+        {
+            marker.QueueFree();
+        }
+
+        _interactions.Clear();
+        _near = null;
+        foreach (var item in Driver?.Interactions ?? Interactions)
+        {
+            var marker = new InteractMarker { Position = TownView.P(item.Position, StepZ(item.Position) + item.MarkerHeight) };
+            _markers.AddChild(marker);
+            _interactions.Add((item, marker));
+        }
+
+        if (_prompt is not null)
+        {
+            _prompt.Visible = false;
+        }
+
+        Driver?.NearChanged(null);
+    }
+
+    /// <summary>按驱动方给出的站位人物重建（剧情人物出场、离场）。展示页没有站位人物。</summary>
+    public void RefreshActors()
+    {
+        foreach (var actor in _actors)
+        {
+            _pieces.Remove(actor);
+            actor.QueueFree();
+        }
+
+        _actors.Clear();
+        foreach (var a in Driver?.Actors ?? [])
+        {
+            var figure = new WalkerFigure { Look = a.Look.Look, Tone = a.Look.Tone, ArtId = a.Look.ArtId, Occluder = false, Facing = a.Facing };
+            figure.Place(a.At, StepZ(a.At));
+            _sorted.AddChild(figure);
+            _pieces.Add(figure);
+            _actors.Add(figure);
+        }
+    }
+
+    /// <summary>同行者变动（入队、离队）后重建跟随者，沿足迹从主角身后排起。</summary>
+    public void RefreshFollowers()
+    {
+        foreach (var f in _followers)
+        {
+            f.Figure.QueueFree();
+        }
+
+        _followers.Clear();
+        foreach (var look in Driver?.Followers ?? [])
+        {
+            AddFollower(look, TrailPoint(FollowGap * (_followers.Count + 1)));
+        }
+    }
+
+    /// <summary>把主角放到某处（自动走查、剧情换位）；同行者紧随其后，镜头直接跳过去。</summary>
+    public void PlaceHero(Vector2 ground)
+    {
+        if (!Walkable(ground))
+        {
+            ground = Hero.Ground;
+        }
+
+        Hero.Place(ground, StepZ(ground));
+        _trail.Clear();
+        _trail.Add(ground);
+        foreach (var f in _followers)
+        {
+            f.Figure.Place(ground, StepZ(ground));
+        }
+
+        _cameraPlaced = false;
+    }
+
+    private void AddFollower(FollowerLook look, Vector2 at)
+    {
+        var figure = new WalkerFigure { Tone = look.Tone, Look = look.Look, ArtId = look.ArtId };
+        figure.Place(at, StepZ(at));
+        _sorted.AddChild(figure);
+        _followers.Add(new Follower(figure));
+    }
+
     // ── HUD ──────────────────────────────────────────────
 
     private void BuildHud()
     {
-        var (region, name, time) = PlaceInfo;
-        AddChild(ExploreHudKit.Place(region, name, time));
-        _mini = CreateMiniMap(() => (Hero.Ground, _heading));
-        AddChild(ExploreHudKit.MiniMapFrame(_mini, region));
-        AddChild(Tracker());
-        AddChild(ExploreHudKit.Party());
-        AddChild(ExploreHudKit.Shortcuts(("WASD", "行走"), ("Shift", "快走"), ("E", "交互"), ("滚轮", "缩放"), ("M", "地图"), ("Esc", "返回标题")));
+        var region = Driver?.Region ?? PlaceInfo.Region;
+        _mini = CreateMiniMap(() => (Hero.Ground, _heading), () => CurrentGoal?.Ground);
+        AddHud(ExploreHudKit.MiniMapFrame(_mini, region));
+        if (Driver is null)
+        {
+            var (_, name, time) = PlaceInfo;
+            AddChild(ExploreHudKit.Place(region, name, time));
+            AddChild(Tracker());
+            AddChild(ExploreHudKit.Party());
+            AddChild(ExploreHudKit.Shortcuts(("WASD", "行走"), ("Shift", "快走"), ("E", "交互"), ("滚轮", "缩放"), ("M", "地图"), ("Esc", "返回标题")));
+        }
 
         _prompt = new InteractPrompt { Visible = false };
         var center = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
         center.AddChild(_prompt);
-        AddChild(Ui.Place(center, 0.5f, 1, -300, -250, 300, -180));
+        AddHud(Ui.Place(center, 0.5f, 1, -300, -250, 300, -180));
 
-        var tag = Ui.Panel(UiTheme.GlassPanel, Ui.Text(Caption, UiTheme.DarkMutedLabel, 16));
-        var tagBox = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
-        tagBox.AddChild(tag);
-        AddChild(Ui.Place(tagBox, 0.5f, 1, -420, -150, 420, -106));
-
-        if (Goal is { } goal)
+        var caption = Driver?.Caption ?? Caption;
+        if (caption.Length > 0)
         {
-            _pointer = new GoalPointer { Label = goal.Label };
+            var tag = Ui.Panel(UiTheme.GlassPanel, Ui.Text(caption, UiTheme.DarkMutedLabel, 16));
+            var tagBox = new CenterContainer { MouseFilter = MouseFilterEnum.Ignore };
+            tagBox.AddChild(tag);
+            AddHud(Ui.Place(tagBox, 0.5f, 1, -420, -150, 420, -106));
+        }
+
+        if (Driver is not null || Goal is not null)
+        {
+            _pointer = new GoalPointer();
             AddChild(_pointer);
         }
 
         _toasts = ToastColumn.Placed(this);
     }
 
+    private void AddHud(Control control)
+    {
+        AddChild(control);
+        _hud.Add(control);
+    }
+
+    /// <summary>布景自带的 HUD（小地图、交互提示、说明条）；对话进行时由驱动方隐去，让出对话层的版位。</summary>
+    public bool HudVisible
+    {
+        set
+        {
+            foreach (var c in _hud)
+            {
+                c.Visible = value;
+            }
+        }
+    }
+
     /// <summary>左侧目标追踪；野外等不在第一章的布景换成本地的样例任务。</summary>
     protected virtual Control Tracker() => ExploreHudKit.Tracker();
 
     /// <summary>在上方通知栏推一条通知（见闻、物品……）。</summary>
-    protected void Toast(string kind, string text, string where) => _toasts.Push(kind, text, where);
+    public void Toast(string kind, string text, string where) => _toasts.Push(kind, text, where);
 
     // ── 输入 ─────────────────────────────────────────────
 
@@ -213,6 +359,14 @@ public abstract partial class ExploreStage : Control
             case InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.WheelUp or MouseButton.WheelDown } wheel:
                 _zoom = Mathf.Clamp(_zoom * (wheel.ButtonIndex == MouseButton.WheelUp ? 1.05f : 1 / 1.05f), MinZoom, MaxZoom);
                 GetViewport().SetInputAsHandled();
+                break;
+            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.E } when Driver is { } driver:
+                if (_near is { } target && !driver.InputLocked)
+                {
+                    driver.Interact(target);
+                    GetViewport().SetInputAsHandled();
+                }
+
                 break;
             case InputEventKey { Pressed: true, Echo: false, Keycode: Key.E } when _near is { } near:
                 if (near.Scene is { } scene && SceneRouter.CanGoTo(scene))
@@ -227,7 +381,7 @@ public abstract partial class ExploreStage : Control
 
                 GetViewport().SetInputAsHandled();
                 break;
-            case InputEventKey { Pressed: true, Echo: false } key when Pages.TryGetValue(key.Keycode, out var page):
+            case InputEventKey { Pressed: true, Echo: false } key when Driver is null && Pages.TryGetValue(key.Keycode, out var page):
                 AppHost.Instance.Router.GoTo(page);
                 GetViewport().SetInputAsHandled();
                 break;
@@ -240,8 +394,12 @@ public abstract partial class ExploreStage : Control
     {
         var dt = (float)delta;
         MoveHero(dt);
-        FollowTrail(dt);
-        DepthSort.Apply(_pieces.Cast<ISortable>().Append(Hero).Append(Lu).ToList());
+        for (var i = 0; i < _followers.Count; i++)
+        {
+            FollowTrail(_followers[i], FollowGap * (i + 1), dt);
+        }
+
+        DepthSort.Apply(_pieces.Cast<ISortable>().Append(Hero).Concat(_followers.Select(f => f.Figure)).ToList());
         UpdateInteraction();
         UpdateOcclusion(dt);
         UpdateCamera(dt);
@@ -253,10 +411,13 @@ public abstract partial class ExploreStage : Control
     private void MoveHero(float dt)
     {
         var input = Vector2.Zero;
-        if (Input.IsPhysicalKeyPressed(Key.A) || Input.IsPhysicalKeyPressed(Key.Left)) input.X -= 1;
-        if (Input.IsPhysicalKeyPressed(Key.D) || Input.IsPhysicalKeyPressed(Key.Right)) input.X += 1;
-        if (Input.IsPhysicalKeyPressed(Key.W) || Input.IsPhysicalKeyPressed(Key.Up)) input.Y -= 1;
-        if (Input.IsPhysicalKeyPressed(Key.S) || Input.IsPhysicalKeyPressed(Key.Down)) input.Y += 1;
+        if (Driver is not { InputLocked: true })
+        {
+            if (Input.IsPhysicalKeyPressed(Key.A) || Input.IsPhysicalKeyPressed(Key.Left)) input.X -= 1;
+            if (Input.IsPhysicalKeyPressed(Key.D) || Input.IsPhysicalKeyPressed(Key.Right)) input.X += 1;
+            if (Input.IsPhysicalKeyPressed(Key.W) || Input.IsPhysicalKeyPressed(Key.Up)) input.Y -= 1;
+            if (Input.IsPhysicalKeyPressed(Key.S) || Input.IsPhysicalKeyPressed(Key.Down)) input.Y += 1;
+        }
 
         var moving = input != Vector2.Zero;
         if (moving)
@@ -275,7 +436,7 @@ public abstract partial class ExploreStage : Control
             if (_trail[^1].DistanceTo(pos) > 8)
             {
                 _trail.Add(pos);
-                if (_trail.Count > 200) _trail.RemoveAt(0);
+                if (_trail.Count > 400) _trail.RemoveAt(0);
             }
         }
 
@@ -287,33 +448,34 @@ public abstract partial class ExploreStage : Control
     }
 
     /// <summary>
-    /// 同行者追向足迹上距主角正好 FollowGap 的点（沿足迹折线连续插值，目标随主角平滑移动，不按足迹点跳格），
+    /// 同行者追向足迹上距主角正好 back 的点（沿足迹折线连续插值，目标随主角平滑移动，不按足迹点跳格），
     /// 速度随落后距离平滑增减；停步有短暂缓冲、朝向按实际位移换，避免走停与左右在相邻帧间来回切换造成抖动。
-    /// 不做碰撞（足迹本身都在可走区内）。
+    /// 不做碰撞（足迹本身都在可走区内）。多名同行者按 FollowGap 的倍数依次排开。
     /// </summary>
-    private void FollowTrail(float dt)
+    private void FollowTrail(Follower f, float back, float dt)
     {
-        var target = TrailPoint(FollowGap);
-        var gap = target - Lu.Ground;
+        var walker = f.Figure;
+        var target = TrailPoint(back);
+        var gap = target - walker.Ground;
         var dist = gap.Length();
         var step = dist < 1 ? 0 : Mathf.Min(dist, Mathf.Min(RunSpeed * 1.1f, dist * 8) * dt);
         if (step > 0)
         {
             var move = gap / dist * step;
-            var pos = Lu.Ground + move;
-            Lu.Phase += step / 30;
+            var pos = walker.Ground + move;
+            walker.Phase += step / 30;
             var sx = TownView.ScreenX(move);
-            if (Mathf.Abs(sx) > step * 0.3f) Lu.Facing = sx > 0 ? 1 : -1;
-            Lu.Place(pos, StepZ(pos));
+            if (Mathf.Abs(sx) > step * 0.3f) walker.Facing = sx > 0 ? 1 : -1;
+            walker.Place(pos, StepZ(pos));
         }
 
         // 每帧位移低于约 60/秒 才算停步，且须连续 0.15 秒，避免起伏动画在相邻帧间开关。
-        _luIdle = step > 60 * dt ? 0 : _luIdle + dt;
-        var moving = _luIdle < 0.15f;
-        if (moving || Lu.Moving)
+        f.Idle = step > 60 * dt ? 0 : f.Idle + dt;
+        var moving = f.Idle < 0.15f;
+        if (moving || walker.Moving)
         {
-            Lu.Moving = moving;
-            Lu.QueueRedraw();
+            walker.Moving = moving;
+            walker.QueueRedraw();
         }
     }
 
@@ -334,6 +496,27 @@ public abstract partial class ExploreStage : Control
         }
 
         return ahead;
+    }
+
+    /// <summary>摆放核对：某处能否站人（可走区内且不压在物件占地上）。</summary>
+    public bool CanStand(Vector2 p) => Walkable(p);
+
+    /// <summary>摆放核对：交互点周围交互距离内有没有能站人的地方（走得到才按得到 E）。</summary>
+    public bool CanReach(Vector2 target)
+    {
+        for (var r = 0f; r < InteractRange - 10; r += 20)
+        {
+            for (var a = 0; a < 16; a++)
+            {
+                var p = target + Vector2.FromAngle(a * Mathf.Tau / 16) * r;
+                if (Walkable(p))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private bool Walkable(Vector2 p)
@@ -362,13 +545,16 @@ public abstract partial class ExploreStage : Control
     {
         TownInteraction? near = null;
         var best = InteractRange;
-        foreach (var (data, _) in _interactions)
+        if (Driver is not { InputLocked: true })
         {
-            var d = data.Position.DistanceTo(Hero.Ground);
-            if (d < best)
+            foreach (var (data, _) in _interactions)
             {
-                best = d;
-                near = data;
+                var d = data.Position.DistanceTo(Hero.Ground);
+                if (d < best)
+                {
+                    best = d;
+                    near = data;
+                }
             }
         }
 
@@ -386,18 +572,20 @@ public abstract partial class ExploreStage : Control
 
         if (near is null)
         {
-            _prompt.Visible = false;
+            _prompt!.Visible = false;
         }
         else
         {
-            _prompt.Show(near.Verb, near.Target);
+            _prompt!.Show(near.Verb, near.Target);
         }
+
+        Driver?.NearChanged(near);
     }
 
     /// <summary>排在行人之前（更近镜头）的物件，其画出的面盖住行人头胸时淡到 0.4。</summary>
     private void UpdateOcclusion(float dt)
     {
-        var walkers = new[] { Hero, Lu };
+        var walkers = _followers.Select(f => f.Figure).Prepend(Hero).ToArray();
         foreach (var piece in _pieces)
         {
             var hidden = piece.Occluder && walkers.Any(w => piece.ZIndex > w.ZIndex && piece.Covers(w));
@@ -427,11 +615,18 @@ public abstract partial class ExploreStage : Control
     /// <summary>目标在画面外时，箭头停在屏幕边缘（避开四角 HUD）指向它。</summary>
     private void UpdatePointer()
     {
-        if (_pointer is null || Goal is not { } goal)
+        if (_pointer is null)
         {
             return;
         }
 
+        if (CurrentGoal is not { } goal || Driver is { InputLocked: true })
+        {
+            _pointer.Visible = false;
+            return;
+        }
+
+        _pointer.Label = goal.Label;
         var screen = _world.Position + TownView.P(goal.Ground, StepZ(goal.Ground) + goal.Height) * _zoom;
         // 内框避开四角 HUD：左侧地点与目标追踪、右上小地图、下方队伍与快捷键。
         var inner = new Rect2(530, 110, Size.X - 530 - 380, Size.Y - 110 - 180);
@@ -451,4 +646,48 @@ public abstract partial class ExploreStage : Control
         _pointer.Direction = dir;
         _pointer.QueueRedraw();
     }
+
+    private sealed class Follower(WalkerFigure figure)
+    {
+        public WalkerFigure Figure { get; } = figure;
+
+        public float Idle { get; set; } = 1;
+    }
+}
+
+/// <summary>探索形象的外观：AI 形象 ID、程序化占位装束与主色（没有 AI 形象的人物画占位剪影）。</summary>
+public sealed record FollowerLook(string ArtId, FigureLook Look, Color Tone);
+
+/// <summary>站在布景里的剧情人物（事件参与者等），不跟随、不挡路。</summary>
+public sealed record ExploreActor(FollowerLook Look, Vector2 At, int Facing);
+
+/// <summary>
+/// 游戏模式的驱动方（M2）：<see cref="ExploreStage"/> 只管行走、排序、遮挡与镜头，
+/// 其余由驱动方按已提交的世界状态给出，交互经驱动方转成 <c>GameSession</c> 的命令。
+/// </summary>
+public interface IExploreDriver
+{
+    /// <summary>主角落点、同行者排开的方向（世界平面单位向量）与缩放。</summary>
+    (Vector2 Hero, Vector2 Back, float Zoom) Start { get; }
+
+    /// <summary>小地图下方的地区名。</summary>
+    string Region { get; }
+
+    IReadOnlyList<FollowerLook> Followers { get; }
+
+    IReadOnlyList<ExploreActor> Actors { get; }
+
+    IReadOnlyList<TownInteraction> Interactions { get; }
+
+    (Vector2 Ground, float Height, string Label)? Goal { get; }
+
+    /// <summary>底部说明条（布景占位说明）；空串不显示。</summary>
+    string Caption { get; }
+
+    /// <summary>对话、换图或菜单进行中：主角不走、E 不响应。</summary>
+    bool InputLocked { get; }
+
+    void Interact(TownInteraction item);
+
+    void NearChanged(TownInteraction? item);
 }

@@ -125,6 +125,13 @@ public sealed partial class BattleScreen : Control
         _overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_overlay);
 
+        // 世界状态里有待开的剧情战：直接按请求开打，不显示原型配置（M2）。
+        if (AppHost.Instance.Play is { Game.World.Battle: not null } play)
+        {
+            StartStory(play);
+            return;
+        }
+
         switch (DevCapture.Tab)
         {
             case 1:
@@ -177,7 +184,11 @@ public sealed partial class BattleScreen : Control
         }
     }
 
-    public override void _Process(double delta) => Pump();
+    public override void _Process(double delta)
+    {
+        Pump();
+        AutoplayResult();
+    }
 
     /// <summary>截图用：在指定人物画框里找一个按轮廓拾取正落在此人身上的点，把鼠标移过去。</summary>
     private void HoverUnitForCapture(string id)
@@ -257,6 +268,14 @@ public sealed partial class BattleScreen : Control
         }
 
         var setup = new BattleSetup { EncounterId = EncounterIds[encounter], Seed = seed, Allies = allies, Items = StartingItems };
+        Begin(setup, $"{_bundle.Name(setup.EncounterId)}：主角（{Builds[build].Label}）· 种子 {seed}");
+    }
+
+    /// <summary>按开战输入建立会话并开始播放；原型配置与剧情战共用。</summary>
+    private void Begin(BattleSetup setup, string logLine)
+    {
+        CloseOverlay();
+        _seed = setup.Seed;
         _session = new BattleSession(_engine, setup, _bundle.ContentVersion);
         ResetPlayback();
         _popupUnit = null;
@@ -264,7 +283,7 @@ public sealed partial class BattleScreen : Control
         BuildUnits();
         _sceneTitle.Text = $"{_bundle.Name(setup.EncounterId)}　·　{(_session.State.Locked ? "剧情战" : "普通战")}";
         _log.Clear();
-        AddLog($"{_bundle.Name(setup.EncounterId)}：主角（{Builds[build].Label}）· 种子 {seed}");
+        AddLog(logLine);
         Enqueue(_session.StartEvents);
     }
 
@@ -309,11 +328,19 @@ public sealed partial class BattleScreen : Control
 
         if (_resultOpen)
         {
-            if (ResultKey(key.Keycode))
+            if (_story is not null ? StoryResultKey(key.Keycode) : ResultKey(key.Keycode))
             {
                 GetViewport().SetInputAsHandled();
             }
 
+            return;
+        }
+
+        if (_story is not null && key.Keycode == Key.Escape)
+        {
+            // 剧情战中不回标题：战果须经结算提交，半途离开会让世界停在待开战斗上。
+            Toast("剧情战须分出结果；可按 X 撤退（剧情战不可撤退时请力战到底）。");
+            GetViewport().SetInputAsHandled();
             return;
         }
 
@@ -444,6 +471,11 @@ public sealed partial class BattleScreen : Control
     /// <summary>场上显示名：同模板多人时按 ID 尾字母加甲乙丙。</summary>
     private string DisplayName(string unitId)
     {
+        if (_story is not null && unitId.StartsWith("char.", StringComparison.Ordinal))
+        {
+            return _story.Name(unitId);
+        }
+
         if (_session?.State.TryUnit(unitId) is not { } unit)
         {
             return unitId;
