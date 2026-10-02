@@ -1,0 +1,59 @@
+{
+ "set": "m2_figures",
+ "model": "animagine4",
+ "size": [
+  832,
+  1216
+ ],
+ "steps": 28,
+ "cfg": 5.0,
+ "control": 0.8,
+ "control_end": 0.8,
+ "threshold": 26,
+ "seeds": [
+  11,
+  22,
+  33,
+  44,
+  55,
+  66
+ ],
+ "style": {
+  "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+  "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+  "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+  "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+  "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe"
+ },
+ "jobs": [
+  {
+   "name": "linghu_chong",
+   "style": "figure",
+   "pose": "stand",
+   "negative_style": "negative_short",
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, carefree smile, slightly messy black hair tied in a topknot with a blue cloth band, a few loose strands, swordsman, light blue-grey cross-collar short jacket ending at the hips, narrow sleeves, white inner collar, dark blue cloth belt, a dried gourd wine flask hanging at the belt, straight chinese jian sword in a dark scabbard at the waist, grey trousers, trousers visible, white leg wraps, black cloth shoes, standing"
+  },
+  {
+   "name": "huang_rong",
+   "style": "figure",
+   "pose": "stand",
+   "negative_style": "negative_robe",
+   "prompt": "1girl, solo, adult woman, about 22 years old, very beautiful, clever lively eyes, slight playful smile, fair skin, long black hair half-up with a thin golden hair band, hanfu, white and pale green cross-collar jacket, narrow sleeves, light green waist sash, white long skirt with pale green hem, embroidered cloth shoes, standing"
+  },
+  {
+   "name": "xiao_feng",
+   "style": "figure",
+   "pose": "stand",
+   "negative_style": "negative_short",
+   "prompt": "1boy, solo, tall burly adult man, about 32 years old, very broad shoulders, muscular, rugged square face, thick eyebrows, short stubble beard, heroic calm expression, black hair tied up with a brown cloth band, dark grey-brown cross-collar short jacket ending at the hips, sleeves rolled to the forearms, wide dark leather belt, dark brown trousers, trousers visible, leg wraps, black boots, empty hands, standing"
+  },
+  {
+   "name": "du_sangao",
+   "style": "figure",
+   "pose": "stand_pole",
+   "negative_style": "negative_short",
+   "prompt": "1boy, solo, old man, about 60 years old, weathered tanned face, grey beard, grey hair in a small bun, thin, tired, ferryman, faded dark blue short jacket with patches, rolled sleeves, rope belt, rolled up grey trousers, bare shins, straw sandals, holding a tall bamboo pole, pole touching the ground, standing"
+  }
+ ],
+ "note": "2026-10-02 第一章同行者与渡工的探索 / 战斗全身形象。令狐冲、黄蓉、萧峰的外形是本作视觉草案（待 M2-10 人物锚点核验），只取作品中常见的身份气质（华山剑客带酒葫芦、清秀机敏的成年女子、魁梧豪迈的大侠），不据此认定原著外貌细节。"
+}

@@ -1,0 +1,761 @@
+{
+  "set": "m2_portrait_fix",
+  "tier": "complex",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "note": "2026-10-02 立绘复核：萧峰上衣是现代翻领衬衫加纽扣门襟，改为交领短打；黄蓉绿眼珠改深棕。只重绘遮罩内区域，其余像素与透明通道沿用游戏内现有立绘（place 步骤见 tools/ArtGen/eye_place.py --set m2_portrait_fix）。 2026-10-02 第二轮：用户指出萧峰立绘上身涂抹感重、胡子与全身像对不上（定为两边统一成短络腮胡）。xiao_feng_v2_beard 在现有立绘上加贴脸短络腮胡，xiao_feng_v2_torso 以较高强度重绘整个上身（领口到腰带、不含两臂），替代第一轮 xiao_feng / _b / _c 的结果。 最终：萧峰取 v2_beard·33 + v2_torso·66 整图（art_source/ai/characters/xiao_feng_portrait_v1_fixed.png），cutout.py 重抠（阈值 30、羽化 1.2），入包图由抠图缩 0.8 倍贴到 (82,53) 整张生成；第一轮 xiao_feng / _b / _c 的结果已被覆盖。",
+  "negative": "shirt collar, collared shirt, turtleneck, stand collar, buttons, button line, placket, zipper, pockets, modern clothes, suit, kimono, lowres, blurry, bad anatomy, text, watermark",
+  "jobs": [
+    {
+      "name": "xiao_feng",
+      "game_transform": {
+        "scale": 0.8,
+        "offset": [
+          82,
+          53
+        ],
+        "note": "2026-10-02 复核：按透明通道比对，入包立绘 = 抠图缩 0.8 倍贴到 (82,53)（此前记的 0.805 /(81,53) 有偏差，腰部附近错开数像素）；萧峰入包图已改为由最终抠图整张按此变换生成，不再按区域贴回"
+      },
+      "source": "out/m2_portrait_fix/xiao_feng_base.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              360,
+              300
+            ],
+            [
+              590,
+              290
+            ],
+            [
+              600,
+              360
+            ],
+            [
+              430,
+              450
+            ],
+            [
+              370,
+              420
+            ]
+          ]
+        },
+        {
+          "rect": [
+            378,
+            440,
+            432,
+            900
+          ]
+        }
+      ],
+      "paint": [
+        {
+          "line": [
+            472,
+            322,
+            450,
+            430
+          ],
+          "color": [
+            196,
+            150,
+            132
+          ],
+          "width": 56
+        },
+        {
+          "line": [
+            396,
+            330,
+            452,
+            470
+          ],
+          "color": [
+            92,
+            78,
+            72
+          ],
+          "width": 26
+        },
+        {
+          "line": [
+            548,
+            312,
+            372,
+            560
+          ],
+          "color": [
+            92,
+            78,
+            72
+          ],
+          "width": 30
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              352,
+              292
+            ],
+            [
+              600,
+              282
+            ],
+            [
+              612,
+              370
+            ],
+            [
+              470,
+              520
+            ],
+            [
+              390,
+              640
+            ],
+            [
+              345,
+              600
+            ],
+            [
+              350,
+              420
+            ]
+          ]
+        },
+        {
+          "rect": [
+            370,
+            430,
+            440,
+            905
+          ]
+        }
+      ],
+      "keep": [],
+      "feather": 8,
+      "strength": 0.85,
+      "padding_mask_crop": 48,
+      "prompt": "1boy, upper body, burly man, broad chest, dark grey-brown cross-collar jacket, hanfu, jiaoling, overlapping wrapped collar, v-neck collar showing neck, plain cloth, no buttons, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres",
+      "note": "第一步：翻领与上段门襟改交领，选种子 33；下段门襟坐标首轮量错（实际在 x≈290–400），由 xiao_feng_b 补",
+      "iris": false
+    },
+    {
+      "name": "xiao_feng_b",
+      "game_transform": {
+        "scale": 0.8,
+        "offset": [
+          82,
+          53
+        ],
+        "note": "2026-10-02 复核：按透明通道比对，入包立绘 = 抠图缩 0.8 倍贴到 (82,53)（此前记的 0.805 /(81,53) 有偏差，腰部附近错开数像素）；萧峰入包图已改为由最终抠图整张按此变换生成，不再按区域贴回"
+      },
+      "source": "out/m2_portrait_fix/xiao_feng_33.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              362,
+              436
+            ],
+            [
+              328,
+              560
+            ],
+            [
+              280,
+              700
+            ],
+            [
+              282,
+              905
+            ],
+            [
+              332,
+              905
+            ],
+            [
+              342,
+              700
+            ],
+            [
+              372,
+              580
+            ],
+            [
+              408,
+              436
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              355,
+              430
+            ],
+            [
+              318,
+              560
+            ],
+            [
+              270,
+              700
+            ],
+            [
+              272,
+              910
+            ],
+            [
+              342,
+              910
+            ],
+            [
+              352,
+              700
+            ],
+            [
+              382,
+              580
+            ],
+            [
+              418,
+              430
+            ]
+          ]
+        }
+      ],
+      "feather": 6,
+      "strength": 0.6,
+      "padding_mask_crop": 48,
+      "prompt": "1boy, upper body, burly man, broad chest, dark grey-brown cross-collar jacket, hanfu, plain cloth, cloth folds, no buttons, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres",
+      "iris": false,
+      "target": "xiao_feng",
+      "note": "第二步：去掉下段门襟与纽扣，选种子 33；颈后残留浅灰旧领由 xiao_feng_c 补"
+    },
+    {
+      "name": "xiao_feng_c",
+      "target": "xiao_feng",
+      "iris": false,
+      "game_transform": {
+        "scale": 0.8,
+        "offset": [
+          82,
+          53
+        ],
+        "note": "2026-10-02 复核：按透明通道比对，入包立绘 = 抠图缩 0.8 倍贴到 (82,53)（此前记的 0.805 /(81,53) 有偏差，腰部附近错开数像素）；萧峰入包图已改为由最终抠图整张按此变换生成，不再按区域贴回"
+      },
+      "source": "out/m2_portrait_fix/xiao_feng_b_33.png",
+      "paint": [
+        {
+          "line": [
+            350,
+            380,
+            396,
+            372
+          ],
+          "color": [
+            80,
+            66,
+            60
+          ],
+          "width": 44
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              344,
+              347
+            ],
+            [
+              400,
+              346
+            ],
+            [
+              402,
+              408
+            ],
+            [
+              338,
+              414
+            ]
+          ]
+        }
+      ],
+      "feather": 4,
+      "strength": 0.6,
+      "padding_mask_crop": 48,
+      "prompt": "1boy, upper body, burly man, dark brown collar band behind neck, dark grey-brown cross-collar jacket, hanfu, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres",
+      "note": "第三步：颈后浅灰旧领改深棕领缘，选种子 44。套回后另把右肩领口 (548–572, 284–322) 内偏蓝的亮像素（底色残留）压成墨线色 (44,38,36)，入包图按 game_transform 换算同一框"
+    },
+    {
+      "name": "huang_rong",
+      "source": "../../art_source/ai/characters/huang_rong_portrait_v1.png",
+      "mask": [
+        {
+          "ellipse": [
+            347,
+            232,
+            17,
+            11
+          ]
+        },
+        {
+          "ellipse": [
+            421,
+            212,
+            20,
+            12
+          ]
+        }
+      ],
+      "feather": 3,
+      "strength": 0.75,
+      "padding_mask_crop": 40,
+      "negative": "green eyes, aqua eyes, blue eyes, grey eyes, white eyes, blank eyes, no pupils, glowing eyes, heterochromia, closed eyes, lowres, blurry, bad anatomy, text, watermark",
+      "prompt": "1girl, close-up of face, beautiful young woman, clever lively eyes, dark brown eyes, black pupils, detailed iris, eyeliner, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres"
+    },
+    {
+      "name": "xiao_feng_v2_beard",
+      "target": "xiao_feng",
+      "iris": false,
+      "game_transform": {
+        "scale": 0.8,
+        "offset": [
+          82,
+          53
+        ],
+        "note": "2026-10-02 复核：按透明通道比对，入包立绘 = 抠图缩 0.8 倍贴到 (82,53)（此前记的 0.805 /(81,53) 有偏差，腰部附近错开数像素）；萧峰入包图已改为由最终抠图整张按此变换生成，不再按区域贴回"
+      },
+      "source": "out/m2_portrait_fix/xiao_feng_v2_base.png",
+      "mask": [
+        {
+          "poly": [
+            [
+              480,
+              226
+            ],
+            [
+              500,
+              262
+            ],
+            [
+              494,
+              322
+            ],
+            [
+              472,
+              362
+            ],
+            [
+              424,
+              388
+            ],
+            [
+              378,
+              386
+            ],
+            [
+              352,
+              352
+            ],
+            [
+              336,
+              306
+            ],
+            [
+              338,
+              278
+            ],
+            [
+              362,
+              262
+            ],
+            [
+              420,
+              252
+            ],
+            [
+              462,
+              234
+            ]
+          ]
+        }
+      ],
+      "feather": 6,
+      "strength": 0.72,
+      "padding_mask_crop": 48,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "negative": "long beard, goatee only, clean shaven, white beard, grey beard, lowres, blurry, smudge, bad anatomy, text, watermark",
+      "prompt": "1boy, close-up of face, rugged man about 32 years old, short full beard, dense short black beard covering the jawline, cheeks and chin, connected to sideburns, short moustache, neatly trimmed, thick eyebrows, stern calm expression, semi-realistic, cel shading, clean lineart, detailed shading, masterpiece, high score, absurdres",
+      "paint": [
+        {
+          "line": [
+            488,
+            250,
+            478,
+            300
+          ],
+          "color": [
+            44,
+            40,
+            40
+          ],
+          "width": 18
+        },
+        {
+          "line": [
+            478,
+            300,
+            452,
+            330
+          ],
+          "color": [
+            44,
+            40,
+            40
+          ],
+          "width": 22
+        },
+        {
+          "line": [
+            452,
+            330,
+            410,
+            342
+          ],
+          "color": [
+            44,
+            40,
+            40
+          ],
+          "width": 22
+        },
+        {
+          "line": [
+            410,
+            342,
+            374,
+            338
+          ],
+          "color": [
+            44,
+            40,
+            40
+          ],
+          "width": 20
+        },
+        {
+          "line": [
+            374,
+            338,
+            356,
+            322
+          ],
+          "color": [
+            44,
+            40,
+            40
+          ],
+          "width": 14
+        }
+      ]
+    },
+    {
+      "name": "xiao_feng_v2_torso",
+      "target": "xiao_feng",
+      "iris": false,
+      "game_transform": {
+        "scale": 0.8,
+        "offset": [
+          82,
+          53
+        ],
+        "note": "2026-10-02 复核：按透明通道比对，入包立绘 = 抠图缩 0.8 倍贴到 (82,53)（此前记的 0.805 /(81,53) 有偏差，腰部附近错开数像素）；萧峰入包图已改为由最终抠图整张按此变换生成，不再按区域贴回"
+      },
+      "source": "out/m2_portrait_fix/xiao_feng_v2_beard_33.png",
+      "mask": [
+        {
+          "poly": [
+            [
+              360,
+              374
+            ],
+            [
+              420,
+              374
+            ],
+            [
+              462,
+              354
+            ],
+            [
+              495,
+              320
+            ],
+            [
+              560,
+              322
+            ],
+            [
+              640,
+              410
+            ],
+            [
+              770,
+              470
+            ],
+            [
+              782,
+              560
+            ],
+            [
+              772,
+              640
+            ],
+            [
+              560,
+              680
+            ],
+            [
+              548,
+              888
+            ],
+            [
+              242,
+              888
+            ],
+            [
+              228,
+              720
+            ],
+            [
+              195,
+              700
+            ],
+            [
+              205,
+              470
+            ],
+            [
+              300,
+              410
+            ],
+            [
+              345,
+              382
+            ]
+          ]
+        }
+      ],
+      "feather": 8,
+      "strength": 0.75,
+      "padding_mask_crop": 32,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "negative": "shirt collar, collared shirt, buttons, placket, zipper, pockets, modern clothes, t-shirt, kimono, blurry, smudge, smeared, painterly, watercolor, sketch, messy lines, lowres, bad anatomy, text, watermark",
+      "prompt": "1boy, upper body, burly muscular man, broad chest, dark grey-brown cross-collar jacket, hanfu, jiaoling, wrapped v-neck collar with dark brown collar band, plain cotton cloth, clean crisp lineart, simple cloth folds, flat cel shading with two tones, semi-realistic, masterpiece, high score, absurdres"
+    },
+    {
+      "name": "xiao_feng_figure_beard",
+      "note": "全身像（探索与战斗共用）的长络腮须改为与立绘一致的短络腮胡：在 832×1216 原图上重绘，再按原裁框 [248,108,603,1168]、缩放 0.7663 放回 272×812，脚底与身高不变",
+      "source": "out/m2_figures/xiao_feng_22__raw.png",
+      "paint": [
+        {
+          "line": [
+            416,
+            262,
+            476,
+            260
+          ],
+          "color": [
+            251,
+            213,
+            194
+          ],
+          "width": 26
+        },
+        {
+          "line": [
+            470,
+            288,
+            545,
+            300
+          ],
+          "color": [
+            180,
+            138,
+            111
+          ],
+          "width": 34
+        },
+        {
+          "line": [
+            500,
+            306,
+            560,
+            322
+          ],
+          "color": [
+            180,
+            138,
+            111
+          ],
+          "width": 26
+        },
+        {
+          "line": [
+            455,
+            272,
+            500,
+            280
+          ],
+          "color": [
+            180,
+            138,
+            111
+          ],
+          "width": 14
+        },
+        {
+          "line": [
+            390,
+            170,
+            393,
+            228
+          ],
+          "color": [
+            30,
+            30,
+            36
+          ],
+          "width": 10
+        },
+        {
+          "line": [
+            393,
+            228,
+            430,
+            250
+          ],
+          "color": [
+            30,
+            30,
+            36
+          ],
+          "width": 12
+        },
+        {
+          "line": [
+            430,
+            250,
+            470,
+            246
+          ],
+          "color": [
+            30,
+            30,
+            36
+          ],
+          "width": 12
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              378,
+              160
+            ],
+            [
+              404,
+              160
+            ],
+            [
+              420,
+              236
+            ],
+            [
+              470,
+              232
+            ],
+            [
+              492,
+              236
+            ],
+            [
+              504,
+              262
+            ],
+            [
+              574,
+              296
+            ],
+            [
+              578,
+              344
+            ],
+            [
+              500,
+              328
+            ],
+            [
+              430,
+              300
+            ],
+            [
+              396,
+              276
+            ],
+            [
+              376,
+              240
+            ]
+          ]
+        }
+      ],
+      "feather": 5,
+      "strength": 0.72,
+      "padding_mask_crop": 48,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "negative": "long beard, flowing beard, beard on chest, clean shaven, goatee only, white beard, lowres, blurry, bad anatomy, text, watermark",
+      "prompt": "1boy, close-up, rugged burly man about 32 years old, very short full beard, short black beard hugging the jawline and chin, connected to sideburns, neck visible, round collar of a light brown jacket, thick lineart, cel shading, high contrast, semi-realistic, masterpiece, high score, absurdres"
+    }
+  ]
+}

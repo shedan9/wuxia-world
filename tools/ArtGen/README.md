@@ -179,9 +179,27 @@ cd tools/ArtGen
 
 重绘沿用同一 SDXL 基础模型，不新增权重。重绘管线必须用 `StableDiffusionXLInpaintPipeline(**base.components)` 共用子模型：diffusers 0.40 的 `from_pipe` 会再复制一份权重（显存 6.6 → 13.1 GB），16 GB 显卡溢出到共享内存后每张从 4 秒变成 5 分钟以上。
 
+### 眼部重绘（白眼珠修正）
+
+2026-10-02 用户要求：人设不是盲人的角色不许出现白眼珠。萧峰、唐守亭、令狐冲、杜三篙四张对话立绘的眼珠发白（虹膜极浅或没画），按 `jobs/m2_eye_fix.json` 只重绘眼部：遮罩是两只眼的椭圆，`padding_mask_crop: 40` 让管线把眼部附近裁出来放大到整张尺寸再画（小眼睛也有细节），strength 0.75–0.8，正面词写 `dark brown eyes, black pupils, detailed iris`，负面词排除 `white eyes, blank eyes, no pupils, blind, pale / blue / grey eyes`，每人 4 个种子。选好后用 `eye_place.py` 套回：
+
+```powershell
+.venv/Scripts/python eye_place.py xiao_feng=44 tang_shouting=44 linghu_chong=22 du_sangao=22
+```
+
+它只取遮罩（羽化）内的像素，把偏橙的亮棕压暗成深棕，贴进 `art_source/ai/characters/<名>_portrait_v1_cutout.png` 与 `game/assets/portraits/<名>_v1.png`，透明通道与其余像素不变，选定种子与输出哈希记在 `out/m2_eye_fix/picks.json`。入包立绘若是源图缩放平移后的版本（萧峰缩 0.8 倍并与陆青禾头顶对齐），在任务里写 `game_transform`（`scale`、`offset`，按不透明像素比对求得），遮罩与修好的眼部按同一变换搬到入包坐标——不写会把眼睛贴错位置。
+
+同一套路也用于眼部以外的局部修正。2026-10-02 复核立绘：萧峰的上衣是现代翻领加纽扣门襟、黄蓉是绿眼珠，按 `jobs/m2_portrait_fix.json` 修：萧峰分三步串联（后一步的 `source` 指向前一步选定的输出）——领口先 `erase` 旧翻领、`paint` 粗涂交领 V 形与颈下肤色再重绘（strength 0.85），然后抹掉下段门襟与纽扣（0.6），最后把颈后残留的浅灰旧领改成深棕领缘（0.6）；黄蓉只重绘两眼。负面词排除 `shirt collar, buttons, placket` 与 `green / aqua eyes`。注意 `erase` 会从周围取色，遮罩挨着轮廓时会把底色吸进人物里（萧峰颈后那块浅灰就是这样来的），挨轮廓处宁可用 `paint` 先涂成衣服颜色。套回时用 `--set` 指定任务集，串联任务按先后顺序传入：
+
+```powershell
+.venv/Scripts/python eye_place.py --set m2_portrait_fix xiao_feng=33 xiao_feng_b=33 xiao_feng_c=44 huang_rong=33
+```
+
+任务写 `"target"` 时套到该人物（串联的第二、三步），写 `"iris": false` 时不做虹膜压暗（衣服、皮肤里偏橙的像素不该被压暗）。萧峰右肩领口另有一小片底色残留，套回后把框内偏蓝的亮像素压成墨线色，记在任务的 `note` 里。
+
 ## 纯色底抠图
 
-`cutout.py` 从图像边缘按颜色距离做连通填充，只去掉与边框相连的底色（人物身上与底色相近的饰物不受影响），边缘羽化并扣除底色溢色，输出 RGBA PNG 与同名 `.json` 记录（源图与输出哈希、阈值、羽化）。`--enclosed 距离` 另去掉离底色更近的封闭小块（树冠枝条间的空隙），默认不去；`--soft t0,t1` 按与底色的色差给半透明度（t0 以下全透、t1 以上不透），用于模型混进前景的雾状底色。
+`cutout.py` 从图像边缘按颜色距离做连通填充，只去掉与边框相连的底色（人物身上与底色相近的饰物不受影响），边缘羽化并扣除底色溢色，输出 RGBA PNG 与同名 `.json` 记录（源图与输出哈希、阈值、羽化）。`--enclosed 距离` 另去掉离底色更近的封闭小块（树冠枝条间的空隙），默认不去；`--soft t0,t1` 按与底色的色差给半透明度（t0 以下全透、t1 以上不透），用于模型混进前景的雾状底色。`--gradient` 用于上下渐变的底（天色由深到浅）：按行取左右边上的真实底色（先用二次曲线作参照、剔除压着人物和兵器的行，再插值平滑），逐行比色差；唐守亭立绘原先单一底色抠图漏掉了下半截渐变天色，2026-10-02 用 `--gradient --threshold 22 --enclosed 16` 重抠。抠完在深、浅两种底色上各看一遍再入库。
 
 ```powershell
 .venv/Scripts/python cutout.py ../../art_source/ai/characters/lu_qinghe_portrait_v1.png ../../art_source/ai/characters/lu_qinghe_portrait_v1_cutout.png

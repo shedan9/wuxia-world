@@ -1,0 +1,106 @@
+{
+ "set": "m2_portraits",
+ "tier": "complex",
+ "model": "animagine4",
+ "size": [
+  832,
+  1216
+ ],
+ "steps": 28,
+ "cfg": 5.0,
+ "seeds": [
+  101,
+  202,
+  303,
+  404,
+  505,
+  606
+ ],
+ "note": "2026-10-02 第一章说话人物对话立绘。经典人物外形为视觉草案（待 M2-10 人物锚点核验），与探索 / 战斗全身形象同一套服装描述。",
+ "style": {
+  "portrait_final": "semi-realistic, cel shading, detailed shading, pale teal background, masterpiece, high score, absurdres",
+  "negative_v2": "lowres, bad anatomy, bad hands, extra digits, text, watermark, signature, chibi, loli, child, old woman, wrinkles, denim, jeans, zipper, pockets, buttons, hood, modern clothes, kimono, ink wash, paper texture, nsfw, cleavage, blurry",
+  "negative_male": "lowres, bad anatomy, bad hands, extra digits, text, watermark, signature, chibi, child, denim, jeans, zipper, pockets, modern clothes, kimono, japanese clothes, katana, ink wash, paper texture, nsfw, blurry, scenery",
+  "negative_old": "lowres, bad anatomy, bad hands, extra digits, text, watermark, signature, chibi, child, denim, jeans, zipper, modern clothes, kimono, ink wash, paper texture, nsfw, blurry, scenery"
+ },
+ "jobs": [
+  {
+   "name": "qiao_hongxiao",
+   "style": "portrait_final",
+   "negative_style": "negative_v2",
+   "prompt": "1woman, solo, mature woman, around thirty, beautiful, confident sly smile, black hair in a tall elegant bun, gold hairpin, hanfu, short white cross-collar jacket, narrow sleeves, cinnabar waist sash, crimson skirt, innkeeper, hand on hip, cowboy shot"
+  },
+  {
+   "name": "linghu_chong",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, carefree grin, slightly messy black hair tied in a topknot with a blue cloth band, loose strands, swordsman, light blue-grey cross-collar jacket, white inner collar, dark blue belt, holding a gourd wine flask, chinese jian sword at waist, cowboy shot"
+  },
+  {
+   "name": "huang_rong",
+   "style": "portrait_final",
+   "negative_style": "negative_v2",
+   "prompt": "1girl, solo, adult woman, about 22 years old, very beautiful, clever lively eyes, playful smile, fair skin, long black hair half-up with a thin golden hair band, hanfu, white and pale green cross-collar dress, light green waist sash, cowboy shot"
+  },
+  {
+   "name": "xiao_feng",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "prompt": "1boy, solo, tall burly adult man, about 32 years old, very broad shoulders, muscular, rugged square face, thick eyebrows, short black beard, heroic calm expression, black hair tied up with a brown cloth band, dark grey-brown cross-collar jacket, sleeves rolled to the forearms, wide dark leather belt, arms crossed, cowboy shot"
+  },
+  {
+   "name": "du_sangao",
+   "style": "portrait_final",
+   "negative_style": "negative_old",
+   "prompt": "1boy, solo, old man, about 60 years old, weathered tanned face, grey beard, grey hair in a small bun, thin, tired kind eyes, ferryman, faded dark blue patched jacket, rope belt, holding a bamboo pole, cowboy shot"
+  },
+  {
+   "name": "tang_shouting",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "prompt": "1boy, solo, burly middle-aged man, stubble, scar on cheek, fierce cold expression, black hair tied back, dark grey leather vest over black robe, leather bracers, holding a chinese dao broadsword, cowboy shot"
+  },
+  {
+   "name": "linghu_chong_v2",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, relaxed carefree smile, slightly messy black hair tied in a topknot with a blue cloth band, loose strands, swordsman, light blue-grey cross-collar jacket, white inner collar, dark blue belt, dried calabash gourd hanging from the belt, chinese jian sword in scabbard at waist, simple background, cowboy shot"
+  },
+  {
+   "name": "xiao_feng_v2",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "prompt": "1boy, solo, tall adult man, about 32 years old, broad shoulders, strong build, handsome rugged face, thick eyebrows, short trimmed stubble, steady calm eyes, black hair tied up with a brown cloth band, dark grey-brown cross-collar jacket, sleeves rolled to the forearms, dark leather belt, hands at sides, simple background, cowboy shot"
+  },
+  {
+   "name": "linghu_chong_v3",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, relaxed carefree smile, slightly messy black hair tied in a topknot with a blue cloth band, loose strands, swordsman, light blue-grey cross-collar jacket, white inner collar, dark blue belt, chinese jian sword in scabbard at waist, hand resting on sword hilt, simple background, plain pale teal background, cowboy shot"
+  },
+  {
+   "name": "linghu_chong_i2i",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "init_image": "out/m2_portraits/linghu_base.png",
+   "strength": 0.55,
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, relaxed carefree smile, black hair tied in a topknot with a blue cloth band, swordsman, blue-grey cross-collar jacket, white inner collar, dark blue belt, gourd at the belt, chinese jian sword, cowboy shot"
+  },
+  {
+   "name": "linghu_chong_i2i_s70",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "init_image": "out/m2_portraits/linghu_base2.png",
+   "strength": 0.7,
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, relaxed carefree smile, black hair tied in a topknot with a blue cloth band, loose strands, swordsman, blue cross-collar jacket over white inner robe, dark blue belt, upper body"
+  },
+  {
+   "name": "linghu_chong_i2i_s80",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "init_image": "out/m2_portraits/linghu_base2.png",
+   "strength": 0.8,
+   "prompt": "1boy, solo, young adult man, about 25 years old, handsome, relaxed carefree smile, black hair tied in a topknot with a blue cloth band, loose strands, swordsman, blue cross-collar jacket over white inner robe, dark blue belt, upper body"
+  }
+ ]
+}

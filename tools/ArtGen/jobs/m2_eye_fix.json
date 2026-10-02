@@ -1,0 +1,129 @@
+{
+  "set": "m2_eye_fix",
+  "tier": "complex",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "note": "2026-10-02 用户试听试看反馈：男角色对话立绘眼珠发白（非盲人设定不允许）。只重绘眼部，其余像素不变；输出套回游戏内立绘原有的透明通道（place 步骤见 tools/ArtGen/eye_place.py）。",
+  "negative": "white eyes, blank eyes, empty eyes, no pupils, blind, pale eyes, glowing eyes, blue eyes, grey eyes, heterochromia, closed eyes, lowres, blurry, bad anatomy, text, watermark",
+  "jobs": [
+    {
+      "name": "xiao_feng",
+      "game_transform": {
+        "scale": 0.8,
+        "offset": [
+          82,
+          53
+        ],
+        "note": "2026-10-02 复核：按透明通道比对，入包立绘 = 抠图缩 0.8 倍贴到 (82,53)（此前记的 0.805 /(81,53) 有偏差，腰部附近错开数像素）；萧峰入包图已改为由最终抠图整张按此变换生成，不再按区域贴回"
+      },
+      "source": "../../art_source/ai/characters/xiao_feng_portrait_v1.png",
+      "mask": [
+        {
+          "ellipse": [
+            351,
+            192,
+            16,
+            11
+          ]
+        },
+        {
+          "ellipse": [
+            416,
+            191,
+            27,
+            13
+          ]
+        }
+      ],
+      "feather": 3,
+      "strength": 0.8,
+      "padding_mask_crop": 40,
+      "prompt": "1boy, close-up of face, burly man, thick eyebrows, stern calm gaze, dark brown eyes, black pupils, detailed iris, eyes looking to the side, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres"
+    },
+    {
+      "name": "tang_shouting",
+      "source": "../../art_source/ai/characters/tang_shouting_portrait_v1.png",
+      "mask": [
+        {
+          "ellipse": [
+            394,
+            170,
+            22,
+            11
+          ]
+        },
+        {
+          "ellipse": [
+            466,
+            190,
+            18,
+            11
+          ]
+        }
+      ],
+      "feather": 3,
+      "strength": 0.8,
+      "padding_mask_crop": 40,
+      "prompt": "1boy, close-up of face, middle-aged man, fierce cold glare, furrowed brow, dark brown eyes, black pupils, detailed iris, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres"
+    },
+    {
+      "name": "linghu_chong",
+      "source": "../../art_source/ai/characters/linghu_chong_portrait_v1.png",
+      "mask": [
+        {
+          "ellipse": [
+            452,
+            292,
+            25,
+            12
+          ]
+        },
+        {
+          "ellipse": [
+            528,
+            302,
+            16,
+            11
+          ]
+        }
+      ],
+      "feather": 3,
+      "strength": 0.75,
+      "padding_mask_crop": 40,
+      "prompt": "1boy, close-up of face, young handsome man, carefree smile, dark brown eyes, black pupils, detailed iris, eyes looking to the side, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres"
+    },
+    {
+      "name": "du_sangao",
+      "source": "../../art_source/ai/characters/du_sangao_portrait_v1.png",
+      "mask": [
+        {
+          "ellipse": [
+            395,
+            213,
+            20,
+            10
+          ]
+        },
+        {
+          "ellipse": [
+            482,
+            214,
+            22,
+            10
+          ]
+        }
+      ],
+      "feather": 3,
+      "strength": 0.75,
+      "padding_mask_crop": 40,
+      "prompt": "1boy, close-up of face, old man, wrinkles, grey eyebrows, narrowed weary eyes, dark brown eyes, black pupils, detailed iris, semi-realistic, cel shading, detailed shading, masterpiece, high score, absurdres"
+    }
+  ]
+}

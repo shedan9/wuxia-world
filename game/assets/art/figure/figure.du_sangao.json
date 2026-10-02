@@ -1,0 +1,10 @@
+{
+  "id": "figure.du_sangao",
+  "foot": [
+    134.3,
+    843.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.du_sangao.png",
+  "sha256": "0e531f7e7fd16dbe5645d4352a7337e82709e06c217bd2d3fc4fd215fbbfcff5"
+}
