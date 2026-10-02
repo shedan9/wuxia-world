@@ -9,7 +9,7 @@ namespace WuxiaWorld.Game.Presentation.Play;
 using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 
 /// <summary>
-/// 游戏菜单的内容（由 <see cref="PauseMenu"/> 承载，一局中任意时刻按 Esc 打开）：继续、保存、读取、人物、行囊、札记、设置、返回标题、退出游戏。
+/// 游戏菜单的内容（由 <see cref="PauseMenu"/> 承载，一局中任意时刻按 Esc 打开）：继续、保存、读取、人物、队伍、行囊、札记、设置、返回标题、退出游戏。
 /// 保存只写手动槽（快速槽由 F5 写，自动槽由换图写）；对话、换图或战斗进行中不能保存（架构文档 3、11），按钮置灰并写明原因。
 /// 读取可读任何有效槽。子页（存读档、札记、设置、确认）按 Esc 回到主页，主页按 Esc 关闭菜单。
 /// </summary>
@@ -28,7 +28,7 @@ public sealed class GameMenu
     }
 
     public const float Width = 760;
-    public const float Height = 860;
+    public const float Height = 910;
 
     /// <summary>存读档页更宽，放得下带缩略图的存档卡。</summary>
     public const float SlotsWidth = 1180;
@@ -60,6 +60,9 @@ public sealed class GameMenu
         Ui.ClearChildren(_body);
         _resize(width, height);
         Back = sub ? () => ShowMain() : null;
+
+        // 主页十项菜单排得紧一些，整页放得进 1080 高的画面；子页照常留白。
+        _body.AddThemeConstantOverride("separation", sub ? UiPalette.SpaceM : 0);
     }
 
     private void ShowMain()
@@ -93,6 +96,7 @@ public sealed class GameMenu
 
         Item("读取进度", () => ShowSlots(save: false));
         Item("人物与武学", () => ShowPage(CharacterPage.Build(_play)));
+        Item("队伍", () => ShowPage(PartyPage.Build(_play)));
         Item("行囊", () => ShowPage(InventoryPage.Build(_play)));
         Item("江湖札记", ShowJournal);
         Item("江湖设置", () =>
@@ -112,7 +116,7 @@ public sealed class GameMenu
         first?.CallDeferred(Control.MethodName.GrabFocus);
     }
 
-    /// <summary>人物、行囊页：与探索中按 C / I 打开的是同一页；对话、换图或战斗中只能查看。</summary>
+    /// <summary>人物、队伍、行囊页：与探索中按 C / P / I 打开的是同一页；对话、换图或战斗中只能查看。</summary>
     private void ShowPage(Control page)
     {
         Page(ExplorationScreen.PageWidth, ExplorationScreen.PageHeight);

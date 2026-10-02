@@ -22,7 +22,7 @@ public static class ExploreHudKit
         return Ui.Place(panel, 0, 0, 40, 32, 480, 180);
     }
 
-    /// <summary>右上：泥金卷云角框小地图，下方地区名与 M 大地图（<paramref name="mapKey"/> 为 false 时不写按键：游戏内大地图尚未接入，不留按了没反应的提示）。</summary>
+    /// <summary>右上：泥金卷云角框小地图，下方地区名与 M 大地图（<paramref name="mapKey"/> 为 false 时不写按键；游戏内 M 打开江湖大地图）。</summary>
     public static Control MiniMapFrame(Control map, string region, bool mapKey = true)
     {
         map.CustomMinimumSize = new Vector2(280, 280);

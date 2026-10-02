@@ -312,7 +312,7 @@ public abstract partial class ExploreStage : Control
     {
         var region = Driver?.Region ?? PlaceInfo.Region;
         _mini = CreateMiniMap(() => (Hero.Ground, _heading), () => CurrentGoal?.Ground);
-        AddHud(ExploreHudKit.MiniMapFrame(_mini, region, mapKey: Driver is null));
+        AddHud(ExploreHudKit.MiniMapFrame(_mini, region));
         if (Driver is null)
         {
             var (_, name, time) = PlaceInfo;

@@ -127,7 +127,7 @@ public sealed class CharacterPage
         if (!Growth.IsBuildable(_who))
         {
             info.AddChild(Companion());
-            return Ui.Row(UiPalette.SpaceXl, Portrait(_who), Ui.Expand(info));
+            return Ui.Row(UiPalette.SpaceXl, Portrait(_play, _who), Ui.Expand(info));
         }
 
         var next = Game.Rules.NextLevelAt(level);
@@ -196,7 +196,7 @@ public sealed class CharacterPage
         }
 
         info.AddChild(Ui.Row(UiPalette.SpaceXl, Ui.MinSize(rows, 620), Ui.Expand(Ui.Panel(UiTheme.InsetPanel, StatGrid(now, after)))));
-        return Ui.Row(UiPalette.SpaceXl, Portrait(_who), Ui.Expand(info));
+        return Ui.Row(UiPalette.SpaceXl, Portrait(_play, _who), Ui.Expand(info));
     }
 
     private void Pend(int index, int delta)
@@ -227,26 +227,30 @@ public sealed class CharacterPage
         return Ui.Column(UiPalette.SpaceS, Ui.Text(title, UiTheme.SectionLabel), grid);
     }
 
-    /// <summary>同行者：原创人物显示战斗模板数值；经典人物在档案核验前不显示数值（不被读作实力排名）。</summary>
+    /// <summary>
+    /// 同行者：可招募伙伴显示随成长现推的数值（等级、经验、属性）；暂时同行的原创人物显示其角色模板；
+    /// 经典人物的个人战斗档案制作前不显示数值（不被读作实力排名）。
+    /// </summary>
     private Control Companion()
     {
         var content = Game.Rules.Content;
-        var column = Ui.Column(UiPalette.SpaceM, Ui.Text("暂时同行，成长随剧情与角色模板变化，不由玩家分配。", UiTheme.MutedLabel, wrap: true));
+        var grows = Growth.Grows(World, _who);
+        var column = Ui.Column(UiPalette.SpaceM, Ui.Text(PartyRules.RoleOf(Game.Rules, _who) == PartyRole.Recruitable
+            ? "伙伴：随主角成长，不由玩家加点。在队时与主角同得经验，离队期间得一半；再入队时若落后，补到比主角低一级。"
+            : "暂时同行：随事件来去，实力随其原著阶段与角色模板，不随主角成长。", UiTheme.MutedLabel, wrap: true));
         if (content.Characters.TryGetValue(_who, out var c) && c.Origin == CharacterOrigin.Canon)
         {
             column.AddChild(Ui.Panel(UiTheme.InsetPanel, Ui.Column(UiPalette.SpaceS,
-                Ui.Text("人物档案待核", UiTheme.AccentLabel),
-                Ui.Text("经典人物的实力由角色模板与剧情表现体现；原著剧情锚点核对完成前不展示数值。", UiTheme.MutedLabel, wrap: true))));
+                Ui.Text("个人战斗档案待制作", UiTheme.AccentLabel),
+                Ui.Text("经典人物的武学与实力按所选原著阶段整理，制作完成前不展示数值。", UiTheme.MutedLabel, wrap: true))));
             return column;
         }
 
-        if (c?.Combatant is { } id && _play.Combat.Combatants.FirstOrDefault(t => t.Id == id) is { } template)
-        {
-            var stats = CombatantFactory.DeriveStats(template, Growth.Combat);
-            column.AddChild(Ui.Text($"第 {template.Level} 级　招式：{string.Join("、", template.Loadout.Skills.Select(_play.Combat.Name))}", wrap: true));
-            column.AddChild(Ui.Panel(UiTheme.InsetPanel, StatGrid(stats, null)));
-        }
-
+        var template = Growth.Template(World, _who);
+        var stats = CombatantFactory.DeriveStats(template, Growth.Combat);
+        var level = grows ? $"第 {template.Level} 级　经验 {World.Companions[_who].Experience}" : $"第 {template.Level} 级";
+        column.AddChild(Ui.Text($"{level}　招式：{string.Join("、", template.Loadout.Skills.Select(_play.Combat.Name))}", wrap: true));
+        column.AddChild(Ui.Panel(UiTheme.InsetPanel, StatGrid(stats, null)));
         return column;
     }
 
@@ -256,7 +260,7 @@ public sealed class CharacterPage
     {
         if (!Growth.IsBuildable(_who))
         {
-            return Ui.Row(UiPalette.SpaceXl, Portrait(_who), Ui.Expand(Companion()));
+            return Ui.Row(UiPalette.SpaceXl, Portrait(_play, _who), Ui.Expand(Companion()));
         }
 
         var build = World.Builds.GetValueOrDefault(_who) ?? new CharacterBuild();
@@ -403,7 +407,7 @@ public sealed class CharacterPage
     {
         if (!Growth.IsBuildable(_who))
         {
-            return Ui.Row(UiPalette.SpaceXl, Portrait(_who), Ui.Expand(Companion()));
+            return Ui.Row(UiPalette.SpaceXl, Portrait(_play, _who), Ui.Expand(Companion()));
         }
 
         var build = World.Builds.GetValueOrDefault(_who) ?? new CharacterBuild();
@@ -498,7 +502,7 @@ public sealed class CharacterPage
     /// <summary>
     /// 立绘框：有对话立绘用立绘，否则用探索与战斗共用的全身形象，都没有则竖排姓名并标“立绘待制作”（UI_DESIGN 5.2）。
     /// </summary>
-    private Control Portrait(string who)
+    internal static Control Portrait(PlaySession play, string who)
     {
         var frame = new PanelContainer { ClipContents = true };
         frame.AddThemeStyleboxOverride("panel", new OrnateBox
@@ -542,7 +546,7 @@ public sealed class CharacterPage
         }
         else
         {
-            var name = Ui.Text(Ui.Vertical(_play.Name(who)), UiTheme.DarkTitleLabel, 72);
+            var name = Ui.Text(Ui.Vertical(play.Name(who)), UiTheme.DarkTitleLabel, 72);
             name.AddThemeColorOverride("font_color", UiPalette.TextOnDark with { A = 0.35f });
             name.HorizontalAlignment = HorizontalAlignment.Center;
             name.VerticalAlignment = VerticalAlignment.Center;
@@ -551,7 +555,7 @@ public sealed class CharacterPage
             note = "立绘待制作";
         }
 
-        var caption = Ui.Column(2, Ui.Text(_play.Name(who), UiTheme.DarkTitleLabel, 28));
+        var caption = Ui.Column(2, Ui.Text(play.Name(who), UiTheme.DarkTitleLabel, 28));
         if (note.Length > 0)
         {
             caption.AddChild(Ui.Text(note, UiTheme.DarkMutedLabel, 16));

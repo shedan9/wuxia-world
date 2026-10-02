@@ -10,9 +10,27 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 再由 <c>assets/shaders/world_relief.gdshader</c> 叠加岩石与林地细节、做西北光照的山体晕渲、按海拔与坡度着色
 /// （平原田块、林地、高地、裸岩、雪线）并画出由浅到深的海水；江河、道路与地域题字以矢量叠在地形之上。
 /// 正式大地图按架构文档 10.3 制作后替换此类；地标与路线图层不受影响。全部形状只取决于固定种子。
+/// 地标位置（山体避让）与道路由构造参数给出：展示页用样例，游戏内大地图用内容数据（<c>WorldMapOverlay</c>）。
 /// </summary>
 public partial class WorldMapCanvas : Control
 {
+    private readonly IReadOnlyList<Vector2> _landmarks;
+    private readonly IReadOnlyList<MapRoad> _roads;
+
+    /// <summary>展示页：样例地标与路网。</summary>
+    public WorldMapCanvas()
+        : this(WorldMapSamples.Nodes.Select(n => n.Pos).ToArray(), WorldMapSamples.Edges.Select(e => new MapRoad(RoutePath(e), e.Water)).ToArray())
+    {
+    }
+
+    /// <param name="landmarks">地标位置（地图坐标），山体避开这些空地。</param>
+    /// <param name="roads">要画出的道路。</param>
+    public WorldMapCanvas(IReadOnlyList<Vector2> landmarks, IReadOnlyList<MapRoad> roads)
+    {
+        _landmarks = landmarks;
+        _roads = roads;
+    }
+
     /// <summary>高度图每格对应的地图逻辑像素。</summary>
     private const int Cell = 6;
 
@@ -272,7 +290,7 @@ public partial class WorldMapCanvas : Control
     /// 沿每条山脉的走向摆放山体：主脊两三排，间距、大小、前后位置都随机错开，偶有一座特别高的主峰；
     /// 山脉前沿再撒一排低矮的丘陵。按底边由远到近绘制，前山压住后山；避开地标所在的空地、江河、湖与海岸。
     /// </summary>
-    private static void DrawMountains(Rid item)
+    private void DrawMountains(Rid item)
     {
         var massifs = new List<Massif>();
         var r = 0;
@@ -339,16 +357,16 @@ public partial class WorldMapCanvas : Control
         }
     }
 
-    private static bool Blocked(Vector2 c, float w, float h)
+    private bool Blocked(Vector2 c, float w, float h)
     {
         if (c.X + w * 0.5f > CoastX(c.Y) - 30 || c.Y > WorldMapSamples.Size.Y + 20 || c.Y - h < -40)
         {
             return true;
         }
 
-        foreach (var node in WorldMapSamples.Nodes)
+        foreach (var pos in _landmarks)
         {
-            var d = node.Pos - c;
+            var d = pos - c;
             if (Mathf.Abs(d.X) < w * 0.25f + 16 && d.Y > -h * 0.5f && d.Y < 24)
             {
                 return true;
@@ -559,14 +577,14 @@ public partial class WorldMapCanvas : Control
     // ── 路 ───────────────────────────────────────────────
 
     /// <summary>陆路为暗边浅色短划的土路，水路为白色点线。</summary>
-    private static void DrawRoads(Rid item)
+    private void DrawRoads(Rid item)
     {
         var casing = new Color(0.18f, 0.14f, 0.1f, 0.6f);
         var dirt = new Color(0.93f, 0.86f, 0.68f, 0.95f);
-        foreach (var edge in WorldMapSamples.Edges)
+        foreach (var road in _roads)
         {
-            var path = RoutePath(edge);
-            if (edge.Water)
+            var path = road.Path;
+            if (road.Water)
             {
                 foreach (var (p, _) in Walk(path, 16))
                 {
@@ -669,3 +687,6 @@ public partial class WorldMapCanvas : Control
         }
     }
 }
+
+/// <summary>舆图上画出的一段路：折线（地图坐标）与是否水路（白色点线；否则为土色短划陆路）。</summary>
+public sealed record MapRoad(Vector2[] Path, bool Water);

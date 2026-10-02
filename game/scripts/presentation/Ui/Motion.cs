@@ -50,19 +50,36 @@ public static class Motion
             var applied = Vector2.Zero;
             void Apply()
             {
+                if (!GodotObject.IsInstanceValid(control))
+                {
+                    return;
+                }
+
                 control.Position += current - applied;
                 applied = current;
             }
 
             // 容器排版会把位置重设为排版结果（不含位移），此时位移从零重新叠加。
+            // 入场途中控件可能已被释放（通知被挤掉、面板重建），此时断开排版回调，不再碰它。
             var container = control.GetParent() as Container;
+            Callable onSort = default;
             void OnSort()
             {
+                if (!GodotObject.IsInstanceValid(control))
+                {
+                    if (container is not null && GodotObject.IsInstanceValid(container) && container.IsConnected(Container.SignalName.SortChildren, onSort))
+                    {
+                        container.Disconnect(Container.SignalName.SortChildren, onSort);
+                    }
+
+                    return;
+                }
+
                 applied = Vector2.Zero;
                 Apply();
             }
 
-            var onSort = Callable.From(OnSort);
+            onSort = Callable.From(OnSort);
             container?.Connect(Container.SignalName.SortChildren, onSort);
             Apply();
 
@@ -75,7 +92,7 @@ public static class Motion
             }), 1f, 0f, duration).SetDelay(delay);
             tween.Chain().TweenCallback(Callable.From(() =>
             {
-                if (container is not null && GodotObject.IsInstanceValid(container))
+                if (container is not null && GodotObject.IsInstanceValid(container) && container.IsConnected(Container.SignalName.SortChildren, onSort))
                 {
                     container.Disconnect(Container.SignalName.SortChildren, onSort);
                     container.QueueSort();

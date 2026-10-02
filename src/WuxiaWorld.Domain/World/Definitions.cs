@@ -325,6 +325,68 @@ public sealed record RouteDefinition
     public IReadOnlyList<RouteEncounter> Encounters { get; init; } = [];
 }
 
+/// <summary>
+/// 江湖大地图（架构文档 6.1、6.5）：地标节点与图上画出的道路。节点把若干小地图归为一处目的地，
+/// 旅行仍走 <see cref="RouteDefinition"/>（起讫为小地图）；道路只供表现层描线，不决定能否通行。
+/// 坐标为设计稿坐标，范围 <see cref="Frame"/>，表现层按自己的画布尺寸缩放。
+/// </summary>
+public sealed record WorldMapDefinition
+{
+    /// <summary>设计稿尺寸 [宽, 高]。</summary>
+    public IReadOnlyList<int> Frame { get; init; } = [];
+
+    public IReadOnlyList<WorldNodeDefinition> Nodes { get; init; } = [];
+    public IReadOnlyList<WorldRoadDefinition> Roads { get; init; } = [];
+}
+
+/// <summary>大地图图标种类（表现层映射为地标小图）。</summary>
+public enum WorldNodeIcon
+{
+    Inn,
+    Ferry,
+    Granary,
+    Wharf,
+    Gate,
+    Relay,
+    Pagoda,
+    Hall,
+    Peak,
+    Beggars,
+}
+
+/// <summary>
+/// 大地图地标。<see cref="Maps"/> 为属于此处的小地图（每张小地图至多属于一处），为空表示尚无可进入的场景、只在图上预告；
+/// <see cref="When"/> 为地标在图上出现的条件（缺省一直可见）；<see cref="LockedHint"/> 为不能前往时写明的开放条件（文本键）。
+/// </summary>
+public sealed record WorldNodeDefinition
+{
+    public required string Id { get; init; }
+    public required string Region { get; init; }
+    public WorldNodeIcon Icon { get; init; }
+
+    /// <summary>设计稿坐标 [x, y]。</summary>
+    public IReadOnlyList<int> Pos { get; init; } = [];
+
+    public IReadOnlyList<string> Maps { get; init; } = [];
+    public Condition? When { get; init; }
+    public string? LockedHint { get; init; }
+}
+
+public enum RoadKind
+{
+    Land,
+    Water,
+}
+
+/// <summary>图上两处地标之间画出的一段路：陆路（步行、骑马、马车）或水路（渡船）；<see cref="Via"/> 为途经的弯折点。</summary>
+public sealed record WorldRoadDefinition
+{
+    public required string From { get; init; }
+    public required string To { get; init; }
+    public RoadKind Kind { get; init; }
+    public IReadOnlyList<IReadOnlyList<int>> Via { get; init; } = [];
+}
+
 public enum ItemCategory
 {
     Weapon,
@@ -528,6 +590,24 @@ public sealed record CharacterDefinition
 
     /// <summary>战斗模板（未参战的人物为空）。</summary>
     public string? Combatant { get; init; }
+
+    /// <summary>同行身份（架构文档 8.4）：能入队的人物必填；不入队的人物为 <see cref="PartyRole.None"/>。</summary>
+    public PartyRole Party { get; init; }
+}
+
+/// <summary>
+/// 人物与队伍的关系（架构文档 8.4、9.4.4）。切磋对象与导师属后续篇章，届时再加。
+/// </summary>
+public enum PartyRole
+{
+    /// <summary>不入队。</summary>
+    None,
+
+    /// <summary>暂时同行：随事件入队与离队，实力随其原著阶段与角色模板，不随主角成长。</summary>
+    Temporary,
+
+    /// <summary>可招募伙伴：随主角成长，离队期间有限追赶（见 <see cref="PartyRules"/>）。</summary>
+    Recruitable,
 }
 
 /// <summary>新游戏的初始世界。</summary>

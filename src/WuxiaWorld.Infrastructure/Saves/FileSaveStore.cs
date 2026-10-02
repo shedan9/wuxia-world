@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using WuxiaWorld.Application.Persistence;
+using WuxiaWorld.Domain.World;
 
 namespace WuxiaWorld.Infrastructure.Saves;
 
@@ -24,7 +25,7 @@ public interface ISaveMigration
 public sealed class FileSaveStore : ISaveStore
 {
     /// <summary>当前存档结构版本。改动存档结构时递增，并在 <see cref="Migrations"/> 中加入上一版的迁移。</summary>
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 4;
 
     public static readonly JsonSerializerOptions Json = CreateOptions();
 
@@ -39,7 +40,7 @@ public sealed class FileSaveStore : ISaveStore
     }
 
     /// <summary>正式迁移表，按起始版本排列。</summary>
-    public static IReadOnlyList<ISaveMigration> Migrations { get; } = [new V1ToV2()];
+    public static IReadOnlyList<ISaveMigration> Migrations { get; } = [new V1ToV2(), new V2ToV3(), new V3ToV4()];
 
     public string Directory { get; }
 
@@ -377,5 +378,75 @@ internal sealed class V1ToV2 : ISaveMigration
 
         world["cultivation"] ??= 0;
         world["builds"] ??= new JsonObject();
+    }
+}
+
+/// <summary>
+/// v2 → v3（2026-10-02，M2-02 江湖大地图）：世界状态新增到过的小地图 <c>visited</c>。旧档无从知道到过哪里，
+/// 只补当前所在的地图；其余地标在下次到达时记下（大地图上暂显示为“未到访”，不影响能否前往）。
+/// </summary>
+internal sealed class V2ToV3 : ISaveMigration
+{
+    public int From => 2;
+
+    public void Migrate(JsonObject payload)
+    {
+        if (payload["world"] is not JsonObject world)
+        {
+            throw new InvalidDataException("存档缺少 world");
+        }
+
+        if (world["visited"] is null)
+        {
+            var visited = new JsonArray();
+            if (world["map_id"]?.GetValue<string>() is { Length: > 0 } map)
+            {
+                visited.Add(map);
+            }
+
+            world["visited"] = visited;
+        }
+    }
+}
+
+/// <summary>
+/// v3 → v4（2026-10-02，M2-06 伙伴）：世界状态新增阵位 <c>formation</c> 与同行记录 <c>companions</c>。
+/// 旧档的阵位按队伍次序取默认格位（与此前剧情战写死的站位相同：主角前排 1 号、第二人后排 1 号、其后前排 2 号、前排 0 号）；
+/// 在队伙伴记入队一次、经验与主角持平（暂时同行者的经验不被使用）。已离队的人此前没有记录，按未同行处理。
+/// </summary>
+internal sealed class V3ToV4 : ISaveMigration
+{
+    public int From => 3;
+
+    public void Migrate(JsonObject payload)
+    {
+        if (payload["world"] is not JsonObject world)
+        {
+            throw new InvalidDataException("存档缺少 world");
+        }
+
+        var party = world["party"] is JsonArray a ? a.Select(x => x!.GetValue<string>()).ToList() : [];
+        var experience = world["experience"]?.GetValue<int>() ?? 0;
+        if (world["formation"] is null)
+        {
+            var formation = new JsonObject();
+            for (var i = 0; i < party.Count && i < PartyRules.DefaultOrder.Length; i++)
+            {
+                formation[party[i]] = PartyRules.DefaultOrder[i];
+            }
+
+            world["formation"] = formation;
+        }
+
+        if (world["companions"] is null)
+        {
+            var companions = new JsonObject();
+            foreach (var id in party.Skip(1))
+            {
+                companions[id] = new JsonObject { ["joins"] = 1, ["experience"] = experience };
+            }
+
+            world["companions"] = companions;
+        }
     }
 }

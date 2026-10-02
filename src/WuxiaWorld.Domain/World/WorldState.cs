@@ -164,6 +164,21 @@ public sealed class CharacterBuild
 }
 
 /// <summary>
+/// 能入队人物的同行记录（架构文档 8.4、9.4.4）：第一次入队时建立，离队后保留，再入队时接着用。
+/// 经验只对可招募伙伴有意义（暂时同行者的实力随角色模板，不随主角成长）。
+/// </summary>
+public sealed class CompanionState
+{
+    /// <summary>入队次数；大于 0 即“曾同行”。</summary>
+    public int Joins { get; set; }
+
+    /// <summary>可招募伙伴的累计经验，等级按主角同一张经验表换算，不低于其角色模板等级。</summary>
+    public int Experience { get; set; }
+
+    public CompanionState Clone() => new() { Joins = Joins, Experience = Experience };
+}
+
+/// <summary>
 /// 统一世界的完整可存档状态（架构文档 9.2 <c>WorldState</c>、11）。领域规则只改这一份数据；
 /// 应用层在副本上执行事务，成功后整体替换，失败则丢弃副本。集合一律按序数排序，哈希与存档次序稳定。
 /// </summary>
@@ -201,6 +216,15 @@ public sealed class WorldState
     /// <summary>队伍：首位为主角，最多主角 + 3 名伙伴。</summary>
     public List<string> Party { get; init; } = [];
 
+    /// <summary>
+    /// 阵位：在队人物 → 格位（<c>排 × 3 + 列</c>，0–2 前排、3–5 后排），见 <see cref="PartyRules"/>。
+    /// 入队时占默认空位，离队时让出；玩家可在队伍页调换。
+    /// </summary>
+    public SortedDictionary<string, int> Formation { get; init; } = new(StringComparer.Ordinal);
+
+    /// <summary>入过队的人物的同行记录（离队后保留）。</summary>
+    public SortedDictionary<string, CompanionState> Companions { get; init; } = new(StringComparer.Ordinal);
+
     /// <summary>人物 → 占用它的事件 ID（架构文档 9.1 事件占用）。</summary>
     public SortedDictionary<string, string> Reservations { get; init; } = new(StringComparer.Ordinal);
 
@@ -223,6 +247,9 @@ public sealed class WorldState
 
     /// <summary>可养成人物的成长与装配（人物 ID → 构成）。</summary>
     public SortedDictionary<string, CharacterBuild> Builds { get; init; } = new(StringComparer.Ordinal);
+
+    /// <summary>到过的小地图（大地图据此区分已到访与未到访的地标）。每次提交时记下当前所在。</summary>
+    public SortedSet<string> Visited { get; init; } = new(StringComparer.Ordinal);
 
     /// <summary>地图差异：已消耗的一次性交互物，键为 <c>map_id/interactable_id</c>（架构文档 6.4）。</summary>
     public SortedSet<string> MapDeltas { get; init; } = new(StringComparer.Ordinal);
@@ -278,6 +305,7 @@ public sealed class WorldState
         c.Met.UnionWith(Met);
         c.Skills.UnionWith(Skills);
         c.MapDeltas.UnionWith(MapDeltas);
+        c.Visited.UnionWith(Visited);
         foreach (var (k, v) in Facts)
         {
             c.Facts[k] = v;
@@ -308,6 +336,16 @@ public sealed class WorldState
             c.Builds[k] = v.Clone();
         }
 
+        foreach (var (k, v) in Formation)
+        {
+            c.Formation[k] = v;
+        }
+
+        foreach (var (k, v) in Companions)
+        {
+            c.Companions[k] = v.Clone();
+        }
+
         return c;
     }
 
@@ -331,6 +369,7 @@ public sealed class WorldState
         Set("met", Met);
         Set("skills", Skills);
         Set("deltas", MapDeltas);
+        Set("visited", Visited);
         Set("party", Party);
         h.Add("facts");
         foreach (var (k, v) in Facts)
@@ -370,6 +409,18 @@ public sealed class WorldState
         {
             h.Add(k);
             build.AddTo(h);
+        }
+
+        h.Add("formation");
+        foreach (var (k, v) in Formation)
+        {
+            h.Add(k).Add(v);
+        }
+
+        h.Add("companions");
+        foreach (var (k, v) in Companions)
+        {
+            h.Add(k).Add(v.Joins).Add(v.Experience);
         }
 
         h.Add(QueuedEvent).Add("battle");

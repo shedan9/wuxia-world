@@ -1,0 +1,41 @@
+{
+  "frame": [2880, 1600],
+  "nodes": [
+    {
+      "id": "node.jiangnan.luwan",
+      "region": "region.jiangnan",
+      "icon": "inn",
+      "pos": [1786, 904],
+      "maps": ["map.jiangnan.luwan_street", "map.jiangnan.inn", "map.jiangnan.luwan_shore"]
+    },
+    {
+      "id": "node.jiangnan.old_ferry",
+      "region": "region.jiangnan",
+      "icon": "ferry",
+      "pos": [1934, 884],
+      "maps": ["map.jiangnan.old_ferry"]
+    },
+    {
+      "id": "node.jiangnan.granary",
+      "region": "region.jiangnan",
+      "icon": "granary",
+      "pos": [1640, 1090],
+      "when": { "type": "clue_known", "id": "clue.ch01.next_leads" },
+      "locked_hint": "node.jiangnan.granary.locked"
+    },
+    {
+      "id": "node.jiangnan.mountain_pass",
+      "region": "region.jiangnan",
+      "icon": "gate",
+      "pos": [1330, 690],
+      "when": { "type": "clue_known", "id": "clue.ch01.next_leads" },
+      "locked_hint": "node.jiangnan.mountain_pass.locked"
+    }
+  ],
+  "roads": [
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.old_ferry", "kind": "water", "via": [[1820, 887], [1880, 878]] },
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.old_ferry", "kind": "land", "via": [[1840, 932], [1905, 918]] },
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.granary", "kind": "land", "via": [[1730, 1000], [1690, 1060]] },
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.mountain_pass", "kind": "land", "via": [[1700, 918], [1560, 862], [1450, 790]] }
+  ]
+}

@@ -1,6 +1,6 @@
 namespace WuxiaWorld.Domain.World;
 
-/// <summary>已校验的世界内容索引：地图、路线、地区事件、任务、对白、物品、人物、店铺、成长设置与新游戏设置。</summary>
+/// <summary>已校验的世界内容索引：地图、路线、大地图、地区事件、任务、对白、物品、人物、店铺、成长设置与新游戏设置。</summary>
 public sealed class WorldContent
 {
     public WorldContent(
@@ -13,7 +13,8 @@ public sealed class WorldContent
         IEnumerable<CharacterDefinition> characters,
         NewGameDefinition newGame,
         ProgressionDefinition? progression = null,
-        IEnumerable<ShopDefinition>? shops = null)
+        IEnumerable<ShopDefinition>? shops = null,
+        WorldMapDefinition? worldMap = null)
     {
         Maps = Index(maps, m => m.Id);
         Routes = Index(routes, r => r.Id);
@@ -25,6 +26,18 @@ public sealed class WorldContent
         NewGame = newGame;
         Progression = progression ?? new ProgressionDefinition();
         Shops = Index(shops ?? [], s => s.Id);
+        WorldMap = worldMap ?? new WorldMapDefinition();
+        Nodes = Index(WorldMap.Nodes, n => n.Id);
+        var nodeOfMap = new SortedDictionary<string, WorldNodeDefinition>(StringComparer.Ordinal);
+        foreach (var node in WorldMap.Nodes)
+        {
+            foreach (var map in node.Maps)
+            {
+                nodeOfMap.TryAdd(map, node);
+            }
+        }
+
+        _nodeOfMap = nodeOfMap;
         EventsByMap = Events.Values.GroupBy(e => e.Map, StringComparer.Ordinal)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<StoryEventDefinition>)[.. g.OrderBy(e => e.Priority).ThenBy(e => e.Id, StringComparer.Ordinal)],
                 StringComparer.Ordinal);
@@ -40,6 +53,19 @@ public sealed class WorldContent
     public NewGameDefinition NewGame { get; }
     public ProgressionDefinition Progression { get; }
     public IReadOnlyDictionary<string, ShopDefinition> Shops { get; }
+
+    /// <summary>江湖大地图；没有大地图内容时节点与道路都为空。</summary>
+    public WorldMapDefinition WorldMap { get; }
+
+    public IReadOnlyDictionary<string, WorldNodeDefinition> Nodes { get; }
+
+    private readonly SortedDictionary<string, WorldNodeDefinition> _nodeOfMap;
+
+    /// <summary>小地图所属的大地图地标；不属于任何地标时为 null。</summary>
+    public WorldNodeDefinition? NodeOf(string mapId) => _nodeOfMap.TryGetValue(mapId, out var n) ? n : null;
+
+    /// <summary>两张小地图是同一张，或属于同一处地标。</summary>
+    public bool SamePlace(string a, string b) => a == b || (NodeOf(a) is { } na && NodeOf(b) is { } nb && na.Id == nb.Id);
 
     /// <summary>地图 → 该图的地区事件，已按优先级与 ID 排好。</summary>
     public IReadOnlyDictionary<string, IReadOnlyList<StoryEventDefinition>> EventsByMap { get; }

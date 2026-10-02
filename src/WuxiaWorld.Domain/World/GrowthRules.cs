@@ -71,8 +71,20 @@ public sealed class GrowthRules(WorldRules world, CombatContent combat)
         var points = Math.Max(0, Unspent(s, who));
         var w = (s.Facts.TryGetValue(WorldRules.StyleFact, out var id) ? P.Styles.FirstOrDefault(x => x.Id == id) : null)?.Recommended
                 ?? new Attributes(1, 1, 1, 1, 1);
-        int[] weights = [w.Physique, w.Strength, w.Root, w.Agility, w.Insight];
-        var sum = Math.Max(1, weights.Sum());
+        return Distribute(points, w);
+    }
+
+    /// <summary>按权重把点数分到五项（最大余数法，平分时按体魄、臂力、根骨、身法、悟性次序）；权重全为 0 时平分。</summary>
+    public static Attributes Distribute(int points, Attributes weight)
+    {
+        int[] weights = [weight.Physique, weight.Strength, weight.Root, weight.Agility, weight.Insight];
+        if (weights.All(x => x <= 0))
+        {
+            weights = [1, 1, 1, 1, 1];
+        }
+
+        weights = [.. weights.Select(x => Math.Max(0, x))];
+        var sum = weights.Sum();
         var give = weights.Select(x => points * x / sum).ToArray();
         var rest = points - give.Sum();
         foreach (var i in Enumerable.Range(0, 5).OrderByDescending(i => points * weights[i] % sum).ThenBy(i => i).Take(rest))
@@ -296,6 +308,11 @@ public sealed class GrowthRules(WorldRules world, CombatContent combat)
     /// </summary>
     public CombatantTemplate Template(WorldState s, string who)
     {
+        if (!IsBuildable(who))
+        {
+            return CompanionTemplate(s, who);
+        }
+
         var b = s.Builds.TryGetValue(who, out var build) ? build : new CharacterBuild();
         return new CombatantTemplate
         {
@@ -310,4 +327,49 @@ public sealed class GrowthRules(WorldRules world, CombatContent combat)
     }
 
     public StatBlock Stats(WorldState s, string who) => CombatantFactory.DeriveStats(Template(s, who), Combat);
+
+    // ── 同行者（架构文档 8.4、9.4.4） ─────────────────────
+
+    /// <summary>经典人物的个人战斗模板制作前（M3）共用的占位同行者模板。</summary>
+    public const string PlaceholderCompanion = "combatant.placeholder.companion";
+
+    /// <summary>同行者的角色模板；没有模板的人物用占位同行者模板。</summary>
+    public CombatantTemplate BaseTemplate(string who) =>
+        Combat.Combatant(World.Content.Characters.TryGetValue(who, out var c) && c.Combatant is { } id ? id : PlaceholderCompanion);
+
+    /// <summary>是否随主角成长：可招募伙伴且已入过队（同行记录里有经验）。</summary>
+    public bool Grows(WorldState s, string who) =>
+        PartyRules.RoleOf(World, who) == PartyRole.Recruitable && s.Companions.ContainsKey(who);
+
+    /// <summary>人物当前等级：主角按经验；可招募伙伴按自己的经验、不低于角色模板等级；暂时同行者即模板等级。</summary>
+    public int LevelOf(WorldState s, string who)
+    {
+        if (IsBuildable(who))
+        {
+            return Level(s);
+        }
+
+        var t = BaseTemplate(who);
+        return Grows(s, who) ? Math.Max(t.Level, World.LevelOf(s.Companions[who].Experience)) : t.Level;
+    }
+
+    /// <summary>
+    /// 同行者的战斗模板：可招募伙伴高出模板等级的每一级，按模板里高出基础属性的部分作权重自动分配潜能
+    /// （保留其个人特色，不由玩家加点）；招式、心法与装备随角色模板。暂时同行者原样使用角色模板。
+    /// </summary>
+    public CombatantTemplate CompanionTemplate(WorldState s, string who)
+    {
+        var t = BaseTemplate(who);
+        var level = LevelOf(s, who);
+        if (level <= t.Level)
+        {
+            return t;
+        }
+
+        var b = P.BaseAttributes;
+        var a = t.Attributes;
+        var weight = new Attributes(a.Physique - b.Physique, a.Strength - b.Strength, a.Root - b.Root, a.Agility - b.Agility, a.Insight - b.Insight);
+        var extra = StatFormula.PotentialAt(level) - StatFormula.PotentialAt(t.Level);
+        return t with { Level = level, Attributes = a.Plus(Distribute(extra, weight)) };
+    }
 }

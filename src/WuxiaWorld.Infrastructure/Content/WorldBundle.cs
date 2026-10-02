@@ -38,6 +38,9 @@ public sealed record WorldBundle
     public IReadOnlyList<StoryAnchorDefinition> Anchors { get; init; } = [];
     public IReadOnlyList<ShopDefinition> Shops { get; init; } = [];
 
+    /// <summary>江湖大地图（<c>world/world_map.json</c>）。</summary>
+    public WorldMapDefinition? WorldMap { get; init; }
+
     /// <summary>成长设置（<c>world/progression.json</c>）。</summary>
     public ProgressionDefinition? Progression { get; init; }
 
@@ -48,7 +51,7 @@ public sealed record WorldBundle
 
     public WorldContent ToContent() =>
         new(Maps, Routes, Events, Quests, Dialogues, Items, Characters, NewGame ?? throw new InvalidDataException("缺少新游戏设置 world/new_game.json"),
-            Progression ?? throw new InvalidDataException("缺少成长设置 world/progression.json"), Shops);
+            Progression ?? throw new InvalidDataException("缺少成长设置 world/progression.json"), Shops, WorldMap);
 
     public string Name(string id) => Text.TryGetValue(id + ".name", out var name) ? name : id;
 
@@ -71,6 +74,7 @@ public static class WorldContentLoader
 
         NewGameDefinition? newGame = null;
         ProgressionDefinition? progression = null;
+        WorldMapDefinition? worldMap = null;
         var shops = new List<ShopDefinition>();
         var maps = new List<MapDefinition>();
         var routes = new List<RouteDefinition>();
@@ -94,6 +98,9 @@ public static class WorldContentLoader
                         break;
                     case ["world", "progression.json"]:
                         progression = Read<ProgressionDefinition>(json);
+                        break;
+                    case ["world", "world_map.json"]:
+                        worldMap = Read<WorldMapDefinition>(json);
                         break;
                     case ["regions", _, "shops", ..]:
                         shops.AddRange(Read<List<ShopDefinition>>(json));
@@ -140,7 +147,7 @@ public static class WorldContentLoader
         return new WorldBundle
         {
             ContentVersion = ContentFiles.Version(root),
-            NewGame = newGame, Progression = progression, Shops = shops, Maps = maps, Routes = routes, Events = events, Quests = quests,
+            NewGame = newGame, Progression = progression, WorldMap = worldMap, Shops = shops, Maps = maps, Routes = routes, Events = events, Quests = quests,
             Chapters = chapters, Items = items, Characters = characters, Anchors = anchors, Text = text,
         };
     }

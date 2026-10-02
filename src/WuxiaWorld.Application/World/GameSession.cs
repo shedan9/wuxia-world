@@ -26,6 +26,15 @@ public sealed class DialogueSession
     internal long OriginRevision { get; }
 }
 
+/// <summary>
+/// 大地图上一处地标的状态。<see cref="Route"/> 为从所在之处去那里、条件已满足的路线；
+/// 不能前往时 <see cref="LockedHint"/> 为写明开放条件的文本键（可能为 null，表示无路可通且未写条件）。
+/// </summary>
+public sealed record WorldNodeStatus(WorldNodeDefinition Node, bool Here, bool Visited, RouteDefinition? Route, string? LockedHint)
+{
+    public bool Open => Here || Route is not null;
+}
+
 public enum TransitionKind
 {
     /// <summary>大地图路线旅行（扣费、推进时辰、抽途中事件）。</summary>
@@ -246,15 +255,50 @@ public sealed class GameSession
 
     // ── 场景切换 ──────────────────────────────────────────
 
-    /// <summary>可用的路线（从当前地图出发且条件满足）。</summary>
+    /// <summary>可用的路线（从当前所在之处出发且条件满足）：起点与当前地图同属一处大地图地标即可，不必站在码头。</summary>
     public IReadOnlyList<RouteDefinition> Routes =>
-        [.. Rules.Content.Routes.Values.Where(r => r.From == World.MapId && Rules.Check(r.When, World))];
+        [.. Rules.Content.Routes.Values.Where(r => Rules.Content.SamePlace(r.From, World.MapId) && Rules.Check(r.When, World))];
+
+    /// <summary>
+    /// 大地图上此刻可见的地标及其状态（架构文档 6.5）：所在之处、是否到过、可走的路线；不能前往时给出开放条件文本键——
+    /// 有路线但条件未满足用路线的提示，没有路线用地标自己的提示。所在之处总是可见。
+    /// </summary>
+    public IReadOnlyList<WorldNodeStatus> WorldMapNodes
+    {
+        get
+        {
+            var content = Rules.Content;
+            var here = content.NodeOf(World.MapId);
+            var list = new List<WorldNodeStatus>();
+            foreach (var node in content.WorldMap.Nodes)
+            {
+                var isHere = node.Id == here?.Id;
+                if (!isHere && !Rules.Check(node.When, World))
+                {
+                    continue;
+                }
+
+                var visited = isHere || node.Maps.Any(World.Visited.Contains);
+                List<RouteDefinition> routes = isHere ? [] : content.Routes.Values
+                    .Where(r => content.SamePlace(r.From, World.MapId) && node.Maps.Contains(r.To, StringComparer.Ordinal)).ToList();
+                var open = routes.FirstOrDefault(r => Rules.Check(r.When, World));
+                var hint = open is not null || isHere ? null : routes.Select(r => r.LockedHint).FirstOrDefault(h => h is not null) ?? node.LockedHint;
+                list.Add(new WorldNodeStatus(node, isHere, visited, open, hint));
+            }
+
+            return list;
+        }
+    }
+
+    /// <summary>一处地标里此刻可开始的地区事件（各小地图合在一起，主线在前）。</summary>
+    public IReadOnlyList<StoryEventDefinition> EventsIn(WorldNodeDefinition node) =>
+        [.. node.Maps.SelectMany(m => Rules.EventsAt(World, m)).OrderBy(e => e.Priority).ThenBy(e => e.Id, StringComparer.Ordinal)];
 
     public Transition BeginRoute(string routeId, TravelMode mode)
     {
         EnsureExploring();
         var route = Rules.Content.Routes.TryGetValue(routeId, out var rd) ? rd : throw new InvalidOperationException($"未定义的路线 {routeId}");
-        if (route.From != World.MapId || !Rules.Check(route.When, World))
+        if (!Rules.Content.SamePlace(route.From, World.MapId) || !Rules.Check(route.When, World))
         {
             throw new InvalidOperationException($"路线 {routeId} 当前不可走");
         }
@@ -400,6 +444,9 @@ public sealed class GameSession
     public CommitResult Cultivate(string who, string skillId) =>
         Manage(g => g.Cultivate(Candidate, who, skillId), new WorldNotice("mastery", skillId));
 
+    /// <summary>调换阵位：把在队人物移到某格（0–2 前排、3–5 后排），该格有人则互换（见 <see cref="PartyRules"/>）。</summary>
+    public CommitResult SetFormation(string who, int cell) => Manage(_ => PartyRules.SetCell(Candidate, who, cell));
+
     public CommitResult Buy(string shopId, string itemId, int count = 1) => Trade(r => Rules.Buy(Candidate, shopId, itemId, count, r));
 
     public CommitResult Sell(string shopId, string itemId, int count = 1) => Trade(r => Rules.Sell(Candidate, shopId, itemId, count, r));
@@ -538,6 +585,7 @@ public sealed class GameSession
             return CommitResult.From(r);
         }
 
+        candidate.Visited.Add(candidate.MapId);
         candidate.Revision = World.Revision + 1;
         World = candidate;
         return CommitResult.From(r);

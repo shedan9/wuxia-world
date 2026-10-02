@@ -230,6 +230,7 @@ public sealed class PlaySession
         "clue" => ("线索", $"已记录：{Name(n.Id)}"),
         "joined" => ("同行", $"{Name(n.Id)} 加入队伍"),
         "left" => ("同行", $"{Name(n.Id)} 离开队伍"),
+        "caught_up" => ("同行", $"{Name(n.Id)} 离队期间也未荒废，追到第 {n.Amount} 级"),
         "skill" => ("武学", $"习得 {Combat.Name(n.Id)}"),
         "experience" => ("成长", $"经验 +{n.Amount}"),
         "cultivation" => ("成长", $"修为 +{n.Amount}"),

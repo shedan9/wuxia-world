@@ -14,14 +14,12 @@ namespace WuxiaWorld.Game.Presentation.Battle;
 /// 按请求的遭遇与当前队伍开打；结算页确认后经 <see cref="GameSession.SettleBattle"/> 以 <c>battle_instance_id</c> 一次性提交，
 /// 再回探索页。战败可再战（新实例）或暂退（执行战败收束、回本图安全入口）。
 /// 主角由世界状态现推战斗模板（等级、潜能、装备、装配与熟练度，见 <see cref="Domain.World.GrowthRules.Template"/>）；
-/// 经典人物援手在人物锚点核验（M2-10）前用占位同行者模板，显示真名。
+/// 可招募伙伴按同行记录的等级现推，暂时同行的经典人物在个人战斗模板制作前（M3）用占位同行者模板，显示真名；
+/// 站位取队伍页设定的阵位（<see cref="PartyRules"/>）。
 /// 战斗用药读行囊里的数量，用掉的随结算一并从行囊扣除（无论胜负，重复结算不重复扣）。
 /// </summary>
 public sealed partial class BattleScreen
 {
-    /// <summary>陆青禾之外的同行者依次站：前排右、前排左、后排右。</summary>
-    private static readonly Position[] CompanionSlots = [new(0, 2), new(0, 0), new(1, 2)];
-
     private PlaySession? _story;
     private PendingBattle? _pending;
 
@@ -36,14 +34,9 @@ public sealed partial class BattleScreen
         _build = w.Skills.Any(s => s.StartsWith("skill.fist.", StringComparison.Ordinal)) ? 1
             : w.Skills.Any(s => s.StartsWith("skill.inner.", StringComparison.Ordinal)) ? 2 : 0;
         var growth = play.Game.Growth!;
-        var allies = new List<AllyEntry> { new(growth.Template(w, growth.Hero), growth.Hero, new Position(0, 1)) };
-        var slot = 0;
-        foreach (var id in w.Party.Skip(1).Take(BattleSetup.MaxAllies - 1))
-        {
-            var template = play.Game.Rules.Content.Characters.TryGetValue(id, out var c) && c.Combatant is { } t ? t : "combatant.placeholder.companion";
-            var at = id == "char.lu_qinghe" ? new Position(1, 1) : CompanionSlots[slot++ % CompanionSlots.Length];
-            allies.Add(new(content.Combatant(template), id, at));
-        }
+        var allies = PartyRules.Cells(w).Take(BattleSetup.MaxAllies)
+            .Select(x => new AllyEntry(growth.Template(w, x.Id), x.Id, new Position(PartyRules.RowOf(x.Cell), PartyRules.SlotOf(x.Cell))))
+            .ToList();
 
         var items = w.Items.Where(i => content.Items.ContainsKey(i.Key) && i.Value > 0).ToDictionary(i => i.Key, i => i.Value);
         var setup = new BattleSetup { EncounterId = _pending.Encounter, Seed = StorySeed(_pending.InstanceId, w.RngState), Allies = allies, Items = items };

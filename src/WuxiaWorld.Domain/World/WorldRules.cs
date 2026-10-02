@@ -28,6 +28,8 @@ public sealed class WorldRules
         s.SetRng(new Common.Pcg32(ng.Seed, WorldStream));
         s.Party.AddRange(ng.Party);
         s.Met.UnionWith(ng.Party);
+        PartyRules.Normalize(s);
+        s.Visited.Add(ng.Map);
         Wear(s, BuildOf(s, Content.Progression.Hero));
         var r = new EffectResult();
         Apply(s, ng.Effects, r, "new_game");
@@ -61,6 +63,13 @@ public sealed class WorldRules
     /// <summary>升到下一级所需的累计经验；已满级为 null。</summary>
     public int? NextLevelAt(int level) =>
         level >= 1 && level - 1 < Content.Progression.Experience.Count ? Content.Progression.Experience[level - 1] : null;
+
+    /// <summary>某一级的起点经验（1 级及以下为 0，超过上限按上限）。</summary>
+    public int ExperienceFor(int level)
+    {
+        var table = Content.Progression.Experience;
+        return level <= 1 ? 0 : table[Math.Min(level, table.Count + 1) - 2];
+    }
 
     /// <summary>取（必要时建立）人物的成长构成。</summary>
     public static CharacterBuild BuildOf(WorldState s, string characterId)
@@ -341,6 +350,10 @@ public sealed class WorldRules
                     s.Party.Add(e.Id!);
                     s.Met.Add(e.Id!);
                     r.Notices.Add(new WorldNotice("joined", e.Id!));
+                    if (PartyRules.Joined(this, s, e.Id!) is { } caughtUp)
+                    {
+                        r.Notices.Add(new WorldNotice("caught_up", e.Id!, caughtUp));
+                    }
                 }
 
                 break;
@@ -353,6 +366,7 @@ public sealed class WorldRules
 
                 if (s.Party.Remove(e.Id!))
                 {
+                    PartyRules.Left(s, e.Id!);
                     r.Notices.Add(new WorldNotice("left", e.Id!));
                 }
 
@@ -371,6 +385,7 @@ public sealed class WorldRules
             case WorldEffectType.GrantExperience:
                 var before = LevelOf(s.Experience);
                 s.Experience += Math.Max(0, e.Amount);
+                PartyRules.ShareExperience(this, s, Math.Max(0, e.Amount));
                 r.Notices.Add(new WorldNotice("experience", "experience", e.Amount));
                 if (LevelOf(s.Experience) is var after && after > before)
                 {

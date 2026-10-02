@@ -32,6 +32,7 @@ public static partial class WorldContentValidator
         var items = w.Items.Select(i => i.Id).ToHashSet(StringComparer.Ordinal);
         var characters = w.Characters.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
         var heroes = w.Characters.Where(c => c.Origin == CharacterOrigin.Hero).Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
+        var joinable = w.Characters.Where(c => c.Party != PartyRole.None).Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
         var regions = w.Maps.Select(m => m.Region).ToHashSet(StringComparer.Ordinal);
         var encounters = combat?.Encounters.Select(e => e.Id).ToHashSet(StringComparer.Ordinal);
         var combatants = combat?.Combatants.Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
@@ -140,8 +141,10 @@ public static partial class WorldContentValidator
                     WorldEffectType.GrantItem or WorldEffectType.RemoveItem => e.Id is not null && items.Contains(e.Id) && e.Amount > 0,
                     WorldEffectType.ChangeSilver or WorldEffectType.AdvanceClock or WorldEffectType.GrantExperience
                         or WorldEffectType.GrantCultivation => true,
-                    WorldEffectType.ChangeRelationship or WorldEffectType.MeetCharacter or WorldEffectType.JoinParty
+                    WorldEffectType.ChangeRelationship or WorldEffectType.MeetCharacter
                         or WorldEffectType.LeaveParty => e.Id is not null && characters.Contains(e.Id),
+                    // 能入队的人物须写明同行身份（暂时同行 / 可招募），见架构文档 9.4.4。
+                    WorldEffectType.JoinParty => e.Id is not null && characters.Contains(e.Id) && joinable.Contains(e.Id),
                     WorldEffectType.AddCommitment => e.Id is not null && characters.Contains(e.Id) && e.Value is not null,
                     WorldEffectType.AddClue => e.Id is not null && IdPattern().IsMatch(e.Id),
                     WorldEffectType.StartQuest or WorldEffectType.FailQuest or WorldEffectType.AbandonQuest =>
@@ -200,6 +203,11 @@ public static partial class WorldContentValidator
         foreach (var c in w.Characters)
         {
             RequireText(c.Id + ".name");
+            if (c.SourceWork is { } work)
+            {
+                RequireText(work + ".name"); // 队伍页写“出自《……》”
+            }
+
             if (c.Origin == CharacterOrigin.Canon && (c.SourceWork is null || c.StoryAnchor is null))
             {
                 Err($"{c.Id}：经典人物须写来源作品与剧情锚点（未核验写 pending）");
@@ -219,6 +227,17 @@ public static partial class WorldContentValidator
             if (c.Combatant is not null && combatants is not null && !combatants.Contains(c.Combatant))
             {
                 Err($"{c.Id}：战斗模板 {c.Combatant} 不存在");
+            }
+
+            // 同行身份：主角不设；可招募伙伴随主角成长，须有自己的战斗模板（暂时同行的经典人物可先用占位模板）。
+            if (c.Origin == CharacterOrigin.Hero && c.Party != PartyRole.None)
+            {
+                Err($"{c.Id}：主角不设同行身份");
+            }
+
+            if (c.Party == PartyRole.Recruitable && c.Combatant is null)
+            {
+                Err($"{c.Id}：可招募伙伴须有战斗模板");
             }
         }
 
@@ -499,6 +518,100 @@ public static partial class WorldContentValidator
                 if (e.ChanceBp is < 0 or > 10000)
                 {
                     Err($"{r.Id}：途中事件概率越界");
+                }
+            }
+        }
+
+        // 江湖大地图（架构文档 6.5）
+        if (w.WorldMap is { } wm)
+        {
+            var frame = wm.Frame is [> 0 and var fw, > 0 and var fh] ? (fw, fh) : default;
+            if (frame == default)
+            {
+                Err("大地图：frame 须为 [宽, 高] 两个正数");
+            }
+
+            bool InFrame(IReadOnlyList<int> p) => p is [var x, var y] && x >= 0 && y >= 0 && x <= frame.fw && y <= frame.fh;
+
+            var nodeIds = new HashSet<string>(StringComparer.Ordinal);
+            var owner = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var n in wm.Nodes)
+            {
+                if (!nodeIds.Add(n.Id))
+                {
+                    Err($"重复 ID：{n.Id}");
+                }
+
+                if (!IdPattern().IsMatch(n.Id) || !n.Id.StartsWith("node.", StringComparison.Ordinal))
+                {
+                    Err($"大地图地标 ID 须以 node. 开头、小写 ASCII 点分层：{n.Id}");
+                }
+
+                RequireText(n.Id + ".name");
+                RequireText(n.Id + ".desc");
+                CheckCondition(n.Id, n.When);
+                if (!InFrame(n.Pos))
+                {
+                    Err($"{n.Id}：坐标须为 frame 内的 [x, y]");
+                }
+
+                if (n.LockedHint is { } hint)
+                {
+                    RequireText(hint);
+                }
+
+                foreach (var m in n.Maps)
+                {
+                    if (!maps.ContainsKey(m))
+                    {
+                        Err($"{n.Id}：地图 {m} 不存在");
+                    }
+                    else if (!owner.TryAdd(m, n.Id))
+                    {
+                        Err($"{n.Id}：地图 {m} 已属于 {owner[m]}，一张小地图只能属于一处地标");
+                    }
+                }
+
+                if (n.Maps.Count == 0 && n.LockedHint is null)
+                {
+                    Err($"{n.Id}：尚无场景的预告地标须写明开放条件 locked_hint");
+                }
+            }
+
+            foreach (var m in w.Maps.Where(m => !owner.ContainsKey(m.Id)))
+            {
+                Err($"{m.Id}：不属于任何大地图地标");
+            }
+
+            foreach (var road in wm.Roads)
+            {
+                var where = $"大地图道路 {road.From} → {road.To}";
+                if (!nodeIds.Contains(road.From) || !nodeIds.Contains(road.To) || road.From == road.To)
+                {
+                    Err($"{where}：起讫须为两处不同的已定义地标");
+                }
+
+                if (road.Via.Any(p => !InFrame(p)))
+                {
+                    Err($"{where}：途经点须为 frame 内的 [x, y]");
+                }
+            }
+
+            // 跨地标的路线须在图上有路可画：渡船走水路，其余方式走陆路。
+            string? NodeOfMap(string map) => owner.TryGetValue(map, out var id) ? id : null;
+            foreach (var r in w.Routes)
+            {
+                if (NodeOfMap(r.From) is not { } a || NodeOfMap(r.To) is not { } b || a == b)
+                {
+                    continue;
+                }
+
+                foreach (var kind in r.Modes.Select(m => m.Mode == TravelMode.Ferry ? RoadKind.Water : RoadKind.Land).Distinct())
+                {
+                    if (!wm.Roads.Any(x => x.Kind == kind && ((x.From == a && x.To == b) || (x.From == b && x.To == a))))
+                    {
+                        Err($"{r.Id}：大地图上 {a} 与 {b} 之间缺少{(kind == RoadKind.Water ? "水路" : "陆路")}道路");
+                    }
                 }
             }
         }

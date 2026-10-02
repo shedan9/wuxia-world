@@ -7,6 +7,9 @@
   "char.linghu_chong.name": "令狐冲",
   "char.huang_rong.name": "黄蓉",
   "char.xiao_feng.name": "萧峰",
+  "work.xiaoao_jianghu.name": "笑傲江湖",
+  "work.shediao_yingxiong_zhuan.name": "射雕英雄传",
+  "work.tianlong_babu.name": "天龙八部",
 
   "item.misc.dry_rations.name": "干粮",
   "item.misc.dry_rations.desc": "油纸包着的烙饼与咸菜，赶路时充饥。",
@@ -26,6 +29,17 @@
   "route.jiangnan.luwan_to_old_ferry.name": "芦湾—旧渡水路",
   "route.jiangnan.luwan_to_old_ferry.locked": "先在客栈商定由谁同行，再去码头乘船。",
   "route.jiangnan.old_ferry_to_luwan.name": "旧渡—芦湾水路",
+
+  "node.jiangnan.luwan.name": "芦湾",
+  "node.jiangnan.luwan.desc": "江南　·　芦湾街、江南客栈与河滩",
+  "node.jiangnan.old_ferry.name": "芦湾旧渡",
+  "node.jiangnan.old_ferry.desc": "江南　·　下游废弃的老渡口与水门",
+  "node.jiangnan.granary.name": "江南粮仓",
+  "node.jiangnan.granary.desc": "江南　·　赈粮收发之处",
+  "node.jiangnan.granary.locked": "下一章开放：循签押副页的线索去核对收粮的账",
+  "node.jiangnan.mountain_pass.name": "山门路",
+  "node.jiangnan.mountain_pass.desc": "山门旧路　·　绕开驿站的山道",
+  "node.jiangnan.mountain_pass.locked": "下一章开放：乔红绡说过有条绕开驿站的旧路",
 
   "map.jiangnan.luwan_shore.stone_marks.name": "旧渡石痕",
   "map.jiangnan.luwan_shore.tide_line.name": "拖船潮痕",

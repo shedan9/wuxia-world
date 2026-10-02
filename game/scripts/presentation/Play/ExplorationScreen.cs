@@ -19,7 +19,8 @@ using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 /// 按当前地图选用已验收的 M0 布景（<see cref="MapStaging"/>），由 <see cref="GameSession"/> 决定落点、交互点、出口、路线、
 /// 事件、同行者与站位人物。交互、对话、换图与战斗都经会话事务：对话在副本上跑完才提交；换图先开票据，
 /// 重新载入本页后才提交（加载失败则中止，不扣费、不推进时辰）；剧情请求的战斗转到战斗页，结算后回来。
-/// 进图先处理途中事件与本图过场事件。Esc 菜单（保存、读取、札记、回标题），J 札记，F5 快速存档，F9 快速读档。
+/// 进图先处理途中事件与本图过场事件。Esc 菜单（保存、读取、札记、回标题），J 札记，M 江湖大地图（码头的乘船点也打开它），
+/// F5 快速存档，F9 快速读档。
 /// </summary>
 public partial class ExplorationScreen : Control, IExploreDriver
 {
@@ -42,7 +43,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
     /// <summary>自动走查已结束（停在要截图的画面上）。</summary>
     private bool _autoplayFinished;
     private bool _leaving;
-    private bool _travelOpen;
+    private WorldMapOverlay? _worldMap;
     private string _partyKey = "";
     private (string Key, Vector2 Ground, float Height, string Label)? _goal;
     private double _autoWait = 0.5;
@@ -250,7 +251,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
             GD.Print($"[autoplay] 分配潜能 {string.Join("/", GrowthText.Values(add))}：{(allocated.Ok ? "成功" : allocated.Error)}，{growth.Level(World)} 级");
         }
 
-        var holdInScene = DevCapture.Hold is "journal" or "menu" or "saves" or "travel" or "character" or "martial" or "equipment" or "inventory" or "shop";
+        var holdInScene = DevCapture.Hold is "journal" or "menu" or "saves" or "travel" or "worldmap" or "character" or "martial" or "equipment" or "inventory" or "party" or "shop";
         var next = AutoTarget();
         if (done || DevCapture.AutoplaySteps >= DevCapture.Autoplay + (DevCapture.Hold is null || holdInScene ? 0 : 3) || next is null)
         {
@@ -266,8 +267,11 @@ public partial class ExplorationScreen : Control, IExploreDriver
                     _play.Save(SaveSlot.Manual(1));
                     AppHost.Instance.Menu.Open(slots: true);
                     break;
-                case "travel" when Game.Rules.Content.Routes.Values.FirstOrDefault(r => r.From == World.MapId) is { } route:
-                    OpenTravel(route);
+                case "travel" when Game.Routes is [var route, ..]:
+                    OpenWorldMap(Game.Rules.Content.NodeOf(route.To)?.Id);
+                    break;
+                case "worldmap":
+                    OpenWorldMap(null);
                     break;
                 case "character":
                     OpenCharacter(0);
@@ -280,6 +284,9 @@ public partial class ExplorationScreen : Control, IExploreDriver
                     break;
                 case "inventory":
                     OpenInventory();
+                    break;
+                case "party":
+                    OpenParty();
                     break;
                 case "shop" when Game.Rules.Content.Shops.Keys.FirstOrDefault() is { } shopId:
                     OpenShop(shopId);
@@ -483,7 +490,14 @@ public partial class ExplorationScreen : Control, IExploreDriver
                     Go(Game.BeginExit(id));
                     break;
                 case "route":
-                    OpenTravel(Game.Rules.Content.Routes[id]);
+                    var route = Game.Rules.Content.Routes[id];
+                    if (!Game.Rules.Check(route.When, World))
+                    {
+                        _view.Toast("提示", route.LockedHint is { } hint ? _play.Text(hint) ?? hint : "此路暂时不通", "");
+                        break;
+                    }
+
+                    OpenWorldMap(Game.Rules.Content.NodeOf(route.To)?.Id);
                     break;
             }
         }
@@ -660,57 +674,29 @@ public partial class ExplorationScreen : Control, IExploreDriver
         AppHost.Instance.Router.GoTo(ScenePaths.BattlePrototype);
     }
 
-    /// <summary>路线面板：列出可用的交通方式（费用、时辰），不满足条件的路线只显示提示。</summary>
-    private void OpenTravel(RouteDefinition route)
-    {
-        if (!Game.Rules.Check(route.When, World))
-        {
-            _view.Toast("提示", route.LockedHint is { } h ? _play.Text(h) ?? h : "此路暂时不通", "");
-            return;
-        }
-
-        var buttons = new List<Button>();
-        var column = Ui.Column(UiPalette.SpaceM,
-            Ui.Row(UiPalette.SpaceL, Ui.Seal("行路"), Ui.Column(4,
-                Ui.Text(_play.Name(route.Id), UiTheme.DarkTitleLabel, 36),
-                Ui.Text($"{_play.Name(route.From)} → {_play.Name(route.To)}　·　现有银 {World.Silver} 两", UiTheme.DarkMutedLabel, 18))),
-            Ui.Rule(dark: true));
-        foreach (var m in route.Modes)
-        {
-            var ok = Game.Rules.Check(m.When, World) && World.Silver >= m.Silver;
-            var label = $"{ModeName(m.Mode)}　·　{(m.Silver > 0 ? $"船钱 {m.Silver} 两" : "不花钱")}　·　约 {m.Ticks} 个时辰";
-            var mode = m.Mode;
-            var button = Ui.Button(label, UiTheme.ChoiceButton, ok ? () => Depart(route, mode) : null, disabled: !ok,
-                tooltip: ok ? null : World.Silver < m.Silver ? "银两不足" : "条件未满足");
-            button.Alignment = HorizontalAlignment.Left;
-            button.CustomMinimumSize = new Vector2(620, 60);
-            button.AddThemeFontSizeOverride("font_size", 24);
-            column.AddChild(button);
-            if (ok)
-            {
-                buttons.Add(button);
-            }
-        }
-
-        column.AddChild(Ui.Rule(dark: true));
-        column.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Spacer(), Ui.KeyHints(true, ("Enter", "出发"), ("Esc", "取消"))));
-        ShowModal(column, 760, 420);
-        _travelOpen = true;
-        buttons.FirstOrDefault()?.CallDeferred(Control.MethodName.GrabFocus);
-    }
-
-    private static string ModeName(TravelMode mode) => mode switch
-    {
-        TravelMode.Ferry => "乘渡船",
-        TravelMode.Walk => "沿岸步行",
-        TravelMode.Horse => "骑马",
-        TravelMode.Carriage => "坐车",
-        _ => "随行",
-    };
-
-    private void Depart(RouteDefinition route, TravelMode mode)
+    /// <summary>
+    /// 江湖大地图（M 键，或码头乘船点选中目的地打开）：全屏盖在探索页上，选地标、方式后启程；
+    /// 行进动画走完交回切换票据，按换图流程载入目的地。场景缺失时票据中止、地图关闭，世界不变。
+    /// </summary>
+    private void OpenWorldMap(string? target)
     {
         CloseModal();
+        _worldMap = new WorldMapOverlay(_play, target, CloseModal, t =>
+        {
+            Go(t);
+            if (!_leaving)
+            {
+                CloseModal();
+            }
+        });
+        _overlay.AddChild(_worldMap);
+        _modal = _worldMap;
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
+    /// <summary>自动走查（非真实行走）直接按路线的第一种可用方式启程，不经大地图。</summary>
+    private void Depart(RouteDefinition route, TravelMode mode)
+    {
         AppHost.Instance.Sound.Play(mode == TravelMode.Ferry ? "travel.oar" : "travel.whoosh", -2);
         try
         {
@@ -758,6 +744,12 @@ public partial class ExplorationScreen : Control, IExploreDriver
             case Key.I:
                 OpenInventory();
                 break;
+            case Key.P:
+                OpenParty();
+                break;
+            case Key.M:
+                OpenWorldMap(null);
+                break;
             case Key.F5:
                 var r = _play.Save(SaveSlot.Quick, SaveThumbnail.Grab(GetViewport()));
                 _view.Toast("存档", r.Ok ? "已快速存档" : $"存档失败：{r.Error}", "");
@@ -791,12 +783,19 @@ public partial class ExplorationScreen : Control, IExploreDriver
         AppHost.Instance.Sound.Play("ui.page", -4);
     }
 
+    /// <summary>队伍页（P）：调换阵位，查看同行人物。</summary>
+    private void OpenParty()
+    {
+        ShowModal(PartyPage.Build(_play), PageWidth, PageHeight);
+        AppHost.Instance.Sound.Play("ui.page", -4);
+    }
+
     private void OpenShop(string shopId)
     {
         ShowModal(ShopPanel.Build(_play, shopId), PageWidth, PageHeight);
     }
 
-    /// <summary>人物、行囊与店铺页的面板尺寸（1920×1080 画布）。</summary>
+    /// <summary>人物、行囊、队伍与店铺页的面板尺寸（1920×1080 画布）。</summary>
     public const float PageWidth = 1720;
 
     public const float PageHeight = 960;
@@ -829,7 +828,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     private void CloseModal()
     {
-        _travelOpen = false;
+        _worldMap = null;
         if (_modal is { } layer)
         {
             AppHost.Instance.Sound.Play("ui.close", -8);

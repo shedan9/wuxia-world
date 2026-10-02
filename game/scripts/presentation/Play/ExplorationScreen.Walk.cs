@@ -4,7 +4,7 @@ namespace WuxiaWorld.Game.Presentation.Play;
 
 /// <summary>
 /// 真实行走的自动走查（<c>--autoplay=N --walk</c>，开发用）：不再把主角瞬移到目标旁，而是用布景的寻路
-/// （与玩家鼠标点地同一套，见 <c>ExploreStage.Navigation</c>）一路走过去，走到后注入真实的 E 键；乘船面板注入 Enter。
+/// （与玩家鼠标点地同一套，见 <c>ExploreStage.Navigation</c>）一路走过去，走到后注入真实的 E 键；码头打开的大地图注入 Enter 启程。
 /// 走不到、卡住、到了却被别的交互点抢先高亮，都打印 <c>[walk]</c> 问题并计数（结束时退出码 4），随后兜底继续，
 /// 一次走查能把整章的问题都列出来。对话层在此模式下同样改为注入 Enter / 数字键推进。
 /// </summary>
@@ -80,16 +80,16 @@ public partial class ExplorationScreen
         }
     }
 
-    /// <summary>乘船面板打开时：稍候注入 Enter，选中默认（第一个可用）的交通方式。</summary>
+    /// <summary>大地图开着时：选中的目的地可前往就稍候注入 Enter（默认方式为第一种可用的）；行进中只等。</summary>
     private bool StepTravelPanel(double delta)
     {
-        if (!_travelOpen)
+        if (_worldMap is null)
         {
             return false;
         }
 
         _keyDelay += delta;
-        if (_keyDelay > 0.6)
+        if (_keyDelay > 0.6 && _worldMap.ReadyToDepart)
         {
             _keyDelay = 0;
             PressKey(Key.Enter);
