@@ -1,0 +1,700 @@
+{
+  "status": "trial",
+  "source": "voice_source/profiles/minimax_cast.json",
+  "note": "试听版：台词未锁稿，音色为工作选角；锁稿后按改动增量重生成并逐句审核",
+  "lines": {
+    "ch01.companion_choice.huang.001": {
+      "file": "ch01.companion_choice.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "a66eddd74c9cb6fca984dd0e21f25b4471c6f3c334330df934ac2e3de7f37a24",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.companion_choice.huang.002": {
+      "file": "ch01.companion_choice.huang.002.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "58c002a66b156e737575518884db00be6d74bf6fa96eff97afe3bbcd8bc5c894",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.companion_choice.huang.003": {
+      "file": "ch01.companion_choice.huang.003.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "25d9a2c158793958b31921d26a7a9bc24d049baa3b615adbd926035179de1bc5",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.companion_choice.linghu.001": {
+      "file": "ch01.companion_choice.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "262ef92b5cc2afed74ad7c316f60a0a4eac2353b38cedb8b06084b74f6957db1",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.companion_choice.linghu.002": {
+      "file": "ch01.companion_choice.linghu.002.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "ddfdbb721569e8648da20f80afb52f9eb8ed2ebad32fbc575f54d5fabb227606",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.companion_choice.linghu.003": {
+      "file": "ch01.companion_choice.linghu.003.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "b396bdf80bf961a86366b7884783fbdd0ee1656edb43ff2de2e3433789360276",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.companion_choice.lu.001": {
+      "file": "ch01.companion_choice.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "e4557e4638ee9d9de41e3ae75fd3a363cc3e167178a46ec367aa43c40a4dd125",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.companion_choice.lu.002": {
+      "file": "ch01.companion_choice.lu.002.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "f4eb2e2bb1e138784cb7c3bcac34f0902d6916d1fc685455c3f03671e5577936",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.companion_choice.qiao.001": {
+      "file": "ch01.companion_choice.qiao.001.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "c5c9168f9fbbd292b68ae2fc0e551051ac3c68778a1e672f28f4e774022856c3",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.companion_choice.xiao.001": {
+      "file": "ch01.companion_choice.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "50a2029dd335b1365a02259fec2b46b854ade17046cb2703798d994297018ba7",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.companion_choice.xiao.002": {
+      "file": "ch01.companion_choice.xiao.002.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "89eeb3013d3d1b09022d2951291d7263564b69e2df35fd618c5c147970db714f",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.companion_choice.xiao.003": {
+      "file": "ch01.companion_choice.xiao.003.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "00ac0d992c5b4f0a66127ccc91d31f4e7ef78637cad95a36d17687a992eddb32",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.copy_custody.du.001": {
+      "file": "ch01.copy_custody.du.001.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "aca6da9ce6b80ff386ce5dff61e9207a9767ffb0f55d65f419e14a4eaf23d5a3",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.copy_custody.du.002": {
+      "file": "ch01.copy_custody.du.002.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "17a4530370c0aa535fbb3fff0daa7922ace9dd298ca03e1257ebe6f0e54e0ed4",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.copy_custody.du.003": {
+      "file": "ch01.copy_custody.du.003.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "415e56ebc7c6ddf5abd72ed394f5f392acf90174f41811a2a02588967eaca767",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.copy_custody.du.004": {
+      "file": "ch01.copy_custody.du.004.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "715e79171fa4e1abaefdc7f7838989056e98865deb3d919d1e56861d722ba438",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.copy_custody.hero.001": {
+      "file": "ch01.copy_custody.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "82619907c2c00847aeaf11a70c154edce4be1cccf3e340d72aaad43d88dc1c40",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.copy_custody.hero.002": {
+      "file": "ch01.copy_custody.hero.002.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "0b7604b22159725c5b242f060f080aef379fb0e80ce28f0016d962fc0980f31f",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.copy_custody.hero.003": {
+      "file": "ch01.copy_custody.hero.003.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "585da6175eaa2433c6621f4247f9bd275de13f838f6ac505379220bd7855ca87",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.copy_custody.lu.001": {
+      "file": "ch01.copy_custody.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "fd550dc84845c94bef33897c11590bd87719871adc4b7c33a1be9806aee7749d",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.copy_custody.lu.002": {
+      "file": "ch01.copy_custody.lu.002.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "03f44462ef22e1d488ab00789b86381c94e9c00a64459af7a650e9f2b510dd4b",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.copy_custody.lu.003": {
+      "file": "ch01.copy_custody.lu.003.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "702e1b0e6ade74de23a357a602b795990630945aff83b9d842f4d910dcc7dd9c",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.copy_custody.tang.001": {
+      "file": "ch01.copy_custody.tang.001.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "0ebee36e9ffca0ab0a856ef7936aa85f18e7d69b73efa3be7a6c910267af21b6",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.epilogue.du.001": {
+      "file": "ch01.epilogue.du.001.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "ac69d3ee5d333f1e3736006e245f381f3c6b459f33d91348c888d4fa96bd95f8",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.epilogue.hero.001": {
+      "file": "ch01.epilogue.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "2e82ec63ded4064cdfe49233bbdc2eea10e2195b804e5332753653cf58e083d7",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.epilogue.huang.001": {
+      "file": "ch01.epilogue.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "6cda35e1d6ba4f305fd1d19171e60398eb8617748144277a58462b4fefe18171",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.epilogue.linghu.001": {
+      "file": "ch01.epilogue.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "5348ec8af09c337bbc330233e647f7b142803dc90025abbd7f2ccf85c74c14de",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.epilogue.lu.001": {
+      "file": "ch01.epilogue.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "1f6e4c142a4a6b86b4ea1ffb221938772033d811695ca903d50405900acade71",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.epilogue.lu.002": {
+      "file": "ch01.epilogue.lu.002.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "a6c1c3af47d6b9352ca1fd63eb8f5fcafc607340418ad8f4e1cd0171383f958d",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.epilogue.lu.003": {
+      "file": "ch01.epilogue.lu.003.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "87edde57f118d82ef628f3bc65638bde6f3e73d1f4bcaf4429300789f7c70006",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.epilogue.qiao.001": {
+      "file": "ch01.epilogue.qiao.001.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "eae5eca0402e18f8726dea223bce4eb85be5fce595b810064de85e55fb905069",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.epilogue.qiao.002": {
+      "file": "ch01.epilogue.qiao.002.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "bc72c592a8bb870b759b079e3c10ccc4161b7bd0663d733dd168533858457bbf",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.epilogue.qiao.003": {
+      "file": "ch01.epilogue.qiao.003.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "8f8e48cf8399faba92d1757b39b81c659e18bff9e696e00cc5ace9d86807fc11",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.epilogue.qiao.004": {
+      "file": "ch01.epilogue.qiao.004.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "1c2f9c69623d11cc6b6eafff5e7b40ebc8a096331802629f7c89036d90c7328a",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.epilogue.xiao.001": {
+      "file": "ch01.epilogue.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "770795d2bb989566bdf208735aa213f38b017a9925a83901d7ce8049b43002d4",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.inn_council.hero.001": {
+      "file": "ch01.inn_council.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "64fc026f0c711beed4a3bf7baa6781456fefaa889d02474f2a9856a2773d537b",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.inn_council.huang.001": {
+      "file": "ch01.inn_council.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "eb1f962748b9d8e27dde97468835685800bdc157d00a4bc69b8777d045f5fb62",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.inn_council.huang.002": {
+      "file": "ch01.inn_council.huang.002.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "e1e6435bea0511d8575178805c0cf3fb56dcddc7060e63b7b04007c298cb39fe",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.inn_council.huang.003": {
+      "file": "ch01.inn_council.huang.003.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "e46774cdc2089f4d27ceb1b727fe2b981d9beaa574265972d36ab8b426b20f9a",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.inn_council.huang.004": {
+      "file": "ch01.inn_council.huang.004.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "21fbe100263d0591eb8d455f36a6fb7e53f36c572d2fa7cea9d228ede48c7eb0",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.inn_council.linghu.001": {
+      "file": "ch01.inn_council.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "8205633c164e6f06ada9f04d0d0365720f9c98efcdf4fe58b99c6ecfff501637",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.inn_council.linghu.002": {
+      "file": "ch01.inn_council.linghu.002.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "a10992fd8fc517f4a788aae89b2e3bfcff7dce5f339ed237e4d0c50c50b924ed",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.inn_council.linghu.003": {
+      "file": "ch01.inn_council.linghu.003.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "87e697fabf2d425d35e78fca9f9d607b114c3d69aafd00d2e9b755008f6f75f1",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.inn_council.linghu.004": {
+      "file": "ch01.inn_council.linghu.004.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "617aa973d7254c5e3f64ccd138c7d33e340ee539c0da66e8ee94d46db298b842",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.inn_council.lu.001": {
+      "file": "ch01.inn_council.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "204d73edfbcafe1bd23f3f5840515d91f70d57059f198ada1f22b66f8ac9c0c0",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.inn_council.lu.002": {
+      "file": "ch01.inn_council.lu.002.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "ac73bf8e9df479ae8d15282a95818c6f6e0cedf6a1a912ee12d30562ef8f15f9",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.inn_council.qiao.001": {
+      "file": "ch01.inn_council.qiao.001.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "a9af01cf1dbf60c8c2e4592d17a237e58dd0079fd6f5449f3797edf8465b3421",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.inn_council.qiao.002": {
+      "file": "ch01.inn_council.qiao.002.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "c4f659016a9a3b2f9aa08036f59d1b6f36cac63fda7ed51d4c6b71ebab8372cb",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.inn_council.qiao.003": {
+      "file": "ch01.inn_council.qiao.003.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "7be156d624b066d774bbb8007fbd6021ed2cec32ea2bd88bfa6c825e03581664",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.inn_council.qiao.004": {
+      "file": "ch01.inn_council.qiao.004.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "678220affb569842fa6ecaa0d075c1d6ccea6e24157791bfa97e80e273acb7b8",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.inn_council.qiao.005": {
+      "file": "ch01.inn_council.qiao.005.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "2f6ea07f35bbd58518517765446da980f926f51def5021cdc94cc52e081c0ac7",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.inn_council.qiao.006": {
+      "file": "ch01.inn_council.qiao.006.mp3",
+      "speaker": "char.qiao_hongxiao",
+      "text_sha256": "b9de63cd3afad946fd029669531bbd62443a5c9f8a08482a175b10be0b8d9b52",
+      "voice": "Chinese (Mandarin)_Wise_Women",
+      "review": "pending"
+    },
+    "ch01.inn_council.xiao.001": {
+      "file": "ch01.inn_council.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "0b7239950d515d5c28ec23376e72db790257a4617ab46f56e96bbc782b21bc2e",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.inn_council.xiao.002": {
+      "file": "ch01.inn_council.xiao.002.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "3d8f397bdda8f377ca9959e053ff3a36b0b88865323bc2a17345ed257c8113e7",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.inn_council.xiao.003": {
+      "file": "ch01.inn_council.xiao.003.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "73a33877e05c7f99b5595626ef6ee37296543a9969b3c940482e3a7f2ab97504",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.inn_council.xiao.004": {
+      "file": "ch01.inn_council.xiao.004.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "a70c199b39628cc3e2aba5208cbc6314b82ef4706ea8fc23e9bb4d8d6d142add",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.inspect_stone_marks.lu.001": {
+      "file": "ch01.inspect_stone_marks.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "63336fbe6c13abe84ebf77bcf19b59dc1078ecda909431c3dd14faac6246b502",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.hero.001": {
+      "file": "ch01.mentor_choice.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "d59f535af8c913a02a8cdae1a605ca27bf90939bb146ec1ef8f617c0f5b93d61",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.huang.001": {
+      "file": "ch01.mentor_choice.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "717dbcf41dcceabd44db52698ffd2f1cb4c5e67a4e464dd626fc72d3947671a0",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.huang.002": {
+      "file": "ch01.mentor_choice.huang.002.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "ed74cbe723233d6809089cc4d33d7f1354cb46ee0ed07097058bb62327cc215d",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.linghu.001": {
+      "file": "ch01.mentor_choice.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "8333821f39c1291f0eb36ab22efeb9cf670d5ffdcf34040a197a4f63dda1cdc3",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.linghu.002": {
+      "file": "ch01.mentor_choice.linghu.002.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "a84768910a8f23cd76e587957760736de5c7f7c7eea6a42e1b875bfc9decae5c",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.xiao.001": {
+      "file": "ch01.mentor_choice.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "0242c12e70522bedbb1c8ce3b91a04854e8700e9354193da15811ef5c0982cc3",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.xiao.002": {
+      "file": "ch01.mentor_choice.xiao.002.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "d98d7d9d773209ffd1cf97115b8205f3223da9e6e283b1ec7a4d5208f768b186",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.old_ferry_arrival.du.001": {
+      "file": "ch01.old_ferry_arrival.du.001.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "89e0c7025167898bb1ee78bfb69e26e1b19d60ca3ca8875de10cc722bd933a27",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.old_ferry_arrival.huang.001": {
+      "file": "ch01.old_ferry_arrival.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "8b5b697f9981419d81df062c9846b4f464577c0c383023c5909f684b9491a419",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.old_ferry_arrival.linghu.001": {
+      "file": "ch01.old_ferry_arrival.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "11d498c91f3bd78d1d4c4b7d4f7bf99887a8b6b512ca6885080220465396b8ac",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.old_ferry_arrival.lu.001": {
+      "file": "ch01.old_ferry_arrival.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "a6c5d0d4e596b1d6dd9119ceeb25b0bf97e9bd2d2af8adcfce4661602ed1154e",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.old_ferry_arrival.xiao.001": {
+      "file": "ch01.old_ferry_arrival.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "8d1ef1e4cc9569a6806ad33f56e3ef240eec69f4ba08c236989339f20981bbb7",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.hero.001": {
+      "file": "ch01.opening_luwan.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "283c0cd4545bf14af07e6d75e358c19fc4de468638b07693dcdc385b6ac1f80d",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.hero.002": {
+      "file": "ch01.opening_luwan.hero.002.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "3686c1da84eb20746844096ce9301e8f3b3aa7b3c7a145f9a0ec4b7284573bc1",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.hero.003": {
+      "file": "ch01.opening_luwan.hero.003.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "ce15fe3182fe293b4e17ed223788137499b27f7c30ef5960bd10f92975bcd6e5",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.hero.004": {
+      "file": "ch01.opening_luwan.hero.004.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "5428e334704a1926d7d57c83f3fd082dcb3b7c29545bbaae0cb5deb10b4050e9",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.hero.005": {
+      "file": "ch01.opening_luwan.hero.005.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "ac9c6395a5c8bf4b664b0cb9c3aaa943ad632df3aea75e9077ce8c5d15028f39",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.001": {
+      "file": "ch01.opening_luwan.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "60aad4a3a2cf2b939cea967db78f2e54cc48187dd0c6221978bee7504a5a2e24",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.002": {
+      "file": "ch01.opening_luwan.lu.002.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "14258788d489f1e79058d40cc23ff90ae7a1b0a5eab7c9b1d279383a26c4fe08",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.003": {
+      "file": "ch01.opening_luwan.lu.003.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "ad94fc67ade3319772d43c80955758a65b26083edeabb487093d5a0fc0c44831",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.004": {
+      "file": "ch01.opening_luwan.lu.004.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "7fabfcd2461f2751565314a645cda04d9d6856c8474c1b24f1920fed4faca629",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.005": {
+      "file": "ch01.opening_luwan.lu.005.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "e4b1678c4a844a141f590cd8153452963e6276611b48a2415aad7b9bcfe58635",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.006": {
+      "file": "ch01.opening_luwan.lu.006.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "6ac0c6dccf19fe3c4e6f74b6a45f4c201e75a6de0e7170d0c5fadc3be052f0d2",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.007": {
+      "file": "ch01.opening_luwan.lu.007.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "9ca2f368be60cd17d99d2d74dec7a4770161ab3084ca008b79bee882ae241e59",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.008": {
+      "file": "ch01.opening_luwan.lu.008.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "1bb8e981a8a9ae73ed65cf887a448d5194f6e05a338a1325af5a5e6937676b8e",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.009": {
+      "file": "ch01.opening_luwan.lu.009.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "740f89631ca85934fa226316fb302e92a92ff3920ee2d781f468692063e8de3c",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.opening_luwan.lu.010": {
+      "file": "ch01.opening_luwan.lu.010.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "78736314d13321025dd14610901bf819ba55c1a79b72b2c80f937ed18212ac79",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.side_locked_boat.du.001": {
+      "file": "ch01.side_locked_boat.du.001.mp3",
+      "speaker": "char.du_sangao",
+      "text_sha256": "bbafff29ff47687204f8c8264ff8371850ff2b3ae225f429e85e26f244b2f584",
+      "voice": "Chinese (Mandarin)_Humorous_Elder",
+      "review": "pending"
+    },
+    "ch01.side_locked_boat.lu.001": {
+      "file": "ch01.side_locked_boat.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "8e8e2fe7e851b8468b8cb0cbd1df4c33fdf264161ab1dff330fde64be01941ec",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.side_offer.lu.001": {
+      "file": "ch01.side_offer.lu.001.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "92563b90e503560ca4b4be6529b509d38489abad40f6db2b8e90427f50e011eb",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.side_offer.lu.002": {
+      "file": "ch01.side_offer.lu.002.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "93c8608a7bdc2b5a825da2b5ce671ff58dc58f77ac1e30d70d11dcceb2d11dec",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.side_offer.lu.003": {
+      "file": "ch01.side_offer.lu.003.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "a7298a3fffd38bb61dccacfa135a8193bdfa99099e639b3134b77066d9219254",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.side_offer.lu.004": {
+      "file": "ch01.side_offer.lu.004.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "8d486f106d5917eaffd24ff4f714a223a6278f934fec6bde5a146b9df5d2eeee",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.hero.001": {
+      "file": "ch01.sluice_confrontation.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "9ce8e15914cfc07084c8a98ca7ac952a300817ed589e5e165df32ad1bf6065b5",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.huang.001": {
+      "file": "ch01.sluice_confrontation.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "5381d78d74f9d4111873f8c4c59135fed78ee858b15802b009f8bc33501022e2",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.linghu.001": {
+      "file": "ch01.sluice_confrontation.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "f9d5d4fc5347820d7872d93ed4c52cceff6f3a11c88296dfd6314e97e5213cd9",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.tang.001": {
+      "file": "ch01.sluice_confrontation.tang.001.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "35f162f8366df8663d7353bc84e8db265744d136c8b847315a064e2ef9c9d486",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.tang.002": {
+      "file": "ch01.sluice_confrontation.tang.002.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "9d55fe9f49b937389c5999d1ec802179c18002dedb56e7538966bf1fde7f6497",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.tang.003": {
+      "file": "ch01.sluice_confrontation.tang.003.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "c8e805929a28cc97c90d093398ff2b6ddc5873760b757e120474d07b51fa7cd3",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.tang.004": {
+      "file": "ch01.sluice_confrontation.tang.004.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "5d58f52ca296e7c38d7e51d849c800f2ebfe469848a4936f813d1d79d52f9986",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.tang.005": {
+      "file": "ch01.sluice_confrontation.tang.005.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "37e54809dd0e0a043b0cc0a4c1b0e9c84e192b6ff0b6338b5d5169cda2385fbe",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.sluice_confrontation.xiao.001": {
+      "file": "ch01.sluice_confrontation.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "125d3f381a5c49b9c9142e9f841c79054a7a0e20dd300123aedc49f27acb37e6",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    }
+  }
+}

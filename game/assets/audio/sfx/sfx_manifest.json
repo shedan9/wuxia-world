@@ -1,0 +1,1160 @@
+{
+  "note": "tools/AudioBuild/sfx_build.py 按 sfx_recipes.json 从 Freesound CC0 实录剪辑（freesound.py 下载，来源见各条 sources）。clap 字段为 sfx_check.py 零样本听辨结果，未经人耳审听。",
+  "sfx": {
+    "ui.move": {
+      "file": "ui.move.ogg",
+      "seconds": 0.139,
+      "peak_db": -10.0,
+      "sources": [
+        {
+          "freesound": 840321,
+          "title": "Wooden Short Click!",
+          "author": "Robo9418",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Robo9418/sounds/840321/"
+        }
+      ],
+      "clap": {
+        "expect": "a wooden click",
+        "top": "a wooden click",
+        "p": 0.95,
+        "ok": true
+      }
+    },
+    "ui.confirm": {
+      "file": "ui.confirm.ogg",
+      "seconds": 0.12,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 692828,
+          "title": "Woodblock-soft.wav",
+          "author": "hollandm",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/hollandm/sounds/692828/"
+        }
+      ],
+      "clap": {
+        "expect": "a wooden block knock",
+        "top": "a wooden block knock",
+        "p": 0.99,
+        "ok": true
+      }
+    },
+    "ui.cancel": {
+      "file": "ui.cancel.ogg",
+      "seconds": 0.242,
+      "peak_db": -8.0,
+      "sources": [
+        {
+          "freesound": 742356,
+          "title": "SingleKnock_Wood",
+          "author": "NoisyRedFox",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/NoisyRedFox/sounds/742356/"
+        }
+      ],
+      "clap": {
+        "expect": "a wooden block knock",
+        "top": "a wooden block knock",
+        "p": 0.78,
+        "ok": true
+      }
+    },
+    "ui.open": {
+      "file": "ui.open.ogg",
+      "seconds": 0.556,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 614081,
+          "title": "Opening a book",
+          "author": "mateusboga",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/mateusboga/sounds/614081/"
+        }
+      ],
+      "clap": {
+        "expect": "paper rustling",
+        "top": "paper rustling",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "ui.close": {
+      "file": "ui.close.ogg",
+      "seconds": 0.8,
+      "peak_db": -8.0,
+      "sources": [
+        {
+          "freesound": 202107,
+          "title": "Unrolling Scroll.wav",
+          "author": "spookymodem",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/spookymodem/sounds/202107/"
+        }
+      ],
+      "clap": {
+        "expect": "unrolling a paper scroll",
+        "top": "unrolling a paper scroll",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "ui.page": {
+      "file": "ui.page.ogg",
+      "seconds": 1.728,
+      "peak_db": -5.0,
+      "sources": [
+        {
+          "freesound": 144110,
+          "title": "Page Turn 1",
+          "author": "gfrog",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/gfrog/sounds/144110/"
+        }
+      ],
+      "clap": {
+        "expect": "turning a book page",
+        "top": "paper rustling",
+        "p": 0.53,
+        "ok": true
+      }
+    },
+    "notify.item": {
+      "file": "notify.item.ogg",
+      "seconds": 0.897,
+      "peak_db": -5.0,
+      "sources": [
+        {
+          "freesound": 336580,
+          "title": "coins - in cloth 09.wav",
+          "author": "Anthousai",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Anthousai/sounds/336580/"
+        }
+      ],
+      "clap": {
+        "expect": "coins jingling",
+        "top": "coins jingling",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "notify.clue": {
+      "file": "notify.clue.ogg",
+      "seconds": 0.194,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 607215,
+          "title": "Mokugyo.wav",
+          "author": "jonopodmore",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/jonopodmore/sounds/607215/"
+        }
+      ],
+      "clap": {
+        "expect": "a wooden block knock",
+        "top": "a wooden block knock",
+        "p": 0.68,
+        "ok": true
+      }
+    },
+    "notify.quest": {
+      "file": "notify.quest.ogg",
+      "seconds": 2.044,
+      "peak_db": -5.0,
+      "sources": [
+        {
+          "freesound": 369428,
+          "title": "Small Gong_Soft Hit_RAW",
+          "author": "cabled_mess",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/cabled_mess/sounds/369428/"
+        }
+      ],
+      "clap": {
+        "expect": "a gong being struck",
+        "top": "a gong being struck",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "notify.skill": {
+      "file": "notify.skill.ogg",
+      "seconds": 2.4,
+      "peak_db": -7.0,
+      "sources": [
+        {
+          "freesound": 148849,
+          "title": "1ring",
+          "author": "iluppai",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/iluppai/sounds/148849/"
+        }
+      ],
+      "clap": {
+        "expect": "a bell ringing",
+        "top": "a bell ringing",
+        "p": 0.99,
+        "ok": true
+      }
+    },
+    "step.dirt.1": {
+      "file": "step.dirt.1.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 352870,
+          "title": "Footsteps Dirt Gravel",
+          "author": "PotatokingXII",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/PotatokingXII/sounds/352870/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on gravel",
+        "top": "footsteps on gravel",
+        "p": 0.57,
+        "ok": true
+      }
+    },
+    "step.dirt.2": {
+      "file": "step.dirt.2.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 352870,
+          "title": "Footsteps Dirt Gravel",
+          "author": "PotatokingXII",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/PotatokingXII/sounds/352870/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on gravel",
+        "top": "paper rustling",
+        "p": 1.0,
+        "ok": false
+      }
+    },
+    "step.dirt.3": {
+      "file": "step.dirt.3.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 352870,
+          "title": "Footsteps Dirt Gravel",
+          "author": "PotatokingXII",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/PotatokingXII/sounds/352870/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on gravel",
+        "top": "footsteps on stone",
+        "p": 0.59,
+        "ok": true
+      }
+    },
+    "step.dirt.4": {
+      "file": "step.dirt.4.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 352870,
+          "title": "Footsteps Dirt Gravel",
+          "author": "PotatokingXII",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/PotatokingXII/sounds/352870/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on gravel",
+        "top": "footsteps on gravel",
+        "p": 0.9,
+        "ok": true
+      }
+    },
+    "step.dirt.5": {
+      "file": "step.dirt.5.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 682127,
+          "title": "Footsteps Dirt Road 1.wav",
+          "author": "HenKonen",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/HenKonen/sounds/682127/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on gravel",
+        "top": "footsteps on stone",
+        "p": 0.65,
+        "ok": false
+      }
+    },
+    "step.dirt.6": {
+      "file": "step.dirt.6.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 682127,
+          "title": "Footsteps Dirt Road 1.wav",
+          "author": "HenKonen",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/HenKonen/sounds/682127/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on gravel",
+        "top": "a drum hit",
+        "p": 0.37,
+        "ok": false
+      }
+    },
+    "step.wood.1": {
+      "file": "step.wood.1.ogg",
+      "seconds": 0.326,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 119914,
+          "title": "Footsteps on Wooden Floor.aif",
+          "author": "ftpalad",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/ftpalad/sounds/119914/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on wooden floor",
+        "top": "footsteps on wooden floor",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "step.wood.2": {
+      "file": "step.wood.2.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 119914,
+          "title": "Footsteps on Wooden Floor.aif",
+          "author": "ftpalad",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/ftpalad/sounds/119914/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on wooden floor",
+        "top": "footsteps on wooden floor",
+        "p": 0.79,
+        "ok": true
+      }
+    },
+    "step.wood.3": {
+      "file": "step.wood.3.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 164315,
+          "title": "Footsteps on wooden flooring.wav",
+          "author": "Rickmk2",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Rickmk2/sounds/164315/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on wooden floor",
+        "top": "footsteps on wooden floor",
+        "p": 0.99,
+        "ok": true
+      }
+    },
+    "step.wood.4": {
+      "file": "step.wood.4.ogg",
+      "seconds": 0.323,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 164315,
+          "title": "Footsteps on wooden flooring.wav",
+          "author": "Rickmk2",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Rickmk2/sounds/164315/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on wooden floor",
+        "top": "footsteps on wooden floor",
+        "p": 0.99,
+        "ok": true
+      }
+    },
+    "step.wood.5": {
+      "file": "step.wood.5.ogg",
+      "seconds": 0.329,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 164315,
+          "title": "Footsteps on wooden flooring.wav",
+          "author": "Rickmk2",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Rickmk2/sounds/164315/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on wooden floor",
+        "top": "a drum hit",
+        "p": 0.75,
+        "ok": true
+      }
+    },
+    "step.wood.6": {
+      "file": "step.wood.6.ogg",
+      "seconds": 0.33,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 164315,
+          "title": "Footsteps on wooden flooring.wav",
+          "author": "Rickmk2",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Rickmk2/sounds/164315/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on wooden floor",
+        "top": "footsteps on wooden floor",
+        "p": 0.5,
+        "ok": true
+      }
+    },
+    "step.stone.1": {
+      "file": "step.stone.1.ogg",
+      "seconds": 0.31,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 757207,
+          "title": "Footsteps stone floor",
+          "author": "HenKonen",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/HenKonen/sounds/757207/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on stone",
+        "top": "a drum hit",
+        "p": 0.82,
+        "ok": false
+      }
+    },
+    "step.stone.2": {
+      "file": "step.stone.2.ogg",
+      "seconds": 0.31,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 757207,
+          "title": "Footsteps stone floor",
+          "author": "HenKonen",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/HenKonen/sounds/757207/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on stone",
+        "top": "a drum hit",
+        "p": 0.96,
+        "ok": false
+      }
+    },
+    "step.stone.3": {
+      "file": "step.stone.3.ogg",
+      "seconds": 0.31,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 757207,
+          "title": "Footsteps stone floor",
+          "author": "HenKonen",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/HenKonen/sounds/757207/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on stone",
+        "top": "a drum hit",
+        "p": 0.98,
+        "ok": false
+      }
+    },
+    "step.stone.4": {
+      "file": "step.stone.4.ogg",
+      "seconds": 0.124,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 521590,
+          "title": "Hiking Boot Footsteps on Stone",
+          "author": "Fission9",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Fission9/sounds/521590/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on stone",
+        "top": "a drum hit",
+        "p": 0.68,
+        "ok": false
+      }
+    },
+    "step.stone.5": {
+      "file": "step.stone.5.ogg",
+      "seconds": 0.224,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 521590,
+          "title": "Hiking Boot Footsteps on Stone",
+          "author": "Fission9",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Fission9/sounds/521590/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on stone",
+        "top": "a drum hit",
+        "p": 0.9,
+        "ok": false
+      }
+    },
+    "step.stone.6": {
+      "file": "step.stone.6.ogg",
+      "seconds": 0.266,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 521590,
+          "title": "Hiking Boot Footsteps on Stone",
+          "author": "Fission9",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Fission9/sounds/521590/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps on stone",
+        "top": "a wooden block knock",
+        "p": 0.52,
+        "ok": false
+      }
+    },
+    "interact": {
+      "file": "interact.ogg",
+      "seconds": 0.4,
+      "peak_db": -8.0,
+      "sources": [
+        {
+          "freesound": 19291,
+          "title": "foley cloth rustle.wav",
+          "author": "martian",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/martian/sounds/19291/"
+        }
+      ],
+      "clap": {
+        "expect": "cloth rustling",
+        "top": "cloth rustling",
+        "p": 0.57,
+        "ok": true
+      }
+    },
+    "battle.draw": {
+      "file": "battle.draw.ogg",
+      "seconds": 1.255,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 577619,
+          "title": "Sword Drawing 1.wav",
+          "author": "paulfabb",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/paulfabb/sounds/577619/"
+        }
+      ],
+      "clap": {
+        "expect": "unsheathing a sword",
+        "top": "a sword cutting flesh",
+        "p": 0.74,
+        "ok": true
+      }
+    },
+    "battle.swing.1": {
+      "file": "battle.swing.1.ogg",
+      "seconds": 0.159,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 420668,
+          "title": "Basic Melee Swing / Miss / Whoosh",
+          "author": "SypherZent",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/SypherZent/sounds/420668/"
+        }
+      ],
+      "clap": {
+        "expect": "sword swinging through the air",
+        "top": "sword swinging through the air",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.swing.2": {
+      "file": "battle.swing.2.ogg",
+      "seconds": 0.315,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 420670,
+          "title": "Strong Melee Swing",
+          "author": "SypherZent",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/SypherZent/sounds/420670/"
+        }
+      ],
+      "clap": {
+        "expect": "sword swinging through the air",
+        "top": "sword swinging through the air",
+        "p": 0.8,
+        "ok": true
+      }
+    },
+    "battle.swing.3": {
+      "file": "battle.swing.3.ogg",
+      "seconds": 0.227,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 422513,
+          "title": "Swinging staff whoosh (strong) 04.wav",
+          "author": "Nightflame",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Nightflame/sounds/422513/"
+        }
+      ],
+      "clap": {
+        "expect": "sword swinging through the air",
+        "top": "sword swinging through the air",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.swing.4": {
+      "file": "battle.swing.4.ogg",
+      "seconds": 0.277,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 59988,
+          "title": "SWOSH-01 44.1kHz",
+          "author": "qubodup",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/qubodup/sounds/59988/"
+        }
+      ],
+      "clap": {
+        "expect": "sword swinging through the air",
+        "top": "sword swinging through the air",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.hit.blade.1": {
+      "file": "battle.hit.blade.1.ogg",
+      "seconds": 0.8,
+      "peak_db": -2.0,
+      "sources": [
+        {
+          "freesound": 474575,
+          "title": "Sword stab.wav",
+          "author": "ethanchase7744",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/ethanchase7744/sounds/474575/"
+        }
+      ],
+      "clap": {
+        "expect": "a sword cutting flesh",
+        "top": "a sword cutting flesh",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.hit.blade.2": {
+      "file": "battle.hit.blade.2.ogg",
+      "seconds": 0.8,
+      "peak_db": -2.0,
+      "sources": [
+        {
+          "freesound": 395373,
+          "title": "Sword stab 2",
+          "author": "ihitokage",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/ihitokage/sounds/395373/"
+        }
+      ],
+      "clap": {
+        "expect": "a sword cutting flesh",
+        "top": "a sword cutting flesh",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.hit.blade.3": {
+      "file": "battle.hit.blade.3.ogg",
+      "seconds": 0.8,
+      "peak_db": -2.0,
+      "sources": [
+        {
+          "freesound": 395370,
+          "title": "Sword stab 1",
+          "author": "ihitokage",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/ihitokage/sounds/395370/"
+        }
+      ],
+      "clap": {
+        "expect": "a sword cutting flesh",
+        "top": "a sword cutting flesh",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.hit.blunt.1": {
+      "file": "battle.hit.blunt.1.ogg",
+      "seconds": 0.566,
+      "peak_db": -2.0,
+      "sources": [
+        {
+          "freesound": 390462,
+          "title": "Punch in the face",
+          "author": "Huminaatio",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Huminaatio/sounds/390462/"
+        }
+      ],
+      "clap": {
+        "expect": "a fist punching a body",
+        "top": "a fist punching a body",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.hit.blunt.2": {
+      "file": "battle.hit.blunt.2.ogg",
+      "seconds": 0.283,
+      "peak_db": -2.0,
+      "sources": [
+        {
+          "freesound": 464492,
+          "title": "Face/Body Being Punched",
+          "author": "elynch0901",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/elynch0901/sounds/464492/"
+        }
+      ],
+      "clap": {
+        "expect": "a fist punching a body",
+        "top": "a fist punching a body",
+        "p": 0.84,
+        "ok": true
+      }
+    },
+    "battle.hit.blunt.3": {
+      "file": "battle.hit.blunt.3.ogg",
+      "seconds": 0.267,
+      "peak_db": -2.0,
+      "sources": [
+        {
+          "freesound": 162370,
+          "title": "Punch #1.mp3",
+          "author": "lewisisminted",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/lewisisminted/sounds/162370/"
+        }
+      ],
+      "clap": {
+        "expect": "a fist punching a body",
+        "top": "a fist punching a body",
+        "p": 0.8,
+        "ok": true
+      }
+    },
+    "battle.block.1": {
+      "file": "battle.block.1.ogg",
+      "seconds": 0.338,
+      "peak_db": -3.0,
+      "sources": [
+        {
+          "freesound": 326868,
+          "title": "Sword_Clash (7).wav",
+          "author": "JohnBuhr",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/JohnBuhr/sounds/326868/"
+        }
+      ],
+      "clap": {
+        "expect": "swords clashing, metal clang",
+        "top": "swords clashing, metal clang",
+        "p": 0.67,
+        "ok": true
+      }
+    },
+    "battle.block.2": {
+      "file": "battle.block.2.ogg",
+      "seconds": 0.706,
+      "peak_db": -3.0,
+      "sources": [
+        {
+          "freesound": 364530,
+          "title": "Swords Clash - High Quality #2",
+          "author": "Christopherderp",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Christopherderp/sounds/364530/"
+        }
+      ],
+      "clap": {
+        "expect": "swords clashing, metal clang",
+        "top": "swords clashing, metal clang",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.block.3": {
+      "file": "battle.block.3.ogg",
+      "seconds": 0.583,
+      "peak_db": -3.0,
+      "sources": [
+        {
+          "freesound": 471095,
+          "title": "Sword clash 1.wav",
+          "author": "spycrah",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/spycrah/sounds/471095/"
+        }
+      ],
+      "clap": {
+        "expect": "swords clashing, metal clang",
+        "top": "swords clashing, metal clang",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.down": {
+      "file": "battle.down.ogg",
+      "seconds": 1.443,
+      "peak_db": -3.0,
+      "sources": [
+        {
+          "freesound": 346694,
+          "title": "Body fall_02.wav",
+          "author": "deleted_user_2104797",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/deleted_user_2104797/sounds/346694/"
+        }
+      ],
+      "clap": {
+        "expect": "a body falling to the ground",
+        "top": "cloth rustling",
+        "p": 0.5,
+        "ok": true
+      }
+    },
+    "battle.heal": {
+      "file": "battle.heal.ogg",
+      "seconds": 11.303,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 717167,
+          "title": "- Deep Breath",
+          "author": "rrehl",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/rrehl/sounds/717167/"
+        },
+        {
+          "freesound": 352611,
+          "title": "singing bowl.MP3",
+          "author": "macdaddyno1",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/macdaddyno1/sounds/352611/"
+        }
+      ],
+      "clap": {
+        "expect": "a deep breath",
+        "top": "a deep breath",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "battle.buff": {
+      "file": "battle.buff.ogg",
+      "seconds": 0.522,
+      "peak_db": -7.0,
+      "sources": [
+        {
+          "freesound": 496188,
+          "title": "Whoosh (Clothing Drag)",
+          "author": "JonasTisell",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/JonasTisell/sounds/496188/"
+        }
+      ],
+      "clap": {
+        "expect": "cloth rustling",
+        "top": "cloth rustling",
+        "p": 0.86,
+        "ok": true
+      }
+    },
+    "battle.charge": {
+      "file": "battle.charge.ogg",
+      "seconds": 2.234,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 683185,
+          "title": "Power Up",
+          "author": "NearTheAtmoshphere",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/NearTheAtmoshphere/sounds/683185/"
+        }
+      ],
+      "clap": {
+        "expect": "a whoosh",
+        "top": "a whoosh",
+        "p": 0.59,
+        "ok": true
+      }
+    },
+    "battle.victory": {
+      "file": "battle.victory.ogg",
+      "seconds": 6.783,
+      "peak_db": -3.0,
+      "sources": [
+        {
+          "freesound": 369428,
+          "title": "Small Gong_Soft Hit_RAW",
+          "author": "cabled_mess",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/cabled_mess/sounds/369428/"
+        },
+        {
+          "freesound": 71507,
+          "title": "Gong1.wav",
+          "author": "pfeifferc",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/pfeifferc/sounds/71507/"
+        }
+      ],
+      "clap": {
+        "expect": "a gong being struck",
+        "top": "a gong being struck",
+        "p": 0.99,
+        "ok": true
+      }
+    },
+    "battle.defeat": {
+      "file": "battle.defeat.ogg",
+      "seconds": 2.009,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 139507,
+          "title": "Drum Hit 3.wav",
+          "author": "robertmcdonald",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/robertmcdonald/sounds/139507/"
+        }
+      ],
+      "clap": {
+        "expect": "a drum hit",
+        "top": "a drum hit",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "travel.oar": {
+      "file": "travel.oar.ogg",
+      "seconds": 4.9,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 478973,
+          "title": "Oarsmanship_SS_1_HQ.wav",
+          "author": "SkibkaMusic",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/SkibkaMusic/sounds/478973/"
+        },
+        {
+          "freesound": 480840,
+          "title": "R23-38-Oar Splash.wav",
+          "author": "craigsmith",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/craigsmith/sounds/480840/"
+        }
+      ],
+      "clap": {
+        "expect": "rowing a boat with oars, water splashes",
+        "top": "rowing a boat with oars, water splashes",
+        "p": 0.92,
+        "ok": true
+      }
+    },
+    "travel.whoosh": {
+      "file": "travel.whoosh.ogg",
+      "seconds": 1.2,
+      "peak_db": -8.0,
+      "sources": [
+        {
+          "freesound": 19291,
+          "title": "foley cloth rustle.wav",
+          "author": "martian",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/martian/sounds/19291/"
+        }
+      ],
+      "clap": {
+        "expect": "cloth rustling",
+        "top": "cloth rustling",
+        "p": 1.0,
+        "ok": true
+      }
+    }
+  },
+  "ambience": {
+    "amb.river": {
+      "file": "amb.river.ogg",
+      "seconds": 60.0,
+      "lufs": -24.0,
+      "sources": [
+        {
+          "freesound": 707576,
+          "title": "gentle river flow",
+          "author": "Garuda1982",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Garuda1982/sounds/707576/"
+        },
+        {
+          "freesound": 450628,
+          "title": "river or stream thick soft flow bubbly2.flac",
+          "author": "kyles",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/kyles/sounds/450628/"
+        }
+      ],
+      "clap": {
+        "expect": "a flowing river stream",
+        "top": "a flowing river stream",
+        "p": 1.0,
+        "ok": true,
+        "suspect_windows": 0
+      }
+    },
+    "amb.reeds": {
+      "file": "amb.reeds.ogg",
+      "seconds": 60.0,
+      "lufs": -27.0,
+      "sources": [
+        {
+          "freesound": 613960,
+          "title": "strong wind on field with rustling reeds",
+          "author": "Garuda1982",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Garuda1982/sounds/613960/"
+        }
+      ],
+      "clap": {
+        "expect": "wind blowing through reeds and grass",
+        "top": "wind blowing through reeds and grass",
+        "p": 0.52,
+        "ok": true,
+        "suspect_windows": 0
+      }
+    },
+    "amb.town": {
+      "file": "amb.town.ogg",
+      "seconds": 60.0,
+      "lufs": -27.0,
+      "sources": [
+        {
+          "freesound": 614924,
+          "title": "Bird song early morning long.wav",
+          "author": "Rimmer",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Rimmer/sounds/614924/"
+        },
+        {
+          "freesound": 707576,
+          "title": "gentle river flow",
+          "author": "Garuda1982",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Garuda1982/sounds/707576/"
+        }
+      ],
+      "clap": {
+        "expect": "birds singing in the countryside",
+        "top": "birds singing in the countryside",
+        "p": 1.0,
+        "ok": true,
+        "suspect_windows": 0
+      }
+    },
+    "amb.inn": {
+      "file": "amb.inn.ogg",
+      "seconds": 60.0,
+      "lufs": -28.0,
+      "sources": [
+        {
+          "freesound": 455727,
+          "title": "crowd int medium murmur restaurant busy buffet dishes cutlery tinkling Montreal, Canada.flac",
+          "author": "kyles",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/kyles/sounds/455727/"
+        },
+        {
+          "freesound": 444920,
+          "title": "Fire crackling in fireplace",
+          "author": "NomadApe",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/NomadApe/sounds/444920/"
+        },
+        {
+          "freesound": 316643,
+          "title": "dishes clearing.aiff",
+          "author": "bevibeldesign",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/bevibeldesign/sounds/316643/"
+        }
+      ],
+      "clap": {
+        "expect": "people chatting in a restaurant",
+        "top": "dishes and cutlery clinking",
+        "p": 0.7,
+        "ok": true,
+        "suspect_windows": 0
+      }
+    }
+  }
+}

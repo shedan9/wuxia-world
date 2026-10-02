@@ -76,15 +76,88 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | 全身人物形象（7 件；任务名·种子）：主角 `figure.hero` hero·66、陆青禾 `figure.lu_qinghe` lu_qinghe·33、乔红绡 `figure.qiao_hongxiao` qiao_hongxiao·22、店小二 `figure.waiter` waiter·22、茶客 `figure.tea_guest` tea_guest·22（坐姿）、唐守亭 `figure.tang_shouting` tang_shouting·11、押运打手 `figure.escort` escort·44（迎敌架势）；入包为 `game/assets/art/figure/<id>.png`，头顶到脚底 800 像素 | `tools/ArtGen/jobs/m0_figures.json`：Animagine XL 4.0 + openpose ControlNet 文生图（control 0.8、至八成步数，长提示词分段编码），`cutout.py` 灰底抠图，`place.py --figure` 裁边缩放并按骨架记脚底与身高 | 见左栏 | 家用台式机 RTX 4070 Ti SUPER | 2026-09-30 入库，探索与战斗共用，待用户核对；未修整；记录见 `art_source/ai/figure/<id>.json` |
 | 战斗远景“旧渡黄昏”`battle.ferry_dusk`（1920×1080），入包 `game/assets/art/battle/` | `tools/ArtGen/jobs/m0_battle_backdrop.json` / `m_far`：SDXL base 文生图 1360×768（长提示词分段编码），放大到 1920×1088 后以 strength 0.3 图生图补细节；`place.py --backdrop 578` 记远岸水线 | 99 | 家用台式机 RTX 4070 Ti SUPER | 2026-09-30 入库，水线以下由引擎画码头石板，待用户核对；未修整；SHA-256 `f7cbbefb…` |
 | 战斗道具“水门机关”`battle.sluice_gate`（937×1022） | `tools/ArtGen/jobs/m0_battle_props.json` / `b_sluice_txt`：`prop_guide.py` 按任务文件色块画正立面引导图，SDXL base + canny ControlNet 文生图（control 0.75、至六成半步数），按引导图 alpha 抠出；`place.py --regrade 0.7,1.0 --prop` 调色、裁边并记底边与整高 | 66 | 同上 | 同上；SHA-256 `95b7962f…` |
+| 全身人物形象 第二批（4 件；任务名·种子）：令狐冲 `figure.linghu_chong` linghu_chong·33、黄蓉 `figure.huang_rong` huang_rong·44、萧峰 `figure.xiao_feng` xiao_feng·22、杜三篙 `figure.du_sangao` du_sangao·33（持篙） | `tools/ArtGen/jobs/m2_figures.json`，同第一批管线（`figure.py` OpenPose 骨架 + Animagine XL 4.0，`cutout.py` 抠图，`place.py --figure` 入库）；源图在 `art_source/ai/figure/`，入包 `game/assets/art/figure/`（导入开 mipmap） | 见左 | 家用台式机 RTX 4070 Ti SUPER | 2026-10-02 入库，探索与战斗共用；**令狐冲、黄蓉、萧峰的外形是本作视觉草案**，只取常见的身份气质，待 M2-10 人物锚点核验与用户审看；每人 6 个种子由制作方挑选，未经用户选定。2026-10-02 用户指出萧峰全身形象的长络腮须与对话立绘对不上，定为两边统一短络腮胡：`tools/ArtGen/jobs/m2_portrait_fix.json` 的 `xiao_feng_figure_beard` 在 832×1216 原图上涂掉长须、沿下颌引导后重绘（选种子 11），`cutout.py` 抠图（阈值 26、羽化 1.0，加 `--enclosed 16` 顺带去掉原先残留在两腿之间的灰底），沿用原裁框 [248,108,603,1168] 与缩放 0.7663，脚底与身高不变；改前文件存于 `tools/ArtGen/out/m2_portrait_fix/before/`（不入库） |
+| 对话立绘 第二批（6 件，832×1216 半身，抠图后入包 `game/assets/portraits/<人物>_v1.png`；源图、抠图与生成记录在 `art_source/ai/characters/`）：乔红绡 qiao_hongxiao·505、黄蓉 huang_rong·505、杜三篙 du_sangao·101、唐守亭 tang_shouting·202、萧峰 xiao_feng_v2·404（入包时缩到 0.8 倍并与陆青禾立绘头顶对齐）、令狐冲 linghu_chong_i2i_s80·202（以其全身形象上半身放大、淡青底，图生图 strength 0.8） | `tools/ArtGen/jobs/m2_portraits.json`，Animagine XL 4.0，风格词同陆青禾立绘 `portrait_final` | 见左 | 同上 | 2026-10-02 入库；经典人物外形同上为视觉草案；令狐冲文生图多张背景杂乱、出现西式酒瓶与十字形扣饰，萧峰第一轮体型过度夸张，均弃用；未经用户选定。2026-10-02 用户指出男角色立绘眼珠发白：萧峰、唐守亭、令狐冲、杜三篙四张以 `tools/ArtGen/jobs/m2_eye_fix.json` 只重绘眼部（各 4 种子，选萧峰·44、唐守亭·44、令狐冲·22、杜三篙·22），`eye_place.py` 压暗为深棕后贴回，其余像素与透明通道不变；唐守亭立绘下半截渐变天色原先没抠干净（游戏里露出浅蓝色块），用 `cutout.py --gradient` 重抠（带底色的源图仍在 `art_source/ai/characters/<人物>_portrait_v1.png`）；未经用户审看。2026-10-02 复核：萧峰上衣原为现代翻领加纽扣门襟，以 `tools/ArtGen/jobs/m2_portrait_fix.json` 三步局部重绘改为交领短打（选 xiao_feng·33、xiao_feng_b·33、xiao_feng_c·44）；黄蓉绿眼珠同一任务只重绘眼部改深棕（选 huang_rong·33），均用 `eye_place.py --set m2_portrait_fix` 套回，透明通道不变，生成参数与选定记录在 `tools/ArtGen/out/m2_portrait_fix/`；未经用户审看。同日用户审看：黄蓉眼睛认可；萧峰上身涂抹感重、胡子与全身形象对不上——第一轮结果作废，以现有立绘为底先加贴脸短络腮胡（`xiao_feng_v2_beard`，沿下颌粗涂引导，选 33），再以 strength 0.75 重绘领口到腰带的整个上身（`xiao_feng_v2_torso`，不含两臂，选 66）；整图存 `art_source/ai/characters/xiao_feng_portrait_v1_fixed.png`，`cutout.py` 重抠（阈值 30、羽化 1.2），入包图由抠图缩 0.8 倍贴到 (82,53) 整张生成（按透明通道比对求得；此前任务里记的 0.805 /(81,53) 有偏差，区域贴回在腰部附近会错开数像素，已更正）；未经用户审看 |
 
 生成记录由 `tools/ArtGen/generate.py` 写在每张图旁的 `.json` 中；入库时把该记录一并放入 `art_source/ai/`，并在上表登记。
 
+## AI 配音
+
+取得方式：MiniMax 国内站语音合成（`speech-2.8-hd`），`tools/VoiceBuilder`；工作选角见 `voice_source/profiles/minimax_cast.json`，其中主角、黄蓉为用户确认后使用的设计音色（各扣音色费 9.9 元），其余为系统音色。商用与随包分发的可用范围待按 MiniMax 用户协议与所购套餐核对，未确认前不作为发行资产。
+
+| 资产 | 来源 | 位置 | 状态 |
+|---|---|---|---|
+| 第一章台词配音（99 句，心里话不配） | `minimax_cast` 工作选角，2026-10-01 生成 | `game/assets/audio/voice/*.mp3`（Git LFS）、`voice_manifest.json` | 2026-10-02 作为试听版装入游戏；台词未锁稿、逐句审核未做；锁稿后按改动增量重生成并制作正式母带 |
+
 ## AI 配乐
 
-取得方式：本地 ACE-Step 1.5（代码与权重 MIT，生成物可商用；其 README 要求核对原创性并披露 AI 参与），`tools/MusicGen`，家用台式机 RTX 4070 Ti SUPER。母带放 `audio_source/music/`（Git LFS），每首旁的同名 `.json` 记录逐步生成与剪辑过程；运行时 Ogg、循环点与响度统一尚未做。
+取得方式：本地 ACE-Step 1.5（代码与权重 MIT，生成物可商用；其 README 要求核对原创性并披露 AI 参与），`tools/MusicGen`，家用台式机 RTX 4070 Ti SUPER。母带放 `audio_source/music/`（Git LFS），每首旁的同名 `.json` 记录逐步生成与剪辑过程。2026-10-02 由 `tools/AudioBuild/bgm_runtime.py` 自动找循环点、统一到 −18 LUFS，运行时 Ogg 入包 `game/assets/audio/music/`（循环起点、接缝相似度与源文件哈希见 `music_manifest.json`），循环接缝待用户试听。
 
 | 资产 | 来源过程 | 母带 | 状态 |
 |---|---|---|---|
 | 芦湾水镇·探索 `bgm.town.luwan` | XL turbo 文生曲种子 11 | `audio_source/music/bgm.town.luwan.wav`，48000 Hz 2 声道 FLOAT，120.00 秒 | 2026-10-02 用户选定工作稿；未剪循环；SHA-256 `b44f8bb1…0794` |
 | 普通战斗 `bgm.battle.common` | 2B 种子 11 → XL cover 种子 11 / 22 → 60.02–92.69 秒换成种子 22 同段（交叉淡化拼接） | `audio_source/music/bgm.battle.common.wav`，48000 Hz 2 声道 PCM_16，100.00 秒 | 2026-10-02 用户选定工作稿；未剪循环；SHA-256 `4ec4cd5d…925e` |
 | 旧渡首领战 `bgm.boss.old_ferry` | 普通战斗 2B 种子 33 → XL 重画两段旋律（种子 11）→ 0:48 借种子 44 呼吸律动做留白过渡 → 去 0:53 高音 → `note_gate.py` 删去类似二胡长音 → 0:03–0:09 重画为大提琴独奏 | `audio_source/music/bgm.boss.old_ferry.wav`，48000 Hz 2 声道 FLOAT，100.00 秒 | 2026-10-02 用户选定工作稿；未剪循环；SHA-256 `15d9358f…b0a0` |
+
+## 实录音效与环境声（Freesound CC0）
+
+2026-10-02 用户试听后认为程序合成的音效“太烂，只有一下钢琴声”，原 `sfx_synth.py` 合成版（41 个音效、4 段环境声）全部作废，改用实录素材剪辑。
+
+取得方式：`tools/AudioBuild/freesound.py` 只检索、下载 Freesound 上 **Creative Commons 0** 授权的声音（检索页按 CC0 过滤，下载前到每个声音详情页再核一次授权，不是 CC0 的拒收）；当前下载的是官方高质量试听版（Ogg，约 192 kbps），原始文件需登录，发行前可换原档（同一 ID，剪辑流程不变）。素材缓存与来源记录在 `audio_source/sfx/freesound/`（`<ID>.ogg` + `sources.json`：标题、作者、链接、授权、标签），共下载候选 93 个，成品用到其中 47 个。`tools/AudioBuild/sfx_build.py` 按 `sfx_recipes.json` 剪辑（截取、按起音切出单步 / 单击、高低通、变调、叠层、首尾淡化、统一峰值；环境声取段混合、首尾交叉淡化成循环并按 BS.1770 定响度），处理不含随机数，重跑逐采样一致。CC0 不要求署名，下表仍逐条记录以备核查。
+
+挑选与验收：制作方不能直接听声音，用 CLAP 零样本听辨（`tools/AudioBuild/sfx_check.py`，模型 `laion/larger_clap_general`，Apache-2.0，只在开发机上用，不入包）初筛候选、验收成品——每个音效对 40 余条描述（含“钢琴、电子音、人声、汽车、飞机”等错类）打分，期望描述须排第一；脚步按游戏步频把变体连成一串再听辨；环境声另按 5 秒窗口扫描人声、音乐、交通、警笛、狗叫。旧合成版的听辨结果是：通知声被听成“钢琴 / 警笛”，脚步与击打被听成“鼓”，四段环境声都被听成“静音”，与用户反馈一致。
+
+| 资产 | 内容 | 位置 | 状态 |
+|---|---|---|---|
+| 环境声 4 段 | 河水 `amb.river`（两段溪流叠加，−24 LUFS）、风吹芦苇 `amb.reeds`（−27）、水镇街巷 `amb.town`（清晨鸟鸣 + 远处低通河水，−27）、客栈大堂 `amb.inn`（低通人声嘈杂 + 炉火 + 收拾碗盏，−28）；立体声 60 秒无缝循环 | `game/assets/audio/amb/` | 2026-10-02 入库；CLAP 听辨全部符合，窗口扫描未见人声、音乐、交通；**未经人耳试听** |
+| 音效 51 个 | 界面（木键轻响、木鱼式确认、纸页、翻页、卷轴）、通知（铜钱入袋、木鱼一叩、小锣、铃）、脚步（泥石路 / 木地板 / 石板各 6 变体）、交互（衣料）、战斗（拔刀、兵刃破空 4、劈砍入肉 3、拳掌击中 3、兵刃相格 3、倒地、运气呼吸、衣料、蓄力、胜锣、败鼓）、旅行（摇橹入水、衣袂） | `game/assets/audio/sfx/`、`sfx_manifest.json`（每条记来源 ID 与 CLAP 结果） | 2026-10-02 入库；CLAP 听辨 0 个不符（三种路面连走均符合）；**未经人耳试听**，正式验收在 M3-06 |
+
+| Freesound ID | 标题 | 作者 | 用于 |
+|---|---|---|---|
+| [19291](https://freesound.org/people/martian/sounds/19291/) | foley cloth rustle.wav | martian | `interact`、`travel.whoosh` |
+| [59988](https://freesound.org/people/qubodup/sounds/59988/) | SWOSH-01 44.1kHz | qubodup | `battle.swing` |
+| [71507](https://freesound.org/people/pfeifferc/sounds/71507/) | Gong1.wav | pfeifferc | `battle.victory` |
+| [119914](https://freesound.org/people/ftpalad/sounds/119914/) | Footsteps on Wooden Floor.aif | ftpalad | `step.wood` |
+| [139507](https://freesound.org/people/robertmcdonald/sounds/139507/) | Drum Hit 3.wav | robertmcdonald | `battle.defeat` |
+| [144110](https://freesound.org/people/gfrog/sounds/144110/) | Page Turn 1 | gfrog | `ui.page` |
+| [148849](https://freesound.org/people/iluppai/sounds/148849/) | 1ring | iluppai | `notify.skill` |
+| [162370](https://freesound.org/people/lewisisminted/sounds/162370/) | Punch #1.mp3 | lewisisminted | `battle.hit.blunt` |
+| [164315](https://freesound.org/people/Rickmk2/sounds/164315/) | Footsteps on wooden flooring.wav | Rickmk2 | `step.wood` |
+| [202107](https://freesound.org/people/spookymodem/sounds/202107/) | Unrolling Scroll.wav | spookymodem | `ui.close` |
+| [316643](https://freesound.org/people/bevibeldesign/sounds/316643/) | dishes clearing.aiff | bevibeldesign | `amb.inn` |
+| [326868](https://freesound.org/people/JohnBuhr/sounds/326868/) | Sword_Clash (7).wav | JohnBuhr | `battle.block` |
+| [336580](https://freesound.org/people/Anthousai/sounds/336580/) | coins - in cloth 09.wav | Anthousai | `notify.item` |
+| [346694](https://freesound.org/people/deleted_user_2104797/sounds/346694/) | Body fall_02.wav | deleted_user_2104797 | `battle.down` |
+| [352611](https://freesound.org/people/macdaddyno1/sounds/352611/) | singing bowl.MP3 | macdaddyno1 | `battle.heal` |
+| [352870](https://freesound.org/people/PotatokingXII/sounds/352870/) | Footsteps Dirt Gravel | PotatokingXII | `step.dirt` |
+| [364530](https://freesound.org/people/Christopherderp/sounds/364530/) | Swords Clash - High Quality #2 | Christopherderp | `battle.block` |
+| [369428](https://freesound.org/people/cabled_mess/sounds/369428/) | Small Gong_Soft Hit_RAW | cabled_mess | `battle.victory`、`notify.quest` |
+| [390462](https://freesound.org/people/Huminaatio/sounds/390462/) | Punch in the face | Huminaatio | `battle.hit.blunt` |
+| [395370](https://freesound.org/people/ihitokage/sounds/395370/) | Sword stab 1 | ihitokage | `battle.hit.blade` |
+| [395373](https://freesound.org/people/ihitokage/sounds/395373/) | Sword stab 2 | ihitokage | `battle.hit.blade` |
+| [420668](https://freesound.org/people/SypherZent/sounds/420668/) | Basic Melee Swing / Miss / Whoosh | SypherZent | `battle.swing` |
+| [420670](https://freesound.org/people/SypherZent/sounds/420670/) | Strong Melee Swing | SypherZent | `battle.swing` |
+| [422513](https://freesound.org/people/Nightflame/sounds/422513/) | Swinging staff whoosh (strong) 04.wav | Nightflame | `battle.swing` |
+| [444920](https://freesound.org/people/NomadApe/sounds/444920/) | Fire crackling in fireplace | NomadApe | `amb.inn` |
+| [450628](https://freesound.org/people/kyles/sounds/450628/) | river or stream thick soft flow bubbly2.flac | kyles | `amb.river` |
+| [455727](https://freesound.org/people/kyles/sounds/455727/) | crowd int medium murmur restaurant busy buffet dishes cutlery tinkling Montreal, Canada.flac | kyles | `amb.inn` |
+| [464492](https://freesound.org/people/elynch0901/sounds/464492/) | Face/Body Being Punched | elynch0901 | `battle.hit.blunt` |
+| [471095](https://freesound.org/people/spycrah/sounds/471095/) | Sword clash 1.wav | spycrah | `battle.block` |
+| [474575](https://freesound.org/people/ethanchase7744/sounds/474575/) | Sword stab.wav | ethanchase7744 | `battle.hit.blade` |
+| [478973](https://freesound.org/people/SkibkaMusic/sounds/478973/) | Oarsmanship_SS_1_HQ.wav | SkibkaMusic | `travel.oar` |
+| [480840](https://freesound.org/people/craigsmith/sounds/480840/) | R23-38-Oar Splash.wav | craigsmith | `travel.oar` |
+| [496188](https://freesound.org/people/JonasTisell/sounds/496188/) | Whoosh (Clothing Drag) | JonasTisell | `battle.buff` |
+| [521590](https://freesound.org/people/Fission9/sounds/521590/) | Hiking Boot Footsteps on Stone | Fission9 | `step.stone` |
+| [577619](https://freesound.org/people/paulfabb/sounds/577619/) | Sword Drawing 1.wav | paulfabb | `battle.draw` |
+| [607215](https://freesound.org/people/jonopodmore/sounds/607215/) | Mokugyo.wav | jonopodmore | `notify.clue` |
+| [613960](https://freesound.org/people/Garuda1982/sounds/613960/) | strong wind on field with rustling reeds | Garuda1982 | `amb.reeds` |
+| [614081](https://freesound.org/people/mateusboga/sounds/614081/) | Opening a book | mateusboga | `ui.open` |
+| [614924](https://freesound.org/people/Rimmer/sounds/614924/) | Bird song early morning long.wav | Rimmer | `amb.town` |
+| [682127](https://freesound.org/people/HenKonen/sounds/682127/) | Footsteps Dirt Road 1.wav | HenKonen | `step.dirt` |
+| [683185](https://freesound.org/people/NearTheAtmoshphere/sounds/683185/) | Power Up | NearTheAtmoshphere | `battle.charge` |
+| [692828](https://freesound.org/people/hollandm/sounds/692828/) | Woodblock-soft.wav | hollandm | `ui.confirm` |
+| [707576](https://freesound.org/people/Garuda1982/sounds/707576/) | gentle river flow | Garuda1982 | `amb.river`、`amb.town` |
+| [717167](https://freesound.org/people/rrehl/sounds/717167/) | - Deep Breath | rrehl | `battle.heal` |
+| [742356](https://freesound.org/people/NoisyRedFox/sounds/742356/) | SingleKnock_Wood | NoisyRedFox | `ui.cancel` |
+| [757207](https://freesound.org/people/HenKonen/sounds/757207/) | Footsteps stone floor | HenKonen | `step.stone` |
+| [840321](https://freesound.org/people/Robo9418/sounds/840321/) | Wooden Short Click! | Robo9418 | `ui.move` |

@@ -1,0 +1,48 @@
+{
+  "tracks": {
+    "bgm.town.luwan": {
+      "file": "bgm.town.luwan.ogg",
+      "title": "芦湾水镇·探索",
+      "loop_offset": 19.01,
+      "loop_end": 106.2727,
+      "loop_bars": 32.0,
+      "seam_similarity": 0.9666,
+      "seam_jump": 0.0,
+      "lufs_source": -15.21,
+      "lufs": -18.0,
+      "peak_db": -3.79,
+      "source": "audio_source/music/bgm.town.luwan.wav",
+      "source_sha256": "b44f8bb14e8085c5374e8c50ce483cbc7a900603eaf5a2c676e3bca86a5e0794"
+    },
+    "bgm.battle.common": {
+      "file": "bgm.battle.common.ogg",
+      "title": "普通战斗",
+      "loop_offset": 2.77,
+      "loop_end": 74.1314,
+      "loop_bars": 44.01,
+      "seam_similarity": 0.6988,
+      "seam_jump": 0.0,
+      "lufs_source": -15.09,
+      "lufs": -18.0,
+      "peak_db": -4.51,
+      "source": "audio_source/music/bgm.battle.common.wav",
+      "source_sha256": "4ec4cd5d2767dc77db21bf78ee40fe4ded4eb6d3c421b4cf4afc8d007ca0925e"
+    },
+    "bgm.boss.old_ferry": {
+      "file": "bgm.boss.old_ferry.ogg",
+      "title": "旧渡首领战",
+      "loop_offset": 2.0,
+      "loop_end": 57.1651,
+      "loop_bars": 34.02,
+      "seam_similarity": 0.7226,
+      "seam_jump": 0.0,
+      "lufs_source": -16.84,
+      "lufs": -18.0,
+      "peak_db": -3.13,
+      "source": "audio_source/music/bgm.boss.old_ferry.wav",
+      "source_sha256": "15d9358f2ff65a7a8318ac4e6760acd0d80934e3054184aec59a6ea28d7eb0a0"
+    }
+  },
+  "note": "tools/AudioBuild/bgm_runtime.py 生成：循环起点 loop_offset（秒），播放到文件末尾跳回；响度按 BS.1770 统一。",
+  "target_lufs": -18.0
+}

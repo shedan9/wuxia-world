@@ -1,0 +1,70 @@
+{
+  "note": "sfx_build.py 的配方。素材均为 Freesound CC0 实录（ID 见 audio_source/sfx/freesound/sources.json）。expect 是 sfx_check.py 核对用的期望描述。level 为成品峰值 dBFS，游戏内另按调用处的音量播放。2026-10-02 用户反馈合成音效“只有一下钢琴声”后整体替换。",
+  "sfx": {
+    "ui.move": {"expect": "a wooden click", "from": [{"id": 840321}], "lp": 7000, "level": -10},
+    "ui.confirm": {"expect": "a wooden block knock", "from": [{"id": 692828}], "max": 0.25, "fade": 0.12, "level": -6},
+    "ui.cancel": {"expect": "a wooden block knock", "from": [{"id": 742356, "pitch": -3}], "level": -8},
+    "ui.open": {"expect": "paper rustling", "from": [{"id": 614081}], "fade": 0.08, "level": -6},
+    "ui.close": {"expect": "unrolling a paper scroll", "from": [{"id": 202107, "start": 2.15, "end": 2.95}], "fade": 0.12, "level": -8},
+    "ui.page": {"expect": "turning a book page", "from": [{"id": 144110}], "fade": 0.1, "level": -5},
+
+    "notify.item": {"expect": "coins jingling", "from": [{"id": 336580}], "fade": 0.15, "level": -5},
+    "notify.clue": {"expect": "a wooden block knock", "from": [{"id": 607215}], "max": 1.2, "fade": 0.4, "level": -6},
+    "notify.quest": {"expect": "a gong being struck", "from": [{"id": 369428}], "max": 3.2, "fade": 1.2, "level": -5},
+    "notify.skill": {"expect": "a bell ringing", "from": [{"id": 148849}], "max": 2.4, "fade": 0.8, "level": -7},
+
+    "step.dirt": {"expect": "footsteps on gravel", "variants": 6, "from": [
+      {"id": 352870, "split": {"gap": 0.3, "len": 0.32}},
+      {"id": 682127, "split": {"gap": 0.3, "len": 0.32}}
+    ], "hp": 60, "lp": 9000, "fade": 0.06, "level": -6},
+    "step.wood": {"expect": "footsteps on wooden floor", "variants": 6, "from": [
+      {"id": 119914, "split": {"gap": 0.3, "len": 0.32}},
+      {"id": 164315, "split": {"gap": 0.3, "len": 0.32}}
+    ], "hp": 60, "fade": 0.06, "level": -6},
+    "step.stone": {"expect": "footsteps on stone", "variants": 6, "from": [
+      {"id": 757207, "split": {"gap": 0.3, "len": 0.3}},
+      {"id": 521590, "split": {"gap": 0.3, "len": 0.3}}
+    ], "hp": 80, "lp": 8000, "fade": 0.06, "level": -6},
+    "interact": {"expect": "cloth rustling", "from": [{"id": 19291, "start": 1.1, "end": 1.5}], "fade": 0.08, "level": -8},
+    "battle.draw": {"expect": "unsheathing a sword", "from": [{"id": 577619}], "max": 1.6, "fade": 0.3, "level": -4},
+    "battle.swing": {"expect": "sword swinging through the air", "variants": 4, "from": [
+      {"id": 420668}, {"id": 420670}, {"id": 422513}, {"id": 59988}
+    ], "max": 0.7, "fade": 0.08, "level": -4},
+    "battle.hit.blade": {"expect": "a sword cutting flesh", "variants": 3, "from": [
+      {"id": 474575}, {"id": 395373, "end": 1.2}, {"id": 395370, "end": 1.4}
+    ], "max": 0.8, "fade": 0.15, "level": -2},
+    "battle.hit.blunt": {"expect": "a fist punching a body", "variants": 3, "from": [
+      {"id": 390462}, {"id": 464492}, {"id": 162370}
+    ], "max": 0.7, "fade": 0.12, "level": -2},
+    "battle.block": {"expect": "swords clashing, metal clang", "variants": 3, "from": [
+      {"id": 326868}, {"id": 364530}, {"id": 471095}
+    ], "max": 1.2, "fade": 0.4, "level": -3},
+    "battle.down": {"expect": "a body falling to the ground", "from": [{"id": 346694}], "floor_db": -70, "fade": 0.3, "level": -3},
+    "battle.heal": {"expect": "a deep breath", "from": [{"id": 717167}], "layer": [{"id": 352611, "at": 0.2, "rel": -14}], "max": 3.2, "fade": 0.8, "level": -6},
+    "battle.buff": {"expect": "cloth rustling", "from": [{"id": 496188}], "fade": 0.08, "level": -7},
+    "battle.charge": {"expect": "a whoosh", "from": [{"id": 683185, "pitch": -4}], "lp": 6000, "fade": 0.3, "level": -4},
+    "battle.victory": {"expect": "a gong being struck", "from": [{"id": 369428, "pitch": -4}], "layer": [{"id": 71507, "at": 0.0, "rel": -6}], "max": 5.0, "fade": 2.0, "level": -3},
+    "battle.defeat": {"expect": "a drum hit", "from": [{"id": 139507, "pitch": -5}], "lp": 3000, "max": 2.6, "fade": 1.2, "level": -4},
+
+    "travel.oar": {"expect": "rowing a boat with oars, water splashes", "from": [{"id": 478973, "start": 2.3, "end": 7.2}], "layer": [{"id": 480840, "at": 0.0, "rel": -6}], "fade": 0.6, "level": -6},
+    "travel.whoosh": {"expect": "cloth rustling", "from": [{"id": 19291, "start": 0.4, "end": 1.6}], "fade": 0.3, "level": -8}
+  },
+  "ambience": {
+    "amb.river": {"expect": "a flowing river stream", "seconds": 60, "fade": 4, "lufs": -24, "layers": [
+      {"id": 707576, "start": 10, "lufs": -26},
+      {"id": 450628, "start": 5, "lufs": -31}
+    ]},
+    "amb.reeds": {"expect": "wind blowing through reeds and grass", "seconds": 60, "fade": 4, "lufs": -27, "layers": [
+      {"id": 613960, "start": 15, "lufs": -27}
+    ]},
+    "amb.town": {"expect": "birds singing in the countryside", "seconds": 60, "fade": 4, "lufs": -27, "layers": [
+      {"id": 614924, "start": 20, "lufs": -29},
+      {"id": 707576, "start": 80, "lp": 1500, "lufs": -35}
+    ]},
+    "amb.inn": {"expect": "people chatting in a restaurant", "seconds": 60, "fade": 4, "lufs": -28, "layers": [
+      {"id": 455727, "start": 30, "lp": 2500, "mono_width": 0.6, "lufs": -30},
+      {"id": 444920, "start": 5, "lufs": -38},
+      {"id": 316643, "start": 0, "hp": 300, "lufs": -40}
+    ]}
+  }
+}
