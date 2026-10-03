@@ -199,6 +199,7 @@ public static class TownLayout
 public partial class TownGroundDetail : Node2D
 {
     private readonly List<Face> _faces = [];
+    private readonly List<(Face Face, float Width, float Height, float Offset)> _bank = [];
     private readonly PieceArt? _deckArt;
 
     public TownGroundDetail()
@@ -216,13 +217,13 @@ public partial class TownGroundDetail : Node2D
             var along = c - a;
             var offset = run;
             run += along.Length();
-            _faces.Add(new Face
+            _bank.Add((new Face
             {
                 Points = [a, c, c + new Vector3(0, 0, water), a + new Vector3(0, 0, water)],
                 Normal = new Vector3(-along.Y, along.X, 0).Normalized(), Color = Cel.Stone, Outline = 0,
                 Local = TownView.Local(a, along.Normalized(), TownView.Below),
                 Decal = ci => Embankment(ci, along.Length(), -water, offset),
-            });
+            }, along.Length(), -water, offset));
         }
 
         // 渡口石阶：五级，自岸沿逐级下到水边。
@@ -285,6 +286,62 @@ public partial class TownGroundDetail : Node2D
 
     private static readonly (Texture2D Texture, float WorldSize)? EmbankmentTexture = PieceArt.FindTexture("town.embankment");
 
+    /// <summary>
+    /// 驳岸（M3-07 合批）：原先沿岸每 60 一面，每面填色、设局部变换贴条石纹理、苔带、白沫、背光压暗各一次，一张图约 850 次绘制调用。
+    /// 各面首尾相接、互不重叠，改为按“底色 → 纹理 → 苔带与白沫 → 背光”四组各并成一次，同一面内的先后不变；
+    /// 局部坐标由面的 <see cref="Face.Local"/> 换到画面。无 AI 纹理时照旧逐面画。
+    /// </summary>
+    private void DrawEmbankment()
+    {
+        if (EmbankmentTexture is not { } tex)
+        {
+            foreach (var (face, _, _, _) in _bank)
+            {
+                face.Draw(this);
+            }
+
+            return;
+        }
+
+        var visible = _bank.Where(b => TownView.Facing(b.Face.Normal)).ToList();
+        var size = tex.Texture.GetSize();
+        var px = size.X / tex.WorldSize;
+        var tone = new Color(1.05f, 1.1f, 1.08f);
+        var moss = Cel.Leaf.Darkened(0.35f) with { A = 0.55f };
+        var foam = Colors.White with { A = 0.7f };
+        using var batch = new PolyBatch(this);
+        foreach (var (face, _, _, _) in visible)
+        {
+            batch.Add([.. face.Points.Select(p => TownView.P(p))], face.Color);
+        }
+
+        foreach (var (face, width, height, offset) in visible)
+        {
+            var u0 = Mathf.PosMod(offset, tex.WorldSize) * px / size.X;
+            var u1 = u0 + width * px / size.X;
+            batch.Add(LocalQuad(face.Local, 0, 0, width, height), [tone, tone, tone, tone], [new(u0, 0), new(u1, 0), new(u1, 1), new(u0, 1)], tex.Texture);
+        }
+
+        foreach (var (face, width, height, _) in visible)
+        {
+            batch.Add(LocalQuad(face.Local, 0, height - 16, width, 12), moss);
+            // 宽 3 的水线白沫（原为局部坐标里的一笔直线）。
+            batch.Add(LocalQuad(face.Local, 0, height - 3.5f, width, 3), foam);
+        }
+
+        foreach (var (face, _, _, _) in visible)
+        {
+            var light = TownView.Light(face.Normal);
+            if (light < 1)
+            {
+                batch.Add([.. face.Points.Select(p => TownView.P(p))], Face.ShadeTint with { A = (1 - light) * 1.25f });
+            }
+        }
+    }
+
+    private static Vector2[] LocalQuad(Transform2D local, float x, float y, float w, float h) =>
+        [local * new Vector2(x, y), local * new Vector2(x + w, y), local * new Vector2(x + w, y + h), local * new Vector2(x, y + h)];
+
     private static void Embankment(CanvasItem ci, float width, float height, float offset)
     {
         // AI 条石纹理（town.embankment，横向无缝）：按沿岸累计长度取 u，整幅高度对应驳岸高；水线苔带与白沫照旧叠加。
@@ -319,6 +376,7 @@ public partial class TownGroundDetail : Node2D
 
     public override void _Draw()
     {
+        DrawEmbankment();
         foreach (var face in _faces)
         {
             face.Draw(this);

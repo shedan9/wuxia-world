@@ -44,6 +44,11 @@ public sealed partial class BattleScreen
     private List<string> _roundOrder = [];
     private string? _current;
 
+    // 局部刷新（M3-07）：行动顺序、招式卡按内容键比较，键不变就不重建；日志复用标签只改文字。
+    private string? _orderKey;
+    private string? _dockKey;
+    private string? _glyphActor;
+
     // ── 场上单位 ─────────────────────────────────────────
 
     private void BuildUnits()
@@ -164,13 +169,23 @@ public sealed partial class BattleScreen
         _enemyMomentumLabel.AddThemeColorOverride("font_color", threat.Count > 0 ? UiPalette.Warm.Lightened(0.45f) : UiPalette.TextOnDarkMuted);
         _enemyMomentumLabel.TooltipText = MomentumTip(Side.Enemy);
         _speedLabel.Text = (_speed > 1 ? "2× 倍速" : "") + (_auto ? "　自动" : "");
-        Ui.ClearChildren(_order);
-        var passed = true;
+        RefreshOrder();
+    }
+
+    /// <summary>
+    /// 顶栏行动顺序。每格的外观只由（人物、是否行动中、是否已行动、人多缩小、提示文字）决定，拼成格键：
+    /// 整条不变就不动；变了只重建键变了的格，其余格与箭头摘下后按新次序挂回（M3-07，原先每条事件都整条删了重建）。
+    /// </summary>
+    private void RefreshOrder()
+    {
+        var state = _session!.State;
         var living = _roundOrder.Where(id => !(_views.TryGetValue(id, out var gone) && gone.Down)).ToList();
-        _order.AddThemeConstantOverride("separation", living.Count > 6 ? 3 : UiPalette.SpaceS);
-        for (var i = 0; i < living.Count; i++)
+        // 人多时印鉴缩小一档，免得行动顺序挤出顶栏（满编 4 对 6 时十人同列）。
+        var crowded = living.Count > 6;
+        var cells = new List<(string Id, string Key, bool Current, bool Dim, string Tip)>(living.Count);
+        var passed = true;
+        foreach (var id in living)
         {
-            var id = living[i];
             var unit = state.TryUnit(id);
             var current = id == _current;
             if (current)
@@ -178,51 +193,103 @@ public sealed partial class BattleScreen
                 passed = false;
             }
 
-            var ally = unit?.Side == Side.Ally;
-            var tone = ally ? UiPalette.Trim : UiPalette.Warm.Lightened(0.15f);
             var name = _views.TryGetValue(id, out var v) ? v.Name : id;
-            // 人多时印鉴缩小一档，免得行动顺序挤出顶栏（满编 4 对 6 时十人同列）。
-            var crowded = living.Count > 6;
-            var glyph = Ui.Glyph(name[..1], tone, current ? (crowded ? 50 : 64) : (crowded ? 38 : 48));
-            glyph.SizeFlagsVertical = SizeFlags.ShrinkEnd;
-            var label = Ui.Text(current ? "行动中" : name, current ? UiTheme.GiltLabel : UiTheme.DarkMutedLabel, crowded ? 12 : 14);
-            label.HorizontalAlignment = HorizontalAlignment.Center;
-            var cell = Ui.Column(2, glyph, label);
-            cell.SizeFlagsVertical = SizeFlags.ShrinkEnd;
-            cell.MouseFilter = MouseFilterEnum.Pass;
-            glyph.MouseFilter = MouseFilterEnum.Ignore;
-            if (unit is not null)
-            {
-                cell.TooltipText = $"{name}　速度 {_engine.EffectiveSpeed(unit)}（身法 {unit.Template.Attributes.Agility}）"
-                    + (unit.IsDown ? "　已倒下" : "");
-            }
-            if (passed && _current is not null)
-            {
-                cell.Modulate = new Color(1, 1, 1, 0.55f);
-            }
+            var tip = unit is null ? "" : $"{name}　速度 {_engine.EffectiveSpeed(unit)}（身法 {unit.Template.Attributes.Agility}）" + (unit.IsDown ? "　已倒下" : "");
+            var dim = passed && _current is not null;
+            cells.Add((id, $"{id}|{current}|{dim}|{crowded}|{tip}", current, dim, tip));
+        }
 
-            if (current)
+        var orderKey = string.Join(";", cells.Select(c => c.Key)) + "|" + crowded;
+        if (orderKey == _orderKey)
+        {
+            return;
+        }
+
+        _orderKey = orderKey;
+        var wanted = cells.Select(c => c.Key).ToHashSet(StringComparer.Ordinal);
+        var reuse = new Dictionary<string, Control>(StringComparer.Ordinal);
+        var arrows = new Stack<Control>();
+        foreach (var child in _order.GetChildren().OfType<Control>())
+        {
+            _order.RemoveChild(child);
+            if (child.HasMeta(OrderKeyMeta) && wanted.Contains(child.GetMeta(OrderKeyMeta).AsString()))
             {
-                var frame = new PanelContainer();
-                frame.AddThemeStyleboxOverride("panel", new OrnateBox
-                {
-                    Corners = CornerStyle.Bracket, CornerColor = UiPalette.Gilt, CornerSize = 12, CornerWidth = 2, CornerOutset = 4,
-                });
-                frame.AddChild(cell);
-                _order.AddChild(frame);
+                reuse[child.GetMeta(OrderKeyMeta).AsString()] = child;
+            }
+            else if (child.HasMeta(ArrowMeta) && child.GetMeta(ArrowMeta).AsBool() == crowded)
+            {
+                arrows.Push(child);
             }
             else
             {
-                _order.AddChild(cell);
+                child.QueueFree();
+            }
+        }
+
+        _order.AddThemeConstantOverride("separation", crowded ? 3 : UiPalette.SpaceS);
+        for (var i = 0; i < cells.Count; i++)
+        {
+            var c = cells[i];
+            if (!reuse.Remove(c.Key, out var cell))
+            {
+                cell = OrderCell(c.Id, c.Current, c.Dim, crowded, c.Tip);
+                cell.SetMeta(OrderKeyMeta, c.Key);
             }
 
-            if (i < living.Count - 1)
+            _order.AddChild(cell);
+            if (i < cells.Count - 1)
             {
-                var arrow = Ui.Text("›", UiTheme.DarkMutedLabel, crowded ? 18 : 24);
-                arrow.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+                if (!arrows.TryPop(out var arrow))
+                {
+                    arrow = Ui.Text("›", UiTheme.DarkMutedLabel, crowded ? 18 : 24);
+                    arrow.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+                    arrow.SetMeta(ArrowMeta, crowded);
+                }
+
                 _order.AddChild(arrow);
             }
         }
+
+        foreach (var left in reuse.Values.Concat(arrows))
+        {
+            left.QueueFree();
+        }
+    }
+
+    private const string OrderKeyMeta = "order_key";
+    private const string ArrowMeta = "order_arrow";
+
+    private Control OrderCell(string id, bool current, bool dim, bool crowded, string tip)
+    {
+        var ally = _session!.State.TryUnit(id)?.Side == Side.Ally;
+        var tone = ally ? UiPalette.Trim : UiPalette.Warm.Lightened(0.15f);
+        var name = _views.TryGetValue(id, out var v) ? v.Name : id;
+        var glyph = Ui.Glyph(name[..1], tone, current ? (crowded ? 50 : 64) : (crowded ? 38 : 48));
+        glyph.SizeFlagsVertical = SizeFlags.ShrinkEnd;
+        var label = Ui.Text(current ? "行动中" : name, current ? UiTheme.GiltLabel : UiTheme.DarkMutedLabel, crowded ? 12 : 14);
+        label.HorizontalAlignment = HorizontalAlignment.Center;
+        var cell = Ui.Column(2, glyph, label);
+        cell.SizeFlagsVertical = SizeFlags.ShrinkEnd;
+        cell.MouseFilter = MouseFilterEnum.Pass;
+        glyph.MouseFilter = MouseFilterEnum.Ignore;
+        cell.TooltipText = tip;
+        if (dim)
+        {
+            cell.Modulate = new Color(1, 1, 1, 0.55f);
+        }
+
+        if (!current)
+        {
+            return cell;
+        }
+
+        var frame = new PanelContainer();
+        frame.AddThemeStyleboxOverride("panel", new OrnateBox
+        {
+            Corners = CornerStyle.Bracket, CornerColor = UiPalette.Gilt, CornerSize = 12, CornerWidth = 2, CornerOutset = 4,
+        });
+        frame.AddChild(cell);
+        return frame;
     }
 
     /// <summary>场上某方能耗势施展的招式（去重）：(施展者, 招式, 所需势)。</summary>
@@ -275,12 +342,24 @@ public sealed partial class BattleScreen
         RefreshLog();
     }
 
+    /// <summary>日志行复用标签：新一行到来只改各行文字，不删了重建。</summary>
     private void RefreshLog()
     {
-        Ui.ClearChildren(_logList);
-        foreach (var line in _log.TakeLast(_logExpanded ? 18 : 3))
+        var lines = _log.TakeLast(_logExpanded ? 18 : 3).ToList();
+        while (_logList.GetChildCount() < lines.Count)
         {
-            _logList.AddChild(Ui.Text(line, UiTheme.DarkLabel, 16, wrap: true));
+            _logList.AddChild(Ui.Text("", UiTheme.DarkLabel, 16, wrap: true));
+        }
+
+        var labels = _logList.GetChildren();
+        for (var i = 0; i < labels.Count; i++)
+        {
+            var label = (Label)labels[i];
+            label.Visible = i < lines.Count;
+            if (i < lines.Count && label.Text != lines[i])
+            {
+                label.Text = lines[i];
+            }
         }
     }
 
@@ -407,6 +486,7 @@ public sealed partial class BattleScreen
             var pending = _session?.State.Pending is { } p ? DisplayName(p) : null;
             _actorState.Text = _session?.Ended == true ? "战斗结束" : pending is not null ? $"{pending} 行动中" : "";
             Ui.ClearChildren(_slots);
+            _dockKey = null;
             _info.Text = "";
             HideTargeting();
             return;
@@ -415,9 +495,13 @@ public sealed partial class BattleScreen
         var name = DisplayName(actor.Id);
         _actorName.Text = name;
         _actorState.Text = ready ? "请下令" : "结算中";
-        _actorGlyph.QueueFree();
-        _actorGlyph = Ui.Glyph(name[..1], actor.Id == "char.hero" ? UiPalette.Accent : UiPalette.Trim, 96);
-        _actorGlyphHost.AddChild(_actorGlyph);
+        if (_glyphActor != actor.Id)
+        {
+            _glyphActor = actor.Id;
+            _actorGlyph.QueueFree();
+            _actorGlyph = Ui.Glyph(name[..1], actor.Id == "char.hero" ? UiPalette.Accent : UiPalette.Trim, 96);
+            _actorGlyphHost.AddChild(_actorGlyph);
+        }
         SetMeter(_actorHp, _actorHpText, actor.Hp, actor.Stats.MaxHp);
         SetMeter(_actorInner, _actorInnerText, actor.Inner, actor.Stats.MaxInner);
         SetMeter(_actorMomentum, _actorMomentumText, _session!.State.AllyMomentum, CombatConstants.MaxMomentum);
@@ -440,11 +524,18 @@ public sealed partial class BattleScreen
             }
         }
 
-        Ui.ClearChildren(_slots);
-        _slots.AddChild(SkillSlot(actor, CoreIds.BasicAttack, KeyBindings.Label("battle_attack")));
-        for (var i = 0; i < actor.Skills.Count; i++)
+        // 招式卡只由（人物、各招能否施展及原因、冷却、键帽）决定：都没变就沿用现有卡面，选中态由 SelectSkill 另行同步。
+        var slots = new List<(string Skill, string Key, string? Reason)> { (CoreIds.BasicAttack, KeyBindings.Label("battle_attack"), Usable(actor, CoreIds.BasicAttack)) };
+        slots.AddRange(actor.Skills.Select((s, i) => (s, $"{i + 1}", Usable(actor, s))));
+        var dockKey = actor.Id + "|" + string.Join(";", slots.Select(s => $"{s.Skill},{s.Key},{s.Reason},{actor.CooldownOf(s.Skill)}"));
+        if (dockKey != _dockKey)
         {
-            _slots.AddChild(SkillSlot(actor, actor.Skills[i], $"{i + 1}"));
+            _dockKey = dockKey;
+            Ui.ClearChildren(_slots);
+            foreach (var (skill, key, reason) in slots)
+            {
+                _slots.AddChild(SkillSlot(actor, skill, key, reason));
+            }
         }
 
         if (ready)
@@ -474,10 +565,9 @@ public sealed partial class BattleScreen
         return _engine.Validate(_session.State, new UseSkill(actor.Id, skill, candidates.Count > 0 ? candidates[0].Id : null));
     }
 
-    private Button SkillSlot(BattleUnit actor, string skillId, string key)
+    private Button SkillSlot(BattleUnit actor, string skillId, string key, string? reason)
     {
         var def = _engine.Content.Skill(skillId);
-        var reason = Usable(actor, skillId);
         var cooldown = actor.CooldownOf(skillId);
         var name = _bundle.Name(skillId);
         var button = new Button

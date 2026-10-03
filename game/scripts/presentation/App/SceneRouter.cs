@@ -60,7 +60,11 @@ public partial class SceneRouter : CanvasLayer
         ArrivedInstantly = instant;
         if (instant || !Motion.Enabled)
         {
-            tree.CallDeferred(SceneTree.MethodName.ChangeSceneToFile, scenePath);
+            Callable.From(() =>
+            {
+                PerfProbe.MarkLoad();
+                tree.ChangeSceneToFile(scenePath);
+            }).CallDeferred();
             return;
         }
 
@@ -68,7 +72,11 @@ public partial class SceneRouter : CanvasLayer
         _curtain.MouseFilter = Control.MouseFilterEnum.Stop;
         var tween = _curtain.CreateTween();
         tween.TweenProperty(_curtain, "modulate:a", 1f, FadeOut);
-        tween.TweenCallback(Callable.From(() => tree.ChangeSceneToFile(scenePath)));
+        tween.TweenCallback(Callable.From(() =>
+        {
+            PerfProbe.MarkLoad();
+            tree.ChangeSceneToFile(scenePath);
+        }));
         tween.TweenInterval(0.05f);
         tween.TweenProperty(_curtain, "modulate:a", 0f, FadeIn).SetEase(Tween.EaseType.Out);
         tween.TweenCallback(Callable.From(() =>

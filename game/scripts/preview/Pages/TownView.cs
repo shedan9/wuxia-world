@@ -115,7 +115,7 @@ public sealed class Face
         }
     }
 
-    private static readonly Color ShadeTint = new(0.10f, 0.17f, 0.26f);
+    internal static readonly Color ShadeTint = new(0.10f, 0.17f, 0.26f);
 
     /// <summary>
     /// 结构引导图模式：只保留面、轮廓与门窗等开口，瓦垄、墙面水渍等纹理贴花不画（交给 AI 画），

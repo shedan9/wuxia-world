@@ -66,7 +66,8 @@ public partial class AppHost : Node
         }
 
         GetTree().NodeAdded += FocusOnHover;
-        if (!GameSettings.Fullscreen && DevCapture.Output is null)
+        PerfProbe.Begin(this);
+        if (!GameSettings.Fullscreen && DevCapture.Output is null && PerfProbe.Output is null)
         {
             EnterWindowed();
         }

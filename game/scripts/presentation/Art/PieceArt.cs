@@ -19,6 +19,32 @@ public sealed class PieceArt
     /// </summary>
     private static readonly Dictionary<string, (Texture2D Texture, float WorldSize)?> TextureCache = [];
 
+    /// <summary>
+    /// 两个缓存里各项最后被取用时所在的“到访代”（M3-07，架构文档 12.1“只保留当前地图及受限缓存”）：每进一张图代数加一，
+    /// 进图时放掉上一张图之前就没再用过的项，只留当前图与上一张图的贴图（往回走不用重载）。当前图正在用的项绝不放，
+    /// 不会重演上面说的“已录下的绘制命令退成白图”。各布景类自己用静态字段留着的少数纹理（岩壁、溪岸、草丛图集等）不受影响。
+    /// </summary>
+    private static readonly Dictionary<string, int> LastUsed = [];
+
+    private static int _generation;
+
+    /// <summary>进一张新图时调用：代数加一，放掉两代以前的缓存项，并促一次回收让引擎真正释放这些纹理。</summary>
+    public static void BeginMap()
+    {
+        _generation++;
+        var stale = LastUsed.Where(e => e.Value < _generation - 1).Select(e => e.Key).ToList();
+        foreach (var key in stale)
+        {
+            LastUsed.Remove(key);
+            _ = key[0] == 'p' ? Cache.Remove(key[1..]) : TextureCache.Remove(key[1..]);
+        }
+
+        if (stale.Count > 0)
+        {
+            GC.Collect();
+        }
+    }
+
     private PieceArt(Texture2D texture, Vector2 origin, float px)
     {
         Texture = texture;
@@ -45,6 +71,7 @@ public sealed class PieceArt
             return null;
         }
 
+        LastUsed["p" + id] = _generation;
         if (Cache.TryGetValue(id, out var cached))
         {
             return cached;
@@ -75,6 +102,7 @@ public sealed class PieceArt
             return null;
         }
 
+        LastUsed["t" + id] = _generation;
         if (TextureCache.TryGetValue(id, out var cached))
         {
             return cached;

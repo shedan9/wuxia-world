@@ -54,6 +54,8 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     public override void _Ready()
     {
+        // 每进一张图（含重进同一张）换一代贴图缓存：只留本图与上一张图的布景贴图（M3-07）。
+        Art.PieceArt.BeginMap();
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         MouseFilter = MouseFilterEnum.Ignore;
         if (AppHost.Instance.Play is not { } play)
@@ -128,6 +130,12 @@ public partial class ExplorationScreen : Control, IExploreDriver
         {
             DevCapture.Soaking = true;
             CallDeferred(MethodName.SoakVisit);
+            return;
+        }
+
+        if (DevCapture.Stroll > 0)
+        {
+            CallDeferred(MethodName.StrollVisit);
             return;
         }
 
@@ -222,8 +230,12 @@ public partial class ExplorationScreen : Control, IExploreDriver
         }
 
         FlushThumbnails();
+        if (PerfProbe.Instance is not null)
+        {
+            PerfProbe.Activity = _play is null ? "" : _play.Name(World.MapId) + (_dialogue is not null ? "/对话" : "");
+        }
 
-        if (DevCapture.Autoplay <= 0 || DevCapture.Soaking || _play is null || _staging is null || _autoplayFinished)
+        if (StepStroll(delta) || DevCapture.Autoplay <= 0 || DevCapture.Soaking || _play is null || _staging is null || _autoplayFinished)
         {
             return;
         }

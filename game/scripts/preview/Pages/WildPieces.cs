@@ -236,22 +236,25 @@ public partial class WildWall : Node2D
     private void DrawCliff(float s0, float s1)
     {
         var h = Z1 - Z0;
+        // 逐段的小四边形合成一次绘制（M3-07）；勾线前提交，先后不变。
+        using var batch = new PolyBatch(this);
         // 崖脚接触阴影：落在低台地面上，向镜头方向渐淡。
         var shade = Cel.Ink with { A = 0.24f };
         for (var a = s0; a < s1; a += 40)
         {
             var b = Mathf.Min(a + 40, s1);
-            DrawPolygon([S(a, Z0), S(b, Z0), WildLayout.S(b, Edge(b) + 70, Z0), WildLayout.S(a, Edge(a) + 70, Z0)],
+            batch.Add([S(a, Z0), S(b, Z0), WildLayout.S(b, Edge(b) + 70, Z0), WildLayout.S(a, Edge(a) + 70, Z0)],
                 [shade, shade, shade with { A = 0 }, shade with { A = 0 }]);
         }
 
         // AI 岩壁纹理（wild.cliff，横向无缝）入库时：沿崖边每段按崖长取 u、按高取 v 贴图，岩块、石台与顶光不再画。
         if (CliffTexture is { } tex)
         {
-            DrawFacadeTexture(s0, s1, tex.Texture, tex.WorldSize, new Color(0.78f, 0.82f, 0.8f));
+            DrawFacadeTexture(batch, s0, s1, tex.Texture, tex.WorldSize, new Color(0.78f, 0.82f, 0.8f));
         }
         else
         {
+            batch.Flush();
             DrawCliffBlocks(s0, s1, h);
         }
 
@@ -272,10 +275,11 @@ public partial class WildWall : Node2D
 
             pts.Add(S(a + len, Z1));
             inner.Add(S(a + len, Z1));
-            DrawColoredPolygon(pts.ToArray(), Cel.LeafDark);
-            DrawColoredPolygon(inner.ToArray(), Cel.Leaf);
+            batch.Add(pts.ToArray(), Cel.LeafDark);
+            batch.Add(inner.ToArray(), Cel.Leaf);
         }
 
+        batch.Flush();
         DrawPolyline(Line(s0, s1, Z0).ToArray(), Cel.Ink with { A = 0.45f }, 1.6f, true);
         if (s0 > WildLayout.FarA0) DrawLine(S(s0, Z0), S(s0, Z1), Cel.Ink, 2.2f, true);
         if (s1 < WildLayout.FarA1) DrawLine(S(s1, Z0), S(s1, Z1), Cel.Ink, 2.2f, true);
@@ -286,13 +290,13 @@ public partial class WildWall : Node2D
     private static readonly (Texture2D Texture, float WorldSize)? BankTexture = PieceArt.FindTexture("wild.bank");
 
     /// <summary>立面纹理（岩壁、溪岸）：u 随崖长（每 worldSize 循环一次），v 自顶 0 到脚 1；脚下按 foot 压暗（崖脚接地面阴影、岸脚湿石）。</summary>
-    private void DrawFacadeTexture(float s0, float s1, Texture2D texture, float worldSize, Color foot, float v1 = 1)
+    private void DrawFacadeTexture(PolyBatch batch, float s0, float s1, Texture2D texture, float worldSize, Color foot, float v1 = 1)
     {
         var white = Colors.White;
         for (var a = s0; a < s1 - 0.5f; a += Seg)
         {
             var b = Mathf.Min(a + Seg, s1);
-            DrawPolygon([S(a, Z1), S(b, Z1), S(b, Z0), S(a, Z0)], [white, white, foot, foot],
+            batch.Add([S(a, Z1), S(b, Z1), S(b, Z0), S(a, Z0)], [white, white, foot, foot],
                 [new(a / worldSize, 0), new(b / worldSize, 0), new(b / worldSize, v1), new(a / worldSize, v1)], texture);
         }
     }
@@ -343,7 +347,11 @@ public partial class WildWall : Node2D
         {
             // 岸高 40 只取纹理上部 v1，卵石按纹理宽高比放大到约二三十厘米。
             var v1 = (Z1 - Z0) * tex.Texture.GetWidth() / tex.Texture.GetHeight() / tex.WorldSize;
-            DrawFacadeTexture(s0, s1, tex.Texture, tex.WorldSize, new Color(0.7f, 0.78f, 0.78f), v1);
+            using (var batch = new PolyBatch(this))
+            {
+                DrawFacadeTexture(batch, s0, s1, tex.Texture, tex.WorldSize, new Color(0.7f, 0.78f, 0.78f), v1);
+            }
+
             DrawPolyline(Line(s0, s1, Z0 + 2).ToArray(), Color.FromHtml("#E4F2EE") with { A = 0.7f }, 2.4f, true);
             return;
         }
@@ -367,11 +375,14 @@ public partial class WildWall : Node2D
     private void DrawLip(float s0, float s1)
     {
         var moss = Cel.LeafDark with { A = 0.55f };
-        for (var a = s0; a < s1; a += 40)
+        using (var batch = new PolyBatch(this))
         {
-            var b = Mathf.Min(a + 40, s1);
-            DrawPolygon([S(a, Z1), S(b, Z1), WildLayout.S(b, Edge(b) - 26, Z1), WildLayout.S(a, Edge(a) - 26, Z1)],
-                [moss, moss, moss with { A = 0 }, moss with { A = 0 }]);
+            for (var a = s0; a < s1; a += 40)
+            {
+                var b = Mathf.Min(a + 40, s1);
+                batch.Add([S(a, Z1), S(b, Z1), WildLayout.S(b, Edge(b) - 26, Z1), WildLayout.S(a, Edge(a) - 26, Z1)],
+                    [moss, moss, moss with { A = 0 }, moss with { A = 0 }]);
+            }
         }
 
         DrawPolyline(Line(s0, s1, Z1).ToArray(), Cel.Ink, 2.6f, true);
@@ -746,7 +757,9 @@ public partial class WildBackdrop : Node2D
         var node = new Node2D();
         node.Draw += () =>
         {
-            node.DrawColoredPolygon([.. ridge, new(x1, baseY + 3000), new(x0, baseY + 3000)], tone);
+            // 山体与各峰背光、远树与山脚雾各并成一次绘制（M3-07），勾线与雾底的矩形照原先后画。
+            var batch = new PolyBatch(node);
+            batch.Add([.. ridge, new(x1, baseY + 3000), new(x0, baseY + 3000)], tone);
             // 背光：每座峰自峰顶到右坡山脚的一片。
             foreach (var (px, h, _, r) in peaks)
             {
@@ -754,9 +767,10 @@ public partial class WildBackdrop : Node2D
                 for (var x = px + 12; x < px + r * 0.9f; x += 24) poly.Add(new Vector2(x, baseY - Ridge(x)));
                 poly.Add(new Vector2(px + r * 0.9f, baseY + 20));
                 poly.Add(new Vector2(px + r * 0.18f, baseY + 20));
-                if (poly.Count > 3) node.DrawColoredPolygon(poly.ToArray(), shade);
+                if (poly.Count > 3) batch.Add(poly.ToArray(), shade);
             }
 
+            batch.Flush();
             node.DrawPolyline(ridge.ToArray(), Cel.Ink with { A = ink }, 2f, true);
             if (trees)
             {
@@ -765,13 +779,14 @@ public partial class WildBackdrop : Node2D
                     if (Cel.Rand(seed, (int)x + 90) < 0.55f) continue;
                     var y = baseY - Ridge(x);
                     var s = 8 + 8 * Cel.Rand(seed, (int)x + 91);
-                    node.DrawColoredPolygon([new(x - s * 0.6f, y + 4), new(x, y - s * 1.8f), new(x + s * 0.6f, y + 4)], shade.Darkened(0.12f));
+                    batch.Add([new(x - s * 0.6f, y + 4), new(x, y - s * 1.8f), new(x + s * 0.6f, y + 4)], shade.Darkened(0.12f));
                 }
             }
 
             var mist = WildFog.Mist;
-            node.DrawPolygon([new(x0, baseY - 150), new(x1, baseY - 150), new(x1, baseY), new(x0, baseY)],
+            batch.Add([new(x0, baseY - 150), new(x1, baseY - 150), new(x1, baseY), new(x0, baseY)],
                 [mist with { A = 0 }, mist with { A = 0 }, mist, mist]);
+            batch.Flush();
             node.DrawRect(new Rect2(x0, baseY, x1 - x0, 3000), mist);
         };
         return node;
@@ -1563,6 +1578,7 @@ public partial class WildShore : Node2D
         if (SandTexture is { } tex)
         {
             var solid = new Color(0.8f, 0.84f, 0.8f);
+            using var batch = new PolyBatch(this);
             for (var a = a0; a < a1; a += Seg)
             {
                 var b = a + Seg;
@@ -1570,7 +1586,7 @@ public partial class WildShore : Node2D
                 var (wa, wb) = (Beach(a), Beach(b));
                 // 按画面坐标 (A, D) 平铺沙纹，滩外沿淡出到草坡。
                 Vector2 Uv(float x, float d) => new Vector2(x, d) / tex.WorldSize;
-                DrawPolygon([S(a, da), S(b, db), S(b, db + wb), S(a, da + wa)],
+                batch.Add([S(a, da), S(b, db), S(b, db + wb), S(a, da + wa)],
                     [solid, solid, solid with { A = 0 }, solid with { A = 0 }],
                     [Uv(a, da), Uv(b, db), Uv(b, db + wb), Uv(a, da + wa)], tex.Texture);
             }
@@ -1592,29 +1608,70 @@ public partial class WildShore : Node2D
 
 internal static class Tufts
 {
-    private static readonly Texture2D[] Grass = Load("grass", 4);
-    private static readonly Texture2D[] Bush = Load("bush", 1);
+    /// <summary>
+    /// 草丛与矮灌（AI 精灵 4 + 1 张）启动时按原分辨率拼成一张图集（M3-07）：原先轮换 5 张贴图，每换一张就打断一次合批，
+    /// 一张图上数百丛就是数百次绘制调用；拼图后同一节点里连续的草丛并成一次。各张之间留 32 像素透明边，远看取低层 mipmap 时不串色。
+    /// </summary>
+    private static readonly (Texture2D Atlas, Rect2[] Grass, Rect2? Bush)? Sheet = Build();
 
-    public static bool Ready => PieceArt.Enabled && Grass.Length > 0;
+    public static bool Ready => PieceArt.Enabled && Sheet is { Grass.Length: > 0 };
 
-    private static Texture2D[] Load(string kind, int count)
+    private static List<Image> Load(string kind, int count)
     {
-        var list = new List<Texture2D>();
+        var list = new List<Image>();
         for (var i = 1; i <= count; i++)
         {
             var path = $"res://assets/art/wild/wild.tuft.{kind}.{i}.png";
-            if (ResourceLoader.Exists(path)) list.Add(GD.Load<Texture2D>(path));
+            if (ResourceLoader.Exists(path))
+            {
+                var image = GD.Load<Texture2D>(path).GetImage();
+                if (image.IsCompressed())
+                {
+                    image.Decompress();
+                }
+
+                image.ClearMipmaps();
+                image.Convert(Image.Format.Rgba8);
+                list.Add(image);
+            }
         }
 
-        return list.ToArray();
+        return list;
+    }
+
+    private static (Texture2D, Rect2[], Rect2?)? Build()
+    {
+        const int pad = 32;
+        var grass = Load("grass", 4);
+        var bush = Load("bush", 1);
+        var all = grass.Concat(bush).ToList();
+        if (grass.Count == 0)
+        {
+            return null;
+        }
+
+        var width = all.Sum(i => i.GetWidth() + pad * 2);
+        var height = all.Max(i => i.GetHeight()) + pad * 2;
+        var sheet = Image.CreateEmpty(width, height, false, Image.Format.Rgba8);
+        var regions = new List<Rect2>();
+        var x = 0;
+        foreach (var image in all)
+        {
+            sheet.BlitRect(image, new Rect2I(Vector2I.Zero, image.GetSize()), new Vector2I(x + pad, pad));
+            regions.Add(new Rect2(x + pad, pad, image.GetWidth(), image.GetHeight()));
+            x += image.GetWidth() + pad * 2;
+        }
+
+        sheet.GenerateMipmaps();
+        return (ImageTexture.CreateFromImage(sheet), regions.Take(grass.Count).ToArray(), bush.Count > 0 ? regions[^1] : null);
     }
 
     public static void Draw(CanvasItem ci, Vector2 foot, float height, int variant, bool flip)
     {
-        var tex = variant < 0 && Bush.Length > 0 ? Bush[0] : Grass[Mathf.PosMod(variant, Grass.Length)];
-        var size = tex.GetSize() * (height / tex.GetSize().Y);
-        ci.DrawSetTransform(foot, 0, new Vector2(flip ? -1 : 1, 1));
-        ci.DrawTextureRect(tex, new Rect2(-size.X / 2, -size.Y, size.X, size.Y), false);
-        ci.DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+        var (atlas, grass, bush) = Sheet!.Value;
+        var region = variant < 0 && bush is { } b ? b : grass[Mathf.PosMod(variant, grass.Length)];
+        var size = region.Size * (height / region.Size.Y);
+        // 翻转用负宽度矩形（引擎按水平翻转画），不再每丛前后各设一次变换：变换命令会打断合批。
+        ci.DrawTextureRectRegion(atlas, new Rect2(foot.X - size.X / 2, foot.Y - size.Y, flip ? -size.X : size.X, size.Y), region);
     }
 }

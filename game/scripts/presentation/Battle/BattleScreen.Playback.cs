@@ -41,6 +41,7 @@ public sealed partial class BattleScreen
 
     private void Enqueue(IReadOnlyList<BattleEvent> events)
     {
+        var t = PerfProbe.Start();
         foreach (var e in events)
         {
             _queue.Enqueue(e);
@@ -48,6 +49,7 @@ public sealed partial class BattleScreen
 
         _needsSync = true;
         RefreshDock();
+        PerfProbe.Stop("表现·入队并刷新指令区", t);
     }
 
     private bool ToggleSpeed()
@@ -82,7 +84,9 @@ public sealed partial class BattleScreen
         while (!_playing && _queue.Count > 0)
         {
             var e = _queue.Dequeue();
+            var t = PerfProbe.Start();
             var duration = Play(e, animate: !_skipping && Motion.Enabled);
+            PerfProbe.Stop("表现·播放事件 " + e.GetType().Name, t);
             if (duration > 0 && !_skipping && Motion.Enabled)
             {
                 _playing = true;
@@ -98,7 +102,9 @@ public sealed partial class BattleScreen
         if (_needsSync)
         {
             _needsSync = false;
+            var t = PerfProbe.Start();
             SyncAll();
+            PerfProbe.Stop("表现·批次校正", t);
         }
 
         if (_session.Ended)
@@ -120,7 +126,10 @@ public sealed partial class BattleScreen
             }
 
             _aiDelay = 0;
-            Submit(Domain.Combat.Ai.BattleAi.BestAttack(_engine, _session.State, _session.AwaitingPlayer!, skirmish: false));
+            var t = PerfProbe.Start();
+            var best = Domain.Combat.Ai.BattleAi.BestAttack(_engine, _session.State, _session.AwaitingPlayer!, skirmish: false);
+            PerfProbe.Stop("自动战斗选招", t);
+            Submit(best);
             return;
         }
 
@@ -134,7 +143,9 @@ public sealed partial class BattleScreen
             }
 
             _aiDelay = 0;
+            var started = System.Diagnostics.Stopwatch.GetTimestamp();
             var result = _session.StepAi();
+            PerfProbe.Rule("AI 决策并结算", System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds);
             if (result is not null)
             {
                 Enqueue(result.Events);

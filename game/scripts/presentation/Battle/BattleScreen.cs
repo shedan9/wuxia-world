@@ -74,7 +74,7 @@ public sealed partial class BattleScreen : Control
         }
 
         _bundle = bundle;
-        _engine = new BattleEngine(bundle.ToContent());
+        _engine = new BattleEngine(DevCapture.BattleStress ? WithStress(bundle.ToContent()) : bundle.ToContent());
         _seed = (ulong)Time.GetTicksUsec();
 
         AddChild(new BattleBackdrop { ArtId = "battle.ferry_dusk" });
@@ -129,6 +129,12 @@ public sealed partial class BattleScreen : Control
         if (AppHost.Instance.Play is { Game.World.Battle: not null } play)
         {
             StartStory(play);
+            return;
+        }
+
+        if (DevCapture.BattleStress)
+        {
+            StartStress(20261003);
             return;
         }
 
@@ -188,6 +194,7 @@ public sealed partial class BattleScreen : Control
     {
         Pump();
         AutoplayResult();
+        StepStress(delta);
     }
 
     /// <summary>截图用：在指定人物画框里找一个按轮廓拾取正落在此人身上的点，把鼠标移过去。</summary>
@@ -290,6 +297,7 @@ public sealed partial class BattleScreen : Control
         _log.Clear();
         AddLog(logLine);
         Enqueue(_session.StartEvents);
+        PerfProbe.Activity = setup.EncounterId;
     }
 
     private void Restart(bool newSeed) => StartBattle(_encounter, _build, newSeed ? (ulong)Time.GetTicksUsec() : _seed);
@@ -434,7 +442,9 @@ public sealed partial class BattleScreen : Control
             return;
         }
 
+        var started = System.Diagnostics.Stopwatch.GetTimestamp();
         var result = _session!.Submit(command);
+        PerfProbe.Rule("玩家命令结算", System.Diagnostics.Stopwatch.GetElapsedTime(started).TotalMilliseconds);
         if (!result.Accepted)
         {
             Toast(result.Rejection ?? "无法执行。");

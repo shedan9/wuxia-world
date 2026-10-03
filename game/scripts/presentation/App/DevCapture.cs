@@ -72,6 +72,24 @@ public static class DevCapture
     /// <summary>耐久走查已开始（自动走查结束后或新游戏进图即开始）。</summary>
     public static bool Soaking { get; set; }
 
+    /// <summary>
+    /// 探索漫游（<c>--stroll=秒</c>，开发用，性能测量的“典型探索”，开发计划 M3-07）：每张图上用真实寻路在交互点之间来回走，
+    /// 不做交互、不开过场，走满给定秒数后经剧情换图票据去下一张图；各图走过一遍后退出。配合 <c>--perf</c> 记帧时间。
+    /// </summary>
+    public static double Stroll { get; private set; }
+
+    /// <summary>漫游走几轮（<c>--stroll-rounds=2</c>，缺省 1）；第二轮起截图文件名带轮次。</summary>
+    public static int StrollRounds { get; private set; } = 1;
+
+    /// <summary>漫游每到一图先在落点截图存到给定目录（<c>--stroll-shots=目录</c>），用于核对性能改动前后画面一致。</summary>
+    public static string? StrollShots { get; private set; }
+
+    /// <summary>漫游每到一图先做布景分层归因（<c>--perf-layers</c>，见 ExplorationScreen.LayerBreakdown）。</summary>
+    public static bool PerfLayers { get; private set; }
+
+    /// <summary>4 对 6 战斗压测（<c>--battle-stress</c>，开发用，开发计划 M3-07）：战斗原型页直接开 4 名己方对 6 名敌人的自动战斗，按 1 倍速完整播放，打完换种子再开。</summary>
+    public static bool BattleStress { get; private set; }
+
     /// <summary>自动走查的步数；0 为不自动。</summary>
     public static int Autoplay { get; private set; }
 
@@ -178,6 +196,35 @@ public static class DevCapture
                     break;
                 case "--settle":
                     _settleFrames = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--perf":
+                    PerfProbe.Output = value.Length > 0 ? value : "perf.json";
+                    break;
+                case "--perf-seconds":
+                    PerfProbe.Seconds = double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--perf-window":
+                    PerfProbe.Window = value;
+                    break;
+                case "--perf-vsync":
+                    PerfProbe.VsyncOff = value == "off";
+                    break;
+                case "--stroll":
+                    Stroll = double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    NewGame = !Continue;
+                    break;
+                case "--stroll-rounds":
+                    StrollRounds = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--stroll-shots":
+                    StrollShots = value;
+                    break;
+                case "--perf-layers":
+                    PerfLayers = true;
+                    break;
+                case "--battle-stress":
+                    BattleStress = true;
+                    Scene = ScenePaths.BattlePrototype;
                     break;
                 case "--text-size":
                     TextSize = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
