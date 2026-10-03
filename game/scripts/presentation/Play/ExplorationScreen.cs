@@ -124,6 +124,13 @@ public partial class ExplorationScreen : Control, IExploreDriver
             return;
         }
 
+        if (DevCapture.Soak > 0 && (DevCapture.Soaking || DevCapture.Autoplay <= 0))
+        {
+            DevCapture.Soaking = true;
+            CallDeferred(MethodName.SoakVisit);
+            return;
+        }
+
         CallDeferred(MethodName.Resume);
     }
 
@@ -216,7 +223,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
         FlushThumbnails();
 
-        if (DevCapture.Autoplay <= 0 || _play is null || _staging is null || _autoplayFinished)
+        if (DevCapture.Autoplay <= 0 || DevCapture.Soaking || _play is null || _staging is null || _autoplayFinished)
         {
             return;
         }
@@ -304,6 +311,14 @@ public partial class ExplorationScreen : Control, IExploreDriver
             if (DevCapture.Walk)
             {
                 GD.Print($"[walk] 结束：问题 {WalkProblems} 处");
+            }
+
+            if (DevCapture.Soak > 0 && _modal is null && _dialogue is null)
+            {
+                // 走查到此接着做耐久走查：从章中状态开始换图。
+                DevCapture.Soaking = true;
+                CallDeferred(MethodName.SoakVisit);
+                return;
             }
 
             DevCapture.FinishAutoplay(GetTree(), !(done || next is not null) ? 2 : DevCapture.Walk && WalkProblems > 0 ? 4 : 0);

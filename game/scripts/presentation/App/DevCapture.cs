@@ -59,6 +59,19 @@ public static class DevCapture
     /// <summary>摆放核对发现的问题数（跨场景累计）。</summary>
     public static int StagingProblems { get; set; }
 
+    /// <summary>
+    /// 耐久走查（<c>--soak=N</c>，开发计划 6.1 T09 与 M2 验收）：在各地图间换图 N 次，每到一图注入按键开关札记、人物、行囊、队伍、
+    /// 大地图与暂停菜单并快速存档，记录节点数、托管内存、进程私有内存与常驻对象的信号连接数；同时核对重进地图后交互点、站位人物
+    /// 与世界状态不变（一次性交互不刷新）。可接在 <c>--autoplay</c> 之后，从章中状态开始。结束打印结论，有问题时退出码为 5。
+    /// </summary>
+    public static int Soak { get; private set; }
+
+    /// <summary>耐久走查已经到过的地图次数（跨场景累计）。</summary>
+    public static int SoakVisits { get; set; }
+
+    /// <summary>耐久走查已开始（自动走查结束后或新游戏进图即开始）。</summary>
+    public static bool Soaking { get; set; }
+
     /// <summary>自动走查的步数；0 为不自动。</summary>
     public static int Autoplay { get; private set; }
 
@@ -149,6 +162,9 @@ public static class DevCapture
                 case "--check-staging":
                     CheckStaging = true;
                     NewGame = true;
+                    break;
+                case "--soak":
+                    Soak = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                     break;
                 case "--hold":
                     Hold = value;

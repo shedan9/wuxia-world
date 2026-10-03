@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- 人为中断写档测试（开发计划 M2-07 验收、架构文档 11）：写档中途强杀进程后能读回最后确认的存档。 -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>WuxiaWorld.Tools.SaveCrashTest</RootNamespace>
+    <NoWarn>$(NoWarn);CA1303</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\WuxiaWorld.Domain\WuxiaWorld.Domain.csproj" />
+    <ProjectReference Include="..\..\src\WuxiaWorld.Application\WuxiaWorld.Application.csproj" />
+    <ProjectReference Include="..\..\src\WuxiaWorld.Infrastructure\WuxiaWorld.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
