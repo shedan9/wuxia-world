@@ -12,7 +12,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 
 /// <summary>
 /// 标题页（主菜单与存档页），版式见 docs/art/UI_DESIGN.md 第 5.1 节。
-/// 三种状态：按键开始 → 主菜单 → 存档弹层。截图参数 <c>--tab</c>：0 主菜单、1 按键开始、2 存档弹层。
+/// 三种状态：按键开始 → 主菜单 → 存档弹层。截图参数 <c>--tab</c>：0 主菜单、1 按键开始、2 存档弹层、3 江湖设置。
 /// M2 起接上真实存档：“继续旅程”读最近写入的一份存档，“新的旅程”开新游戏，“读取存档”列出全部槽位（user://saves）；
 /// M0 场景目录（展示页与战斗原型）改由“场景目录”进入。
 /// </summary>
@@ -29,6 +29,7 @@ public partial class MainMenuPreview : Control
     private Button _continue = null!;
     private Label _status = null!;
     private SaveSlotList? _slotList;
+    private MenuFrame? _settings;
     private Vector2 _parallax;
 
     public override void _Ready()
@@ -61,6 +62,10 @@ public partial class MainMenuPreview : Control
                 ShowMenu();
                 OpenSaves();
                 break;
+            case 3:
+                ShowMenu();
+                OpenSettings();
+                break;
             default:
                 ShowMenu();
                 break;
@@ -88,6 +93,16 @@ public partial class MainMenuPreview : Control
         {
             ShowMenu();
             GetViewport().SetInputAsHandled();
+            return;
+        }
+
+        if (_settings is { } settings)
+        {
+            if (settings.HandleKey(@event))
+            {
+                GetViewport().SetInputAsHandled();
+            }
+
             return;
         }
 
@@ -328,7 +343,10 @@ public partial class MainMenuPreview : Control
         FadeTo(_footer, 0);
     }
 
-    /// <summary>江湖设置：与游戏菜单共用的设置面板，叠在标题页中央；Esc 或“关闭”收起。</summary>
+    /// <summary>
+    /// 江湖设置：与游戏菜单同一个分区外框（<see cref="MenuFrame"/>，只有设置一个分区），铺满标题页、底为虚化山水；
+    /// Esc 或底栏“返回标题”收起。字号改动时外框自己重建。
+    /// </summary>
     private void OpenSettings()
     {
         if (_saves is not null)
@@ -336,20 +354,13 @@ public partial class MainMenuPreview : Control
             return;
         }
 
-        var layer = new Control();
-        layer.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        var veil = new ColorRect { Color = UiPalette.Abyss with { A = 0.6f } };
-        veil.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
-        layer.AddChild(veil);
-        Motion.FadeIn(veil, Motion.Normal);
-        var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
-        panel.AddChild(SettingsPanel.Build(CloseSaves));
-        layer.AddChild(Ui.Place(panel, 0.5f, 0.5f, -560, -480, 560, 480));
-        Motion.Enter(panel, 0, Motion.Normal, rise: 20);
-        AddChild(layer);
-        _saves = layer;
+        var frame = MenuFrame.Build(null, MenuSection.Settings, null, "返回标题");
+        frame.Back = CloseSaves;
+        _settings = frame;
+        AddChild(frame.Root);
+        Motion.FadeIn(frame.Root, Motion.Normal);
+        _saves = frame.Root;
         _slotList = null;
-        FadeTo(_portrait, 0.3f);
     }
 
     private void CloseSaves()
@@ -361,6 +372,7 @@ public partial class MainMenuPreview : Control
 
         _saves = null;
         _slotList = null;
+        _settings = null;
         Motion.FadeOut(layer, Motion.Quick, layer.QueueFree);
         FadeTo(_portrait, 1);
         FadeTo(_footer, 1);

@@ -67,10 +67,6 @@ public sealed class CharacterPage
         // 洗点的确认只维持到下一次重建：按了别的按钮，确认自动收起。
         (_confirming, _respec) = (_respec, null);
         var level = Growth.Level(World);
-        _root.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("人物"), Ui.Column(4,
-                Ui.Text("人物与武学", UiTheme.DarkTitleLabel, 40),
-                Ui.Text($"{_play.Name(World.MapId)}　·　{PlaySession.ClockText(World.Clock)}　·　银 {World.Silver} 两", UiTheme.DarkMutedLabel, 18)),
-            Ui.Spacer(), Ui.KeyHints(true, ("Esc", "返回"))));
 
         var tabs = new ButtonGroup();
         var people = new ButtonGroup();
@@ -159,7 +155,7 @@ public sealed class CharacterPage
             var minus = Ui.MinSize(Ui.Button("－", onPressed: () => Pend(index, -1), disabled: !Editable || _pending[i] == 0), 52, 44);
             var plus = Ui.MinSize(Ui.Button("＋", onPressed: () => Pend(index, 1), disabled: !Editable || left <= 0), 52, 44);
             rows.AddChild(Ui.Row(UiPalette.SpaceM, Ui.MinSize(Ui.Text(GrowthText.AttributeNames[i]), 72), minus, value, plus,
-                Ui.Text(GrowthText.AttributeHint(i), UiTheme.MutedLabel, 18)));
+                Ui.Text(GrowthText.AttributeHint(i), UiTheme.MutedLabel, 18, wrap: true)));
         }
 
         // 讨教定下流派之前没有推荐比例，按五项平均分。

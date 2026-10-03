@@ -65,6 +65,28 @@ public sealed class SaveStoreTests : IDisposable
     }
 
     [Fact]
+    public void Play_time_round_trips_and_older_saves_without_it_read_as_zero()
+    {
+        var store = new FileSaveStore(_dir);
+        var w = RichWorld();
+        var game = Game(w) with { Header = Game(w).Header with { PlaySeconds = 4321 } };
+        Assert.True(store.Write(SaveSlot.Manual(5), game).Ok);
+        Assert.Equal(4321, store.Read(SaveSlot.Manual(5)).Game!.Header.PlaySeconds);
+
+        // M3-05 之前写的存档头没有游戏时长：去掉这一项、重算校验和后仍能读，时长按 0。
+        var path = store.PathOf(SaveSlot.Manual(5));
+        var payload = JsonNode.Parse(File.ReadAllText(path))!["payload"]!.AsObject();
+        Assert.True(payload["header"]!.AsObject().Remove("play_seconds"));
+        var raw = payload.ToJsonString();
+        var sum = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(Encoding.UTF8.GetBytes(raw)));
+        File.WriteAllText(path, $"{{\"checksum\":\"{sum}\",\"payload\":{raw}}}");
+        var read = store.Read(SaveSlot.Manual(5));
+        Assert.True(read.Ok, read.Error);
+        Assert.Equal(0, read.Game!.Header.PlaySeconds);
+        Assert.Equal(w.Hash(), read.Game.World.Hash());
+    }
+
+    [Fact]
     public void Corrupted_slot_falls_back_to_the_last_valid_backup()
     {
         var store = new FileSaveStore(_dir);

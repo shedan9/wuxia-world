@@ -75,8 +75,12 @@ public static class DevCapture
     /// <summary>自动走查的步数；0 为不自动。</summary>
     public static int Autoplay { get; private set; }
 
+    /// <summary>本次运行改用的正文字号（<c>--text-size=32</c>，核对最大字号下的版式）；不写入设置文件。</summary>
+    public static int? TextSize { get; private set; }
+
     /// <summary>
     /// 自动走查走满步数后停在哪里截图：<c>battle</c> 下一场剧情战打到第 2 轮、<c>choice</c> 下一个对话选项；
+    /// <c>focus</c> 不截图，改跑焦点与版式走查（<see cref="FocusAudit"/>）；
     /// 缺省停在探索页。
     /// </summary>
     public static string? Hold { get; private set; }
@@ -174,6 +178,9 @@ public static class DevCapture
                     break;
                 case "--settle":
                     _settleFrames = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--text-size":
+                    TextSize = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                     break;
             }
         }

@@ -12,8 +12,14 @@ public static class Motion
     public const float Normal = 0.32f;
     public const float Slow = 0.6f;
 
-    /// <summary>为 false 时所有动效直接完成（截图、减少动效）。</summary>
+    /// <summary>为 false 时所有动效直接完成（截图）。</summary>
     public static bool Enabled { get; set; } = true;
+
+    /// <summary>
+    /// 设置“减少动效”：界面入场（淡入上浮、依次入场）与提示呼吸直接落到终态；战斗演出、行走等玩法动画不受影响
+    /// （战斗另有倍速与跳过）。
+    /// </summary>
+    public static bool Reduced { get; set; }
 
     /// <summary>
     /// 淡入并自下方 <paramref name="rise"/> 像素（或横向 <paramref name="fromX"/>）处移到位；等一帧后开始。
@@ -22,7 +28,7 @@ public static class Motion
     /// </summary>
     public static void Enter(Control control, float delay = 0, float duration = Normal, float rise = 16, float fromX = 0)
     {
-        if (!Enabled)
+        if (!Enabled || Reduced)
         {
             return;
         }
@@ -114,7 +120,7 @@ public static class Motion
     /// <summary>透明度往复（“按任意键”提示、可交互标记）。</summary>
     public static void Pulse(CanvasItem item, float low = 0.35f, float period = 1.6f)
     {
-        if (!Enabled)
+        if (!Enabled || Reduced)
         {
             return;
         }

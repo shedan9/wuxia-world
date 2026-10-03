@@ -572,7 +572,7 @@ public partial class WorldMapOverlay : Control
         _panel.AddChild(Ui.Text(summary, option is null ? UiTheme.DarkMutedLabel : UiTheme.DarkLabel, 19, wrap: true));
         var go = Ui.Button("启　程", UiTheme.PrimaryButton, Depart, disabled: option is null);
         go.CustomMinimumSize = new Vector2(0, 62);
-        go.AddThemeFontSizeOverride("font_size", 28);
+        go.AddThemeFontSizeOverride("font_size", FontScale.Of(28));
         go.FocusMode = FocusModeEnum.None;
         _panel.AddChild(Ui.Row(UiPalette.SpaceM, Ui.KeyHint("Enter", ""), Ui.Expand(go)));
     }

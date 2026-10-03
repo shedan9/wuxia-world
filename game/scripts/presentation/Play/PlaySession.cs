@@ -39,8 +39,31 @@ public sealed class PlaySession
     /// <summary>上一场景留给探索页显示的提示（战斗结算、读档说明等），探索页显示后清空。</summary>
     public List<(string Kind, string Text)> PendingToasts { get; } = [];
 
+    /// <summary>累计游戏时长（秒）：一局进行中、场景树未暂停时由 <c>AppHost</c> 逐帧累加，存进存档头，读档时接着记。</summary>
+    public double PlaySeconds { get; set; }
+
+    public static string DurationText(double seconds)
+    {
+        var minutes = (long)(seconds / 60);
+        return $"{minutes / 60}:{minutes % 60:00}";
+    }
+
     /// <summary>本局已显示的台词与选择（对话记录用，不存档）。</summary>
     public List<(string Speaker, string Text)> History { get; } = [];
+
+    /// <summary>本局已推过的世界通知（札记“见闻”页用，不存档，最多留 <see cref="NoticeLimit"/> 条）：通知几秒后淡出，事后在这里查。</summary>
+    public List<(long Clock, string Kind, string Text)> Notices { get; } = [];
+
+    public const int NoticeLimit = 300;
+
+    public void LogNotice(string kind, string text)
+    {
+        Notices.Add((Game.World.Clock, kind, text));
+        if (Notices.Count > NoticeLimit)
+        {
+            Notices.RemoveRange(0, Notices.Count - NoticeLimit);
+        }
+    }
 
     /// <summary>存档目录：<c>user://saves</c>（Windows 下在 %APPDATA%\Godot\app_userdata\武侠世界\saves）；开发参数 <c>--saves</c> 可改到别处。</summary>
     public static ISaveStore OpenStore() => new FileSaveStore(DevCapture.SaveDirectory ?? ProjectSettings.GlobalizePath("user://saves"));
@@ -105,7 +128,7 @@ public sealed class PlaySession
         }
 
         notes = list;
-        return new PlaySession(game, world, combat, store);
+        return new PlaySession(game, world, combat, store) { PlaySeconds = save.Header.PlaySeconds };
     }
 
     private static bool LoadContent(out WorldBundle world, out CombatBundle combat, out string? error)
@@ -162,6 +185,7 @@ public sealed class PlaySession
             ChapterId = w.ChapterId,
             MapId = w.MapId,
             Clock = w.Clock,
+            PlaySeconds = (long)PlaySeconds,
         };
         var result = Saves.Write(slot, new SaveGame { Header = header, World = w });
         if (result.Ok)
@@ -234,7 +258,7 @@ public sealed class PlaySession
         "skill" => ("武学", $"习得 {Combat.Name(n.Id)}"),
         "experience" => ("成长", $"经验 +{n.Amount}"),
         "cultivation" => ("成长", $"修为 +{n.Amount}"),
-        "level_up" => ("成长", $"升到第 {n.Amount} 级：得 {StatFormula.PotentialPerLevel} 点潜能（C 人物页分配）"),
+        "level_up" => ("成长", $"升到第 {n.Amount} 级：得 {StatFormula.PotentialPerLevel} 点潜能（{KeyBindings.Label("open_character")} 人物页分配）"),
         "mastery" => ("武学", $"{Combat.Name(n.Id)} 熟练度提升"),
         "respec.potential" => ("成长", $"洗点：收回 {n.Amount} 点潜能，可重新分配"),
         "respec.mastery" => ("武学", n.Id.StartsWith("skill.", StringComparison.Ordinal)

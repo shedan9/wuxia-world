@@ -60,6 +60,9 @@ public sealed record SaveHeader
     public string MapId { get; init; } = "";
     public long Clock { get; init; }
 
+    /// <summary>累计游戏时长（秒，暂停菜单打开期间不计），仅供显示；旧存档没有此项时为 0。</summary>
+    public long PlaySeconds { get; init; }
+
     /// <summary>世界状态哈希，读档后复核数据完整。</summary>
     public string WorldHash { get; init; } = "";
 }

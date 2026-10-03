@@ -140,7 +140,7 @@ public sealed partial class BattleScreen
             + "速度 = 30 + 2×身法 + 轻功加成；同速时身法高者先，再同按固定次序。\n"
             + "迟滞等增减速要到下一轮排序时才生效。悬停各人印鉴可看其速度。";
         _speedLabel = Ui.Text("", UiTheme.GiltLabel, 16);
-        var playback = Ui.KeyHints(true, ("F", "倍速"), ("Space", "跳过"), ("P", "自动"));
+        var playback = Ui.KeyHints(true, (KeyBindings.Label("battle_speed"), "倍速"), (KeyBindings.Label("battle_skip"), "跳过"), (KeyBindings.Label("battle_auto"), "自动"));
         playback.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         var strip = Ui.Panel(UiTheme.GlassPanel, Ui.Row(UiPalette.SpaceL, round,
             Ui.Expand(Ui.Column(4, Ui.Row(UiPalette.SpaceL, orderTitle, Ui.Spacer(), _momentumLabel, _enemyMomentumLabel, _speedLabel), _order)),
@@ -255,7 +255,7 @@ public sealed partial class BattleScreen
     private Control BuildLog()
     {
         _logList = Ui.Column(4);
-        var toggle = Ui.Row(UiPalette.SpaceS, Ui.Text("战斗日志", UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint("L", "展开"));
+        var toggle = Ui.Row(UiPalette.SpaceS, Ui.Text("战斗日志", UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint(KeyBindings.Label("battle_log"), "展开"));
         var panel = Ui.Panel(UiTheme.GlassPanel, Ui.Column(6, toggle, _logList));
         panel.ClipContents = true;
         _logPanel = Ui.Place(panel, 1, 0, -440, 22, -40, 150);
@@ -323,6 +323,9 @@ public sealed partial class BattleScreen
             ThemeTypeVariation = UiTheme.DarkPanel,
             AnchorLeft = 0, AnchorRight = 1, AnchorTop = 1, AnchorBottom = 1,
             OffsetLeft = 40, OffsetRight = -40, OffsetTop = -262, OffsetBottom = -24,
+
+            // 字号放大后内容变高时向上长，底边不越出画面。
+            GrowVertical = GrowDirection.Begin,
         };
 
         _actorName = Ui.Text("", UiTheme.DarkTitleLabel, 32);
@@ -341,8 +344,8 @@ public sealed partial class BattleScreen
         _actorGlyphHost.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         var actor = Ui.Row(UiPalette.SpaceL, _actorGlyphHost, bars);
 
+        // 说明行随招式栏占满中间剩余的宽度自动折行（不写死宽度，字号放大时不把指令区撑出画面）。
         _info = Ui.Text("", UiTheme.DarkMutedLabel, 17, wrap: true);
-        _info.CustomMinimumSize = new Vector2(860, 0);
         _slots = Ui.Row(UiPalette.SpaceM);
         var skills = Ui.Column(UiPalette.SpaceS, _slots, _info);
 
@@ -351,11 +354,11 @@ public sealed partial class BattleScreen
         basics.AddThemeConstantOverride("v_separation", UiPalette.SpaceS);
         foreach (var (key, label, action) in new (string, string, Action)[]
                  {
-                     ("D", "防御", () => Submit(new Defend(_session!.AwaitingPlayer!.Id))),
-                     ("R", "调息", () => Submit(new Meditate(_session!.AwaitingPlayer!.Id))),
-                     ("I", "物品", CycleItem),
-                     ("S", "换位", EnterSwap),
-                     ("X", "撤退", () => Submit(new Retreat(_session!.AwaitingPlayer!.Id))),
+                     ("battle_defend", "防御", () => Submit(new Defend(_session!.AwaitingPlayer!.Id))),
+                     ("battle_meditate", "调息", () => Submit(new Meditate(_session!.AwaitingPlayer!.Id))),
+                     ("battle_item", "物品", CycleItem),
+                     ("battle_swap", "换位", EnterSwap),
+                     ("battle_retreat", "撤退", () => Submit(new Retreat(_session!.AwaitingPlayer!.Id))),
                  })
         {
             var button = Ui.Button(label, UiTheme.DarkButton, () =>
@@ -366,8 +369,8 @@ public sealed partial class BattleScreen
                 }
             });
             button.CustomMinimumSize = new Vector2(132, 40);
-            button.AddThemeFontSizeOverride("font_size", 19);
-            var cap = Ui.KeyHint(key, "");
+            button.AddThemeFontSizeOverride("font_size", FontScale.Of(19));
+            var cap = Ui.KeyHint(KeyBindings.Label(key), "");
             cap.MouseFilter = MouseFilterEnum.Ignore;
             basics.AddChild(Ui.Row(4, cap, button));
             _basicButtons[key] = button;
@@ -375,7 +378,7 @@ public sealed partial class BattleScreen
 
         var hints = Ui.KeyHints(true, ("Tab", "换目标"), ("Enter", "施展"));
         var right = Ui.Column(UiPalette.SpaceS, basics, hints);
-        _dock.AddChild(Ui.Row(UiPalette.SpaceXl, actor, VerticalRule(), skills, Ui.Spacer(), right));
+        _dock.AddChild(Ui.Row(UiPalette.SpaceXl, actor, VerticalRule(), Ui.Expand(skills), right));
         return _dock;
     }
 
@@ -425,20 +428,20 @@ public sealed partial class BattleScreen
         {
             var reason = key switch
             {
-                "X" => _engine.Validate(_session.State, new Retreat(actor.Id)),
-                "I" => _session.State.Items.Count == 0 ? "没有可用物品" : null,
+                "battle_retreat" => _engine.Validate(_session.State, new Retreat(actor.Id)),
+                "battle_item" => _session.State.Items.Count == 0 ? "没有可用物品" : null,
                 _ => null,
             };
             button.Disabled = reason is not null;
             button.TooltipText = reason ?? "";
-            if (key == "I")
+            if (key == "battle_item")
             {
                 button.Text = $"物品 {_session.State.Items.Values.Sum()}";
             }
         }
 
         Ui.ClearChildren(_slots);
-        _slots.AddChild(SkillSlot(actor, CoreIds.BasicAttack, "A"));
+        _slots.AddChild(SkillSlot(actor, CoreIds.BasicAttack, KeyBindings.Label("battle_attack")));
         for (var i = 0; i < actor.Skills.Count; i++)
         {
             _slots.AddChild(SkillSlot(actor, actor.Skills[i], $"{i + 1}"));

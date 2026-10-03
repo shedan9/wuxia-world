@@ -1,4 +1,5 @@
 using Godot;
+using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Domain.Combat;
 using Side = WuxiaWorld.Domain.Combat.Side;
 using WuxiaWorld.Domain.Combat.Definitions;
@@ -177,7 +178,7 @@ public sealed partial class BattleScreen
             child.SetPressedNoSignal(false);
         }
 
-        _info.Text = $"物品：{_bundle.Name(_item)}（余 {_session.State.Items[_item]}）　·　再按 I 换一种，Tab 换目标，Enter 使用，Esc 取消";
+        _info.Text = $"物品：{_bundle.Name(_item)}（余 {_session.State.Items[_item]}）　·　再按 {KeyBindings.Label("battle_item")} 换一种，Tab 换目标，Enter 使用，Esc 取消";
         RefreshTargeting();
     }
 

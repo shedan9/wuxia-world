@@ -1,5 +1,6 @@
 using Godot;
 using WuxiaWorld.Game.Presentation;
+using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
 
@@ -22,7 +23,7 @@ public static class ExploreHudKit
         return Ui.Place(panel, 0, 0, 40, 32, 480, 180);
     }
 
-    /// <summary>右上：泥金卷云角框小地图，下方地区名与 M 大地图（<paramref name="mapKey"/> 为 false 时不写按键；游戏内 M 打开江湖大地图）。</summary>
+    /// <summary>右上：泥金卷云角框小地图，下方地区名与大地图键（默认 M，随按键设置）（<paramref name="mapKey"/> 为 false 时不写按键；游戏内 M 打开江湖大地图）。</summary>
     public static Control MiniMapFrame(Control map, string region, bool mapKey = true)
     {
         map.CustomMinimumSize = new Vector2(280, 280);
@@ -34,7 +35,7 @@ public static class ExploreHudKit
             Corners = CornerStyle.Cloud, CornerSize = 34, CornerWidth = 2,
         }.Margins(8, 8));
         var caption = mapKey
-            ? Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint("M", "大地图"))
+            ? Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.BoundKeyHint("open_map", "大地图"))
             : Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18));
         frame.AddChild(Ui.Column(UiPalette.SpaceS, map, caption));
         return Ui.Place(frame, 1, 0, -336, 32, -40, 380);
@@ -144,11 +145,13 @@ public partial class GoalPointer : Control
     }
 }
 
-/// <summary>中下交互提示：E + 动作 + 对象，泥金折角，缓慢呼吸。</summary>
+/// <summary>中下交互提示：交互键（默认 E，可改键）+ 动作 + 对象，泥金折角，缓慢呼吸。</summary>
 public partial class InteractPrompt : PanelContainer
 {
     private readonly Label _verb = Ui.Text("", UiTheme.DarkLabel, 24);
     private readonly Label _target = Ui.Text("", UiTheme.GiltLabel, 22);
+    private readonly HBoxContainer _row;
+    private string _key = KeyBindings.Label("interact");
 
     public InteractPrompt()
     {
@@ -158,12 +161,25 @@ public partial class InteractPrompt : PanelContainer
             Ragged = 1.6f, Seed = 65, Border = UiPalette.Gilt with { A = 0.75f }, BorderWidth = 1.3f, Brush = true, Overshoot = 0.6f,
             Corners = CornerStyle.Bracket, CornerSize = 10, CornerWidth = 2, CornerOutset = 4,
         }.Margins(20, 10));
-        AddChild(Ui.Row(UiPalette.SpaceM, Ui.KeyHint("E", ""), _verb, _target));
+        _row = Ui.Row(UiPalette.SpaceM, Ui.KeyHint(_key, ""), _verb, _target);
+        AddChild(_row);
         MouseFilter = MouseFilterEnum.Ignore;
     }
 
     public void Show(string verb, string target)
     {
+        if (KeyBindings.Label("interact") is var key && key != _key)
+        {
+            // 改过交互键：换上新键帽。
+            _key = key;
+            var cap = _row.GetChild(0);
+            _row.RemoveChild(cap);
+            cap.QueueFree();
+            var fresh = Ui.KeyHint(key, "");
+            _row.AddChild(fresh);
+            _row.MoveChild(fresh, 0);
+        }
+
         _verb.Text = verb;
         _target.Text = target;
         Visible = true;

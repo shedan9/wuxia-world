@@ -341,17 +341,14 @@ public sealed partial class BattleScreen : Control
             return;
         }
 
-        var handled = key.Keycode switch
-        {
-            Key.P => ToggleAuto(),
-            Key.F => ToggleSpeed(),
-            Key.Space => SkipPlayback(),
-            Key.L => ToggleLog(),
-            _ => false,
-        };
+        // 自动、倍速、跳过、日志与基础行动键可在设置里改（KeyBindings）；数字选招、Tab / 方向键换目标、Enter 施展固定。
+        var handled = KeyBindings.Pressed(key, "battle_auto") ? ToggleAuto()
+            : KeyBindings.Pressed(key, "battle_speed") ? ToggleSpeed()
+            : KeyBindings.Pressed(key, "battle_skip") ? SkipPlayback()
+            : KeyBindings.Pressed(key, "battle_log") && ToggleLog();
         if (!handled && AcceptingCommand)
         {
-            handled = CommandKey(key.Keycode, key.ShiftPressed);
+            handled = BoundCommand(key) || CommandKey(key.Keycode, key.ShiftPressed);
         }
 
         if (handled)
@@ -360,13 +357,45 @@ public sealed partial class BattleScreen : Control
         }
     }
 
+    /// <summary>可改键的基础行动：普通攻击、防御、调息、物品、换位、撤退。</summary>
+    private bool BoundCommand(InputEventKey key)
+    {
+        if (KeyBindings.Pressed(key, "battle_attack"))
+        {
+            SelectSkill(CoreIds.BasicAttack);
+        }
+        else if (KeyBindings.Pressed(key, "battle_defend"))
+        {
+            Submit(new Defend(_session!.AwaitingPlayer!.Id));
+        }
+        else if (KeyBindings.Pressed(key, "battle_meditate"))
+        {
+            Submit(new Meditate(_session!.AwaitingPlayer!.Id));
+        }
+        else if (KeyBindings.Pressed(key, "battle_item"))
+        {
+            CycleItem();
+        }
+        else if (KeyBindings.Pressed(key, "battle_swap"))
+        {
+            EnterSwap();
+        }
+        else if (KeyBindings.Pressed(key, "battle_retreat"))
+        {
+            Submit(new Retreat(_session!.AwaitingPlayer!.Id));
+        }
+        else
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private bool CommandKey(Key keycode, bool shift)
     {
         switch (keycode)
         {
-            case Key.A:
-                SelectSkill(CoreIds.BasicAttack);
-                return true;
             case >= Key.Key1 and <= Key.Key6:
             {
                 var index = (int)(keycode - Key.Key1);
@@ -387,21 +416,6 @@ public sealed partial class BattleScreen : Control
                 return true;
             case Key.Enter or Key.KpEnter:
                 Confirm();
-                return true;
-            case Key.D:
-                Submit(new Defend(_session!.AwaitingPlayer!.Id));
-                return true;
-            case Key.R:
-                Submit(new Meditate(_session!.AwaitingPlayer!.Id));
-                return true;
-            case Key.I:
-                CycleItem();
-                return true;
-            case Key.S:
-                EnterSwap();
-                return true;
-            case Key.X:
-                Submit(new Retreat(_session!.AwaitingPlayer!.Id));
                 return true;
             case Key.Escape when _mode != Mode.Skill:
                 SelectSkill(_skill ?? CoreIds.BasicAttack);

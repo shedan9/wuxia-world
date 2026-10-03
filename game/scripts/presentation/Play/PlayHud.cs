@@ -75,7 +75,7 @@ public static class PlayHud
             list.AddChild(Ui.Text(done is null ? "暂无进行中的任务" : $"已完成：{play.Name(done.Id)}", UiTheme.DarkMutedLabel, 18));
         }
 
-        list.AddChild(Ui.KeyHint("J", "札记"));
+        list.AddChild(Ui.BoundKeyHint("open_journal", "札记"));
         var panel = Ui.Panel(UiTheme.GlassPanel, list);
 
         // 面板高度随内容：放在顶端对齐的竖排里，不撑满整个版位。

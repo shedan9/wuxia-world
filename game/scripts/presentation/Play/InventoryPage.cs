@@ -47,10 +47,6 @@ public sealed class InventoryPage
     private void Rebuild(string? message = null)
     {
         Ui.ClearChildren(_root);
-        _root.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("行囊"), Ui.Column(4,
-                Ui.Text("行囊", UiTheme.DarkTitleLabel, 40),
-                Ui.Text($"{_play.Name(World.MapId)}　·　{PlaySession.ClockText(World.Clock)}", UiTheme.DarkMutedLabel, 18)),
-            Ui.Spacer(), Ui.Text($"银 {World.Silver} 两", UiTheme.GiltLabel, 26), Ui.KeyHints(true, ("Esc", "返回"))));
 
         var items = Game.Rules.Content.Items;
         var hero = Game.Rules.Content.Progression.Hero;

@@ -273,13 +273,17 @@ public partial class SoundDirector : Node
     }
 
     /// <summary>界面音效：所有按钮取得焦点时轻响一下、按下时确认声（全局挂钩，不必逐页接线）。</summary>
+    private const string SoundMeta = "ui_sound_hooked";
+
     private void OnNodeAdded(Node node)
     {
-        if (node is not BaseButton button)
+        // 同一按钮离开场景树再进来时会再收到一次，只挂一次。
+        if (node is not BaseButton button || button.HasMeta(SoundMeta))
         {
             return;
         }
 
+        button.SetMeta(SoundMeta, true);
         button.FocusEntered += () => UiSound("ui.move", -6);
         button.Pressed += () => UiSound("ui.confirm", -4);
     }

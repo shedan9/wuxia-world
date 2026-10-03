@@ -47,7 +47,7 @@ public static class UiTheme
         var t = new Theme
         {
             DefaultFont = UiFonts.Body,
-            DefaultFontSize = UiPalette.FontBody,
+            DefaultFontSize = FontScale.Of(UiPalette.FontBody),
         };
 
         BuildLabels(t);
@@ -86,9 +86,9 @@ public static class UiTheme
         t.SetFont("normal_font", "RichTextLabel", UiFonts.Body);
         t.SetFont("bold_font", "RichTextLabel", UiFonts.BodyMedium);
         t.SetFont("italics_font", "RichTextLabel", UiFonts.Title);
-        t.SetFontSize("normal_font_size", "RichTextLabel", UiPalette.FontBody);
-        t.SetFontSize("bold_font_size", "RichTextLabel", UiPalette.FontBody);
-        t.SetFontSize("italics_font_size", "RichTextLabel", UiPalette.FontBody);
+        t.SetFontSize("normal_font_size", "RichTextLabel", FontScale.Of(UiPalette.FontBody));
+        t.SetFontSize("bold_font_size", "RichTextLabel", FontScale.Of(UiPalette.FontBody));
+        t.SetFontSize("italics_font_size", "RichTextLabel", FontScale.Of(UiPalette.FontBody));
         t.SetConstant("line_separation", "RichTextLabel", 8);
     }
 
@@ -160,7 +160,7 @@ public static class UiTheme
             Chip(Colors.Transparent, UiPalette.TextMuted with { A = 0.3f }),
             Focus(3));
         Fonts(t, ChipButton, UiPalette.Text, UiPalette.Accent, UiPalette.Surface, UiPalette.TextMuted);
-        t.SetFontSize("font_size", ChipButton, UiPalette.FontSecondary);
+        t.SetFontSize("font_size", ChipButton, FontScale.Of(UiPalette.FontSecondary));
 
         // 顶部分区签（深色面）：选中项自下泛起石青光，底边一笔泥金。
         OrnateBox Nav(float glow, bool line) => new OrnateBox
@@ -172,7 +172,7 @@ public static class UiTheme
         States(t, NavTab, Nav(0, false), Nav(0.25f, false), Nav(0.55f, true), Nav(0, false), Focus(0));
         Fonts(t, NavTab, UiPalette.TextOnDarkMuted, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextOnDarkMuted with { A = 0.45f });
         t.SetFont("font", NavTab, UiFonts.Title);
-        t.SetFontSize("font_size", NavTab, 30);
+        t.SetFontSize("font_size", NavTab, FontScale.Of(30));
 
         // 页内子签（绢面）：文字签，选中在字下补一笔朱砂。
         OrnateBox Sub(Color line, Color fill) => new OrnateBox
@@ -188,7 +188,7 @@ public static class UiTheme
             Focus(0));
         Fonts(t, SubTab, UiPalette.TextMuted, UiPalette.Text, UiPalette.Text, UiPalette.TextMuted with { A = 0.5f });
         t.SetFont("font", SubTab, UiFonts.Title);
-        t.SetFontSize("font_size", SubTab, 26);
+        t.SetFontSize("font_size", SubTab, FontScale.Of(26));
 
         // 深色面按钮：黛底毛边，旧绢色笔线；按下为石青实底。
         OrnateBox DarkBox(Color fill, Color border) => new OrnateBox
@@ -215,7 +215,7 @@ public static class UiTheme
         Fonts(t, MenuItem, UiPalette.Text, UiPalette.TextOnDark, UiPalette.TextOnDark, UiPalette.TextMuted with { A = 0.5f });
         t.SetColor("font_focus_color", MenuItem, UiPalette.TextOnDark);
         t.SetFont("font", MenuItem, UiFonts.Title);
-        t.SetFontSize("font_size", MenuItem, 40);
+        t.SetFontSize("font_size", MenuItem, FontScale.Of(40));
         t.SetColor("font_outline_color", MenuItem, UiPalette.Surface with { A = 0.55f });
         t.SetConstant("outline_size", MenuItem, 4);
 
@@ -324,7 +324,7 @@ public static class UiTheme
             Border = UiPalette.Gilt with { A = 0.6f }, BorderWidth = 1.1f, Brush = true,
         }.Margins(14, 9));
         t.SetColor("font_color", "TooltipLabel", UiPalette.TextOnDark);
-        t.SetFontSize("font_size", "TooltipLabel", UiPalette.FontSecondary);
+        t.SetFontSize("font_size", "TooltipLabel", FontScale.Of(UiPalette.FontSecondary));
 
         t.SetStylebox("panel", "PopupMenu", new OrnateBox
         {
@@ -338,7 +338,7 @@ public static class UiTheme
         t.SetColor("font_color", "PopupMenu", UiPalette.TextOnDark);
         t.SetColor("font_hover_color", "PopupMenu", UiPalette.TextOnDark);
         t.SetColor("font_disabled_color", "PopupMenu", UiPalette.TextOnDarkMuted with { A = 0.6f });
-        t.SetFontSize("font_size", "PopupMenu", UiPalette.FontSecondary);
+        t.SetFontSize("font_size", "PopupMenu", FontScale.Of(UiPalette.FontSecondary));
         t.SetConstant("v_separation", "PopupMenu", 14);
 
         t.SetStylebox("separator", "HSeparator", new StyleBoxLine { Color = UiPalette.Ochre with { A = 0.5f }, Thickness = 2, GrowBegin = -8, GrowEnd = -8 });
@@ -392,7 +392,7 @@ public static class UiTheme
         });
         t.SetStylebox("fill", "ProgressBar", BarFill(UiPalette.TextMuted));
         t.SetColor("font_color", "ProgressBar", UiPalette.Text);
-        t.SetFontSize("font_size", "ProgressBar", 16);
+        t.SetFontSize("font_size", "ProgressBar", FontScale.Of(16));
 
         Variation(t, HealthBar, "ProgressBar");
         t.SetStylebox("fill", HealthBar, BarFill(UiPalette.Warm));
@@ -414,7 +414,7 @@ public static class UiTheme
         t.SetColor("font_color", name, color);
         if (size is { } s)
         {
-            t.SetFontSize("font_size", name, s);
+            t.SetFontSize("font_size", name, FontScale.Of(s));
         }
 
         if (font is not null)

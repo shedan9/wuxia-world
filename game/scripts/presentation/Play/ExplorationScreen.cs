@@ -258,14 +258,23 @@ public partial class ExplorationScreen : Control, IExploreDriver
             GD.Print($"[autoplay] 分配潜能 {string.Join("/", GrowthText.Values(add))}：{(allocated.Ok ? "成功" : allocated.Error)}，{growth.Level(World)} 级");
         }
 
-        var holdInScene = DevCapture.Hold is "journal" or "menu" or "saves" or "travel" or "worldmap" or "character" or "martial" or "equipment" or "inventory" or "party" or "shop";
+        var holdInScene = DevCapture.Hold is "journal" or "settings" or "focus" or "menu" or "saves" or "travel" or "worldmap" or "character" or "martial" or "equipment" or "inventory" or "party" or "shop";
         var next = AutoTarget();
         if (done || DevCapture.AutoplaySteps >= DevCapture.Autoplay + (DevCapture.Hold is null || holdInScene ? 0 : 3) || next is null)
         {
             switch (DevCapture.Hold)
             {
                 case "journal":
-                    OpenJournal();
+                    // --tab 选札记子页签：0 任务、1 线索、2 人物、3 见闻、4 对话。
+                    AppHost.Instance.Menu.OpenSection(MenuSection.Journal, DevCapture.Tab);
+                    break;
+                case "focus":
+                    _autoplayFinished = true;
+                    FocusAudit.Run(this);
+                    return;
+                case "settings":
+                    // --tab 选设置子页签：0 声音、1 显示、2 文字、3 辅助、4 按键。
+                    AppHost.Instance.Menu.OpenSection(MenuSection.Settings, DevCapture.Tab);
                     break;
                 case "menu":
                     AppHost.Instance.Menu.Open();
@@ -601,6 +610,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         foreach (var (kind, text) in notes)
         {
             _view.Toast(kind, text, "");
+            _play.LogNotice(kind, text);
         }
 
         if (notes.Count == 0)
@@ -748,62 +758,53 @@ public partial class ExplorationScreen : Control, IExploreDriver
             return;
         }
 
-        switch (key.Keycode)
+        // 快捷键可在设置里改（KeyBindings）；对话、弹层与换图期间不响应（上面已返回）。
+        if (KeyBindings.Pressed(key, "open_journal"))
         {
-            case Key.J:
-                OpenJournal();
-                break;
-            case Key.C:
-                OpenCharacter(0);
-                break;
-            case Key.I:
-                OpenInventory();
-                break;
-            case Key.P:
-                OpenParty();
-                break;
-            case Key.M:
-                OpenWorldMap(null);
-                break;
-            case Key.F5:
-                var r = _play.Save(SaveSlot.Quick, SaveThumbnail.Grab(GetViewport()));
-                _view.Toast("存档", r.Ok ? "已快速存档" : $"存档失败：{r.Error}", "");
-                break;
-            case Key.F9:
-                GameMenu.LoadInto(SaveSlot.Quick, ShowModalMessage);
-                break;
-            default:
-                return;
+            OpenJournal();
+        }
+        else if (KeyBindings.Pressed(key, "open_character"))
+        {
+            OpenCharacter(0);
+        }
+        else if (KeyBindings.Pressed(key, "open_inventory"))
+        {
+            OpenInventory();
+        }
+        else if (KeyBindings.Pressed(key, "open_party"))
+        {
+            OpenParty();
+        }
+        else if (KeyBindings.Pressed(key, "open_map"))
+        {
+            OpenWorldMap(null);
+        }
+        else if (KeyBindings.Pressed(key, "quick_save"))
+        {
+            var r = _play.Save(SaveSlot.Quick, SaveThumbnail.Grab(GetViewport()));
+            _view.Toast("存档", r.Ok ? "已快速存档" : $"存档失败：{r.Error}", "");
+        }
+        else if (KeyBindings.Pressed(key, "quick_load"))
+        {
+            GameMenu.LoadInto(SaveSlot.Quick, ShowModalMessage);
+        }
+        else
+        {
+            return;
         }
 
         GetViewport().SetInputAsHandled();
     }
 
-    private void OpenJournal()
-    {
-        ShowModal(Journal.Build(_play), 1500, 860);
-        AppHost.Instance.Sound.Play("ui.page", -4);
-    }
+    /// <summary>札记、人物、行囊、队伍都在分区菜单里（M3-05）：直接打开对应分区，游戏随之暂停；Q / E 可切到其他分区。</summary>
+    private static void OpenJournal() => AppHost.Instance.Menu.OpenSection(MenuSection.Journal);
 
-    /// <summary>人物页（C）：在探索中可分配潜能、换装备、调整装配与修炼。</summary>
-    private void OpenCharacter(int tab)
-    {
-        ShowModal(CharacterPage.Build(_play, tab), PageWidth, PageHeight);
-        AppHost.Instance.Sound.Play("ui.page", -4);
-    }
+    /// <param name="tab">人物页子页签：0 属性、1 武学、2 装备。</param>
+    private static void OpenCharacter(int tab) => AppHost.Instance.Menu.OpenSection(MenuSection.Character, tab);
 
-    private void OpenInventory()
-    {
-        ShowModal(InventoryPage.Build(_play), PageWidth, PageHeight);
-        AppHost.Instance.Sound.Play("ui.page", -4);
-    }
+    private static void OpenInventory() => AppHost.Instance.Menu.OpenSection(MenuSection.Inventory);
 
-    /// <summary>队伍页（P）：调换阵位，查看同行人物。</summary>
-    private void OpenParty()
-    {
-        ShowModal(PartyPage.Build(_play), PageWidth, PageHeight);
-        AppHost.Instance.Sound.Play("ui.page", -4);
-    }
+    private static void OpenParty() => AppHost.Instance.Menu.OpenSection(MenuSection.Party);
 
     private void OpenShop(string shopId)
     {

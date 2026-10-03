@@ -84,7 +84,7 @@ public static class ChapterEnd
         foreach (var b in new[] { stayButton, titleButton })
         {
             b.CustomMinimumSize = new Vector2(220, 60);
-            b.AddThemeFontSizeOverride("font_size", 24);
+            b.AddThemeFontSizeOverride("font_size", FontScale.Of(24));
             b.MouseEntered += b.GrabFocus;
         }
 

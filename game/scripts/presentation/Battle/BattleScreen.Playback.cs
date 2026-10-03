@@ -17,14 +17,14 @@ public sealed partial class BattleScreen
     private bool _playing;
     private bool _skipping;
     private bool _needsSync;
-    private float _speed = 1;
+    private float _speed = App.GameSettings.BattleSpeed;
     private double _aiDelay;
     private bool _auto;
 
     private bool ToggleAuto()
     {
         _auto = !_auto;
-        Toast(_auto ? "自动战斗：开（P 关闭）" : "自动战斗：关");
+        Toast(_auto ? $"自动战斗：开（{KeyBindings.Label("battle_auto")} 关闭）" : "自动战斗：关");
         RefreshTopBar();
         return true;
     }
@@ -517,6 +517,12 @@ public sealed partial class BattleScreen
         var origin = view.FeetNow;
         var h = standee.Height;
         var home = new Vector2(origin.X - h * 0.275f, origin.Y - h);
+        if (!App.GameSettings.HitShake)
+        {
+            // 设置里关了受击抖动：只留闪白与音效。
+            return;
+        }
+
         var shake = standee.CreateTween();
         for (var i = 0; i < 4; i++)
         {

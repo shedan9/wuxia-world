@@ -392,7 +392,7 @@ public abstract partial class ExploreStage : Control
                 _zoom = Mathf.Clamp(_zoom * (wheel.ButtonIndex == MouseButton.WheelUp ? 1.05f : 1 / 1.05f), MinZoom, MaxZoom);
                 GetViewport().SetInputAsHandled();
                 break;
-            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.E } when Driver is { } driver:
+            case InputEventKey when KeyBindings.Pressed(@event, "interact") && Driver is { } driver:
                 if (_near is { } target && !driver.InputLocked)
                 {
                     driver.Interact(target);
@@ -400,7 +400,7 @@ public abstract partial class ExploreStage : Control
                 }
 
                 break;
-            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.E } when _near is { } near:
+            case InputEventKey when KeyBindings.Pressed(@event, "interact") && _near is { } near:
                 if (near.Scene is { } scene && SceneRouter.CanGoTo(scene))
                 {
                     PreviewSession.Current.Arrival = near.Arrival;
@@ -446,10 +446,11 @@ public abstract partial class ExploreStage : Control
         var input = Vector2.Zero;
         if (Driver is not { InputLocked: true })
         {
-            if (Input.IsPhysicalKeyPressed(Key.A) || Input.IsPhysicalKeyPressed(Key.Left)) input.X -= 1;
-            if (Input.IsPhysicalKeyPressed(Key.D) || Input.IsPhysicalKeyPressed(Key.Right)) input.X += 1;
-            if (Input.IsPhysicalKeyPressed(Key.W) || Input.IsPhysicalKeyPressed(Key.Up)) input.Y -= 1;
-            if (Input.IsPhysicalKeyPressed(Key.S) || Input.IsPhysicalKeyPressed(Key.Down)) input.Y += 1;
+            // 行走键可在设置里改（KeyBindings）；方向键固定可用。
+            if (KeyBindings.Held("move_left") || Input.IsKeyPressed(Key.Left)) input.X -= 1;
+            if (KeyBindings.Held("move_right") || Input.IsKeyPressed(Key.Right)) input.X += 1;
+            if (KeyBindings.Held("move_up") || Input.IsKeyPressed(Key.Up)) input.Y -= 1;
+            if (KeyBindings.Held("move_down") || Input.IsKeyPressed(Key.Down)) input.Y += 1;
         }
 
         if (input != Vector2.Zero && _route is not null)
@@ -469,7 +470,7 @@ public abstract partial class ExploreStage : Control
                 input = new Vector2(TownView.ScreenX(dir), 0);
             }
 
-            var speed = Input.IsPhysicalKeyPressed(Key.Shift) || bot is not null ? RunSpeed : WalkSpeed;
+            var speed = KeyBindings.Held("run") || bot is not null ? RunSpeed : WalkSpeed;
             var step = dir * speed * dt;
             var pos = Hero.Ground;
             if (Walkable(pos + new Vector2(step.X, 0))) pos.X += step.X;

@@ -1,4 +1,5 @@
 using Godot;
+using WuxiaWorld.Game.Presentation.App;
 using WuxiaWorld.Application.World;
 using WuxiaWorld.Domain.World;
 using WuxiaWorld.Game.Presentation.Art;
@@ -53,10 +54,6 @@ public sealed class PartyPage
     private void Rebuild(string? message = null)
     {
         Ui.ClearChildren(_root);
-        _root.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("队伍"), Ui.Column(4,
-                Ui.Text("队伍与同行", UiTheme.DarkTitleLabel, 40),
-                Ui.Text($"{_play.Name(World.MapId)}　·　{PlaySession.ClockText(World.Clock)}　·　银 {World.Silver} 两", UiTheme.DarkMutedLabel, 18)),
-            Ui.Spacer(), Ui.KeyHints(true, ("Esc", "返回"))));
 
         var board = Ui.Column(UiPalette.SpaceM, Ui.Text("阵位", UiTheme.SectionLabel), Board(),
             Ui.Text("前排护住后排：对方前排有人时，近身单体招只能打前排；远程与穿透一列的招式不受此限。", UiTheme.MutedLabel, 18, wrap: true));
@@ -246,7 +243,7 @@ public sealed class PartyPage
         var column = Ui.Column(UiPalette.SpaceS, Ui.Text(_play.Name(_who), UiTheme.TitleLabel, 30));
         if (_who == World.Hero)
         {
-            column.AddChild(Ui.Text("队伍的核心，不会离队。属性、武学与装备见人物页（C）。", UiTheme.MutedLabel, 18, wrap: true));
+            column.AddChild(Ui.Text($"队伍的核心，不会离队。属性、武学与装备见人物分区（{KeyBindings.Label("open_character")}）。", UiTheme.MutedLabel, 18, wrap: true));
             return Ui.Panel(UiTheme.InsetPanel, column);
         }
 

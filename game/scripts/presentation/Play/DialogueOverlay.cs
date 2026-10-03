@@ -159,7 +159,7 @@ public partial class DialogueOverlay : Control
 
         if (_log is not null)
         {
-            if (@event.IsActionPressed("ui_cancel") || @event is InputEventKey { Pressed: true, Echo: false, Keycode: Key.L })
+            if (@event.IsActionPressed("ui_cancel") || KeyBindings.Pressed(@event, "dialogue_log"))
             {
                 CloseLog();
                 GetViewport().SetInputAsHandled();
@@ -170,13 +170,14 @@ public partial class DialogueOverlay : Control
 
         switch (@event)
         {
-            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.L }:
+            // 记录、隐藏、重播三键可在设置里改（KeyBindings）；继续键（Enter、空格、左键）与数字选项固定。
+            case InputEventKey when KeyBindings.Pressed(@event, "dialogue_log"):
                 OpenLog();
                 break;
-            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.H }:
+            case InputEventKey when KeyBindings.Pressed(@event, "dialogue_hide"):
                 _ui.Visible = !_ui.Visible;
                 break;
-            case InputEventKey { Pressed: true, Echo: false, Keycode: Key.R }:
+            case InputEventKey when KeyBindings.Pressed(@event, "dialogue_replay"):
                 AppHost.Instance.Voice.Replay();
                 break;
             case InputEventKey { Pressed: true, Echo: false } key when key.Keycode is >= Key.Key1 and <= Key.Key9:
@@ -547,7 +548,10 @@ public partial class DialogueOverlay : Control
             var button = Ui.Button(label, UiTheme.ChoiceButton, enabled ? () => Choose(index) : null, disabled: !enabled, tooltip: hint);
             button.Alignment = HorizontalAlignment.Left;
             button.CustomMinimumSize = new Vector2(0, 68);
-            button.AddThemeFontSizeOverride("font_size", 26);
+
+            // 选项长或字号放大时折行，不越出画面右缘。
+            button.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+            button.AddThemeFontSizeOverride("font_size", FontScale.Of(26));
             if (enabled)
             {
                 button.MouseEntered += button.GrabFocus;
@@ -578,7 +582,7 @@ public partial class DialogueOverlay : Control
         foreach (var b in bar.GetChildren().OfType<Button>())
         {
             b.CustomMinimumSize = new Vector2(96, 48);
-            b.AddThemeFontSizeOverride("font_size", 20);
+            b.AddThemeFontSizeOverride("font_size", FontScale.Of(20));
         }
 
         bar.Alignment = BoxContainer.AlignmentMode.End;
@@ -630,7 +634,7 @@ public partial class DialogueOverlay : Control
             FitContent = true, ScrollActive = false, BbcodeEnabled = false,
             SizeFlagsVertical = SizeFlags.ExpandFill, MouseFilter = MouseFilterEnum.Ignore,
         };
-        _text.AddThemeFontSizeOverride("normal_font_size", 30);
+        _text.AddThemeFontSizeOverride("normal_font_size", FontScale.Of(30));
         _text.AddThemeConstantOverride("line_separation", 12);
         _text.AddThemeColorOverride("default_color", UiPalette.TextOnDark);
 
@@ -657,10 +661,12 @@ public partial class DialogueOverlay : Control
         _plate.GrowHorizontal = GrowDirection.End;
         root.AddChild(_plate);
 
-        var hints = Ui.KeyHints(true, ("Enter", "继续"), ("1–3", "选择"), ("R", "重播"), ("L", "记录"), ("H", "隐藏"));
+        var hints = Ui.KeyHints(true, ("Enter", "继续"), ("1–3", "选择"), (KeyBindings.Label("dialogue_replay"), "重播"), (KeyBindings.Label("dialogue_log"), "记录"), (KeyBindings.Label("dialogue_hide"), "隐藏"));
         hints.Modulate = new Color(1, 1, 1, 0.85f);
         root.AddChild(Ui.Place(hints, 1, 1, -900, -38, -150, -6));
         hints.Alignment = BoxContainer.AlignmentMode.End;
+        hints.GrowHorizontal = GrowDirection.Begin;
+        hints.GrowVertical = GrowDirection.Begin;
         // 对话框底板（PanelContainer）默认拦鼠标，点在框内会被吃掉、推进不了台词；框内没有按钮，整块放行。
         Ui.IgnoreMouse(root);
         return root;
@@ -671,7 +677,11 @@ public partial class DialogueOverlay : Control
         _choices = Ui.Column(UiPalette.SpaceM);
         _choices.Visible = false;
         _choices.Alignment = BoxContainer.AlignmentMode.End;
-        return Ui.Place(_choices, 1, 1, -900, -760, -160, -370);
+        Ui.Place(_choices, 1, 1, -900, -760, -160, -370);
+
+        // 选项多、折行或字号放大时向上长，不压到对话框上。
+        _choices.GrowVertical = GrowDirection.Begin;
+        return _choices;
     }
 
     /// <summary>特写与标题卡：画面正中一方绢底，写物件上的文字或章节标题。</summary>
@@ -726,7 +736,7 @@ public partial class DialogueOverlay : Control
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
         panel.AddChild(Ui.Column(UiPalette.SpaceL,
             Ui.Row(UiPalette.SpaceL, Ui.Text("对话记录", UiTheme.DarkTitleLabel, 38), Ui.Spacer(),
-                Ui.KeyHints(true, ("L", "关闭"), ("Esc", "关闭"))),
+                Ui.KeyHints(true, (KeyBindings.Label("dialogue_log"), "关闭"), ("Esc", "关闭"))),
             Ui.Rule(dark: true),
             Ui.Expand(scroll, vertical: true)));
         layer.AddChild(Ui.Place(panel, 0.5f, 0.5f, -620, -400, 620, 400));

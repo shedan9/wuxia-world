@@ -10,7 +10,7 @@ public static class Ui
         var label = new Label { Text = text, ThemeTypeVariation = variation ?? "" };
         if (size is { } s)
         {
-            label.AddThemeFontSizeOverride("font_size", s);
+            label.AddThemeFontSizeOverride("font_size", FontScale.Of(s));
         }
 
         if (wrap)
@@ -162,7 +162,8 @@ public static class Ui
         }
 
         row.AddChild(IgnoreMouse(content));
-        row.CustomMinimumSize = new Vector2(0, leading is null && detail is null ? 56 : 80);
+        // 行内文字靠锚点铺排、不撑开按钮，行高按字号放大（字号缩小时不再收紧，免得点选区域太窄）。
+        row.CustomMinimumSize = new Vector2(0, MathF.Round((leading is null && detail is null ? 56 : 80) * Math.Max(1, FontScale.Factor)));
         return row;
     }
 
@@ -245,7 +246,7 @@ public static class Ui
         var label = Text(text, dark ? UiTheme.DarkTitleLabel : UiTheme.SectionLabel);
         if (dark)
         {
-            label.AddThemeFontSizeOverride("font_size", 28);
+            label.AddThemeFontSizeOverride("font_size", FontScale.Of(28));
         }
 
         var line = Expand(new DiamondRule { Dark = dark, Lead = true });
@@ -266,6 +267,24 @@ public static class Ui
     }
 
     /// <summary>
+    /// 跟随按键设置的按键提示（HUD 上常驻的“札记”“大地图”之类）：改键后自动换上新键帽，不必重建所在界面。
+    /// </summary>
+    public static Control BoundKeyHint(string actionId, string action, bool dark = true)
+    {
+        var host = new MarginContainer { MouseFilter = Control.MouseFilterEnum.Ignore };
+        void Fill()
+        {
+            ClearChildren(host);
+            host.AddChild(KeyHint(App.KeyBindings.Label(actionId), action, dark));
+        }
+
+        Fill();
+        host.TreeEntered += () => App.KeyBindings.Changed += Fill;
+        host.TreeExiting += () => App.KeyBindings.Changed -= Fill;
+        return host;
+    }
+
+    /// <summary>
     /// 可点击的按键提示：外观同 <see cref="KeyHint"/>，鼠标悬停高亮、点击执行同一动作，
     /// 让只用鼠标的玩家也能完成“Enter 继续”“R 再战”这类只写了按键的操作。
     /// </summary>
@@ -277,8 +296,13 @@ public static class Ui
         IgnoreMouse(hint);
         button.AddChild(hint);
         hint.SetAnchorsAndOffsetsPreset(Control.LayoutPreset.FullRect);
-        button.CustomMinimumSize = hint.GetCombinedMinimumSize() + new Vector2(16, 10);
         hint.OffsetLeft = 8;
+
+        // 尺寸要等进了场景树、拿到实际主题（字号随设置缩放）后再量；之前量到的是默认主题下的大小。
+        void Fit() => button.CustomMinimumSize = hint.GetCombinedMinimumSize() + new Vector2(16, 10);
+        Fit();
+        button.Ready += Fit;
+        hint.MinimumSizeChanged += Fit;
         button.Pressed += onPressed;
         button.MouseEntered += () => hint.Modulate = new Color(1.25f, 1.2f, 1.05f);
         button.MouseExited += () => hint.Modulate = Colors.White;

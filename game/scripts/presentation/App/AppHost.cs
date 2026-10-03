@@ -53,11 +53,64 @@ public partial class AppHost : Node
     {
         // 总线由 SoundDirector / VoicePlayer 建好后再读设置、套音量；截图模式不改窗口。
         GameSettings.Load();
+        if (DevCapture.TextSize is { } size)
+        {
+            GameSettings.TextSize = Math.Clamp(size, GameSettings.TextSizeMin, GameSettings.TextSizeMax);
+            GameSettings.ApplyText();
+        }
+
+        if (!Mathf.IsEqualApprox(FontScale.Factor, 1))
+        {
+            // 主题在读设置之前已按默认字号建好：字号改过的，按设置重建一次。
+            RebuildTheme();
+        }
+
+        GetTree().NodeAdded += FocusOnHover;
         if (!GameSettings.Fullscreen && DevCapture.Output is null)
         {
             EnterWindowed();
         }
     }
+
+    public override void _Process(double delta)
+    {
+        // 游戏时长：一局进行中才计；暂停菜单打开时场景树暂停，宿主按默认处理模式随之停住，不计入。
+        if (Play is { } play)
+        {
+            play.PlaySeconds += delta;
+        }
+    }
+
+    /// <summary>主题按当前字号重建后通知（叠在 CanvasLayer 上、自己挂主题的界面层据此换上新主题）。</summary>
+    public event Action? ThemeRebuilt;
+
+    /// <summary>按当前设置（字号）重建全局主题；已打开的页面需各自重建才会用上新字号。</summary>
+    public void RebuildTheme()
+    {
+        GetTree().Root.Theme = UiTheme.Build();
+        ThemeRebuilt?.Invoke();
+    }
+
+    /// <summary>
+    /// 鼠标悬停即取得焦点（UI_DESIGN 第 7 节）：键盘与鼠标共用同一个“当前项”，悬停后按 Enter 与点击是同一项。
+    /// 只对可聚焦、未禁用的按钮生效；页签之类不取焦点的控件不受影响。
+    /// </summary>
+    private static void FocusOnHover(Node node)
+    {
+        if (node is BaseButton button && !button.HasMeta(HoverMeta))
+        {
+            button.SetMeta(HoverMeta, true);
+            button.MouseEntered += () =>
+            {
+                if (button.FocusMode == Control.FocusModeEnum.All && !button.Disabled && button.IsVisibleInTree() && !button.HasFocus())
+                {
+                    button.GrabFocus();
+                }
+            };
+        }
+    }
+
+    private const string HoverMeta = "focus_on_hover";
 
     public override void _Input(InputEvent @event)
     {
