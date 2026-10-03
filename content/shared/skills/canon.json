@@ -1,0 +1,101 @@
+[
+  {
+    "id": "skill.sword.dugu_blade",
+    "tags": ["sword", "external", "guard_break", "break_blade"],
+    "inner_cost": 10,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 11000 },
+      { "type": "stance_damage", "amount": 30 }
+    ],
+    "animation_id": "anim.sword.thrust"
+  },
+  {
+    "id": "skill.sword.dugu_rope",
+    "tags": ["sword", "external", "break_rope"],
+    "inner_cost": 10,
+    "target_rule": "single_any_enemy",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 9000 },
+      { "type": "stance_damage", "amount": 20 }
+    ],
+    "animation_id": "anim.sword.lunge"
+  },
+  {
+    "id": "skill.sword.dugu_formless",
+    "tags": ["sword", "external", "combo"],
+    "inner_cost": 12,
+    "momentum_cost": 30,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 2,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 8500, "bonus_vs_status": "status.broken", "bonus_bp": 8000 },
+      { "type": "damage", "kind": "external", "scale_bp": 8500, "bonus_vs_status": "status.broken", "bonus_bp": 8000 }
+    ],
+    "animation_id": "anim.sword.chain"
+  },
+  {
+    "id": "skill.staff.dagou_trip",
+    "tags": ["staff", "external", "sweep", "control"],
+    "inner_cost": 12,
+    "target_rule": "reachable_row_enemies",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 6000 },
+      { "type": "stance_damage", "amount": 10 },
+      { "type": "apply_status", "status": "status.slow", "chance_bp": 8000 }
+    ],
+    "animation_id": "anim.staff.sweep"
+  },
+  {
+    "id": "skill.staff.dagou_seal",
+    "tags": ["staff", "external", "control"],
+    "inner_cost": 16,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 3,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 5000 },
+      { "type": "apply_status", "status": "status.stunned", "chance_bp": 7000 }
+    ],
+    "animation_id": "anim.staff.jab"
+  },
+  {
+    "id": "skill.staff.dagou_lure",
+    "tags": ["staff", "external"],
+    "inner_cost": 8,
+    "target_rule": "single_any_enemy",
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 6000 },
+      { "type": "apply_status", "status": "status.insight" },
+      { "type": "gain_momentum", "applies": "self", "amount": 10 }
+    ],
+    "animation_id": "anim.staff.jab"
+  },
+  {
+    "id": "skill.fist.xianglong_kanglong",
+    "tags": ["fist", "external", "heavy"],
+    "inner_cost": 18,
+    "target_rule": "single_reachable_enemy",
+    "cooldown": 2,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 15000 },
+      { "type": "stance_damage", "amount": 30 },
+      { "type": "gain_momentum", "applies": "self", "amount": 5 }
+    ],
+    "animation_id": "anim.fist.palm"
+  },
+  {
+    "id": "skill.fist.xianglong_jianlong",
+    "tags": ["fist", "external", "sweep"],
+    "inner_cost": 14,
+    "target_rule": "reachable_row_enemies",
+    "cooldown": 1,
+    "effects": [
+      { "type": "damage", "kind": "external", "scale_bp": 9000 },
+      { "type": "stance_damage", "amount": 15 }
+    ],
+    "animation_id": "anim.fist.sweep"
+  }
+]

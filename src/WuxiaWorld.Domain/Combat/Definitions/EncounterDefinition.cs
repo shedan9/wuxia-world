@@ -47,6 +47,23 @@ public sealed record EncounterPhase
 
 public sealed record PhaseStatus(string Unit, string Status, bool Remove = false);
 
+/// <summary>开战时单位气血改为上限的万分比（如闸绳已被松动的水门机关）。</summary>
+public sealed record VariantHp(string Unit, int Bp);
+
+/// <summary>
+/// 遭遇变体：剧情先手（同行者识破伪装、松动闸绳、提前救人等）对同一场遭遇的开局改动。
+/// 是否生效由世界事实 <see cref="WhenFact"/> = <see cref="WhenValue"/> 决定，由调用方（世界层）判断后把变体 ID 放进
+/// <c>BattleSetup.Variants</c>；内核只按 ID 套用，开战时依次施加状态、调整气血，并发出与阶段相同的提示事件。
+/// </summary>
+public sealed record EncounterVariant
+{
+    public required string Id { get; init; }
+    public required string WhenFact { get; init; }
+    public string WhenValue { get; init; } = "true";
+    public IReadOnlyList<PhaseStatus> Statuses { get; init; } = [];
+    public IReadOnlyList<VariantHp> Hp { get; init; } = [];
+}
+
 public enum VictoryRule
 {
     /// <summary>击倒所有计入胜利的敌人。</summary>
@@ -67,6 +84,9 @@ public sealed record EncounterDefinition
     public VictoryRule Victory { get; init; } = VictoryRule.DefeatAll;
     public string? VictoryUnit { get; init; }
     public IReadOnlyList<EncounterPhase> Phases { get; init; } = [];
+
+    /// <summary>剧情先手造成的开局变体（M3 前置，架构文档 7.6）。</summary>
+    public IReadOnlyList<EncounterVariant> Variants { get; init; } = [];
 
     /// <summary>胜利结算后的经验与修为（战后成长在 M2 的应用事务里一次性提交）。</summary>
     public int Experience { get; init; }

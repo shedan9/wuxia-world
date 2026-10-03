@@ -263,8 +263,9 @@ public sealed partial class BattleScreen : Control
         };
         if (EncounterIds[encounter] == "battle.01.old_ferry_sluice")
         {
-            // 正式 Demo 由经典人物援手（第 2.1 节“冲突”段）；人物锚点核验（M2-10）前以占位同行者代替。
-            allies.Add(new(content.Combatant("combatant.placeholder.companion"), "char.companion", new Position(0, 2)));
+            // 与正式流程“令狐冲同行、萧峰援手”一路相同：两人用各自的角色模板，站位按队伍默认阵位（前排右、前排左）。
+            allies.Add(new(content.Combatant("combatant.linghu_chong"), "char.linghu_chong", new Position(0, 2)));
+            allies.Add(new(content.Combatant("combatant.xiao_feng"), "char.xiao_feng", new Position(0, 0)));
         }
 
         var setup = new BattleSetup { EncounterId = EncounterIds[encounter], Seed = seed, Allies = allies, Items = StartingItems };

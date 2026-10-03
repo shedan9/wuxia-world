@@ -4,7 +4,7 @@
   { "id": "char.qiao_hongxiao", "origin": "original" },
   { "id": "char.tang_shouting", "origin": "original" },
   { "id": "char.du_sangao", "origin": "original" },
-  { "id": "char.linghu_chong", "origin": "canon", "source_work": "work.xiaoao_jianghu", "story_anchor": "anchor.linghu_chong.xiaoao_27_28", "party": "temporary" },
-  { "id": "char.huang_rong", "origin": "canon", "source_work": "work.shediao_yingxiong_zhuan", "story_anchor": "anchor.huang_rong.shediao_40", "party": "temporary" },
-  { "id": "char.xiao_feng", "origin": "canon", "source_work": "work.tianlong_babu", "story_anchor": "anchor.xiao_feng.tianlong_21_23", "party": "temporary" }
+  { "id": "char.linghu_chong", "origin": "canon", "combatant": "combatant.linghu_chong", "source_work": "work.xiaoao_jianghu", "story_anchor": "anchor.linghu_chong.xiaoao_27_28", "party": "temporary" },
+  { "id": "char.huang_rong", "origin": "canon", "combatant": "combatant.huang_rong", "source_work": "work.shediao_yingxiong_zhuan", "story_anchor": "anchor.huang_rong.shediao_40", "party": "temporary" },
+  { "id": "char.xiao_feng", "origin": "canon", "combatant": "combatant.xiao_feng", "source_work": "work.tianlong_babu", "story_anchor": "anchor.xiao_feng.tianlong_21_23", "party": "temporary" }
 ]

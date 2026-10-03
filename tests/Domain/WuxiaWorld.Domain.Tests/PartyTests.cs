@@ -168,7 +168,7 @@ public sealed class PartyTests : IDisposable
 
         Apply(g, s, Effect(WorldEffectType.JoinParty, Linghu));
         Assert.Equal(growth.BaseTemplate(Linghu), growth.Template(s, Linghu));
-        Assert.Equal(GrowthRules.PlaceholderCompanion, growth.Template(s, Linghu).Id);
+        Assert.Equal("combatant.linghu_chong", growth.Template(s, Linghu).Id);
     }
 
     [Fact]

@@ -82,7 +82,7 @@ public sealed partial class BattleScreen
             Ui.Rule(dark: true),
             Ui.Section("遭遇（← / →）", dark: true), encounters,
             Ui.Section("主角流派（Q / E）", dark: true), builds, buildNote,
-            Ui.Text("同行：陆青禾（长篙）；旧渡水门另有同行者（占位，经典人物援手在人物锚点核验后接入）。", UiTheme.DarkMutedLabel, 17, wrap: true),
+            Ui.Text("同行：陆青禾（长篙）；旧渡水门另有令狐冲（独孤九剑）与萧峰（降龙十八掌）援手，与正式流程中令狐冲同行一路相同。", UiTheme.DarkMutedLabel, 17, wrap: true),
             Ui.Rule(dark: true),
             Ui.Row(UiPalette.SpaceL, Ui.Text($"随机种子 {_seed}", UiTheme.DarkMutedLabel, 16), Ui.Spacer(),
                 Ui.KeyHints(true, ("Enter", "开战"), ("Esc", "返回标题")), start)));

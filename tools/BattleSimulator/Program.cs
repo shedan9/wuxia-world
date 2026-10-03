@@ -10,10 +10,12 @@ using WuxiaWorld.Infrastructure.Content;
 using WuxiaWorld.Tools.BattleSimulator;
 
 // 用法：dotnet run --project tools/BattleSimulator -- [--runs 200] [--seed 1] [--scenario <id>] [--csv build/sim/result.csv]
-//        [--hero-level N] [--no-weapon] [--unallocated]
+//        [--hero-level N] [--no-weapon] [--unallocated] [--party linghu_chong,xiao_feng] [--variants variant.a,variant.b]
 // 每个场景 × 主角流派 × 策略跑 runs 个连续种子；陆青禾固定用贪心评分出招。输出胜率、平均轮数、剩余气血、内力消耗与用药。
 // 成长档（M2-05）：默认用 5 级预设；给了 --hero-level / --no-weapon / --unallocated 时，主角改为按游戏内成长规则换算的模板——
 // 指定等级、潜能按预设的分配比例分完（--unallocated 则一点不分）、穿开局衣物，并按需去掉流派兵器。
+// --party 给出同行的经典人物（角色模板 combatant.<名>），按游戏默认阵位依次站前排右、前排左，取代场景里的占位同行者；
+// --variants 给出开局生效的遭遇变体（剧情先手），场景没有该变体时忽略。
 var runs = 200;
 ulong seed0 = 1;
 string? only = null;
@@ -22,6 +24,8 @@ string? root = null;
 int? heroLevel = null;
 var noWeapon = false;
 var unallocated = false;
+string[] party = [];
+string[] variants = [];
 for (var i = 0; i < args.Length; i++)
 {
     switch (args[i])
@@ -34,6 +38,8 @@ for (var i = 0; i < args.Length; i++)
         case "--hero-level": heroLevel = int.Parse(args[++i], CultureInfo.InvariantCulture); break;
         case "--no-weapon": noWeapon = true; break;
         case "--unallocated": unallocated = true; break;
+        case "--party": party = args[++i].Split(',', StringSplitOptions.RemoveEmptyEntries); break;
+        case "--variants": variants = args[++i].Split(',', StringSplitOptions.RemoveEmptyEntries); break;
         default: throw new ArgumentException($"未知参数 {args[i]}");
     }
 }
@@ -61,6 +67,11 @@ if (heroLevel is not null || noWeapon || unallocated)
     Console.WriteLine($"成长档：主角 {level} 级，{(unallocated ? "潜能未分配" : "潜能按预设比例分配")}，{(noWeapon ? "无流派兵器" : "带流派兵器")}，穿开局衣物");
 }
 
+if (party.Length > 0 || variants.Length > 0)
+{
+    Console.WriteLine($"同行：{(party.Length > 0 ? string.Join("、", party) : "按场景")} · 遭遇变体：{(variants.Length > 0 ? string.Join("、", variants) : "无")}");
+}
+
 var builds = new[] { "sword", "fist", "inner" };
 var csv = new StringBuilder("scenario,build,policy,runs,win_rate,avg_rounds,p90_rounds,avg_party_hp_pct,avg_inner_spent,avg_items,timeouts\n");
 
@@ -75,7 +86,7 @@ foreach (var scenario in Scenarios.All.Where(s => only is null || s.Id == only))
         foreach (var policyName in new[] { build, "greedy", "basic" })
         {
             var policy = Policies.ByName(policyName);
-            var stats = Run(engine, content, scenario, build, policy, runs, seed0, heroOf);
+            var stats = Run(engine, content, scenario, build, policy, runs, seed0, heroOf, party, variants);
             Console.WriteLine(string.Create(CultureInfo.InvariantCulture,
                 $"  {build,-7} {policyName,-7} {stats.WinRate,6:P0}  {stats.AvgRounds,6:F1}  {stats.P90Rounds,5}  {stats.AvgHpPct,7:P0}  {stats.AvgInner,8:F0}  {stats.AvgItems,4:F1}  {stats.Timeouts,4}"));
             csv.Append(CultureInfo.InvariantCulture,
@@ -118,8 +129,15 @@ static CombatantTemplate HeroVariant(CombatantTemplate preset, Attributes baseli
 }
 
 static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario scenario, string build, IPolicy policy, int runs, ulong seed0,
-    Func<CombatantTemplate, CombatantTemplate> heroOf)
+    Func<CombatantTemplate, CombatantTemplate> heroOf, string[] party, string[] variants)
 {
+    // 与 PartyRules.DefaultOrder 一致：主角前排中、陆青禾后排中，其后前排右、前排左。
+    Position[] guestCells = [new(0, 2), new(0, 0)];
+    var encounter = content.Encounter(scenario.Id);
+    IReadOnlyList<string> active = [.. variants.Where(v => encounter.Variants.Any(x => x.Id == v))];
+    AllyEntry[] guests = party.Length > 0
+        ? [.. party.Take(guestCells.Length).Select((who, i) => new AllyEntry(content.Combatant("combatant." + who), "char." + who, guestCells[i]))]
+        : scenario.Guest ? [new AllyEntry(content.Combatant("combatant.placeholder.companion"), "char.guest", guestCells[0])] : [];
     var greedy = Policies.ByName("greedy");
     int wins = 0, timeouts = 0;
     var rounds = new List<int>();
@@ -134,8 +152,9 @@ static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario 
             [
                 new AllyEntry(heroOf(content.Combatant($"combatant.hero.{build}")), "char.hero", new Position(0, 1)),
                 new AllyEntry(content.Combatant("combatant.lu_qinghe"), "char.lu_qinghe", new Position(1, 1)),
-                .. scenario.Guest ? [new AllyEntry(content.Combatant("combatant.placeholder.companion"), "char.guest", new Position(0, 2))] : Array.Empty<AllyEntry>(),
+                .. guests,
             ],
+            Variants = active,
             Items = new Dictionary<string, int> { [Policies.GoldenSore] = 2, [Policies.QiPill] = 1 },
         };
         var session = new BattleSession(engine, setup);
@@ -174,8 +193,8 @@ static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario 
         }
 
         rounds.Add(session.State.Round);
-        var party = session.State.Units.Where(u => u.Side == Side.Ally).ToList();
-        hpPct += party.Sum(u => u.Hp) / (double)party.Sum(u => u.Stats.MaxHp);
+        var allies = session.State.Units.Where(u => u.Side == Side.Ally).ToList();
+        hpPct += allies.Sum(u => u.Hp) / (double)allies.Sum(u => u.Stats.MaxHp);
         inner += spent;
         items += used;
     }

@@ -6,6 +6,7 @@
     "loadout": { "skills": ["skill.enemy.escort_chop"] },
     "equipment": { "external_attack": 6 },
     "overrides": { "max_hp": 150 },
+    "tags": ["blade"],
     "ai": "ai.brawler",
     "art_id": "figure.escort"
   },
@@ -15,6 +16,7 @@
     "attributes": { "physique": 4, "strength": 6, "root": 4, "agility": 9, "insight": 6 },
     "loadout": { "skills": ["skill.enemy.hook_throw", "skill.enemy.escort_chop"] },
     "overrides": { "max_hp": 125 },
+    "tags": ["hook"],
     "ai": "ai.skirmisher",
     "art_id": "figure.escort"
   },
@@ -25,7 +27,7 @@
     "loadout": { "skills": ["skill.enemy.bodyguard", "skill.enemy.brace", "skill.enemy.escort_chop"] },
     "equipment": { "external_defense": 10 },
     "overrides": { "max_hp": 240 },
-    "tags": ["armored"],
+    "tags": ["armored", "blade"],
     "ai": "ai.guardian",
     "art_id": "figure.escort"
   },
@@ -36,7 +38,7 @@
     "loadout": { "skills": ["skill.boss.harbor_blade", "skill.boss.chain_hook", "skill.boss.sluice_torrent", "skill.boss.undertow_hook"] },
     "equipment": { "external_attack": 8, "external_defense": 16 },
     "overrides": { "max_hp": 620, "max_stance": 80 },
-    "tags": ["boss", "armored"],
+    "tags": ["boss", "armored", "blade", "hook"],
     "ai": "ai.boss.tang_shouting",
     "control_threshold": 2,
     "art_id": "figure.tang_shouting"

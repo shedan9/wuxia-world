@@ -47,6 +47,36 @@
     "art_id": "figure.lu_qinghe"
   },
   {
+    "id": "combatant.linghu_chong",
+    "level": 7,
+    "attributes": { "physique": 7, "strength": 10, "root": 6, "agility": 10, "insight": 10 },
+    "loadout": {
+      "skills": ["skill.sword.dugu_blade", "skill.sword.dugu_rope", "skill.sword.dugu_formless"]
+    },
+    "equipment": { "external_attack": 12 },
+    "art_id": "figure.linghu_chong"
+  },
+  {
+    "id": "combatant.huang_rong",
+    "level": 7,
+    "attributes": { "physique": 6, "strength": 7, "root": 9, "agility": 11, "insight": 10 },
+    "loadout": {
+      "skills": ["skill.staff.dagou_trip", "skill.staff.dagou_seal", "skill.staff.dagou_lure"]
+    },
+    "equipment": { "external_attack": 10 },
+    "art_id": "figure.huang_rong"
+  },
+  {
+    "id": "combatant.xiao_feng",
+    "level": 7,
+    "attributes": { "physique": 11, "strength": 13, "root": 8, "agility": 6, "insight": 5 },
+    "loadout": {
+      "skills": ["skill.fist.xianglong_kanglong", "skill.fist.xianglong_jianlong", "skill.fist.shield_palm"]
+    },
+    "equipment": { "external_defense": 6 },
+    "art_id": "figure.xiao_feng"
+  },
+  {
     "id": "combatant.placeholder.companion",
     "level": 6,
     "attributes": { "physique": 8, "strength": 10, "root": 7, "agility": 8, "insight": 7 },

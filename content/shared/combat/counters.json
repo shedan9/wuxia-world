@@ -4,5 +4,8 @@
   { "skill_tag": "heavy", "target_tag": "mechanism", "bp": 12500 },
   { "skill_tag": "pierce", "target_tag": "mechanism", "bp": 12000 },
   { "skill_tag": "internal", "target_tag": "mechanism", "bp": 8000 },
-  { "skill_tag": "sweep", "target_tag": "armored", "bp": 8500 }
+  { "skill_tag": "sweep", "target_tag": "armored", "bp": 8500 },
+  { "skill_tag": "break_blade", "target_tag": "blade", "bp": 12000 },
+  { "skill_tag": "break_rope", "target_tag": "hook", "bp": 12500 },
+  { "skill_tag": "break_rope", "target_tag": "mechanism", "bp": 12500 }
 ]

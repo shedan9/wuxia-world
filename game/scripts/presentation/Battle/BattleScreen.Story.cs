@@ -14,8 +14,9 @@ namespace WuxiaWorld.Game.Presentation.Battle;
 /// 按请求的遭遇与当前队伍开打；结算页确认后经 <see cref="GameSession.SettleBattle"/> 以 <c>battle_instance_id</c> 一次性提交，
 /// 再回探索页。战败可再战（新实例）或暂退（执行战败收束、回本图安全入口）。
 /// 主角由世界状态现推战斗模板（等级、潜能、装备、装配与熟练度，见 <see cref="Domain.World.GrowthRules.Template"/>）；
-/// 可招募伙伴按同行记录的等级现推，暂时同行的经典人物在个人战斗模板制作前（M3）用占位同行者模板，显示真名；
-/// 站位取队伍页设定的阵位（<see cref="PartyRules"/>）。
+/// 可招募伙伴按同行记录的等级现推，暂时同行的经典人物用各自角色模板（令狐冲、黄蓉、萧峰的个人招式）；
+/// 站位取队伍页设定的阵位（<see cref="PartyRules"/>）；同行者先手与支线结果按世界事实套用遭遇变体。
+/// 开战输入由 <see cref="GameSession.StoryBattleSetup"/> 统一给出，规则测试走同一条路径。
 /// 战斗用药读行囊里的数量，用掉的随结算一并从行囊扣除（无论胜负，重复结算不重复扣）。
 /// </summary>
 public sealed partial class BattleScreen
@@ -28,21 +29,21 @@ public sealed partial class BattleScreen
         _story = play;
         var w = play.Game.World;
         _pending = w.Battle!;
-        var content = _engine.Content;
 
         // 讨教所学的流派只用于开发说明；主角的数值与招式一律来自世界状态里的成长构成（M2-05）。
         _build = w.Skills.Any(s => s.StartsWith("skill.fist.", StringComparison.Ordinal)) ? 1
             : w.Skills.Any(s => s.StartsWith("skill.inner.", StringComparison.Ordinal)) ? 2 : 0;
         var growth = play.Game.Growth!;
-        var allies = PartyRules.Cells(w).Take(BattleSetup.MaxAllies)
-            .Select(x => new AllyEntry(growth.Template(w, x.Id), x.Id, new Position(PartyRules.RowOf(x.Cell), PartyRules.SlotOf(x.Cell))))
-            .ToList();
-
-        var items = w.Items.Where(i => content.Items.ContainsKey(i.Key) && i.Value > 0).ToDictionary(i => i.Key, i => i.Value);
-        var setup = new BattleSetup { EncounterId = _pending.Encounter, Seed = StorySeed(_pending.InstanceId, w.RngState), Allies = allies, Items = items };
+        var setup = play.Game.StoryBattleSetup(StorySeed(_pending.InstanceId, w.RngState));
         Begin(setup, AppHost.DevInfo
             ? $"{_bundle.Name(setup.EncounterId)}：主角 {growth.Level(w)} 级（{Builds[_build].Label}）· 第 {_pending.Attempt} 次 · 种子 {setup.Seed}"
             : _pending.Attempt > 1 ? $"再战{_bundle.Name(setup.EncounterId)}" : $"{_bundle.Name(setup.EncounterId)}，开战");
+        if (DevCapture.Autoplay > 0)
+        {
+            GD.Print($"[autoplay] 战斗 {_pending.InstanceId}：上场 {string.Join("、", setup.Allies.Select(a => $"{a.UnitId}={a.Template.Id}"))}；"
+                + $"变体 {(setup.Variants.Count > 0 ? string.Join("、", setup.Variants) : "无")}");
+        }
+
         if (DevCapture.Holding("battle"))
         {
             // 停在第 2 轮轮到我方时截图。

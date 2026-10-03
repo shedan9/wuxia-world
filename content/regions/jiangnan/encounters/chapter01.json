@@ -6,6 +6,17 @@
       { "template": "combatant.enemy.escort", "unit_id": "enemy.escort_b", "row": 0, "slot": 2 },
       { "template": "combatant.enemy.hookman", "unit_id": "enemy.hookman", "row": 1, "slot": 1 }
     ],
+    "variants": [
+      {
+        "id": "variant.ch01.disguise_seen",
+        "when_fact": "fact.ch01.disguise_seen",
+        "statuses": [
+          { "unit": "enemy.escort_a", "status": "status.insight" },
+          { "unit": "enemy.escort_b", "status": "status.insight" },
+          { "unit": "enemy.hookman", "status": "status.insight" }
+        ]
+      }
+    ],
     "experience": 60,
     "cultivation": 30
   },
@@ -42,6 +53,18 @@
         "unit": "enemy.tang_shouting",
         "value": 5000,
         "spawn": [{ "template": "combatant.enemy.yard_guard", "unit_id": "enemy.yard_guard", "row": 0, "slot": 0 }]
+      }
+    ],
+    "variants": [
+      {
+        "id": "variant.ch01.sluice_jammed",
+        "when_fact": "fact.ch01.sluice_jammed",
+        "hp": [{ "unit": "enemy.sluice_gate", "bp": 5500 }]
+      },
+      {
+        "id": "variant.ch01.ferryman_freed",
+        "when_fact": "fact.ch01.ferryman_freed_early",
+        "statuses": [{ "unit": "enemy.sluice_gate", "status": "status.sluice_slack" }]
       }
     ],
     "experience": 140,

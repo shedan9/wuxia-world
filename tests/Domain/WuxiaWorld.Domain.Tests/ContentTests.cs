@@ -28,8 +28,9 @@ public class ContentTests
     public void Demo_has_eight_to_twelve_player_skills_and_three_inner_arts()
     {
         var b = TestContent.Bundle;
-        var player = b.Skills.Count(s => s.Id.StartsWith("skill.sword.", StringComparison.Ordinal)
-            || s.Id.StartsWith("skill.fist.", StringComparison.Ordinal) || s.Id.StartsWith("skill.inner.", StringComparison.Ordinal));
+        // 主角可学的招式（三套流派预设所用）；同行者的个人招式（独孤九剑、打狗棒法、降龙十八掌）不计入。
+        var player = b.Combatants.Where(c => c.Id.StartsWith("combatant.hero.", StringComparison.Ordinal))
+            .SelectMany(c => c.Loadout.Skills).Distinct(StringComparer.Ordinal).Count();
         Assert.InRange(player, 8, 12);
         Assert.Equal(3, b.Arts.Count(a => a.Kind == ArtKind.Inner));
         Assert.InRange(b.Arts.Count(a => a.Kind == ArtKind.Qinggong), 1, 2);

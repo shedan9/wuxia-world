@@ -178,6 +178,19 @@ public static partial class WorldContentValidator
             }
         }
 
+        // 遭遇变体：生效条件的事实须有内容能写出那个值，否则变体永远不会出现。
+        if (combat is not null)
+        {
+            var facts = AllEffects(w).Where(e => e.Type == WorldEffectType.SetFact).Select(e => (e.Id, e.Value)).ToHashSet();
+            foreach (var enc in combat.Encounters)
+            {
+                foreach (var v in enc.Variants.Where(v => !facts.Contains((v.WhenFact, v.WhenValue))))
+                {
+                    Err($"{enc.Id}/{v.Id}：没有内容会把 {v.WhenFact} 设为 {v.WhenValue}");
+                }
+            }
+        }
+
         // 新游戏
         if (w.NewGame is not { } ng)
         {

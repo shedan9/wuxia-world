@@ -1,4 +1,6 @@
 using WuxiaWorld.Domain.Characters;
+using WuxiaWorld.Domain.Combat;
+using WuxiaWorld.Domain.Combat.Definitions;
 using WuxiaWorld.Domain.World;
 
 namespace WuxiaWorld.Application.World;
@@ -495,6 +497,27 @@ public sealed class GameSession
     }
 
     // ── 战斗结算 ──────────────────────────────────────────
+
+    /// <summary>
+    /// 待开剧情战的开战输入（界面与测试共用）：主角与可招募伙伴由世界状态现推模板，暂时同行的经典人物用各自角色模板；
+    /// 站位取队伍阵位；带入行囊里的战斗用药；同行者先手与支线结果按世界事实套用遭遇变体。需要成长规则（含战斗内容）。
+    /// </summary>
+    public BattleSetup StoryBattleSetup(ulong seed)
+    {
+        var growth = Growth ?? throw new InvalidOperationException("没有成长规则，不能开剧情战");
+        var w = World;
+        var pending = w.Battle ?? throw new InvalidOperationException("没有待开战斗");
+        var content = growth.Combat;
+        var allies = PartyRules.Cells(w).Take(BattleSetup.MaxAllies)
+            .Select(x => new AllyEntry(growth.Template(w, x.Id), x.Id, new Position(PartyRules.RowOf(x.Cell), PartyRules.SlotOf(x.Cell))))
+            .ToList();
+        var items = w.Items.Where(i => content.Items.ContainsKey(i.Key) && i.Value > 0).ToDictionary(i => i.Key, i => i.Value);
+        return new BattleSetup
+        {
+            EncounterId = pending.Encounter, Seed = seed, Allies = allies, Items = items,
+            Variants = EncounterVariants.Active(content.Encounter(pending.Encounter), w),
+        };
+    }
 
     /// <summary>
     /// 以 <c>battle_instance_id</c> 一次性结算（架构文档 11）：胜利效果按请求只发一次，

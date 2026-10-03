@@ -250,6 +250,54 @@ public static partial class CombatContentValidator
                 RequireText(phase.Id + ".name");
             }
 
+            var initialUnits = e.Enemies.Select(s => s.UnitId ?? s.Template).ToHashSet(StringComparer.Ordinal);
+            var variantIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var v in e.Variants)
+            {
+                if (!variantIds.Add(v.Id))
+                {
+                    Err($"{e.Id}：变体 ID 重复 {v.Id}");
+                }
+
+                if (string.IsNullOrEmpty(v.WhenFact))
+                {
+                    Err($"{e.Id}/{v.Id}：变体缺少 when_fact");
+                }
+
+                if (v.Statuses.Count == 0 && v.Hp.Count == 0)
+                {
+                    Err($"{e.Id}/{v.Id}：变体没有任何改动");
+                }
+
+                foreach (var ps in v.Statuses)
+                {
+                    if (!initialUnits.Contains(ps.Unit))
+                    {
+                        Err($"{e.Id}/{v.Id}：状态目标不在开局阵容里 {ps.Unit}");
+                    }
+
+                    if (ps.Remove || !statuses.ContainsKey(ps.Status))
+                    {
+                        Err($"{e.Id}/{v.Id}：状态不存在或写了 remove {ps.Status}");
+                    }
+                }
+
+                foreach (var hp in v.Hp)
+                {
+                    if (!initialUnits.Contains(hp.Unit))
+                    {
+                        Err($"{e.Id}/{v.Id}：气血目标不在开局阵容里 {hp.Unit}");
+                    }
+
+                    if (hp.Bp is <= 0 or > 10_000)
+                    {
+                        Err($"{e.Id}/{v.Id}：气血比例须在 1–10000 之间");
+                    }
+                }
+
+                RequireText(v.Id + ".name");
+            }
+
             if (e.Locked)
             {
                 RequireText(e.Id + ".locked");

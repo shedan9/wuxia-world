@@ -293,7 +293,7 @@ public sealed class PartyPage
         return World.Companions.ContainsKey(id) ? "已离队" : "相识";
     }
 
-    /// <summary>等级：主角与伙伴写等级；经典人物在个人战斗档案制作前不写数值。</summary>
+    /// <summary>等级：主角与伙伴写等级；经典人物不写（不被读作实力排名，见人物页）。</summary>
     private string LevelText(string id)
     {
         var growth = Game.Growth!;

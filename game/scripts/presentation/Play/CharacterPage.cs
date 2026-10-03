@@ -15,7 +15,7 @@ using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 /// <summary>
 /// 人物页（C，或暂停菜单“人物”）：属性与潜能分配、武学装配与修炼、装备，版式沿用 M0 已验收的人物页（UI_DESIGN 5.2），
 /// 内容全部读已提交的世界状态，改动经 <see cref="GameSession"/> 的养成事务提交，提交后整页按新状态重建。
-/// 只有主角可养成；同行者显示其战斗模板的数值（经典人物在档案核验前不显示数值）。
+/// 只有主角可养成；同行者显示其战斗模板的数值（经典人物只列个人武学，不显示等级与属性）。
 /// 对话、换图或待开战斗期间只能查看，操作按钮置灰并写明原因。
 /// </summary>
 public sealed class CharacterPage
@@ -229,7 +229,7 @@ public sealed class CharacterPage
 
     /// <summary>
     /// 同行者：可招募伙伴显示随成长现推的数值（等级、经验、属性）；暂时同行的原创人物显示其角色模板；
-    /// 经典人物的个人战斗档案制作前不显示数值（不被读作实力排名）。
+    /// 经典人物只列个人武学与效果，不显示等级与属性（模板数值是第一章的平衡取值，不被读作实力排名）。
     /// </summary>
     private Control Companion()
     {
@@ -240,9 +240,16 @@ public sealed class CharacterPage
             : "暂时同行：随事件来去，实力随其原著阶段与角色模板，不随主角成长。", UiTheme.MutedLabel, wrap: true));
         if (content.Characters.TryGetValue(_who, out var c) && c.Origin == CharacterOrigin.Canon)
         {
-            column.AddChild(Ui.Panel(UiTheme.InsetPanel, Ui.Column(UiPalette.SpaceS,
-                Ui.Text("个人战斗档案待制作", UiTheme.AccentLabel),
-                Ui.Text("经典人物的武学与实力按所选原著阶段整理，制作完成前不展示数值。", UiTheme.MutedLabel, wrap: true))));
+            var arts = Ui.Column(UiPalette.SpaceS, Ui.Text("武学", UiTheme.AccentLabel));
+            foreach (var id in Growth.Template(World, _who).Loadout.Skills)
+            {
+                arts.AddChild(Ui.Row(UiPalette.SpaceM, GrowthText.SkillGlyph(id, _play.Combat.Glyph(id), 48), Ui.Expand(Ui.Column(2,
+                    Ui.Text(_play.Combat.Name(id), size: 20),
+                    Ui.Text(_play.Text(id + ".desc") ?? "", UiTheme.MutedLabel, 17, wrap: true)))));
+            }
+
+            arts.AddChild(Ui.Text("经典人物的实力按所选原著阶段体现，不标等级与属性，也不随主角成长。", UiTheme.MutedLabel, 17, wrap: true));
+            column.AddChild(Ui.Panel(UiTheme.InsetPanel, arts));
             return column;
         }
 
@@ -291,7 +298,7 @@ public sealed class CharacterPage
                     _skill = skill;
                     ShowSkill(detail, build, skill);
                 }, _play.Combat.Name(id), $"{GrowthText.School(id)}　{GrowthText.Cost(def)}　第 {tier} 阶",
-                build.Skills.Contains(id) ? "已装配" : null, GrowthText.SkillGlyph(id, _play.Combat.Name(id), 48), id == _skill));
+                build.Skills.Contains(id) ? "已装配" : null, GrowthText.SkillGlyph(id, _play.Combat.Glyph(id), 48), id == _skill));
         }
 
         if (learned.Count == 0)

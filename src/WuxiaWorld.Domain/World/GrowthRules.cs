@@ -330,7 +330,7 @@ public sealed class GrowthRules(WorldRules world, CombatContent combat)
 
     // ── 同行者（架构文档 8.4、9.4.4） ─────────────────────
 
-    /// <summary>经典人物的个人战斗模板制作前（M3）共用的占位同行者模板。</summary>
+    /// <summary>没有角色模板的同行者共用的占位模板（第一章三侠已有个人模板，此为后续新登场人物建模前的退路）。</summary>
     public const string PlaceholderCompanion = "combatant.placeholder.companion";
 
     /// <summary>同行者的角色模板；没有模板的人物用占位同行者模板。</summary>

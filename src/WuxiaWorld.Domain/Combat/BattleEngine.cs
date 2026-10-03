@@ -15,6 +15,9 @@ public sealed record BattleSetup
     public IReadOnlyList<AllyEntry> Allies { get; init; } = [];
     public IReadOnlyDictionary<string, int> Items { get; init; } = new Dictionary<string, int>();
     public ulong Seed { get; init; }
+
+    /// <summary>生效的遭遇变体 ID（按遭遇定义里的次序套用）；未定义的 ID 开战时报错。</summary>
+    public IReadOnlyList<string> Variants { get; init; } = [];
 }
 
 public sealed record CommandResult(bool Accepted, string? Rejection, IReadOnlyList<BattleEvent> Events)
@@ -83,9 +86,42 @@ public sealed partial class BattleEngine(CombatContent content)
         }
 
         var ctx = new Ctx(state, _content);
+        ApplyVariants(ctx, encounter, setup.Variants);
         StartRound(ctx);
         AdvanceToNextActor(ctx);
         return (state, ctx.Events);
+    }
+
+    /// <summary>开局套用遭遇变体：按遭遇定义的次序，先调气血、再施加状态，每个变体发一条阶段提示。</summary>
+    private void ApplyVariants(Ctx ctx, EncounterDefinition encounter, IReadOnlyList<string> ids)
+    {
+        foreach (var id in ids)
+        {
+            if (!encounter.Variants.Any(v => v.Id == id))
+            {
+                throw new ArgumentException($"遭遇 {encounter.Id} 没有变体 {id}。");
+            }
+        }
+
+        foreach (var variant in encounter.Variants.Where(v => ids.Contains(v.Id, StringComparer.Ordinal)))
+        {
+            ctx.Emit(new PhaseTriggered(variant.Id));
+            foreach (var hp in variant.Hp)
+            {
+                if (ctx.State.TryUnit(hp.Unit) is { } unit)
+                {
+                    unit.Hp = Math.Max(1, (int)Bp.Apply(unit.Stats.MaxHp, hp.Bp));
+                }
+            }
+
+            foreach (var ps in variant.Statuses)
+            {
+                if (ctx.State.TryUnit(ps.Unit) is { } unit)
+                {
+                    ApplyStatusDirect(ctx, unit, _content.Status(ps.Status), null, 0, 1);
+                }
+            }
+        }
     }
 
     private static void AddUnit(BattleState state, BattleUnit unit)

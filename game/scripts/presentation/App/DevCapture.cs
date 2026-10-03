@@ -50,6 +50,9 @@ public static class DevCapture
     /// <summary>逐张地图核对摆放：落点能站人、每个交互点在交互距离内走得到；打印结果后退出，有问题时退出码为 3。</summary>
     public static bool CheckStaging { get; private set; }
 
+    /// <summary>自动走查在讨教与同行选择中选哪位侠客（<c>--companion=linghu|huang|xiao</c>）；缺省取第一个选项。</summary>
+    public static string? Companion { get; private set; }
+
     /// <summary>自动走查时第一场剧情战按战败暂退处理（核对战败、暂退与重新迎战的流程）。</summary>
     public static bool LoseFirst { get; set; }
 
@@ -136,6 +139,9 @@ public static class DevCapture
                     break;
                 case "--side":
                     Side = true;
+                    break;
+                case "--companion":
+                    Companion = value;
                     break;
                 case "--lose-first":
                     LoseFirst = true;

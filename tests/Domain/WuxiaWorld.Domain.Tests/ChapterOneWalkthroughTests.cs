@@ -522,8 +522,17 @@ public class ChapterOneWalkthroughTests
             PlayAuto(); // 收束
         }
 
+        /// <summary>真打剧情战：给出时由它开战并结算（须打赢），否则按胜利直接结算。</summary>
+        public Action<GameSession>? Fighter { get; init; }
+
         public void WinBattle()
         {
+            if (Fighter is not null)
+            {
+                Fighter(Game);
+                return;
+            }
+
             var b = Game.World.Battle ?? throw new InvalidOperationException("没有待开战斗");
             // 按遭遇定义发经验与修为，与游戏内剧情战一致。
             var encounter = TestContent.Bundle.Encounters.First(e => e.Id == b.Encounter);

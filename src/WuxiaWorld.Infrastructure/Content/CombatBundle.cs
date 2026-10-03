@@ -31,6 +31,12 @@ public sealed record CombatBundle
 
     public string Name(string id) => Text.TryGetValue(id + ".name", out var name) ? name : id;
 
+    /// <summary>卡面、图标用的短名（<c>.short</c>，如“绊字诀”）；没有时同 <see cref="Name"/>。</summary>
+    public string ShortName(string id) => Text.TryGetValue(id + ".short", out var name) ? name : Name(id);
+
+    /// <summary>招式图标上的单字（<c>.glyph</c>，用于短名首字相同的同门招式，如破刀式“刀”、破索式“索”）；没有时取短名首字。</summary>
+    public string Glyph(string id) => Text.TryGetValue(id + ".glyph", out var g) ? g : ShortName(id)[..1];
+
     public string? Describe(string id) => Text.TryGetValue(id + ".desc", out var desc) ? desc : null;
 
     public static CombatBundle Parse(string json)

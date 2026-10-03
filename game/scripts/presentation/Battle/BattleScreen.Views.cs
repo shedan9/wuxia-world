@@ -298,7 +298,7 @@ public sealed partial class BattleScreen
         _sceneTitle = Ui.Text("", UiTheme.DarkLabel, 20);
         var story = AppHost.Instance.Play is { Game.World.Battle: not null };
         var note = story
-            ? "剧情战：结算写回世界；动作为补间占位，经典人物暂用占位模板"
+            ? "剧情战：结算写回世界；动作为补间占位"
             : "M1 战斗原型：结算来自规则内核；动作为补间占位";
         var column = Ui.Column(2, _sceneTitle);
         if (!story || AppHost.DevInfo)
@@ -489,9 +489,11 @@ public sealed partial class BattleScreen
         var body = Ui.Column(2);
         body.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         body.Alignment = BoxContainer.AlignmentMode.Center;
-        var glyph = Ui.Glyph(name[..1], skillId == CoreIds.BasicAttack ? UiPalette.TextMuted : UiPalette.Trim, 48);
+        // 卡面用短名（“破刀式”），全名写在提示与下方说明行。
+        var shortName = _bundle.ShortName(skillId);
+        var glyph = Ui.Glyph(_bundle.Glyph(skillId), skillId == CoreIds.BasicAttack ? UiPalette.TextMuted : UiPalette.Trim, 48);
         glyph.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
-        var caption = Ui.Text(name, UiTheme.DarkLabel, 17);
+        var caption = Ui.Text(shortName, UiTheme.DarkLabel, 17);
         caption.HorizontalAlignment = HorizontalAlignment.Center;
         // 卡面只写消耗，冷却写在下方说明行里，免得三项挤出卡面。
         var costText = def.InnerCost == 0 && def.MomentumCost == 0 ? "无消耗"

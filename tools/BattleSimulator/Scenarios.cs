@@ -9,7 +9,7 @@ namespace WuxiaWorld.Tools.BattleSimulator;
 /// </summary>
 internal static class Scenarios
 {
-    /// <param name="Guest">第三名同行者（正式 Demo 里由经典人物担任；此处用内容里的占位同行者，不代表人物数值）。</param>
+    /// <param name="Guest">第三名同行者：默认用内容里的占位同行者作 M1 基线对比；给了 --party 时换成经典人物的角色模板。</param>
     public sealed record Scenario(string Id, string Title, string SuitedBuild, bool Guest = false);
 
     public static readonly Scenario[] All =

@@ -56,6 +56,13 @@
     "damage_taken_bp": -2000
   },
   {
+    "id": "status.sluice_slack",
+    "tags": ["mechanism"],
+    "tick": "owner_action_end",
+    "duration": 1,
+    "skip_action": true
+  },
+  {
     "id": "status.exposed",
     "harmful": true,
     "tags": ["mechanism"],

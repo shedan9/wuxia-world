@@ -118,16 +118,16 @@ public partial class DialogueOverlay : Control
                 if (_walkKeyDelay <= 0)
                 {
                     _walkKeyDelay = 0.15;
-                    ExplorationScreen.PressKey(Runner.AwaitingChoice && _choices.Visible ? Key.Key1 : Key.Enter);
+                    ExplorationScreen.PressKey(Runner.AwaitingChoice && _choices.Visible ? Key.Key1 + AutoplayChoice() : Key.Enter);
                 }
 
                 return;
             }
 
-            // 自动走查：读完即进，选项取第一个可选项。
+            // 自动走查：读完即进，选项取第一个可选项（--companion 指定时讨教与同行选那位侠客）。
             if (Runner.AwaitingChoice)
             {
-                Choose(0);
+                Choose(AutoplayChoice());
             }
             else
             {
@@ -224,6 +224,18 @@ public partial class DialogueOverlay : Control
         AppHost.Instance.Voice.Stop();
         Runner.Continue();
         Show(first: false);
+    }
+
+    /// <summary>自动走查要选的可选项序号：有以 <c>.choice.&lt;--companion&gt;</c> 结尾的选项就选它，否则第一个。</summary>
+    private int AutoplayChoice()
+    {
+        if (DevCapture.Companion is not { } who)
+        {
+            return 0;
+        }
+
+        var index = Runner.Choices.Where(c => c.Enabled).ToList().FindIndex(c => c.Option.LineId.EndsWith(".choice." + who, StringComparison.Ordinal));
+        return Math.Max(0, index);
     }
 
     private void Choose(int index)
