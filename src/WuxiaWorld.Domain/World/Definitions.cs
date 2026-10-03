@@ -250,6 +250,9 @@ public sealed record MapDefinition
     /// <summary>安全入口：缺失落点、战败回退都回到这里。</summary>
     public required string SafeSpawn { get; init; }
 
+    /// <summary>城镇：安全的人居之地，开放洗点等养成设施（架构文档 8.2）。</summary>
+    public bool Town { get; init; }
+
     public IReadOnlyList<string> Spawns { get; init; } = [];
     public IReadOnlyList<MapExit> Exits { get; init; } = [];
     public IReadOnlyList<MapInteractable> Interactables { get; init; } = [];
@@ -502,6 +505,9 @@ public sealed record ProgressionDefinition
 
     /// <summary>熟练度每高一阶，该招式的效果强度增加的万分比（第 1 阶为基准）。</summary>
     public int MasteryPowerBp { get; init; } = 500;
+
+    /// <summary>在城镇洗点一次的银两 = 等级 × 此值（至少 1 两）；0 表示不开放洗点。</summary>
+    public int RespecSilverPerLevel { get; init; }
 
     public IReadOnlyList<StyleDefinition> Styles { get; init; } = [];
 

@@ -446,6 +446,19 @@ public sealed class GameSession
     public CommitResult Cultivate(string who, string skillId) =>
         Manage(g => g.Cultivate(Candidate, who, skillId), new WorldNotice("mastery", skillId));
 
+    /// <summary>
+    /// 在城镇洗点：潜能，或招式熟练度（给了招式只退这一门），花银两；通知带收回的点数或返还的修为，
+    /// ID 为人物（潜能、全部熟练度）或招式。
+    /// </summary>
+    public CommitResult Respec(string who, RespecKind kind, string? skillId = null)
+    {
+        var refund = Growth?.RespecRefund(World, who, kind, skillId) ?? 0;
+        var notice = kind == RespecKind.Potential
+            ? new WorldNotice("respec.potential", who, refund)
+            : new WorldNotice("respec.mastery", skillId ?? who, refund);
+        return Manage(g => g.Respec(Candidate, who, kind, skillId), notice);
+    }
+
     /// <summary>调换阵位：把在队人物移到某格（0–2 前排、3–5 后排），该格有人则互换（见 <see cref="PartyRules"/>）。</summary>
     public CommitResult SetFormation(string who, int cell) => Manage(_ => PartyRules.SetCell(Candidate, who, cell));
 

@@ -381,6 +381,15 @@ public static partial class WorldContentValidator
                 Err("成长设置：熟练度消耗与加成须为正");
             }
 
+            if (prog.RespecSilverPerLevel < 0)
+            {
+                Err("成长设置：洗点银两不能为负");
+            }
+            else if (prog.RespecSilverPerLevel > 0 && !w.Maps.Any(m => m.Town))
+            {
+                Err("成长设置：开放了洗点，但没有一张地图标为城镇（town），无处可洗");
+            }
+
             var b = prog.BaseAttributes;
             if (b.Physique < 1 || b.Strength < 1 || b.Root < 1 || b.Agility < 1 || b.Insight < 1)
             {

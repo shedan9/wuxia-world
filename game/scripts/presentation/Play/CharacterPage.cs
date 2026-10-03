@@ -30,6 +30,9 @@ public sealed class CharacterPage
     private EquipSlot _slot = EquipSlot.Weapon;
     private string? _candidate;
     private int[] _pending = new int[5];
+    // 洗点确认：按下洗点按钮时记下对象（"potential" 或招式 ID），下一次重建显示确认。
+    private string? _respec;
+    private string? _confirming;
 
     private CharacterPage(PlaySession play, int tab)
     {
@@ -61,6 +64,8 @@ public sealed class CharacterPage
     private void Rebuild(string? message = null)
     {
         Ui.ClearChildren(_root);
+        // 洗点的确认只维持到下一次重建：按了别的按钮，确认自动收起。
+        (_confirming, _respec) = (_respec, null);
         var level = Growth.Level(World);
         _root.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("人物"), Ui.Column(4,
                 Ui.Text("人物与武学", UiTheme.DarkTitleLabel, 40),
@@ -181,7 +186,8 @@ public sealed class CharacterPage
         }
 
         rows.AddChild(Ui.Row(UiPalette.SpaceM, recommend, reset, confirm));
-        rows.AddChild(Ui.Text("潜能分配后不能收回（洗点待后续在城镇开放）。", UiTheme.MutedLabel, 18));
+        rows.AddChild(Ui.Rule());
+        rows.AddChild(RespecRow());
 
         // 右侧：战斗属性，有待确认的分配时并列“分配后”。
         var now = Growth.Stats(World, _who);
@@ -203,6 +209,71 @@ public sealed class CharacterPage
     {
         _pending[index] = Math.Max(0, _pending[index] + delta);
         Rebuild();
+    }
+
+    /// <summary>
+    /// 洗点一行（架构文档 8.2，城镇开放）：平时是按钮加说明；按下后同一行换成问句与“再想想 / 确认”（<see cref="RespecConfirm"/>）。
+    /// 不在城镇、没有可收回的、银两不够时按钮置灰并写明原因。
+    /// </summary>
+    private Control RespecRow()
+    {
+        if (_confirming == PotentialKey && Growth.CanRespecHere(World))
+        {
+            return RespecConfirm(null);
+        }
+
+        var refund = Growth.RespecRefund(World, _who, RespecKind.Potential);
+        var cost = Growth.RespecCost(World);
+        var hint = !Growth.CanRespecHere(World) ? $"洗点只在城镇进行（{string.Join("、", Towns())}）。"
+            : refund == 0 ? "分配后的潜能要收回，可在城镇洗点。"
+            : World.Silver < cost ? $"银两不足：洗点要 {cost} 两。"
+            : $"收回全部 {refund} 点已分配潜能；等级越高花费越多，剧情选择与已学武学不变。";
+        var button = RespecButton(null, $"洗点（银 {cost} 两）");
+        button.CustomMinimumSize = new Vector2(220, 52);
+        return Ui.Row(UiPalette.SpaceM, button, Ui.Expand(Ui.Text(hint, UiTheme.MutedLabel, 18, wrap: true)));
+    }
+
+    private const string PotentialKey = "potential";
+
+    private IEnumerable<string> Towns() => Game.Rules.Content.Maps.Values.Where(m => m.Town).Select(m => _play.Name(m.Id));
+
+    /// <summary>洗点按钮（<paramref name="skill"/> 为 null 时洗潜能，否则这门招式退阶）：按下只进入确认，不提交。</summary>
+    private Button RespecButton(string? skill, string text)
+    {
+        var kind = skill is null ? RespecKind.Potential : RespecKind.Mastery;
+        return Ui.Button(text, onPressed: () =>
+        {
+            _respec = skill ?? PotentialKey;
+            Rebuild();
+        }, disabled: !Editable || !Growth.CanRespecHere(World) || Growth.RespecRefund(World, _who, kind, skill) == 0
+                     || World.Silver < Growth.RespecCost(World));
+    }
+
+    /// <summary>洗点确认行：问句写明收回多少、花多少银两，焦点落在“再想想”。</summary>
+    private HBoxContainer RespecConfirm(string? skill)
+    {
+        var kind = skill is null ? RespecKind.Potential : RespecKind.Mastery;
+        var refund = Growth.RespecRefund(World, _who, kind, skill);
+        var cost = Growth.RespecCost(World);
+        var no = Ui.Button("再想想", onPressed: () => Rebuild());
+        var yes = Ui.Button(skill is null ? "洗点" : "退阶", UiTheme.PrimaryButton, () =>
+        {
+            _pending = new int[5];
+            Do(() => Game.Respec(_who, kind, skill),
+                skill is null ? $"已收回 {refund} 点潜能，可重新分配" : $"{_play.Combat.Name(skill)}退回第 1 阶，返还修为 {refund}");
+        }, disabled: !Editable);
+        no.CustomMinimumSize = new Vector2(140, 52);
+        yes.CustomMinimumSize = new Vector2(140, 52);
+        // 招式详情在一次重建里可能先后建两遍（选中行的回调 + 显式刷新），先建的那份已离开场景树，不抢焦点。
+        Callable.From(() =>
+        {
+            if (GodotObject.IsInstanceValid(no) && no.IsInsideTree())
+            {
+                no.GrabFocus();
+            }
+        }).CallDeferred();
+        var ask = skill is null ? $"收回 {refund} 点潜能，花银 {cost} 两？" : $"退回第 1 阶、返还修为 {refund}，花银 {cost} 两？";
+        return Ui.Row(UiPalette.SpaceM, Ui.Expand(Ui.Text(ask, UiTheme.AccentLabel, 20, wrap: true)), no, yes);
     }
 
     /// <summary>战斗属性表；给了 <paramref name="after"/> 时第三列写变化。</summary>
@@ -347,13 +418,27 @@ public sealed class CharacterPage
         toggle.CustomMinimumSize = new Vector2(160, 52);
         train.CustomMinimumSize = new Vector2(220, 52);
 
+        // 修炼过的招式可在城镇退回第 1 阶、返还修为（洗点）：按钮并在同一行，确认时整行换成问句。
+        var actions = Ui.Row(UiPalette.SpaceM, toggle, train);
+        if (tier > 1 && _confirming == id && Growth.CanRespecHere(World))
+        {
+            actions.Free(); // 卸下 / 修炼这一行不进场景树，当场释放
+            actions = RespecConfirm(id);
+        }
+        else if (tier > 1)
+        {
+            var back = RespecButton(id, Growth.CanRespecHere(World) ? $"退阶（银 {Growth.RespecCost(World)} 两）" : "退阶须在城镇");
+            back.CustomMinimumSize = new Vector2(200, 52);
+            actions.AddChild(back);
+        }
+
         var body = Ui.Column(UiPalette.SpaceS,
             Ui.Row(UiPalette.SpaceL, GrowthText.SkillGlyph(id, name, 64), Ui.Column(4,
                 Ui.Text(name + "　" + GrowthText.School(id) + (AppHost.DevInfo ? $"　{id}" : ""), UiTheme.SectionLabel),
                 Ui.Text(facts, UiTheme.MutedLabel, 18))),
             Ui.Text(mastery, size: 20),
             Ui.Text(_play.Combat.Describe(id) ?? "", size: 20, wrap: true),
-            Ui.Row(UiPalette.SpaceM, toggle, train));
+            actions);
         if (cost is { } need && World.Cultivation < need)
         {
             body.AddChild(Ui.Text($"修为不足：还差 {need - World.Cultivation}。修为由讨教、战斗与支线获得。", UiTheme.MutedLabel, 18, wrap: true));

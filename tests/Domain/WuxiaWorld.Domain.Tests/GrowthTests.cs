@@ -123,6 +123,109 @@ public sealed class GrowthTests : IDisposable
     }
 
     [Fact]
+    public void Respec_in_town_refunds_potential_for_level_times_silver_and_keeps_story_and_arts()
+    {
+        var g = AfterTraining().Game; // 江南客栈（城镇），5 级
+        var growth = g.Growth!;
+        Assert.True(growth.CanRespecHere(g.World));
+        Assert.Equal(5, growth.RespecCost(g.World));
+        Assert.False(g.Respec(Hero, RespecKind.Potential).Ok); // 还没分配过
+
+        Assert.True(g.Allocate(Hero, new Attributes(4, 4, 0, 0, 4)).Ok);
+        var silver = g.World.Silver;
+        var facts = g.World.Facts.ToDictionary();
+        var skills = g.World.Skills.ToList();
+        var loadout = GrowthRules.LoadoutOf(g.World.Builds[Hero]);
+        var r = g.Respec(Hero, RespecKind.Potential);
+        Assert.True(r.Ok, r.Error);
+        Assert.Contains(r.Notices, n => n.Kind == "respec.potential" && n.Amount == 12);
+        Assert.Equal(silver - 5, g.World.Silver);
+        Assert.Equal(StatFormula.PotentialAt(5), growth.Unspent(g.World, Hero));
+        Assert.Equal(g.Rules.Content.Progression.BaseAttributes, growth.AttributesOf(g.World, Hero));
+        Assert.Equal(facts, g.World.Facts);
+        Assert.Equal(skills, g.World.Skills);
+        Assert.Equal(loadout.Skills, g.World.Builds[Hero].Skills);
+        Assert.Equal(loadout.MainArt, g.World.Builds[Hero].MainArt);
+
+        // 再分配一次，与从未分配过时一样。
+        Assert.True(g.Allocate(Hero, growth.Recommend(g.World, Hero)).Ok);
+        Assert.Equal(0, growth.Unspent(g.World, Hero));
+        Assert.False(g.Respec("char.lu_qinghe", RespecKind.Potential).Ok);
+    }
+
+    [Fact]
+    public void Respec_of_mastery_returns_every_point_of_cultivation_spent()
+    {
+        var g = AfterTraining().Game;
+        var growth = g.Growth!;
+        Assert.False(g.Respec(Hero, RespecKind.Mastery).Ok); // 还没修炼过
+        Assert.True(g.Cultivate(Hero, "skill.sword.pierce").Ok);
+        g.World.Cultivation += 80; // 直接给修为，凑出第二门的两阶（30 + 60）
+        Assert.True(g.Cultivate(Hero, "skill.sword.probe").Ok);
+        Assert.True(g.Cultivate(Hero, "skill.sword.probe").Ok);
+        Assert.Equal(0, g.World.Cultivation);
+        Assert.Equal(30 + 30 + 60, growth.RespecRefund(g.World, Hero, RespecKind.Mastery));
+
+        // 只退一门：返还这一门花的修为，另一门不变。
+        var silver = g.World.Silver;
+        Assert.Equal(90, growth.RespecRefund(g.World, Hero, RespecKind.Mastery, "skill.sword.probe"));
+        var one = g.Respec(Hero, RespecKind.Mastery, "skill.sword.probe");
+        Assert.True(one.Ok, one.Error);
+        Assert.Contains(one.Notices, n => n.Kind == "respec.mastery" && n.Id == "skill.sword.probe" && n.Amount == 90);
+        Assert.Equal(90, g.World.Cultivation);
+        Assert.Equal(silver - 5, g.World.Silver);
+        Assert.Equal(1, g.World.Builds[Hero].MasteryOf("skill.sword.probe"));
+        Assert.Equal(2, g.World.Builds[Hero].MasteryOf("skill.sword.pierce"));
+        Assert.False(g.Respec(Hero, RespecKind.Mastery, "skill.sword.probe").Ok); // 已在第 1 阶
+
+        // 不给招式：全部退回。
+        var all = g.Respec(Hero, RespecKind.Mastery);
+        Assert.True(all.Ok, all.Error);
+        Assert.Equal(120, g.World.Cultivation);
+        Assert.Empty(g.World.Builds[Hero].Mastery);
+        Assert.Equal(Common.Bp.One, growth.Template(g.World, Hero).PowerOf("skill.sword.pierce"));
+    }
+
+    [Fact]
+    public void Respec_is_refused_outside_towns_without_silver_and_while_busy()
+    {
+        var w = AfterTraining();
+        var g = w.Game;
+        Assert.True(g.Allocate(Hero, new Attributes(1, 0, 0, 0, 0)).Ok);
+
+        var d = g.StartEvent(g.Events.First(e => !e.Auto).Id);
+        Assert.False(g.Respec(Hero, RespecKind.Potential).Ok); // 对话中
+        g.CancelDialogue(d);
+
+        var silver = g.World.Silver;
+        g.World.Silver = 4; // 5 级要 5 两
+        var poor = g.Respec(Hero, RespecKind.Potential);
+        Assert.False(poor.Ok);
+        Assert.Contains("银两不足", poor.Error, StringComparison.Ordinal);
+        Assert.Equal(1, g.World.Builds[Hero].Spent);
+        g.World.Silver = silver;
+
+        w.Exit("out");
+        Assert.True(g.Growth!.CanRespecHere(g.World)); // 芦湾街也是城镇
+        w.Exit("to_shore");
+        Assert.False(g.Growth.CanRespecHere(g.World)); // 河滩是野外
+        var wild = g.Respec(Hero, RespecKind.Potential);
+        Assert.False(wild.Ok);
+        Assert.Contains("城镇", wild.Error, StringComparison.Ordinal);
+        Assert.Equal(silver, g.World.Silver);
+    }
+
+    [Fact]
+    public void Validator_requires_a_town_when_respec_is_open()
+    {
+        var b = ChapterOneWalkthroughTests.Bundle.Value;
+        var noTown = b with { Maps = [.. b.Maps.Select(m => m with { Town = false })] };
+        Assert.Contains(WorldContentValidator.Validate(noTown, TestContent.Bundle), e => e.Contains("town", StringComparison.Ordinal));
+        var closed = noTown with { Progression = b.Progression! with { RespecSilverPerLevel = 0 } };
+        Assert.DoesNotContain(WorldContentValidator.Validate(closed, TestContent.Bundle), e => e.Contains("洗点", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Shop_trades_only_where_it_stands_and_keeps_silver_and_items_consistent()
     {
         var w = AfterTraining();

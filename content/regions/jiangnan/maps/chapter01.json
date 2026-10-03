@@ -27,6 +27,7 @@
     "region": "region.jiangnan",
     "scene": "town",
     "safe_spawn": "south_gate",
+    "town": true,
     "spawns": ["south_gate", "inn_door", "pier"],
     "exits": [
       { "id": "to_shore", "to": "map.jiangnan.luwan_shore", "spawn": "path_end" },
@@ -56,6 +57,7 @@
     "region": "region.jiangnan",
     "scene": "inn",
     "safe_spawn": "door",
+    "town": true,
     "spawns": ["door", "hall"],
     "exits": [
       { "id": "out", "to": "map.jiangnan.luwan_street", "spawn": "inn_door" }

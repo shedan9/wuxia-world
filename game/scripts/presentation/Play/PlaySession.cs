@@ -236,6 +236,10 @@ public sealed class PlaySession
         "cultivation" => ("成长", $"修为 +{n.Amount}"),
         "level_up" => ("成长", $"升到第 {n.Amount} 级：得 {StatFormula.PotentialPerLevel} 点潜能（C 人物页分配）"),
         "mastery" => ("武学", $"{Combat.Name(n.Id)} 熟练度提升"),
+        "respec.potential" => ("成长", $"洗点：收回 {n.Amount} 点潜能，可重新分配"),
+        "respec.mastery" => ("武学", n.Id.StartsWith("skill.", StringComparison.Ordinal)
+            ? $"{Combat.Name(n.Id)} 退回第 1 阶：返还修为 {n.Amount}"
+            : $"熟练度全部退回第 1 阶：返还修为 {n.Amount}"),
         "quest_started" => ("任务", $"开始：{Name(n.Id)}"),
         "quest_available" => ("任务", Text(n.Id + ".hint") ?? $"可接：{Name(n.Id)}"),
         "quest_completed" => ("任务", $"完成：{Name(n.Id)}"),

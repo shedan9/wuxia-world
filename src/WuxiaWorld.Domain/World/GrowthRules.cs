@@ -12,6 +12,13 @@ public enum ArtSlot
     Qinggong,
 }
 
+/// <summary>洗点的对象：已分配潜能，或招式熟练度（返还修为）。</summary>
+public enum RespecKind
+{
+    Potential,
+    Mastery,
+}
+
 /// <summary>
 /// 人物成长与装配（架构文档 8.1–8.2、8.4）：潜能分配、装备、招式与心法装配、武学熟练度（修炼），
 /// 以及由这些数据推导出战斗模板。所有改动只作用于调用方给的状态副本，返回失败原因或 null；
@@ -39,7 +46,7 @@ public sealed class GrowthRules(WorldRules world, CombatContent combat)
     public Attributes AttributesOf(WorldState s, string who) =>
         s.Builds.TryGetValue(who, out var b) ? P.BaseAttributes.Plus(b.Allocated) : P.BaseAttributes;
 
-    /// <summary>分配潜能：各项只增不减，合计不超过未分配点数。洗点属后续（架构文档 8.2，安全城镇开放）。</summary>
+    /// <summary>分配潜能：各项只增不减，合计不超过未分配点数；要收回须到城镇洗点（<see cref="Respec"/>）。</summary>
     public string? Allocate(WorldState s, string who, Attributes add)
     {
         if (!IsBuildable(who))
@@ -299,6 +306,85 @@ public sealed class GrowthRules(WorldRules world, CombatContent combat)
 
     /// <summary>某阶熟练度带来的效果强度加成（万分比）。</summary>
     public int MasteryBonusBp(int tier) => Math.Max(0, tier - 1) * P.MasteryPowerBp;
+
+    // ── 洗点 ─────────────────────────────────────────────
+
+    /// <summary>所在地图开放洗点：城镇才有（架构文档 8.2），野外与剧情现场没有。</summary>
+    public bool CanRespecHere(WorldState s) =>
+        P.RespecSilverPerLevel > 0 && World.Content.Maps.TryGetValue(s.MapId, out var map) && map.Town;
+
+    /// <summary>洗点一次的银两：等级 × 每级银两，至少 1 两。潜能与每门招式的熟练度分开洗，各收一次。</summary>
+    public int RespecCost(WorldState s) => Math.Max(1, Level(s) * P.RespecSilverPerLevel);
+
+    /// <summary>
+    /// 洗点能收回多少：潜能为已分配点数；熟练度为升阶已花的修为——给了 <paramref name="skillId"/> 只算这一门，否则合计全部招式。
+    /// </summary>
+    public int RespecRefund(WorldState s, string who, RespecKind kind, string? skillId = null)
+    {
+        if (!s.Builds.TryGetValue(who, out var b))
+        {
+            return 0;
+        }
+
+        if (kind == RespecKind.Potential)
+        {
+            return b.Spent;
+        }
+
+        int Spent(int tier) => P.MasteryCosts.Take(Math.Clamp(tier - 1, 0, P.MasteryCosts.Count)).Sum();
+        return skillId is null ? b.Mastery.Values.Sum(Spent) : Spent(b.MasteryOf(skillId));
+    }
+
+    /// <summary>
+    /// 洗点：在城镇花银两，把已分配潜能全部收回成未分配点；或把招式熟练度退回第 1 阶并如数返还修为
+    /// （给了 <paramref name="skillId"/> 只退这一门，否则全部）。
+    /// 只改人物成长与银两，不碰剧情事实、已学武学与装配（架构文档 8.2：不消除不可逆剧情选择）。
+    /// </summary>
+    public string? Respec(WorldState s, string who, RespecKind kind, string? skillId = null)
+    {
+        if (!IsBuildable(who))
+        {
+            return "此人物的成长随剧情与角色模板变化，不能洗点";
+        }
+
+        if (!CanRespecHere(s))
+        {
+            return "洗点只在城镇进行";
+        }
+
+        var refund = RespecRefund(s, who, kind, skillId);
+        if (refund == 0)
+        {
+            return kind == RespecKind.Potential ? "还没有分配过潜能" : "这门招式还没有修炼过";
+        }
+
+        var cost = RespecCost(s);
+        if (s.Silver < cost)
+        {
+            return $"银两不足：洗点要 {cost} 两，现有 {s.Silver} 两";
+        }
+
+        var b = WorldRules.BuildOf(s, who);
+        s.Silver -= cost;
+        if (kind == RespecKind.Potential)
+        {
+            b.SetAllocated(new Attributes(0, 0, 0, 0, 0));
+        }
+        else
+        {
+            s.Cultivation += refund;
+            if (skillId is null)
+            {
+                b.Mastery.Clear();
+            }
+            else
+            {
+                b.Mastery.Remove(skillId);
+            }
+        }
+
+        return null;
+    }
 
     // ── 战斗模板 ─────────────────────────────────────────
 

@@ -5,6 +5,7 @@
   "experience": [20, 50, 90, 140, 200, 280, 380],
   "mastery_costs": [30, 60, 100, 150],
   "mastery_power_bp": 500,
+  "respec_silver_per_level": 1,
   "starting_equipment": ["item.armor.cloth_jacket"],
   "styles": [
     {
