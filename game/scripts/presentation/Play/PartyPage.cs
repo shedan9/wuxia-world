@@ -55,16 +55,22 @@ public sealed class PartyPage
     {
         Ui.ClearChildren(_root);
 
-        var board = Ui.Column(UiPalette.SpaceM, Ui.Text("阵位", UiTheme.SectionLabel), Board(),
+        // 阵位规则写在右栏底部：放在阵位图下面时，正文字号放大后整页比绢本高，底部的操作提示被挤出可视范围。
+        var board = Ui.Column(UiPalette.SpaceM, Ui.Text("阵位", UiTheme.SectionLabel), Board());
+        var roster = Ui.Column(UiPalette.SpaceM, Ui.Text("同行人物", UiTheme.SectionLabel), Roster(), Ui.Expand(Detail(), vertical: true),
             Ui.Text("前排护住后排：对方前排有人时，近身单体招只能打前排；远程与穿透一列的招式不受此限。", UiTheme.MutedLabel, 18, wrap: true));
-        var roster = Ui.Column(UiPalette.SpaceM, Ui.Text("同行人物", UiTheme.SectionLabel), Roster(), Ui.Expand(Detail(), vertical: true));
         var body = Ui.Row(UiPalette.SpaceXl, CharacterPage.Portrait(_play, _who), Ui.MinSize(board, 660), Ui.Expand(roster));
 
         var hint = _picked is { } p
             ? $"已选中{_play.Name(p)}（{CellName(PartyRules.CellOf(World, p))}）：点另一格换位，再点一次取消。"
             : Game.CanManage ? "点一位队员，再点要去的格子；格上有人则互换。下一场战斗按此站位。" : "对话、换图或战斗进行中，只能查看；告一段落后再调整。";
         var status = Ui.Text(message ?? hint, UiTheme.AccentLabel, 20, wrap: true);
-        var sheet = Ui.Panel(UiTheme.SheetPanel, Ui.Column(UiPalette.SpaceM, Ui.Expand(body, vertical: true), Ui.Rule(), status));
+
+        // 提示行缩进一点，不压在绢本左下角的卷云角饰上。
+        var statusRow = new MarginContainer();
+        statusRow.AddThemeConstantOverride("margin_left", 28);
+        statusRow.AddChild(status);
+        var sheet = Ui.Panel(UiTheme.SheetPanel, Ui.Column(UiPalette.SpaceM, Ui.Expand(body, vertical: true), Ui.Rule(), statusRow));
         _root.AddChild(Ui.Expand(sheet, vertical: true));
     }
 
@@ -138,6 +144,15 @@ public sealed class PartyPage
             var empty = Ui.Text(CellName(cell), UiTheme.MutedLabel, 16);
             empty.HorizontalAlignment = HorizontalAlignment.Center;
             empty.Modulate = Colors.White with { A = 0.55f };
+
+            // 空格名平时不写：上一格的名字正落在下一格人物的肩旁，显得杂乱。选中队员待换位时全部写出，
+            // 平时只在悬停或键盘焦点落到这一格时写出（另有按钮提示）。
+            empty.Visible = _picked is not null;
+            void Reveal(bool on) => empty.Visible = on || _picked is not null;
+            button.MouseEntered += () => Reveal(true);
+            button.MouseExited += () => Reveal(button.HasFocus());
+            button.FocusEntered += () => Reveal(true);
+            button.FocusExited += () => Reveal(button.IsHovered());
             button.AddChild(Ui.Place(empty, 0, 0, 0, 116, 196, 140));
             return button;
         }

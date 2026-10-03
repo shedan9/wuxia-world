@@ -27,6 +27,12 @@ window/stretch/aspect="expand"
 project/assembly_name="WuxiaWorld.Game"
 project/solution_directory=".."
 
+[internationalization]
+
+; 导出包带上文本服务器的断行数据（ICU 断行规则与中文词典）；不带时导出包里的中文只能在空格处折行，
+; 长句整句挤不下就把行首序号单独留在一行或越出边框（编辑器自带这份数据，所以只在导出包里出现）。
+locale/include_text_server_data=true
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"

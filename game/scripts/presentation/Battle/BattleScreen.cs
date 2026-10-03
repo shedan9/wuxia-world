@@ -81,6 +81,8 @@ public sealed partial class BattleScreen : Control
         _field = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _field.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_field);
+        Resized += CenterField;
+        CenterField();
 
         // 场上分层：地面范围标记 → 形象（按槽位由远到近排序）→ 拾取层 → 状态条与意图签 → 预估与飘字。不用 ZIndex，免得压过弹层。
         foreach (var layer in new[] { _ground, _figures, _hits, _huds, _fx })
@@ -463,6 +465,17 @@ public sealed partial class BattleScreen : Control
         _toast.Modulate = Colors.White;
         tween.TweenInterval(1.4f);
         tween.TweenProperty(_toast, "modulate:a", 0f, 0.4f);
+    }
+
+    /// <summary>
+    /// 站位、范围标记、悬停小窗与飘字都按 1920 宽的设计坐标排布；逻辑画布在宽屏（21:9）下按 expand 变宽，
+    /// 把整个场上层水平移到画面正中，与居中铺开的远景和地面对齐。窄于 16:9 时画布只增高，不移动。
+    /// </summary>
+    private void CenterField()
+    {
+        var dx = Mathf.Max(0, (Size.X - 1920) / 2);
+        _field.OffsetLeft = dx;
+        _field.OffsetRight = dx;
     }
 
     private void ShowFatal(string message)

@@ -677,7 +677,8 @@ public partial class DialogueOverlay : Control
         _choices = Ui.Column(UiPalette.SpaceM);
         _choices.Visible = false;
         _choices.Alignment = BoxContainer.AlignmentMode.End;
-        Ui.Place(_choices, 1, 1, -900, -760, -160, -370);
+        // 宽 820：第一章最长的选项（24 字）在默认字号下连序号排一行；更长或字号放大时再折行。
+        Ui.Place(_choices, 1, 1, -980, -760, -160, -370);
 
         // 选项多、折行或字号放大时向上长，不压到对话框上。
         _choices.GrowVertical = GrowDirection.Begin;

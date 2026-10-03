@@ -8,7 +8,7 @@ namespace WuxiaWorld.Game.Presentation.App;
 /// 一局停稳后依次打开暂停页与分区菜单的每个分区、每个子页签，逐页检查：
 /// ① 打开时有焦点、且落在可见控件上；② 从初始焦点出发，按 ↑↓←→ 与 Tab / Shift+Tab 的引擎焦点导航，
 /// 能走到页上每一个可见、可聚焦的控件（走不到的即“焦点孤岛”）；③ 没有出不去的死路（四向与 Tab 都回到自己）；
-/// ④ 可见控件不越出画面（滚动区里的除外）。配合 <c>--text-size=32</c> 在最大字号下再走一遍。
+/// ④ 可见控件不越出画面（滚动区里的除外），也不被外层裁切容器剪掉。配合 <c>--text-size=32</c> 在最大字号下再走一遍。
 /// 结果打印到标准输出，有问题时退出码为 4。
 /// </summary>
 public static class FocusAudit
@@ -137,6 +137,12 @@ public static class FocusAudit
             {
                 Problems.Add($"{name}：{Describe(c)} 越出画面（{r.Position.X:0},{r.Position.Y:0} {r.Size.X:0}×{r.Size.Y:0}）");
             }
+
+            // 还在画面里、却被外层裁切的容器（如分区外框的内容区）剪掉：字号放大后页面比外框高时就是这样，只看画面边界查不出。
+            else if (r.Size.X > 0 && r.Size.Y > 0 && Clipper(c) is { } clip && !clip.GetGlobalRect().Grow(1).Encloses(r))
+            {
+                Problems.Add($"{name}：{Describe(c)} 被 {clip.Name} 裁掉（{r.Position.X:0},{r.Position.Y:0} {r.Size.X:0}×{r.Size.Y:0}）");
+            }
         }
 
         GD.Print($"[focus] {name}：可聚焦 {focusable.Count}，键盘可达 {reached.Count(focusable.Contains)}，初始焦点 {(start is null ? "无" : Describe(start))}");
@@ -162,6 +168,25 @@ public static class FocusAudit
             if (p is ScrollContainer s)
             {
                 return s;
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>最近的外层裁切容器（<see cref="CanvasItem.ClipContents"/>，滚动区另算）；没有时为 null。</summary>
+    private static Control? Clipper(Control c)
+    {
+        for (var p = c.GetParent(); p is not null; p = p.GetParent())
+        {
+            if (p is ScrollContainer)
+            {
+                return null;
+            }
+
+            if (p is Control { ClipContents: true } clip)
+            {
+                return clip;
             }
         }
 

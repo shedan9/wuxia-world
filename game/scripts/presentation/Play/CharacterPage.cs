@@ -649,7 +649,10 @@ public sealed class CharacterPage
             caption.AddChild(Ui.Text(note, UiTheme.DarkMutedLabel, 16));
         }
 
-        stage.AddChild(Ui.Place(Ui.Panel(UiTheme.GlassPanel, caption), 0, 1, 14, -86, 272, -14));
+        // 名签贴在画框底边；字号放大后签比预留的高时向上长，不从画框底边被裁掉。
+        var tag = Ui.Place(Ui.Panel(UiTheme.GlassPanel, caption), 0, 1, 14, -86, 272, -14);
+        tag.GrowVertical = Control.GrowDirection.Begin;
+        stage.AddChild(tag);
         return Ui.MinSize(frame, 300, 560);
     }
 }
