@@ -147,8 +147,7 @@ public sealed class GameMenu
             AppHost.Instance.Router.GoTo(ScenePaths.MainMenu);
         }));
         Item("退出游戏", () => Confirm("退出游戏", "退出", () => _root.GetTree().Quit()));
-        body.AddChild(Ui.Spacer(horizontal: false));
-        body.AddChild(Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "确认"), ("Esc", "继续")));
+        // 不放常驻按键提示（2026-10-04 用户：多余）；方向键、Enter、Esc 照常可用，键位在“设置 · 按键”查看。
         first.CallDeferred(Control.MethodName.GrabFocus);
         return margin;
     }

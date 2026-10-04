@@ -23,20 +23,25 @@ public sealed class ShopPanel
     private string? _selected;
     private int _quantity = 1;
 
-    private ShopPanel(PlaySession play, string shopId)
+    private readonly Action _leave;
+
+    private ShopPanel(PlaySession play, string shopId, Action leave)
     {
         _play = play;
         _shopId = shopId;
+        _leave = leave;
     }
+
+    private void Leave() => _leave();
 
     public Control Root => _root;
 
     private GameSession Game => _play.Game;
     private WorldState World => Game.World;
 
-    public static Control Build(PlaySession play, string shopId)
+    public static Control Build(PlaySession play, string shopId, Action leave)
     {
-        var panel = new ShopPanel(play, shopId);
+        var panel = new ShopPanel(play, shopId, leave);
         panel.Rebuild();
         return panel.Root;
     }
@@ -48,7 +53,7 @@ public sealed class ShopPanel
         _root.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("店铺"), Ui.Column(4,
                 Ui.Text(_play.Name(_shopId), UiTheme.DarkTitleLabel, 40),
                 Ui.Text($"{_play.Name(World.MapId)}　·　收购按原价{shop.BuyBackBp / 1000.0:0.#}成", UiTheme.DarkMutedLabel, 18)),
-            Ui.Spacer(), Ui.Text($"银 {World.Silver} 两", UiTheme.GiltLabel, 26), Ui.KeyHints(true, ("Esc", "离开"))));
+            Ui.Spacer(), Ui.Text($"银 {World.Silver} 两", UiTheme.GiltLabel, 26), Ui.MinSize(Ui.Button("离开", UiTheme.DarkButton, Leave), 120, 52)));
 
         var items = Game.Rules.Content.Items;
         var goods = _selling

@@ -574,7 +574,7 @@ public partial class WorldMapOverlay : Control
         go.CustomMinimumSize = new Vector2(0, 62);
         go.AddThemeFontSizeOverride("font_size", FontScale.Of(28));
         go.FocusMode = FocusModeEnum.None;
-        _panel.AddChild(Ui.Row(UiPalette.SpaceM, Ui.KeyHint("Enter", ""), Ui.Expand(go)));
+        _panel.AddChild(go);
     }
 
     private static Control RouteRow(string mark, string name, string detail, string variation) =>
@@ -693,9 +693,9 @@ public partial class WorldMapOverlay : Control
         _zoomLabel = Ui.Text("", UiTheme.GiltLabel, 17);
         lines.AddChild(Ui.Spacer());
         lines.AddChild(_zoomLabel);
-        var hints = Ui.KeyHints(true, ("滚轮", "缩放"), ("拖动", "平移"), ("Tab", "地标"), ("数字", "方式"), ("Enter", "启程"), ("M / Esc", "关闭"));
-        var panel = Ui.Panel(UiTheme.GlassPanel, Ui.Column(UiPalette.SpaceS, marks, lines, hints));
-        return Ui.IgnoreMouse(Ui.Place(panel, 0, 1, 40, -232, 900, -40));
+        // 图例下方原有一行按键提示（滚轮、拖动、Tab、数字、Enter、M / Esc），2026-10-04 用户要求删去。
+        var panel = Ui.Panel(UiTheme.GlassPanel, Ui.Column(UiPalette.SpaceS, marks, lines));
+        return Ui.IgnoreMouse(Ui.Place(panel, 0, 1, 40, -170, 900, -40));
     }
 
     private static Control LegendBadge(MapLandmark.Look look, string text)

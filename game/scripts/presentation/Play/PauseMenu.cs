@@ -203,6 +203,16 @@ public partial class PauseMenu : CanvasLayer
         }
     }
 
+    /// <summary>分区菜单里点右键返回（底栏的“Esc 返回”键帽已删，给鼠标留一个不占画面的返回方式）。</summary>
+    public override void _Input(InputEvent @event)
+    {
+        if (IsOpen && _frame is { Back: { } back } && @event is InputEventMouseButton { ButtonIndex: MouseButton.Right, Pressed: true })
+        {
+            GetViewport().SetInputAsHandled();
+            back();
+        }
+    }
+
     public override void _UnhandledInput(InputEvent @event)
     {
         if (!IsOpen)

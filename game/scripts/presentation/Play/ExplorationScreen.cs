@@ -834,7 +834,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     private void OpenShop(string shopId)
     {
-        ShowModal(ShopPanel.Build(_play, shopId), PageWidth, PageHeight);
+        ShowModal(ShopPanel.Build(_play, shopId, CloseModal), PageWidth, PageHeight);
     }
 
     /// <summary>人物、行囊、队伍与店铺页的面板尺寸（1920×1080 画布）。</summary>

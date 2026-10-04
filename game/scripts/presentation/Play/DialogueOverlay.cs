@@ -821,7 +821,7 @@ public partial class DialogueOverlay : Control
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
         panel.AddChild(Ui.Column(UiPalette.SpaceL,
             Ui.Row(UiPalette.SpaceL, Ui.Text("对话记录", UiTheme.DarkTitleLabel, 38), Ui.Spacer(),
-                Ui.KeyHints(true, (KeyBindings.Label("dialogue_log"), "关闭"), ("Esc", "关闭"))),
+                Ui.MinSize(Ui.Button("关闭", UiTheme.DarkButton, CloseLog), 120, 52)),
             Ui.Rule(dark: true),
             Ui.Expand(scroll, vertical: true)));
         layer.AddChild(Ui.Place(panel, 0.5f, 0.5f, -620, -400, 620, 400));

@@ -302,24 +302,11 @@ public sealed class MenuFrame
         }
     }
 
-    private void BuildFooter()
-    {
-        Ui.ClearChildren(_footer);
-        var hints = new List<(string, string)>();
-        if (_sections.Length > 1)
-        {
-            hints.Add(($"{KeyBindings.Label("section_prev")}/{KeyBindings.Label("section_next")}", "切换分区"));
-        }
-
-        if (_current.Section is MenuSection.Character or MenuSection.Inventory or MenuSection.Journal or MenuSection.Settings)
-        {
-            hints.Add(("PgUp/PgDn", "切换页签"));
-        }
-
-        _footer.AddChild(Ui.Spacer());
-        _footer.AddChild(Ui.KeyHints(true, hints.ToArray()));
-        _footer.AddChild(Ui.KeyActions(true, ("Esc", _backLabel, () => Back?.Invoke())));
-    }
+    /// <summary>
+    /// 底栏原有“Q/E 切换分区 · PgUp/PgDn 切换页签 · Esc 返回”一行常驻按键提示，2026-10-04 用户要求删去：
+    /// 键位照常可用（设置 · 按键可查），分区签两侧的 Q / E 键帽保留；游戏中鼠标在外框任意处点右键即返回（<c>PauseMenu._Input</c>）。
+    /// </summary>
+    private void BuildFooter() => Ui.ClearChildren(_footer);
 
     private static Control Cap(string key)
     {

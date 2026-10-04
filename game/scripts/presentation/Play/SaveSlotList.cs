@@ -65,7 +65,7 @@ public sealed class SaveSlotList
     /// <summary>卡片滚动区（纵向撑满）。</summary>
     public Control Cards => _scroll;
 
-    /// <summary>底栏：键帽提示、删除与读取 / 保存按钮；确认时原地换成问句与两个按钮。</summary>
+    /// <summary>底栏：删除与读取 / 保存按钮；确认时原地换成问句与两个按钮。</summary>
     public Control Footer => _footer;
 
     /// <summary>状态行：存读档与删除的结果。</summary>
@@ -165,13 +165,12 @@ public sealed class SaveSlotList
         var verb = _save ? "保存" : "读取";
         var remove = Ui.MinSize(Ui.Button("删除", UiTheme.DarkButton, AskDelete, disabled: !CanDelete(selected)), 140, 56);
         var act = Ui.MinSize(Ui.Button(verb, UiTheme.PrimaryButton, Act, disabled: !CanAct(selected)), 180, 56);
-        _footer.AddChild(Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", verb), ("Del", "删除"), ("Esc", "返回")));
         _footer.AddChild(Ui.Spacer());
         _footer.AddChild(remove);
         _footer.AddChild(act);
     }
 
-    /// <summary>问句写在状态行（面板宽度内换行，不压底栏纹饰），底栏换成键帽与“再想想 / 确认”两个按钮，焦点落在“再想想”。</summary>
+    /// <summary>问句写在状态行（面板宽度内换行，不压底栏纹饰），底栏换成“再想想 / 确认”两个按钮，焦点落在“再想想”。</summary>
     private void Confirm(string question, string yesText, Action yes)
     {
         Ui.ClearChildren(_footer);
@@ -180,7 +179,6 @@ public sealed class SaveSlotList
         _status.AddThemeColorOverride("font_color", UiPalette.TextOnDark);
         var no = Ui.MinSize(Ui.Button("再想想", UiTheme.DarkButton, () => Refresh(animate: false)), 140, 56);
         var ok = Ui.MinSize(Ui.Button(yesText, UiTheme.PrimaryButton, yes), 180, 56);
-        _footer.AddChild(Ui.KeyHints(true, ("←→", "选择"), ("Enter", "确认"), ("Esc", "取消")));
         _footer.AddChild(Ui.Spacer());
         _footer.AddChild(no);
         _footer.AddChild(ok);
