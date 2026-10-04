@@ -143,6 +143,12 @@ public static class DevCapture
     /// </summary>
     public static string? Hold { get; private set; }
 
+    /// <summary>
+    /// <c>--hold=line:&lt;line_id&gt;</c>：自动走查走到这句台词（或含这一项的选项）时停下截图（不看步数，<c>--autoplay</c> 给足步数即可），
+    /// 用于核对某句台词显示时的立绘、姓名牌与版式。
+    /// </summary>
+    public static string? HoldLine => Autoplay > 0 && Hold is { } hold && hold.StartsWith("line:", StringComparison.Ordinal) ? hold["line:".Length..] : null;
+
     /// <summary>自动走查已走的步数（探索页每做一次交互加一，跨场景累计）。</summary>
     public static int AutoplaySteps { get; set; }
 

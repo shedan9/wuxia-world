@@ -76,6 +76,11 @@ float fbm(vec2 p) {
 	return s / 0.9375;
 }
 
+float round_box(vec2 p, vec2 h, float r) {
+	vec2 q = abs(p) - h + r;
+	return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+}
+
 vec3 ground_texture(vec2 w) {
 	vec3 c = texture(ground_tex, w / tex_world).rgb;
 	c = mix(textureLod(ground_tex, vec2(0.5), 12.0).rgb, c, tex_contrast);
@@ -84,9 +89,79 @@ vec3 ground_texture(vec2 w) {
 	return clamp(c, 0.0, 1.0);
 }
 
+// 世界平面坐标转画面坐标（逻辑像素，原点任意）：草丛与野花按画面坐标算形状，不随投影压扁。
+vec2 to_screen(vec2 w) {
+	float c = cos(yaw);
+	float s = sin(yaw);
+	return vec2(w.x * c - w.y * s, (w.x * s + w.y * c) * sin(pitch)) * scale;
+}
+
+// 城镇草地（kind 0 且贴了 AI 纹理）：AI 草叶纹理只留作细纹（按亮度起伏），颜色改由三阶明暗色块决定
+// （域扭曲噪声，背阴处偏冷青、受光处偏暖黄绿），受光处零星几簇小野花；房屋占地（lawn_block）四周压一圈接地暗影。
+// 立着的草丛与矮灌是 AI 精灵，由 TownLawn 节点另画。
+uniform vec4 lawn_block[12];
+uniform int lawn_blocks = 0;
+
+const vec3 LAWN_SHADE = vec3(0.39, 0.56, 0.43);
+const vec3 LAWN_MID = vec3(0.47, 0.64, 0.45);
+const vec3 LAWN_LIT = vec3(0.60, 0.73, 0.48);
+const vec3 LUMA = vec3(0.299, 0.587, 0.114);
+
+vec3 lawn(vec2 w) {
+	// 三阶明暗色块：边缘只留很窄的过渡，像平涂的赛璐璐色块。
+	vec2 q = w * 0.0011;
+	q += (vec2(fbm(q * 1.7 + 3.1), fbm(q * 1.7 + 8.4)) - 0.5) * 1.6;
+	float n = fbm(q);
+	float lit = smoothstep(0.565, 0.585, n);
+	float shade = 1.0 - smoothstep(0.415, 0.435, n);
+	vec3 c = mix(LAWN_MID, LAWN_LIT, lit);
+	c = mix(c, LAWN_SHADE, shade);
+	// 色块内部极轻的冷暖起伏与草叶细纹。
+	c *= 1.0 + (fbm(w * 0.006 + 2.0) - 0.5) * 0.12;
+	vec3 t = texture(ground_tex, w / tex_world).rgb;
+	vec3 m = textureLod(ground_tex, vec2(0.5), 12.0).rgb;
+	float grain = clamp(dot(t, LUMA) / max(dot(m, LUMA), 0.05), 0.6, 1.4);
+	c *= mix(1.0, grain, 0.22);
+
+	// 接地暗影：离房屋占地越近越暗，贴墙一窄条更深。
+	float ao = 0.0;
+	for (int i = 0; i < 12; i++) {
+		if (i >= lawn_blocks) {
+			break;
+		}
+		vec4 b = lawn_block[i];
+		float d = round_box(w - (b.xy + b.zw) * 0.5, (b.zw - b.xy) * 0.5, 0.0);
+		ao = max(ao, (1.0 - smoothstep(0.0, 110.0, d)) * 0.55 + (1.0 - smoothstep(14.0, 22.0, d)) * 0.45);
+	}
+	c = mix(c, c * vec3(0.66, 0.76, 0.80), ao * 0.75);
+
+	vec2 sp = to_screen(w);
+	// 小野花：一簇三四朵挤在一起，簇与簇隔开，只开在受光的成片草地上；白花多、浅黄花少，各压一点影子。
+	float bloom = smoothstep(0.58, 0.68, fbm(w * 0.0021 + 50.0)) * (1.0 - shade) * (1.0 - ao);
+	vec2 fs = vec2(46.0, 26.0);
+	vec2 fcell = floor(sp / fs);
+	if (hash(fcell + 41.0) < bloom * 0.5) {
+		vec2 center = (fcell + 0.32 + 0.36 * vec2(hash(fcell + 1.7), hash(fcell + 4.9))) * fs;
+		vec3 col = hash(fcell + 8.8) > 0.3 ? vec3(0.95, 0.96, 0.90) : vec3(0.98, 0.87, 0.55);
+		for (int k = 0; k < 4; k++) {
+			vec2 off = (vec2(hash(fcell + float(k) * 3.1 + 0.5), hash(fcell + float(k) * 5.7 + 0.9)) - 0.5) * vec2(14.0, 7.0);
+			if (k == 3 && hash(fcell + 12.4) < 0.5) {
+				break;
+			}
+			vec2 fd = sp - center - off;
+			float r = 1.2 + 0.7 * hash(fcell + float(k) * 2.3);
+			float petal = 1.0 - smoothstep(r - 0.6, r + 0.6, length(fd * vec2(1.0, 1.35)));
+			float under = 1.0 - smoothstep(r - 0.4, r + 0.8, length((fd - vec2(0.5, 1.3)) * vec2(1.0, 1.35)));
+			c = mix(c, c * 0.72, under * 0.55);
+			c = mix(c, col, petal);
+		}
+	}
+	return clamp(c, 0.0, 1.0);
+}
+
 vec3 grass(vec2 w) {
 	if (use_tex) {
-		return ground_texture(w);
+		return lawn(w);
 	}
 	float n = fbm(w * 0.003);
 	float d = fbm(w * 0.015 + 3.0);
@@ -188,11 +263,6 @@ vec3 creek(vec2 w, vec2 r, float dn, float ds) {
 	float foam = step(shore, 2.0 + 5.0 * foam_n) * step(0.45, foam_n);
 	c = mix(c, vec3(0.90, 0.97, 0.95), foam * 0.8);
 	return clamp(c, 0.0, 1.0);
-}
-
-float round_box(vec2 p, vec2 h, float r) {
-	vec2 q = abs(p) - h + r;
-	return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
 }
 
 float bank_y(vec4 a, vec4 b, float x) {

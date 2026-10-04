@@ -215,3 +215,7 @@ cd tools/ArtGen
 
 - 更换或新增模型、LoRA 前先确认许可允许商用，并更新本文件与资产台账。
 - AI 输出须人工修整：人物一致性、手部、兵器结构和服饰年代最容易出错；不能直接当作分层动画资产（架构文档 10.3）。
+
+## 对话立绘统一比例（2026-10-04）
+
+立绘生成、抠图后不直接放进游戏：先把抠图存为 `art_source/ai/characters/<人物>_portrait_v1_ingame.png`，在 `jobs/portrait_norm.json` 里登记量点（头顶不含发髻、两眼瞳孔中线、下巴尖、两眼中点 x）、体型与身高，再运行 `.venv/Scripts/python portrait_norm.py`（`--out 目录` 先预览、`--only 人物` 只出一张），脚本按统一头身比例与眼线高度写入 `game/assets/portraits/<人物>_v1.png`，并提示发髻出画或下缘露在画面内。自动人脸检测（OpenCV `lbpcascade_animeface`）对写实男脸几乎认不出，量点用人工标注：按原图放大两倍、加 5 像素刻度读数。

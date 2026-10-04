@@ -1,0 +1,42 @@
+{
+ "set": "m2_hero_portrait",
+ "tier": "complex",
+ "model": "animagine4",
+ "size": [
+  832,
+  1216
+ ],
+ "steps": 28,
+ "cfg": 5.0,
+ "seeds": [
+  101,
+  202,
+  303,
+  404,
+  505,
+  606
+ ],
+ "note": "2026-10-04 主角对话立绘。底图 out/m2_portraits/hero_base.png：全身形象 out/m0_figures/hero_66__raw.png 经 cutout.py（阈值 26、羽化 1.0）抠图，铺淡青底 (158,200,198)，裁 (174,0,649,695) 后 LANCZOS 放大到 832×1216。图生图以保住与探索 / 战斗形象一致的服装、发型和脸型。",
+ "style": {
+  "portrait_final": "semi-realistic, cel shading, detailed shading, pale teal background, masterpiece, high score, absurdres",
+  "negative_male": "lowres, bad anatomy, bad hands, extra digits, text, watermark, signature, chibi, child, denim, jeans, zipper, pockets, modern clothes, kimono, japanese clothes, katana, ink wash, paper texture, nsfw, blurry, scenery"
+ },
+ "jobs": [
+  {
+   "name": "hero_i2i_s55",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "init_image": "out/m2_portraits/hero_base.png",
+   "strength": 0.55,
+   "prompt": "1boy, solo, young man, 25 years old, calm expression, dark brown eyes, black hair in a high topknot, cream cross-collar short jacket with indigo collar and cuffs, black inner sleeves, cream sash, cowboy shot"
+  },
+  {
+   "name": "hero_i2i_s70",
+   "style": "portrait_final",
+   "negative_style": "negative_male",
+   "init_image": "out/m2_portraits/hero_base.png",
+   "strength": 0.7,
+   "prompt": "1boy, solo, young man, 25 years old, calm expression, dark brown eyes, black hair in a high topknot, cream cross-collar short jacket with indigo collar and cuffs, black inner sleeves, cream sash, cowboy shot"
+  }
+ ]
+}

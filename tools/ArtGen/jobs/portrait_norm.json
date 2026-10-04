@@ -1,0 +1,83 @@
+{
+ "note": "2026-10-04 对话立绘统一比例。坐标取入包前原图（art_source/ai/characters/<人物>_portrait_v1_ingame.png，832×1216）上人工量的：crown 头顶（不含发髻、发簪、冲天髻）、eyes 两眼瞳孔中线、chin 下巴尖（胡须遮住时取下颌）、face_x 两眼中点。纵向按眼线对齐（看立绘时人眼比的是眼睛高低；按头顶对齐会被发量带偏）：ref_eyes 为 ref_stature 身高人物的眼线，每高 1 厘米上移 px_per_cm。头的大小 = sqrt((chin-crown) × (chin-eyes) × 2.2)，两种量法取几何平均，减少发量与表情带来的偏差。",
+ "canvas": [
+  832,
+  1216
+ ],
+ "face_x": 440,
+ "ref_eyes": 300,
+ "ref_stature": 165,
+ "px_per_cm": 5,
+ "head": {
+  "woman": 235,
+  "man": 250,
+  "burly": 262,
+  "elder": 245
+ },
+ "people": {
+  "lu_qinghe": {
+   "crown": 108,
+   "eyes": 257,
+   "chin": 358,
+   "face_x": 431,
+   "build": "woman",
+   "stature": 165
+  },
+  "hero": {
+   "crown": 173,
+   "eyes": 300,
+   "chin": 400,
+   "face_x": 478,
+   "build": "man",
+   "stature": 176
+  },
+  "linghu_chong": {
+   "crown": 158,
+   "eyes": 300,
+   "chin": 412,
+   "face_x": 495,
+   "build": "man",
+   "stature": 178
+  },
+  "huang_rong": {
+   "crown": 78,
+   "eyes": 222,
+   "chin": 342,
+   "face_x": 378,
+   "build": "woman",
+   "stature": 162
+  },
+  "xiao_feng": {
+   "crown": 82,
+   "eyes": 207,
+   "chin": 322,
+   "face_x": 386,
+   "build": "burly",
+   "stature": 188
+  },
+  "qiao_hongxiao": {
+   "crown": 140,
+   "eyes": 278,
+   "chin": 400,
+   "face_x": 389,
+   "build": "woman",
+   "stature": 166
+  },
+  "tang_shouting": {
+   "crown": 40,
+   "eyes": 175,
+   "chin": 310,
+   "face_x": 428,
+   "build": "man",
+   "stature": 178
+  },
+  "du_sangao": {
+   "crown": 40,
+   "eyes": 212,
+   "chin": 335,
+   "face_x": 428,
+   "build": "elder",
+   "stature": 168
+  }
+ }
+}

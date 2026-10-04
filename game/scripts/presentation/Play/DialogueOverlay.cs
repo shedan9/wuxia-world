@@ -25,7 +25,13 @@ public partial class DialogueOverlay : Control
 {
     private const float BarHeight = 96;
 
-    /// <summary>人物立绘：<c>res://assets/portraits/&lt;人物&gt;_v1.png</c>（主角不设立绘）；没有的人物只切换姓名牌。</summary>
+    /// <summary>主角立绘：放在右侧、水平翻转，朝向左侧的对面人物。</summary>
+    private const string HeroPortraitPath = "res://assets/portraits/hero_v1.png";
+
+    /// <summary>不在说话、正在听的人物立绘压暗的色调。</summary>
+    private static readonly Color Listening = new(0.62f, 0.7f, 0.72f);
+
+    /// <summary>对面人物立绘：<c>res://assets/portraits/&lt;人物&gt;_v1.png</c>（主角另占右侧立绘位）；没有的人物只切换姓名牌。</summary>
     private static string? PortraitOf(string speaker) =>
         speaker.StartsWith("char.", StringComparison.Ordinal) && speaker != "char.hero"
         && $"res://assets/portraits/{speaker["char.".Length..]}_v1.png" is var path && ResourceLoader.Exists(path) ? path : null;
@@ -44,6 +50,7 @@ public partial class DialogueOverlay : Control
     private Control _ui = null!;
     private Control _box = null!;
     private TextureRect _portrait = null!;
+    private TextureRect _hero = null!;
     private PanelContainer _plate = null!;
     private Label _name = null!;
     private RichTextLabel _text = null!;
@@ -83,6 +90,18 @@ public partial class DialogueOverlay : Control
         };
         AddChild(Ui.Place(_portrait, 0, 0, 200, 80, 1100, 1395));
 
+        // 主角立绘贴右侧，与对面人物左右相对；第一次开口时才亮出。
+        _hero = new TextureRect
+        {
+            Texture = ResourceLoader.Exists(HeroPortraitPath) ? GD.Load<Texture2D>(HeroPortraitPath) : null,
+            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
+            StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
+            FlipH = true,
+            MouseFilter = MouseFilterEnum.Ignore,
+            Modulate = Colors.Transparent,
+        };
+        AddChild(Ui.Place(_hero, 1, 0, -1100, 80, -200, 1395));
+
         _ui = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _ui.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_ui);
@@ -105,6 +124,16 @@ public partial class DialogueOverlay : Control
     {
         if (DevCapture.Autoplay > 0 && !_done && _log is null)
         {
+            if (DevCapture.HoldLine is { } line
+                && (Runner.Current?.LineId == line || Runner.AwaitingChoice && Runner.Choices.Any(c => c.Option.LineId == line)))
+            {
+                // 停在指定台词（或含这一项的选项）上截图。
+                FinishTyping();
+                _done = true;
+                DevCapture.FinishAutoplay(GetTree(), 0);
+                return;
+            }
+
             if (Runner.AwaitingChoice && DevCapture.Holding("choice"))
             {
                 // 停在选项上截图。
@@ -434,6 +463,7 @@ public partial class DialogueOverlay : Control
             if (node.Kind == StageKind.Title)
             {
                 Tint(_portrait, Colors.Transparent);
+                Tint(_hero, Colors.Transparent);
             }
 
             _play.History.Add(("画面", caption));
@@ -448,10 +478,12 @@ public partial class DialogueOverlay : Control
         {
             // 场景镜头：人物退到一边，让出画面。
             Tint(_portrait, Colors.Transparent);
+            Tint(_hero, Colors.Transparent);
         }
-        else if (_portrait.Texture is not null && _portrait.Modulate.A > 0.01f)
+        else
         {
-            Tint(_portrait, new Color(0.62f, 0.7f, 0.72f));
+            Dim(_portrait);
+            Dim(_hero);
         }
 
         if (first && node.Kind == StageKind.Scene)
@@ -518,7 +550,7 @@ public partial class DialogueOverlay : Control
         tween.TweenProperty(_barBottom, "offset_top", -h, Motion.Normal);
     }
 
-    /// <summary>上下黑边：压在立绘之上、对话界面之下。</summary>
+    /// <summary>上下黑边：压在两侧立绘之上、对话界面之下。</summary>
     private void BuildBars()
     {
         _barTop = new ColorRect { Color = Colors.Black with { A = 0.92f }, MouseFilter = MouseFilterEnum.Ignore };
@@ -529,12 +561,23 @@ public partial class DialogueOverlay : Control
         _barBottom.AnchorRight = 1;
         AddChild(_barTop);
         AddChild(_barBottom);
-        MoveChild(_barTop, 1);
-        MoveChild(_barBottom, 2);
+        MoveChild(_barTop, _hero.GetIndex() + 1);
+        MoveChild(_barBottom, _hero.GetIndex() + 2);
     }
 
     private void UpdatePortrait(string speaker, bool inner)
     {
+        var hero = inner || speaker == "char.hero";
+        if (hero && _hero.Texture is not null)
+        {
+            // 主角说话（含心里话）：亮出右侧主角立绘，对面那位人物保留但压暗，像在听他说。
+            Tint(_hero, Colors.White);
+            Dim(_portrait);
+            return;
+        }
+
+        // 别人说话：主角在一旁听着，立绘压暗。
+        Dim(_hero);
         if (!inner && PortraitOf(speaker) is { } path)
         {
             _portrait.Texture = GD.Load<Texture2D>(path);
@@ -544,18 +587,24 @@ public partial class DialogueOverlay : Control
         {
             return;
         }
-        else if (inner || speaker == "char.hero")
+        else if (hero)
         {
-            // 主角说话（含心里话）：保留对面那位人物但压暗，像在听他说。
-            if (_portrait.Modulate.A > 0.01f)
-            {
-                Tint(_portrait, new Color(0.62f, 0.7f, 0.72f));
-            }
+            // 没有主角立绘时：保留对面那位人物但压暗。
+            Dim(_portrait);
         }
         else
         {
             // 换了一位还没有立绘的人物说话：上一位的立绘退下，免得看着像她在说。
             Tint(_portrait, Colors.Transparent);
+        }
+    }
+
+    /// <summary>已亮出的立绘压暗；还没出场或已退下的不动。</summary>
+    private static void Dim(TextureRect portrait)
+    {
+        if (portrait.Texture is not null && portrait.Modulate.A > 0.01f)
+        {
+            Tint(portrait, Listening);
         }
     }
 
@@ -701,12 +750,7 @@ public partial class DialogueOverlay : Control
         _plate.GrowHorizontal = GrowDirection.End;
         root.AddChild(_plate);
 
-        var hints = Ui.KeyHints(true, ("Enter", "继续"), ("1–3", "选择"), (KeyBindings.Label("dialogue_replay"), "重播"), (KeyBindings.Label("dialogue_log"), "记录"), (KeyBindings.Label("dialogue_hide"), "隐藏"));
-        hints.Modulate = new Color(1, 1, 1, 0.85f);
-        root.AddChild(Ui.Place(hints, 1, 1, -900, -38, -150, -6));
-        hints.Alignment = BoxContainer.AlignmentMode.End;
-        hints.GrowHorizontal = GrowDirection.Begin;
-        hints.GrowVertical = GrowDirection.Begin;
+        // 不放常驻按键提示：继续有右下的◆标记，记录、隐藏在右上有按钮，按键在设置里可查。
         // 对话框底板（PanelContainer）默认拦鼠标，点在框内会被吃掉、推进不了台词；框内没有按钮，整块放行。
         Ui.IgnoreMouse(root);
         return root;

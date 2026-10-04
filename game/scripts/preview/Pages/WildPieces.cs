@@ -1666,12 +1666,12 @@ internal static class Tufts
         return (ImageTexture.CreateFromImage(sheet), regions.Take(grass.Count).ToArray(), bush.Count > 0 ? regions[^1] : null);
     }
 
-    public static void Draw(CanvasItem ci, Vector2 foot, float height, int variant, bool flip)
+    public static void Draw(CanvasItem ci, Vector2 foot, float height, int variant, bool flip, Color? modulate = null)
     {
         var (atlas, grass, bush) = Sheet!.Value;
         var region = variant < 0 && bush is { } b ? b : grass[Mathf.PosMod(variant, grass.Length)];
         var size = region.Size * (height / region.Size.Y);
         // 翻转用负宽度矩形（引擎按水平翻转画），不再每丛前后各设一次变换：变换命令会打断合批。
-        ci.DrawTextureRectRegion(atlas, new Rect2(foot.X - size.X / 2, foot.Y - size.Y, flip ? -size.X : size.X, size.Y), region);
+        ci.DrawTextureRectRegion(atlas, new Rect2(foot.X - size.X / 2, foot.Y - size.Y, flip ? -size.X : size.X, size.Y), region, modulate);
     }
 }

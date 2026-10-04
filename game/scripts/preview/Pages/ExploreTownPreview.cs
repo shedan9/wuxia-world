@@ -14,7 +14,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 人物与树为立着的精灵；行走、排序、遮挡与镜头由 <see cref="ExploreStage"/> 共用。
 /// 客栈门前按 E 进入客栈大堂页（<see cref="ExploreInnPreview"/>），从大堂出门回到门前。
 /// 房屋、树、杂件、平桥、街面、草地与驳岸已按架构文档 10.3 方案 C 换成 AI 出件，廊柱、坐栏与渡口石阶为几何面贴 AI 纹理，河水为着色器。
-/// 截图参数 <c>--tab</c>：0 旧渡石痕旁（交互提示）、1 南岸街被屋身遮挡、2 客栈门前、3 廊棚下、4 缩到 0.85 看平桥一带、5 西头民居（AI 出件样板）、6 廊棚西头外侧（屋面不淡出，查屋面与廊柱遮挡）。
+/// 截图参数 <c>--tab</c>：0 旧渡石痕旁（交互提示）、1 南岸街被屋身遮挡、2 客栈门前、3 廊棚下、4 缩到 0.85 看平桥一带、5 西头民居（AI 出件样板）、6 廊棚西头外侧（屋面不淡出，查屋面与廊柱遮挡）、7 西头街口（看街外草地）。
 /// </summary>
 public partial class ExploreTownPreview : ExploreStage
 {
@@ -43,6 +43,7 @@ public partial class ExploreTownPreview : ExploreStage
             4 => (new Vector2(2900, 2300), new Vector2(2900, 2180), MinZoom),
             5 => (new Vector2(620, 1560), new Vector2(500, 1590), 1f),
             6 => (new Vector2(3120, 1700), new Vector2(3000, 1690), 1f),
+            7 => (new Vector2(260, 1620), new Vector2(150, 1650), 1f),
             _ => (TownSamples.Spawn, TownSamples.Spawn + new Vector2(-120, -40), 1f),
         };
     }
@@ -51,6 +52,7 @@ public partial class ExploreTownPreview : ExploreStage
     {
         BuildGround(GroundLayer);
         GroundLayer.AddChild(new TownGroundDetail());
+        GroundLayer.AddChild(new TownLawn());
 
         foreach (var house in TownSamples.Houses) Add(new TownHouseNode(house));
         foreach (var part in TownCorridorPart.Build(TownSamples.Corridor)) Add(part);
@@ -80,6 +82,11 @@ public partial class ExploreTownPreview : ExploreStage
             else if (kind == 0)
             {
                 PieceArt.ApplyGround(material, "town.ground.grass", GroundTint.Grass, 0.35f, 0.08f, 0.5f);
+                // 草地贴房屋占地压一圈接地暗影。
+                var houses = TownSamples.Houses;
+                material.SetShaderParameter("lawn_blocks", houses.Length);
+                material.SetShaderParameter("lawn_block", Enumerable.Range(0, 12)
+                    .Select(i => i < houses.Length ? new Vector4(houses[i].X0, houses[i].Y0, houses[i].X1, houses[i].Y1) : Vector4.Zero).ToArray());
             }
             else if (kind == 2)
             {
@@ -444,5 +451,176 @@ public partial class TownMiniMap : Control
 
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
         DrawString(UiFonts.Title, new Vector2(Size.X - 30, 28), "北", HorizontalAlignment.Left, -1, 20, UiPalette.Text);
+    }
+}
+
+/// <summary>
+/// 草地上立着的草丛与矮灌（复用山路的 AI 草丛精灵，调到草地的青绿）：成簇错落散在草地上，铺地边、河沿与房屋背后贴边一溜，
+/// 打断草地与石板的直线交界。画在地面层，脚下各压一抹淡影；房屋朝镜头的西、南两面留出一段空地，
+/// 免得草丛顶端画进墙面，树脚同理。人物走不到草地上，不参与排序。
+/// </summary>
+public partial class TownLawn : Node2D
+{
+    private const int Seed = 61;
+    private readonly List<(Vector2 Foot, float Height, int Variant, bool Flip, Color Tint)> _tufts = [];
+
+    public TownLawn()
+    {
+        TextureFilter = TextureFilterEnum.LinearWithMipmaps;
+        if (!Tufts.Ready)
+        {
+            return;
+        }
+
+        var b = TownSamples.Bounds;
+        var i = 0;
+        // 成簇散布：抖动网格，每格四成概率长一簇 2–5 丛，间或一丛矮灌。
+        const float cell = 150;
+        for (var x = b.Position.X - 1100; x < b.End.X + 1100; x += cell)
+        {
+            for (var y = b.Position.Y - 700; y < b.End.Y + 700; y += cell)
+            {
+                i++;
+                if (Cel.Rand(Seed, i) > 0.42f)
+                {
+                    continue;
+                }
+
+                var center = new Vector2(x + cell * Cel.Rand(Seed, i + 1000), y + cell * Cel.Rand(Seed, i + 2000));
+                var tone = 0.86f + 0.2f * Cel.Rand(Seed, i + 3000);
+                var count = 2 + (int)(Cel.Rand(Seed, i + 4000) * 4);
+                if (Cel.Rand(Seed, i + 5000) < 0.07f)
+                {
+                    Place(center, 44 + 18 * Cel.Rand(Seed, i + 5100), -1, i, tone * 0.95f);
+                }
+
+                for (var k = 0; k < count; k++)
+                {
+                    var j = i * 8 + k;
+                    var off = new Vector2(Cel.Rand(Seed, j + 6000) - 0.5f, Cel.Rand(Seed, j + 7000) - 0.5f) * 90;
+                    Place(center + off, 16 + 20 * Cel.Rand(Seed, j + 8000), (int)(Cel.Rand(Seed, j + 9000) * 4), j, tone);
+                }
+            }
+        }
+
+        // 贴边一溜：铺地与河沿外侧，每隔一小段一丛。
+        void Fringe(IEnumerable<Vector2> line, Vector2 outward)
+        {
+            foreach (var p in line)
+            {
+                i++;
+                if (Cel.Rand(Seed, i) < 0.3f)
+                {
+                    continue;
+                }
+
+                Place(p + outward * (8 + 16 * Cel.Rand(Seed, i + 100)), 18 + 16 * Cel.Rand(Seed, i + 200), (int)(Cel.Rand(Seed, i + 300) * 4), i, 0.84f + 0.12f * Cel.Rand(Seed, i + 400));
+            }
+        }
+
+        IEnumerable<Vector2> Along(Vector2 from, Vector2 to)
+        {
+            var length = from.DistanceTo(to);
+            for (var t = 0f; t < length; t += 28 + 26 * Cel.Rand(Seed, (int)(t + from.X + from.Y)))
+            {
+                yield return from.Lerp(to, t / length);
+            }
+        }
+
+        var bank0 = TownSamples.NorthBank(b.Position.X);
+        var bank1 = TownSamples.NorthBank(b.End.X);
+        Fringe(Along(new Vector2(b.Position.X, TownSamples.StreetNorth), new Vector2(b.Position.X, bank0)), Vector2.Left);
+        Fringe(Along(new Vector2(b.End.X, TownSamples.StreetNorth), new Vector2(b.End.X, bank1)), Vector2.Right);
+        Fringe(Along(new Vector2(b.Position.X, TownSamples.StreetNorth), new Vector2(b.End.X, TownSamples.StreetNorth)), Vector2.Up);
+        Fringe(Along(new Vector2(b.Position.X, TownSamples.SouthWalkEnd), new Vector2(b.End.X, TownSamples.SouthWalkEnd)), Vector2.Down);
+        foreach (var r in new[] { TownSamples.Alley, TownSamples.Plaza })
+        {
+            Fringe(Along(r.Position, new Vector2(r.End.X, r.Position.Y)), Vector2.Up);
+            Fringe(Along(r.Position, new Vector2(r.Position.X, r.End.Y)), Vector2.Left);
+            Fringe(Along(new Vector2(r.End.X, r.Position.Y), r.End), Vector2.Right);
+            Fringe(Along(new Vector2(r.Position.X, r.End.Y), r.End), Vector2.Down);
+        }
+
+        Fringe(TownLayout.Edge(TownSamples.NorthBank, b.Position.X - 1100, b.Position.X).Concat(TownLayout.Edge(TownSamples.NorthBank, b.End.X, b.End.X + 1100))
+            .Select(p => p + new Vector2(0, -14)), Vector2.Up);
+
+        // 远处的先画，近处的盖在上面。
+        _tufts.Sort((p, q) => TownView.P(p.Foot).Y.CompareTo(TownView.P(q.Foot).Y));
+    }
+
+    private void Place(Vector2 foot, float height, int variant, int i, float tone)
+    {
+        if (!IsLawn(foot))
+        {
+            return;
+        }
+
+        // 带穗的野草（第 4 张）本身偏黄褐，只提亮不加暖，出现次数减半；其余青绿草叶提暖到草地的黄绿。
+        if (variant == 3 && Cel.Rand(Seed, i + 55) < 0.5f)
+        {
+            variant = 0;
+        }
+
+        var tint = variant == 3 ? new Color(1.12f * tone, 1.16f * tone, 0.96f * tone) : new Color(1.42f * tone, 1.2f * tone, 0.84f * tone);
+        _tufts.Add((foot, height, variant, Cel.Rand(Seed, i + 77) > 0.5f, tint));
+    }
+
+    /// <summary>草地上、且离铺地、河沿、房屋朝镜头的两面和树脚都留了余地的位置。</summary>
+    private static bool IsLawn(Vector2 p)
+    {
+        var b = TownSamples.Bounds;
+        var town = p.X > b.Position.X - 6 && p.X < b.End.X + 6;
+        var south = town ? TownSamples.SouthWalkEnd + 6 : TownSamples.SouthBank(p.X) + 16;
+        if (p.Y > TownSamples.NorthBank(p.X) - 8 && p.Y < south)
+        {
+            return false;
+        }
+
+        if (town && p.Y > TownSamples.StreetNorth - 6 && p.Y < TownSamples.NorthBank(p.X))
+        {
+            return false;
+        }
+
+        if (TownSamples.Alley.Grow(6).HasPoint(p) || TownSamples.Plaza.Grow(6).HasPoint(p))
+        {
+            return false;
+        }
+
+        // 房屋：北、东两面在屋身背后，贴墙即可；西、南两面朝镜头，留 70 的空地（草丛高约 35 时顶端不进墙面）。
+        foreach (var h in TownSamples.Houses)
+        {
+            if (p.X > h.X0 - 70 && p.X < h.X1 + 6 && p.Y > h.Y0 - 6 && p.Y < h.Y1 + 70)
+            {
+                return false;
+            }
+        }
+
+        foreach (var t in TownSamples.Trees)
+        {
+            if (p.DistanceTo(t.Position) < 80)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public override void _Draw()
+    {
+        var shadow = new Color(0.12f, 0.24f, 0.2f, 0.12f);
+        foreach (var t in _tufts)
+        {
+            var foot = TownView.P(t.Foot);
+            var rx = t.Height * (t.Variant < 0 ? 0.7f : 0.55f);
+            DrawSetTransform(foot, 0, new Vector2(1, 0.28f));
+            DrawCircle(Vector2.Zero, rx, shadow);
+        }
+
+        DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+        foreach (var t in _tufts)
+        {
+            Tufts.Draw(this, TownView.P(t.Foot) + new Vector2(0, 2), t.Height, t.Variant, t.Flip, t.Tint);
+        }
     }
 }
