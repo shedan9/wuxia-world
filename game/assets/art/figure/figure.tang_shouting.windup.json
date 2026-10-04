@@ -1,0 +1,11 @@
+{
+  "id": "figure.tang_shouting.windup",
+  "foot": [
+    257.1,
+    792.6
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.tang_shouting.windup.png",
+  "sha256": "a66223372f6a404ce69b98d2b1479adf355814786c23342d24a4374d3f78ae46",
+  "frame_of": "figure.tang_shouting"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "figure.xiao_feng.back_run_b",
+  "foot": [
+    192.3,
+    812.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.xiao_feng.back_run_b.png",
+  "sha256": "60b6f84fca20c8ce394b716b8f92b0dd70f6f4ba05dc5d1b5305b6a6dc0d3e6c",
+  "frame_of": "figure.xiao_feng"
+}

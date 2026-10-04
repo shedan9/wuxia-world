@@ -6,5 +6,6 @@
   ],
   "stature": 800,
   "source": "art_source/ai/figure/figure.lu_qinghe.png",
-  "sha256": "c870b96eb6d03bfee77c1ff3021a6e50a28072f1ec7cdef72b4cc399cd19da64"
+  "sha256": "c870b96eb6d03bfee77c1ff3021a6e50a28072f1ec7cdef72b4cc399cd19da64",
+  "keep_x": 316.0
 }

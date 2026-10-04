@@ -1,0 +1,523 @@
+{
+  "set": "m3_cast_frames",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "init": "reference",
+  "strength": 0.9,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress"
+  },
+  "jobs": [
+    {
+      "name": "lu_qinghe_back",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "back_pole",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, from behind, back view, facing away, standing"
+    },
+    {
+      "name": "lu_qinghe_walk_a",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "walk_pole_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, walking, mid-stride"
+    },
+    {
+      "name": "lu_qinghe_walk_b",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "walk_pole_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, walking, mid-stride"
+    },
+    {
+      "name": "huang_rong_back",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "back_stand",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, from behind, back view, facing away, standing"
+    },
+    {
+      "name": "huang_rong_walk_a",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, walking, mid-stride"
+    },
+    {
+      "name": "huang_rong_walk_b",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, walking, mid-stride"
+    },
+    {
+      "name": "linghu_chong_back",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "back_stand",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, from behind, back view, facing away, standing"
+    },
+    {
+      "name": "linghu_chong_walk_a",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, walking, mid-stride"
+    },
+    {
+      "name": "linghu_chong_walk_b",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_back",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "back_stand",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, from behind, back view, facing away, standing"
+    },
+    {
+      "name": "xiao_feng_walk_a",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_walk_b",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, walking, mid-stride"
+    },
+    {
+      "name": "hero_run_a",
+      "reference": "out/m0_figures/hero_66__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "hero_run_b",
+      "reference": "out/m0_figures/hero_66__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "lu_qinghe_run_a",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "run_pole_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "lu_qinghe_run_b",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "run_pole_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "huang_rong_run_a",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "huang_rong_run_b",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "linghu_chong_run_a",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "linghu_chong_run_b",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "xiao_feng_run_a",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "xiao_feng_run_b",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "run_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, running, dashing forward, leaning forward, one foot off the ground, dynamic pose"
+    },
+    {
+      "name": "lu_qinghe_guard",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "guard",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, martial arts fighting stance, focused expression, bamboo pole held in both hands",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "lu_qinghe_windup",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, martial arts stance, drawing back to strike, focused expression, bamboo pole held in both hands"
+    },
+    {
+      "name": "lu_qinghe_strike",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, thrusting the bamboo pole forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "lu_qinghe_hit",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "lu_qinghe_down",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "huang_rong_guard",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "guard",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, martial arts fighting stance, focused expression, empty hands",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "huang_rong_windup",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, martial arts stance, drawing back to strike, focused expression, empty hands"
+    },
+    {
+      "name": "huang_rong_strike",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, palm strike, thrusting open palm forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "huang_rong_hit",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "huang_rong_down",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "linghu_chong_guard",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "guard",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, martial arts fighting stance, focused expression, chinese jian sword drawn",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "linghu_chong_windup",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, martial arts stance, drawing back to strike, focused expression, chinese jian sword drawn"
+    },
+    {
+      "name": "linghu_chong_strike",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, sword thrust, thrusting the jian sword forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "linghu_chong_hit",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "linghu_chong_down",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "xiao_feng_guard",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "guard",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, martial arts fighting stance, focused expression, empty hands, fists",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "xiao_feng_windup",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, martial arts stance, drawing back to strike, focused expression, empty hands, fists"
+    },
+    {
+      "name": "xiao_feng_strike",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, powerful palm strike, thrusting open palm forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "xiao_feng_hit",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "xiao_feng_down",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "escort_windup",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, martial arts stance, drawing back to strike, focused expression, wooden club"
+    },
+    {
+      "name": "escort_strike",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, swinging the wooden club forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "escort_hit",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "escort_down",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "tang_shouting_windup",
+      "reference": "out/m0_figures/tang_shouting_11__raw.png",
+      "reference_pose": "guard",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet_long",
+      "prompt": "1boy, solo, same man, middle-aged man, scar on cheek, fierce expression, long black hair in a high ponytail with red tie, white shirt, long dark grey sleeveless vest, red sash, white baggy trousers, black shoes, holding a chinese dao broadsword, martial arts stance, drawing back to strike, focused expression, dao broadsword"
+    },
+    {
+      "name": "tang_shouting_strike",
+      "reference": "out/m0_figures/tang_shouting_11__raw.png",
+      "reference_pose": "guard",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet_long",
+      "prompt": "1boy, solo, same man, middle-aged man, scar on cheek, fierce expression, long black hair in a high ponytail with red tie, white shirt, long dark grey sleeveless vest, red sash, white baggy trousers, black shoes, holding a chinese dao broadsword, slashing the dao broadsword forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "tang_shouting_hit",
+      "reference": "out/m0_figures/tang_shouting_11__raw.png",
+      "reference_pose": "guard",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet_long",
+      "prompt": "1boy, solo, same man, middle-aged man, scar on cheek, fierce expression, long black hair in a high ponytail with red tie, white shirt, long dark grey sleeveless vest, red sash, white baggy trousers, black shoes, holding a chinese dao broadsword, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "tang_shouting_down",
+      "reference": "out/m0_figures/tang_shouting_11__raw.png",
+      "reference_pose": "guard",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet_long",
+      "prompt": "1boy, solo, same man, middle-aged man, scar on cheek, fierce expression, long black hair in a high ponytail with red tie, white shirt, long dark grey sleeveless vest, red sash, white baggy trousers, black shoes, holding a chinese dao broadsword, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    }
+  ],
+  "note": "M3-02 全员帧：参照格局部重绘（figure_sheet.py），沿用主角样板参数；跑步帧为 Shift 快走，背面行走 / 跑以选定的背面站姿为参照格。"
+}

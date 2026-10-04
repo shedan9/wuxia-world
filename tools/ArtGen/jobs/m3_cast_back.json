@@ -1,0 +1,277 @@
+{
+  "set": "m3_cast_back",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "init": "reference",
+  "strength": 0.9,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress"
+  },
+  "jobs": [
+    {
+      "name": "hero_back_run_a",
+      "reference": "out/m3_hero_frames_v2/hero_back_33__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "hero_back_run_b",
+      "reference": "out/m3_hero_frames_v2/hero_back_33__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "lu_qinghe_back_walk_a",
+      "reference": "out/m3_cast_frames/lu_qinghe_back_44__raw.png",
+      "reference_pose": "back_pole",
+      "pose": "back_walk_pole_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "lu_qinghe_back_walk_b",
+      "reference": "out/m3_cast_frames/lu_qinghe_back_44__raw.png",
+      "reference_pose": "back_pole",
+      "pose": "back_walk_pole_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "lu_qinghe_back_run_a",
+      "reference": "out/m3_cast_frames/lu_qinghe_back_44__raw.png",
+      "reference_pose": "back_pole",
+      "pose": "back_run_pole_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "lu_qinghe_back_run_b",
+      "reference": "out/m3_cast_frames/lu_qinghe_back_44__raw.png",
+      "reference_pose": "back_pole",
+      "pose": "back_run_pole_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "huang_rong_back_walk_a",
+      "reference": "out/m3_cast_frames/huang_rong_back_33__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_walk_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "huang_rong_back_walk_b",
+      "reference": "out/m3_cast_frames/huang_rong_back_33__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_walk_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "huang_rong_back_run_a",
+      "reference": "out/m3_cast_frames/huang_rong_back_33__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "huang_rong_back_run_b",
+      "reference": "out/m3_cast_frames/huang_rong_back_33__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "linghu_chong_back_walk_a",
+      "reference": "out/m3_cast_frames/linghu_chong_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_walk_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "linghu_chong_back_walk_b",
+      "reference": "out/m3_cast_frames/linghu_chong_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_walk_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "linghu_chong_back_run_a",
+      "reference": "out/m3_cast_frames/linghu_chong_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "linghu_chong_back_run_b",
+      "reference": "out/m3_cast_frames/linghu_chong_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_back_walk_a",
+      "reference": "out/m3_cast_frames/xiao_feng_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_walk_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "xiao_feng_back_walk_b",
+      "reference": "out/m3_cast_frames/xiao_feng_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_walk_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, from behind, back view, facing away, walking away, mid-stride"
+    },
+    {
+      "name": "xiao_feng_back_run_a",
+      "reference": "out/m3_cast_frames/xiao_feng_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_back_run_b",
+      "reference": "out/m3_cast_frames/xiao_feng_back_22__raw.png",
+      "reference_pose": "back_stand",
+      "pose": "back_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, from behind, back view, facing away, running away, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "lu_qinghe_stride_a",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "walk_pole_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, walking briskly, taking a big step forward, front foot stepping out from under the skirt, skirt hem swinging open with the stride, skirt flowing with motion",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.95,
+      "control_end": 1.0,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "lu_qinghe_stride_b",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "walk_pole_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, walking briskly, taking a big step forward, front foot stepping out from under the skirt, skirt hem swinging open with the stride, skirt flowing with motion",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.95,
+      "control_end": 1.0,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "huang_rong_stride_a",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, walking briskly, taking a big step forward, front foot stepping out from under the skirt, skirt hem swinging open with the stride, skirt flowing with motion",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.95,
+      "control_end": 1.0,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "huang_rong_stride_b",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "walk_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, walking briskly, taking a big step forward, front foot stepping out from under the skirt, skirt hem swinging open with the stride, skirt flowing with motion",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.95,
+      "control_end": 1.0,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    }
+  ],
+  "note": "M3-02 全员帧：参照格局部重绘（figure_sheet.py），沿用主角样板参数；跑步帧为 Shift 快走，背面行走 / 跑以选定的背面站姿为参照格。"
+}

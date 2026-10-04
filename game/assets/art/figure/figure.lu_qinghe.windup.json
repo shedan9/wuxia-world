@@ -1,0 +1,11 @@
+{
+  "id": "figure.lu_qinghe.windup",
+  "foot": [
+    167.4,
+    847.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.lu_qinghe.windup.png",
+  "sha256": "622460ffc76ce9e76377a33e663d0bd5fb6913c68310961af49bb74da0d3c055",
+  "frame_of": "figure.lu_qinghe"
+}

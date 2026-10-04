@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.back_run_b",
+  "foot": [
+    136.9,
+    778.7
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.back_run_b.png",
+  "sha256": "db0ac430933b9c157ff1a75d51cbbf97fa5bc9b4dc3e2d247460903a5f40c7d5",
+  "frame_of": "figure.hero"
+}

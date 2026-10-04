@@ -229,6 +229,25 @@ public static class DevCapture
                 case "--walk":
                     Walk = true;
                     break;
+                case "--zoom":
+                    WuxiaWorld.Game.Preview.Pages.ExploreStage.DevZoom = float.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--drive":
+                    // 例：--drive=wait:1,right:1.5,up:1,shift+right:1.5（wait 为原地不动）。
+                    foreach (var part in value.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        var (name, secs) = part.Split(':') is [var n, var t] ? (n, float.Parse(t, System.Globalization.CultureInfo.InvariantCulture)) : (part, 1f);
+                        var run = name.StartsWith("shift+", StringComparison.Ordinal);
+                        var dir = Vector2.Zero;
+                        foreach (var d in name.Replace("shift+", "", StringComparison.Ordinal).Split('+'))
+                        {
+                            dir += d switch { "left" => Vector2.Left, "right" => Vector2.Right, "up" => Vector2.Up, "down" => Vector2.Down, _ => Vector2.Zero };
+                        }
+
+                        WuxiaWorld.Game.Preview.Pages.ExploreStage.DevDrive.Enqueue((dir, run, secs));
+                    }
+
+                    break;
                 case "--side":
                     Side = true;
                     break;

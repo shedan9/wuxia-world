@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.run_a",
+  "foot": [
+    184.0,
+    765.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.run_a.png",
+  "sha256": "ed4e3099211248332d7c865bcc30a4d56f8eb5f917be0b4c68f3d7f89af731e6",
+  "frame_of": "figure.hero"
+}

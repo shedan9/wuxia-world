@@ -1,0 +1,11 @@
+{
+  "id": "figure.huang_rong.strike",
+  "foot": [
+    260.0,
+    782.9
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.huang_rong.strike.png",
+  "sha256": "c8e115a5251a7cebe2ed13e8bfdda37d82652d49f73099984eb38e4f34043a90",
+  "frame_of": "figure.huang_rong"
+}

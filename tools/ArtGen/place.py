@@ -41,6 +41,26 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def pole_left(image) -> float:
+    """竖直竹篙的左缘 x（贴图像素）：图下半段里竹青色（绿明显高于红、蓝）像素占满大半行的列中，取靠右那一簇的最左列再让 3 像素。"""
+    import numpy as np
+
+    rgba = np.asarray(image.convert("RGBA")).astype(int)
+    lower = rgba[rgba.shape[0] // 2:]
+    r, g, b, a = lower[..., 0], lower[..., 1], lower[..., 2], lower[..., 3]
+    green = (a > 128) & (g > r + 25) & (g > b + 45)
+    cols = np.nonzero(green.mean(axis=0) > 0.35)[0]
+    if len(cols) == 0:
+        raise SystemExit("--pole：没找到竖直的竹篙")
+    # 靠右那一簇（篙在人物前方右侧）：从最右列往左连到断开为止。
+    start = cols[-1]
+    for c in cols[::-1]:
+        if start - c > 4:
+            break
+        start = c
+    return float(max(0, start - 3))
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
@@ -55,6 +75,7 @@ def main() -> int:
     parser.add_argument("--figure", action="store_true", help="全身人物：裁边、缩放到统一身高，记脚底与身高")
     parser.add_argument("--stature", type=int, default=800, help="--figure：头顶到脚底的输出像素")
     parser.add_argument("--top", type=int, help="--figure：头顶 y（原图像素），默认取外框顶边")
+    parser.add_argument("--pole", action="store_true", help="--figure：图中有竖直的竹篙（陆青禾），记篙杆左缘 keep_x，探索里裙摆摆动不横移篙杆")
     parser.add_argument("--frame-of", help="--figure：作为该基础形象的一帧入库（沿用其缩放比例与 stature，脚底取两胯中点）")
     parser.add_argument("--prop", action="store_true", help="战斗道具：裁边，记底边中点与整高（FigureArt 格式）")
     parser.add_argument("--backdrop", type=float, metavar="WATERLINE", help="整张布景：原样入库，记远岸水线 y（原图像素）")
@@ -272,6 +293,8 @@ def place_figure(args, src: Path, record: dict, art_dir: Path, game_dir: Path) -
     placed = {"id": args.id, "foot": foot, "stature": stature, "source": f"art_source/ai/figure/{args.id}.png", "sha256": sha(path)}
     if args.frame_of:
         placed["frame_of"] = args.frame_of
+    if args.pole:
+        placed["keep_x"] = pole_left(out)
     (game_dir / f"{args.id}.json").write_text(json.dumps(placed, ensure_ascii=False, indent=2), encoding="utf-8")
     fig = {"crop": list(box), "scale": round(k, 4), "top": head, "bottom": bottom, "stature": stature, "foot": foot, "frame_of": args.frame_of}
     (art_dir / f"{args.id}.json").write_text(

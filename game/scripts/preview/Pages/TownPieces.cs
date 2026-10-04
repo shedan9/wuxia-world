@@ -1163,13 +1163,19 @@ public partial class WalkerFigure : TownPiece
     public float Phase { get; set; }
     public bool Moving { get; set; }
 
-    /// <summary>按屏幕上的位移方向换正面 / 背面：明显往上走转背面、往下走转正面，近乎水平时保持原样（不来回闪）。</summary>
+    /// <summary>快走（Shift 或点地自动行走、同行者追赶）：有跑步帧（<c>run_a</c> / <c>run_b</c>，背面 <c>back_run_a</c> / <c>back_run_b</c>）时换跑步姿势。</summary>
+    public bool Running { get; set; }
+
+    /// <summary>
+    /// 按屏幕上的位移方向换正面 / 背面：明显往上走（含斜上）转背面，水平或往下走转正面（四分之三正面朝左右）。
+    /// 两个阈值之间留一段回差，沿足迹略带上下起伏的跟随不会来回闪。
+    /// </summary>
     public void TurnToward(Vector2 groundMove)
     {
         var len = groundMove.Length();
         var dy = TownView.ScreenY(groundMove);
-        if (dy < -0.25f * len) Back = true;
-        else if (dy > 0.25f * len) Back = false;
+        if (dy < -0.4f * len) Back = true;
+        else if (dy > -0.2f * len) Back = false;
     }
 
     /// <summary>坐姿时凳面高度（世界单位）。</summary>
@@ -1193,6 +1199,54 @@ public partial class WalkerFigure : TownPiece
         TextureFilter = TextureFilterEnum.LinearWithMipmaps;
     }
 
+    /// <summary>
+    /// 穿长裙 / 长下摆的人物与裙摆摆幅（相对值，1 为裙摆处约 4.5% 身高）。长裙盖住腿时 AI 行走帧画不出迈步，
+    /// 由 figure_skirt 着色器让裙摆随步相前后摆、走动时略向后拖，停步后以阻尼回正。
+    /// </summary>
+    private static readonly Dictionary<string, float> SkirtAmp = new()
+    {
+        ["figure.lu_qinghe"] = 1f,
+        ["figure.huang_rong"] = 1.3f,
+        ["figure.qiao_hongxiao"] = 1f,
+        ["figure.linghu_chong"] = 0.45f,
+    };
+
+    private static readonly Shader SkirtShader = GD.Load<Shader>("res://assets/shaders/figure_skirt.gdshader");
+
+    private ShaderMaterial? _skirt;
+    private float _skirtSway;
+    private float _skirtRipple;
+
+    public override void _Ready()
+    {
+        if (SkirtAmp.ContainsKey(ArtId) && FigureArt.Find(ArtId) is not null)
+        {
+            _skirt = new ShaderMaterial { Shader = SkirtShader };
+            Material = _skirt;
+        }
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_skirt is null)
+        {
+            SetProcess(false);
+            return;
+        }
+
+        // 摆动目标：每步换一次方向（sin 步相），走动时整体向后（行进反方向）拖一点；跑步摆幅与拖曳更大。
+        var amp = SkirtAmp[ArtId] * (Running ? 1.5f : 1f);
+        var target = Moving && Motion.Enabled ? amp * (0.75f * Mathf.Sin(Phase) - (Running ? 0.55f : 0.3f)) : 0;
+        var ripple = Moving && Motion.Enabled ? amp * (Running ? 0.35f : 0.22f) : 0;
+        var k = 1 - Mathf.Exp(-(float)delta * 10);
+        _skirtSway = Mathf.Lerp(_skirtSway, target, k);
+        _skirtRipple = Mathf.Lerp(_skirtRipple, ripple, k * 0.5f);
+        if (Moving || Mathf.Abs(_skirtSway) > 0.002f || _skirtRipple > 0.002f)
+        {
+            QueueRedraw();
+        }
+    }
+
     /// <summary>AI 形象的 id（<see cref="FigureArt"/>）；按装束取默认人物，未入库时画程序化占位。</summary>
     public string ArtId
     {
@@ -1209,7 +1263,7 @@ public partial class WalkerFigure : TownPiece
 
     private readonly string? _artId;
 
-    private static readonly string[] FrameKeys = ["walk_a", "walk_b", "back", "back_walk_a", "back_walk_b"];
+    private static readonly string[] FrameKeys = ["walk_a", "walk_b", "back", "back_walk_a", "back_walk_b", "run_a", "run_b", "back_run_a", "back_run_b"];
 
     public void Place(Vector2 ground, float z = 0)
     {
@@ -1242,10 +1296,24 @@ public partial class WalkerFigure : TownPiece
         if (FigureArt.Find(ArtId) is { } art)
         {
             var step = Moving ? Mathf.Abs(Mathf.Sin(Phase)) : 0;
+            if (Moving && Running && RunFrame() is { } run)
+            {
+                // 跑步帧：每步换一张（左右腿交替），步中腾空时整身抬高一点。
+                DrawFrame(run, new Vector2(0, -step * 7));
+                return;
+            }
+
             if (WalkFrame(art) is { } frame)
             {
                 // M3-02 行走帧：四拍一循环（迈左、过步、迈右、过步），过步即站姿；过步时身体略高，不再整张前倾伸缩。
-                frame.Draw(this, new Vector2(0, -step * 2), Height, Facing);
+                DrawFrame(frame, new Vector2(0, -step * 2));
+                return;
+            }
+
+            if (_skirt is not null)
+            {
+                // 长裙人物缺行走帧时不再整张伸缩前倾（裙摆由着色器摆动），只随步上下起伏。
+                DrawFrame(Back && FigureArt.Find($"{ArtId}.back") is { } backStill ? backStill : art, new Vector2(0, -step * 3));
                 return;
             }
 
@@ -1335,6 +1403,38 @@ public partial class WalkerFigure : TownPiece
             2 => b,
             _ => idle,
         };
+    }
+
+    /// <summary>画一帧形象；长裙人物经裙摆着色器、四周外扩画出，并按这一帧的脚底与身高设定摆动范围。</summary>
+    private void DrawFrame(FigureArt frame, Vector2 feet)
+    {
+        if (_skirt is null)
+        {
+            frame.Draw(this, feet, Height, Facing);
+            return;
+        }
+
+        var swayPx = 0.045f * frame.Stature;
+        _skirt.SetShaderParameter("tex_size", frame.Texture.GetSize());
+        _skirt.SetShaderParameter("top_y", frame.Foot.Y - frame.Stature * 0.45f);
+        _skirt.SetShaderParameter("hem_y", frame.Foot.Y);
+        _skirt.SetShaderParameter("sway", _skirtSway * swayPx);
+        _skirt.SetShaderParameter("ripple", _skirtRipple * swayPx);
+        _skirt.SetShaderParameter("ripple_phase", Phase * 2);
+        _skirt.SetShaderParameter("keep_x", frame.KeepX ?? 1e9f);
+        frame.DrawPadded(this, feet, Height, Facing, swayPx * 2.5f);
+    }
+
+    /// <summary>当前该画的跑步帧：步相每 π 一步，偶数步 <c>run_a</c>、奇数步 <c>run_b</c>（背面加 <c>back_</c> 前缀）；缺帧时返回 null，退回行走帧。</summary>
+    private FigureArt? RunFrame()
+    {
+        var prefix = Back ? "back_run" : "run";
+        if (FigureArt.Find($"{ArtId}.{prefix}_a") is not { } a || FigureArt.Find($"{ArtId}.{prefix}_b") is not { } b)
+        {
+            return null;
+        }
+
+        return Mathf.PosMod(Mathf.FloorToInt(Phase / Mathf.Pi), 2) == 0 ? a : b;
     }
 
     private void DrawHead(Vector2 head, float h, int dir, float bob)

@@ -1,0 +1,11 @@
+{
+  "id": "figure.escort.windup",
+  "foot": [
+    288.6,
+    762.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.escort.windup.png",
+  "sha256": "6f52e3ca4020dc3749e83278f7694e557250cc15b9bd5828469b435f32747f9e",
+  "frame_of": "figure.escort"
+}

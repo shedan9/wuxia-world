@@ -1,0 +1,11 @@
+{
+  "id": "figure.huang_rong.guard",
+  "foot": [
+    278.6,
+    811.2
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.huang_rong.guard.png",
+  "sha256": "5d7038e5b312c76d4865e906f5d7fdf675231147aa23f3b6b696fd19136250ca",
+  "frame_of": "figure.huang_rong"
+}

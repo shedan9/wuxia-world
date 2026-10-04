@@ -1,0 +1,11 @@
+{
+  "id": "figure.linghu_chong.walk_a",
+  "foot": [
+    168.8,
+    787.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.linghu_chong.walk_a.png",
+  "sha256": "eb40dab91050685c5c5d7dc70c1848c85a3f17c25644ef92eb406505f19361f3",
+  "frame_of": "figure.linghu_chong"
+}

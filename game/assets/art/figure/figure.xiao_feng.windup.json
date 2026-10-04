@@ -1,0 +1,11 @@
+{
+  "id": "figure.xiao_feng.windup",
+  "foot": [
+    144.8,
+    801.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.xiao_feng.windup.png",
+  "sha256": "595157c160cb9d6d740c45ca4da3b137dd9084a52fe2c30281e627de2bd531b9",
+  "frame_of": "figure.xiao_feng"
+}

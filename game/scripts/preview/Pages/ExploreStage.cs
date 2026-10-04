@@ -70,6 +70,17 @@ public abstract partial class ExploreStage : Control
     /// </summary>
     public Vector2? BotGround { get; set; }
 
+    /// <summary>
+    /// 开发核对（<c>--drive</c>）：按顺序模拟按住屏幕方向键若干秒（run 为同时按 Shift），用于 <c>--write-movie</c> 录行走 / 快走 / 转身的换帧。
+    /// 进第一张可操作的地图后开始，走完即清空。
+    /// </summary>
+    public static Queue<(Vector2 Dir, bool Run, float Seconds)> DevDrive { get; } = new();
+
+    private float _driveLeft = -1;
+
+    /// <summary>开发核对（<c>--zoom</c>）：镜头倍率，越过游戏内缩放上下限，用于录像核对人物换帧的近景。</summary>
+    public static float? DevZoom { get; set; }
+
     /// <summary>当前高亮、按 E 会触发的交互点。</summary>
     public TownInteraction? NearInteraction => _near;
 
@@ -199,6 +210,7 @@ public abstract partial class ExploreStage : Control
         }
 
         _trail.Add(hero);
+        _zoom = DevZoom ?? _zoom;
 
         // 布景内部按 ZIndex 排前后；整体压到 -4000，保证在 HUD（ZIndex 0）之下。
         _world = new Node2D { ZIndex = -4000 };
@@ -489,6 +501,21 @@ public abstract partial class ExploreStage : Control
             if (KeyBindings.Held("move_down") || Input.IsKeyPressed(Key.Down)) input.Y += 1;
         }
 
+        var devRun = false;
+        if (DevDrive.Count > 0 && Driver is not { InputLocked: true })
+        {
+            var (dir, run, seconds) = DevDrive.Peek();
+            if (_driveLeft < 0) _driveLeft = seconds;
+            input = dir;
+            devRun = run;
+            _driveLeft -= dt;
+            if (_driveLeft <= 0)
+            {
+                DevDrive.Dequeue();
+                _driveLeft = -1;
+            }
+        }
+
         if (input != Vector2.Zero && _route is not null)
         {
             // 按方向键接管：取消鼠标点地的自动行走。
@@ -506,7 +533,7 @@ public abstract partial class ExploreStage : Control
                 input = new Vector2(TownView.ScreenX(dir), 0);
             }
 
-            var speed = KeyBindings.Held("run") || bot is not null ? RunSpeed : WalkSpeed;
+            var speed = KeyBindings.Held("run") || devRun || bot is not null ? RunSpeed : WalkSpeed;
             var step = dir * speed * dt;
             var pos = Hero.Ground;
             if (Walkable(pos + new Vector2(step.X, 0))) pos.X += step.X;
@@ -514,7 +541,9 @@ public abstract partial class ExploreStage : Control
             if (input.X != 0) Hero.Facing = input.X > 0 ? 1 : -1;
             Hero.TurnToward(dir);
             _heading = dir;
-            Hero.Phase += (pos - Hero.Ground).Length() / 32;
+            // 快走换跑步帧；跑步一步跨得更远（步相按更长的步幅推进），步频只比走路略快。
+            Hero.Running = speed >= RunSpeed;
+            Hero.Phase += (pos - Hero.Ground).Length() / (Hero.Running ? 44 : 32);
             _stride += (pos - Hero.Ground).Length();
             if (_stride > speed * 0.42f)
             {
@@ -553,7 +582,11 @@ public abstract partial class ExploreStage : Control
         {
             var move = gap / dist * step;
             var pos = walker.Ground + move;
-            walker.Phase += step / 30;
+            // 追赶速度超过走路与快走的中值换跑步帧，回落到走路速度以下才换回（回差避免来回切换）。
+            var speed = step / Mathf.Max(dt, 1e-4f);
+            if (speed > (WalkSpeed + RunSpeed) / 2) walker.Running = true;
+            else if (speed < WalkSpeed * 1.05f) walker.Running = false;
+            walker.Phase += step / (walker.Running ? 42 : 30);
             var sx = TownView.ScreenX(move);
             if (Mathf.Abs(sx) > step * 0.3f) walker.Facing = sx > 0 ? 1 : -1;
             walker.TurnToward(move);

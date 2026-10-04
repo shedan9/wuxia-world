@@ -1,0 +1,11 @@
+{
+  "id": "figure.huang_rong.windup",
+  "foot": [
+    271.9,
+    800.8
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.huang_rong.windup.png",
+  "sha256": "43eb9c67cc49c308fb12df17e4155317db4aa3c10f0fc9b40726c0b77a17885d",
+  "frame_of": "figure.huang_rong"
+}

@@ -1,0 +1,71 @@
+{
+  "set": "m3_cast_lu_fix",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "init": "reference",
+  "strength": 0.9,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress"
+  },
+  "jobs": [
+    {
+      "name": "lu_qinghe_guard",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "guard",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt, cream colored outfit with brown hem, cloth shoes, holding a tall green bamboo pole upright, martial arts fighting stance, focused expression, bamboo pole held in both hands",
+      "strength": 0.95,
+      "init": "reference",
+      "control": 0.95,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "lu_qinghe_down",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet_robe",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt, cream colored outfit with brown hem, cloth shoes, holding a tall green bamboo pole upright, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 0.95,
+      "init": "reference",
+      "control": 0.95,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    }
+  ],
+  "note": "陆青禾迎敌与跪倒重做：第一轮从灰底起步（strength 1.0）衣色全变褐，改以参照图作底、strength 0.95、骨架 0.95。"
+}

@@ -232,4 +232,10 @@ cd tools/ArtGen
 
 夜间发光图（M3-01 光影）：`.venv/Scripts/python glow_mask.py <件 id> [阈值参数] [--preview 对照图.png]` 从已入库的 AI 件取出暖色窗纸与红灯笼，写 `game/assets/art/<地区>/<id>.glow.png`（颜色取原件、alpha 为发光强度，外加一圈柔光）与 `.glow.json`（origin、px 同原件，`blobs` 为窗块中心与面积、`lanterns` 为灯笼中心，均为投影坐标）。引擎黄昏起把它叠加在件上并按 `blobs` / `lanterns` 在街面铺光。客栈用的阈值见资产台账；件换图后重跑，新 png 需让 Godot 导入一次（编辑器打开或 `--headless --import`）。
 
-人物行走帧与战斗关键姿势（M3-02）：`.venv/Scripts/python figure_sheet.py jobs/m3_hero_frames.json [--only 名称前缀] [--preview]`。任务给出参照原图（`reference`，入库形象的 `__raw` 生成原图）、参照姿势（`reference_pose`）与目标姿势（`pose`，骨架定义在 `figure.py` 的 `POSES`）；`init: reference` + `strength 0.9` 配色最稳，大幅改姿势用 `strength 1.0`。提示词必须写入库形象的实际外观。选定后 `.venv/Scripts/python place.py out/<集>/<名>_<种子>.png figure.<人物>.<帧> --figure --frame-of figure.<人物>` 入库（沿用基础形象的缩放、脚底按骨盆对齐）。帧名：`walk_a`、`walk_b`、`back`、`back_walk_a`、`back_walk_b`（探索），`guard`、`windup`、`strike`、`hit`、`down`（战斗）；缺帧时引擎退回站姿。
+人物行走帧与战斗关键姿势（M3-02）：`.venv/Scripts/python figure_sheet.py jobs/m3_hero_frames.json [--only 名称前缀] [--preview]`。任务给出参照原图（`reference`，入库形象的 `__raw` 生成原图）、参照姿势（`reference_pose`）与目标姿势（`pose`，骨架定义在 `figure.py` 的 `POSES`）；`init: reference` + `strength 0.9` 配色最稳，大幅改姿势用 `strength 1.0`。提示词必须写入库形象的实际外观。选定后 `.venv/Scripts/python place.py out/<集>/<名>_<种子>.png figure.<人物>.<帧> --figure --frame-of figure.<人物>` 入库（沿用基础形象的缩放、脚底按骨盆对齐）。帧名：`walk_a`、`walk_b`、`back`、`back_walk_a`、`back_walk_b`、`run_a`、`run_b`、`back_run_a`、`back_run_b`（探索；跑步骨架 `run_front_a/b`、`back_run_a/b`，持篙人物用 `*_pole_*` 一套），`guard`、`windup`、`strike`、`hit`、`down`（战斗）；缺帧时引擎退回站姿。图中有竖直竹篙的人物（陆青禾）入库加 `--pole`，按竹青色找篙杆左缘写入 json 的 `keep_x`，探索里裙摆着色器不横移篙杆。
+
+2026-10-04 全员批量（任务 `m3_cast_frames.json`、`m3_cast_back.json`、`m3_cast_lu_fix.json`，308 张候选，选 64 帧）经验：
+- 长裙人物（陆青禾、黄蓉）的正面迈步在 strength 0.9 下几乎画成站姿；strength 1.0、骨架 0.95 且全程约束、提示词写“前脚从裙下迈出”后迈步出来了，但外衣配色漂移（陆青禾裙子变褐、长篙消失，黄蓉的米白前襟消失），与站姿交替会闪，未采用，改由引擎裙摆着色器补动感。背面迈步同理几乎不动。
+- 迎敌、跪倒用 strength 1.0 从底色起步时，浅色衣服（陆青禾米白长衣）全变成褐色；改回 `init: reference`、strength 0.95、control 0.95 能改动姿势且保住衣色。
+- 跑步骨架能出后脚离地、臂屈肘大摆，但上身前倾仍偏弱；同一人物的 a / b 两帧尽量取同一种子，配色才一致。
+- 双格画布偶尔在右格左缘留一道左格的竖条，入库前挑掉或 `--erase`；跪倒时两腿间的封闭灰底（模型画的地影）用 `--recut 26 --enclosed 60` 去掉。

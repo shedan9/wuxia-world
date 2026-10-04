@@ -1,0 +1,11 @@
+{
+  "id": "figure.escort.down",
+  "foot": [
+    235.1,
+    660.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.escort.down.png",
+  "sha256": "ca8253c98015aad85ed0d44202dab5712a304b8e67c1c8c9f9e343714d9aa6c7",
+  "frame_of": "figure.escort"
+}

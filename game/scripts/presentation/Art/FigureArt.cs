@@ -15,11 +15,12 @@ public sealed class FigureArt
 {
     private static readonly Dictionary<string, FigureArt?> Cache = [];
 
-    private FigureArt(Texture2D texture, Vector2 foot, float stature)
+    private FigureArt(Texture2D texture, Vector2 foot, float stature, float? keepX)
     {
         Texture = texture;
         Foot = foot;
         Stature = stature;
+        KeepX = keepX;
     }
 
     public Texture2D Texture { get; }
@@ -31,6 +32,9 @@ public sealed class FigureArt
 
     /// <summary>头顶到脚底的像素高度（长篙、刀尖高出头顶的部分不计）。</summary>
     public float Stature { get; }
+
+    /// <summary>竖直长道具（陆青禾的长篙）左缘的贴图 x：裙摆摆动不横移这一列及其右侧（json 可选键 keep_x）。</summary>
+    public float? KeepX { get; }
 
     public static FigureArt? Find(string id)
     {
@@ -53,7 +57,8 @@ public sealed class FigureArt
             art = new FigureArt(
                 GD.Load<Texture2D>($"{basePath}.png"),
                 new Vector2(foot[0].GetSingle(), foot[1].GetSingle()),
-                doc.RootElement.GetProperty("stature").GetSingle());
+                doc.RootElement.GetProperty("stature").GetSingle(),
+                doc.RootElement.TryGetProperty("keep_x", out var keep) ? keep.GetSingle() : null);
         }
 
         Cache[id] = art;
@@ -70,6 +75,20 @@ public sealed class FigureArt
         // 源图朝右：facing 为 -1（朝左）时水平翻转。
         ci.DrawSetTransform(feet, lean * facing, new Vector2(k * facing, k * stretch));
         ci.DrawTexture(Texture, -Foot, modulate ?? Colors.White);
+        ci.DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+    }
+
+    /// <summary>
+    /// 同 <see cref="Draw"/>，但贴图四周外扩 pad 个贴图像素画出（外扩处 UV 超出 0–1，由着色器取透明），
+    /// 供裙摆摆动着色器（figure_skirt）把裙摆横移到原外框以外。
+    /// </summary>
+    public void DrawPadded(CanvasItem ci, Vector2 feet, float height, int facing, float pad)
+    {
+        var k = height / Stature;
+        ci.DrawSetTransform(feet, 0, new Vector2(k * facing, k));
+        var size = Texture.GetSize();
+        var grow = new Vector2(pad, pad);
+        ci.DrawTextureRectRegion(Texture, new Rect2(-Foot - grow, size + grow * 2), new Rect2(-grow, size + grow * 2));
         ci.DrawSetTransform(Vector2.Zero, 0, Vector2.One);
     }
 
