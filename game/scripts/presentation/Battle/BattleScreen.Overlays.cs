@@ -71,22 +71,76 @@ public sealed partial class BattleScreen
             builds.AddChild(button);
         }
 
+        // 组成：原型（三套流派同等预算）或剧情路线（测试台，BattleScreen.Bench）。
+        var modes = Ui.Row(UiPalette.SpaceM);
+        var modeGroup = new ButtonGroup();
+        foreach (var (story, label) in new[] { (false, "原型 · 同等预算"), (true, "剧情路线 · 测试台") })
+        {
+            // Ui.Toggle 建好已选中的按钮时也会回调一次：只在真的换了组成时重建，且延后到这次点击处理完。
+            var b = Ui.Toggle(label, UiTheme.ChoiceButton, modeGroup, () =>
+            {
+                if (_benchStory != story)
+                {
+                    _benchStory = story;
+                    Callable.From(ShowSetup).CallDeferred();
+                }
+            }, _benchStory == story);
+            b.CustomMinimumSize = new Vector2(300, 56);
+            modes.AddChild(b);
+        }
+
+        var benchRows = new List<Control>();
+        if (_benchStory)
+        {
+            var companions = Ui.Row(UiPalette.SpaceM);
+            var companionGroup = new ButtonGroup();
+            for (var i = 0; i < BenchCompanions.Length; i++)
+            {
+                var index = i;
+                var b = Ui.Toggle(BenchCompanions[i].Name, UiTheme.ChoiceButton, companionGroup, () => { _benchCompanion = index; }, i == _benchCompanion);
+                b.CustomMinimumSize = new Vector2(160, 52);
+                companions.AddChild(b);
+            }
+
+            var side = Ui.Switch(_benchSide);
+            side.Toggled += on => _benchSide = on;
+            var level = Ui.Row(UiPalette.SpaceS,
+                Ui.Button("−", UiTheme.ChipButton, () => StepBenchLevel(-1)),
+                Ui.Text(_benchLevel == 0 ? "按剧情" : $"{_benchLevel} 级", UiTheme.DarkLabel),
+                Ui.Button("＋", UiTheme.ChipButton, () => StepBenchLevel(1)));
+            benchRows.Add(Ui.Row(UiPalette.SpaceXl, Ui.Column(4, Ui.Section("同行者（1 / 2 / 3）", dark: true), companions),
+                Ui.Column(4, Ui.Section("失踪渡工支线（S）", dark: true), side),
+                Ui.Column(4, Ui.Section("主角等级（- / +）", dark: true), level)));
+        }
+
         var start = Ui.Button("开战", UiTheme.PrimaryButton, () => StartBattle(_encounter, _build, _seed));
         start.CustomMinimumSize = new Vector2(220, 56);
 
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
-        panel.AddChild(Ui.Column(UiPalette.SpaceL,
+        var column = Ui.Column(UiPalette.SpaceM,
             Ui.Row(UiPalette.SpaceL, Ui.Seal("试剑"), Ui.Column(4,
-                Ui.Text("战斗原型（M1）", UiTheme.DarkTitleLabel, 40),
-                Ui.Text("规则、招式与敌人来自内容包；主角三套流派的成长预算相同（5 级、12 点潜能、同等装备）。", UiTheme.DarkMutedLabel, 18))),
+                Ui.Text(_benchStory ? "战斗测试台" : "战斗原型（M1）", UiTheme.DarkTitleLabel, 40),
+                Ui.Text(_benchStory ? "按第一章剧情路线的真实组成开打，可换同行者、流派、支线与主角等级。" : "规则、招式与敌人来自内容包；主角三套流派的成长预算相同（5 级、12 点潜能、同等装备）。",
+                    UiTheme.DarkMutedLabel, 18))),
             Ui.Rule(dark: true),
             Ui.Section("遭遇（← / →）", dark: true), encounters,
-            Ui.Section("主角流派（Q / E）", dark: true), builds, buildNote,
-            Ui.Text("同行：陆青禾（长篙）；旧渡水门另有令狐冲（独孤九剑）与萧峰（降龙十八掌）援手，与正式流程中令狐冲同行一路相同。", UiTheme.DarkMutedLabel, 17, wrap: true),
-            Ui.Rule(dark: true),
+            Ui.Section("组成（C）", dark: true), modes,
+            Ui.Section(_benchStory ? "主角流派 · 讨教人选（Q / E）" : "主角流派（Q / E）", dark: true), builds, buildNote);
+        panel.AddChild(column);
+        foreach (var row in benchRows)
+        {
+            column.AddChild(row);
+        }
+
+        column.AddChild(Ui.Text(_benchStory
+            ? "从新游戏在规则层沿第一章路线瞬间走到战前（对话走完、前一场按胜利结算、潜能按推荐分配）：同行、援手、阵位、等级、装备、行囊与先手变体都与正式流程一致。只供测试，结算不写回任何存档。"
+            : "同行：陆青禾（长篙）；旧渡水门另有令狐冲（独孤九剑）与萧峰（降龙十八掌）援手，与正式流程中令狐冲同行一路相同。", UiTheme.DarkMutedLabel, 17, wrap: true));
+        column.AddChild(Ui.Rule(dark: true));
+        column.AddChild(
             Ui.Row(UiPalette.SpaceL, Ui.Text($"随机种子 {_seed}", UiTheme.DarkMutedLabel, 16), Ui.Spacer(),
-                Ui.KeyHints(true, ("Enter", "开战"), ("Esc", "返回标题")), start)));
-        _overlay.AddChild(Ui.Place(panel, 0.5f, 0.5f, -720, -330, 720, 330));
+                Ui.KeyHints(true, ("Enter", "开战"), ("Esc", "返回标题")), start));
+        var half = _benchStory ? 420 : 340;
+        _overlay.AddChild(Ui.Place(panel, 0.5f, 0.5f, -720, -half, 720, half));
         Motion.Enter(panel, 0.05f, Motion.Normal, rise: 24);
         start.CallDeferred(Control.MethodName.GrabFocus);
     }
@@ -110,6 +164,24 @@ public sealed partial class BattleScreen
             case Key.E:
                 _build = (_build + 1) % Builds.Length;
                 ShowSetup();
+                return true;
+            case Key.C:
+                _benchStory = !_benchStory;
+                ShowSetup();
+                return true;
+            case Key.Key1 or Key.Key2 or Key.Key3 when _benchStory:
+                _benchCompanion = (int)(key - Key.Key1);
+                ShowSetup();
+                return true;
+            case Key.S when _benchStory:
+                _benchSide = !_benchSide;
+                ShowSetup();
+                return true;
+            case Key.Minus or Key.KpSubtract when _benchStory:
+                StepBenchLevel(-1);
+                return true;
+            case Key.Equal or Key.KpAdd when _benchStory:
+                StepBenchLevel(1);
                 return true;
             case Key.Enter or Key.KpEnter:
                 StartBattle(_encounter, _build, _seed);

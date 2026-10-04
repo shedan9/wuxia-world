@@ -1,3 +1,4 @@
+using WuxiaWorld.Application.Dev;
 using WuxiaWorld.Application.Persistence;
 using WuxiaWorld.Application.World;
 using WuxiaWorld.Domain.World;
@@ -405,9 +406,14 @@ public class ChapterOneWalkthroughTests
 
     private static string StageKey(string dialogue, string node) => $"stage:{dialogue}/{node}";
 
-    /// <summary>按固定选择驱动 <see cref="GameSession"/> 的走查器。</summary>
+    /// <summary>
+    /// 按固定选择驱动 <see cref="GameSession"/> 的走查器：路线本身在 <see cref="ChapterOneRoute"/>（游戏的 <c>--jump</c> 与战斗测试台共用），
+    /// 这里只加测试要的核对与台词收集。
+    /// </summary>
     internal sealed class Walker
     {
+        private ChapterOneRoute? _steps;
+
         public Walker(WorldRules rules, GameSession? game = null) => Game = game ?? GameSession.NewGame(rules);
 
         public GameSession Game { get; }
@@ -415,81 +421,51 @@ public class ChapterOneWalkthroughTests
         public string OpeningPick { get; init; } = "choice.a";
         public string CouncilPick { get; init; } = "choice.insight";
 
-        private readonly Queue<string> _picks = new();
+        /// <summary>真打剧情战：给出时由它开战并结算（须打赢），否则按胜利直接结算。</summary>
+        public Action<GameSession>? Fighter { get; init; }
+
+        /// <summary>单步操作用的路线（不走整章，只用它的 Pick / Interact / Exit / PlayAuto 等）。</summary>
+        private ChapterOneRoute Steps => _steps ??= Route();
+
+        private ChapterOneRoute Route(string companion = "linghu", string custody = "public", bool side = false, bool finishSideSteps = true,
+            bool declineSideFirst = false, bool readNoticeEarly = false, bool freeEarly = true, ChapterOnePoint from = ChapterOnePoint.Start) =>
+            new(Game)
+            {
+                Companion = companion, Custody = custody, Side = side, FinishSideSteps = finishSideSteps, DeclineSideFirst = declineSideFirst,
+                ReadNoticeEarly = readNoticeEarly, FreeEarly = freeEarly, From = from,
+                OpeningPick = OpeningPick, CouncilPick = CouncilPick, Fighter = Fighter, OnDialogue = Collect, Combat = TestContent.Real,
+            };
 
         public void PlayChapter(string companion, string custody, bool side, bool finishSideSteps = true,
             bool declineSideFirst = false, bool readNoticeEarly = false, bool freeEarly = true)
         {
-            PlayAuto(); // 开场
-            Interact("stone_marks");
-            Assert.Equal("to_inn", Game.World.Quests[Main].Stage);
-            Exit("to_street");
-            if (readNoticeEarly)
-            {
-                Interact("ferry_notice");
-            }
-
-            Exit("to_inn");
-            Pick(CouncilPick);
-            PlayAuto(); // 会面
-            Assert.Equal("training", Game.World.Quests[Main].Stage);
+            var route = Route(companion, custody, side, finishSideSteps, declineSideFirst, readNoticeEarly, freeEarly);
+            route.RunTo(ChapterOnePoint.Mentor);
             Assert.Equal(QuestStatus.Available, Game.World.QuestStatusOf(Side));
 
-            if (declineSideFirst)
+            route.RunTo(ChapterOnePoint.Departure);
+            Assert.Contains(Game.World.Skills, s => s.StartsWith("skill.", StringComparison.Ordinal));
+            Assert.Equal(3, Game.World.Party.Count);
+            if (side)
             {
-                Pick("choice.later");
-                PlayEvent("event.ch01.side_offer");
+                Assert.DoesNotContain(Game.Events, e => e.Id == "event.ch01.side_offer");
+                Assert.Equal(finishSideSteps ? "free" : "tags", Game.World.Quests[Side].Stage);
+            }
+            else
+            {
+                // 没接（含先婉拒一次）的支线仍可接。
                 Assert.Equal(QuestStatus.Available, Game.World.QuestStatusOf(Side));
             }
 
-            if (side)
-            {
-                Pick("choice.accept");
-                PlayEvent("event.ch01.side_offer");
-                Assert.DoesNotContain(Game.Events, e => e.Id == "event.ch01.side_offer");
-            }
-
-            Pick("choice." + companion);
-            PlayEvent("event.ch01.mentor_choice");
-            Assert.Contains(Game.World.Skills, s => s.StartsWith("skill.", StringComparison.Ordinal));
-
-            if (side && finishSideSteps)
-            {
-                Exit("out");
-                Interact("ferry_tags");
-                Exit("to_shore");
-                Interact("tide_line");
-                Exit("to_street");
-                Exit("to_inn");
-                Assert.Equal("free", Game.World.Quests[Side].Stage);
-            }
-
-            Pick("choice." + companion);
-            PlayEvent("event.ch01.companion_choice");
-            Assert.Equal(3, Game.World.Party.Count);
-            Exit("out");
-            FinishFromFerry(custody, freeEarly: side && finishSideSteps && freeEarly);
+            route.RunTo(ChapterOnePoint.SluiceBattle);
+            Assert.Equal(4, Game.World.Party.Count);
+            route.RunTo(ChapterOnePoint.End);
         }
 
         public void PlayUntilFerry(string companion, bool side)
         {
-            PlayAuto();
-            Interact("stone_marks");
-            Exit("to_street");
-            Exit("to_inn");
-            PlayAuto();
-            if (side)
-            {
-                Pick("choice.accept");
-                PlayEvent("event.ch01.side_offer");
-            }
-
-            Pick("choice." + companion);
-            PlayEvent("event.ch01.mentor_choice");
-            Pick("choice." + companion);
-            PlayEvent("event.ch01.companion_choice");
-            Exit("out");
-            var t = Game.BeginRoute("route.jiangnan.luwan_to_old_ferry", TravelMode.Ferry);
+            Route(companion, side: side, finishSideSteps: false).RunTo(ChapterOnePoint.Departure);
+            var t = Game.BeginRoute(ChapterOneRoute.FerryRoute, TravelMode.Ferry);
             if (side)
             {
                 // 存读档用例：先不出发，回到街上。
@@ -498,92 +474,29 @@ public class ChapterOneWalkthroughTests
             }
 
             Assert.True(Game.CommitTransition(t).Ok);
+            _steps = Route(companion, from: ChapterOnePoint.OldFerry);
         }
 
-        public void FinishFromFerry(string custody, bool freeEarly = false)
+        /// <summary>从芦湾街码头（乘船之前）走到章末。</summary>
+        public void FinishFromFerry(string custody, bool freeEarly = false) =>
+            Route(custody: custody, side: freeEarly, from: ChapterOnePoint.Departure).RunTo(ChapterOnePoint.End);
+
+        public void WinBattle() => Steps.WinBattle();
+
+        public void Pick(string lineSuffix) => Steps.Pick(lineSuffix);
+
+        public CommitResult PlayAuto() => Steps.PlayAuto();
+
+        public CommitResult PlayEvent(string id) => Steps.PlayEvent(id);
+
+        public void Interact(string id) => Steps.Interact(id);
+
+        public void Exit(string id) => Steps.Exit(id);
+
+        private void Collect(DialogueRunner runner)
         {
-            Assert.True(Game.CommitTransition(Game.BeginRoute("route.jiangnan.luwan_to_old_ferry", TravelMode.Ferry)).Ok);
-            Assert.Equal("rescue", Game.World.Quests[Main].Stage);
-            PlayAuto(); // 登岸
-            WinBattle();
-            if (freeEarly && Game.Interactables.Any(i => i.Id == "locked_boat"))
-            {
-                Interact("locked_boat");
-            }
-
-            PlayEvent("event.ch01.sluice_confrontation");
-            Assert.Equal(4, Game.World.Party.Count);
-            WinBattle();
-            Assert.Equal("custody", Game.World.Quests[Main].Stage);
-            Pick("choice." + custody);
-            var result = PlayAuto();
-            Assert.NotNull(result.Travel);
-            Assert.True(Game.CommitTransition(Game.BeginStoryTravel(result.Travel!)).Ok);
-            PlayAuto(); // 收束
-        }
-
-        /// <summary>真打剧情战：给出时由它开战并结算（须打赢），否则按胜利直接结算。</summary>
-        public Action<GameSession>? Fighter { get; init; }
-
-        public void WinBattle()
-        {
-            if (Fighter is not null)
-            {
-                Fighter(Game);
-                return;
-            }
-
-            var b = Game.World.Battle ?? throw new InvalidOperationException("没有待开战斗");
-            // 按遭遇定义发经验与修为，与游戏内剧情战一致。
-            var encounter = TestContent.Bundle.Encounters.First(e => e.Id == b.Encounter);
-            var r = Game.SettleBattle(b.InstanceId, BattleEnd.Victory, experience: encounter.Experience, cultivation: encounter.Cultivation);
-            Assert.True(r.Ok, r.Error);
-        }
-
-        public void Pick(string lineSuffix) => _picks.Enqueue(lineSuffix);
-
-        public CommitResult PlayAuto()
-        {
-            var e = Game.AutoEvent ?? throw new InvalidOperationException($"{Game.World.MapId} 没有自动事件");
-            return PlayEvent(e.Id);
-        }
-
-        public CommitResult PlayEvent(string id) => Play(Game.StartEvent(id));
-
-        public void Interact(string id)
-        {
-            var d = Game.Interact(id, out var r);
-            Assert.True(r.Ok, r.Error);
-            if (d is not null)
-            {
-                Play(d);
-            }
-        }
-
-        public void Exit(string id) => Assert.True(Game.CommitTransition(Game.BeginExit(id)).Ok);
-
-        private CommitResult Play(DialogueSession d)
-        {
-            var opening = d.Runner.Definition.Id == "dlg.ch01.opening_luwan";
-            while (!d.Runner.Ended)
-            {
-                if (!d.Runner.AwaitingChoice)
-                {
-                    d.Runner.Continue();
-                    continue;
-                }
-
-                var want = opening ? OpeningPick : _picks.Count > 0 ? _picks.Dequeue() : null;
-                var choice = d.Runner.Choices.FirstOrDefault(c => c.Enabled && (want is null || c.Option.LineId.EndsWith("." + want, StringComparison.Ordinal)))
-                    ?? throw new InvalidOperationException($"{d.Runner.Definition.Id}：找不到选项 {want}");
-                d.Runner.Choose(choice.Index);
-            }
-
-            Lines.UnionWith(d.Runner.Transcript);
-            Lines.UnionWith(d.Runner.StagesPlayed.Select(n => StageKey(d.Runner.Definition.Id, n)));
-            var r = Game.FinishDialogue(d);
-            Assert.True(r.Ok, r.Error);
-            return r;
+            Lines.UnionWith(runner.Transcript);
+            Lines.UnionWith(runner.StagesPlayed.Select(n => StageKey(runner.Definition.Id, n)));
         }
     }
 }

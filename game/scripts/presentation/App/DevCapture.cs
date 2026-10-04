@@ -91,6 +91,37 @@ public static class DevCapture
     public static bool BattleStress { get; private set; }
 
     /// <summary>
+    /// 直接跳到第一章某处（<c>--jump=escort_battle</c>，开发用）：开新游戏后在规则层按 <see cref="Application.Dev.ChapterOneRoute"/> 瞬间走到该处
+    /// （对话直接走完、战斗按胜利结算、主角潜能按推荐分配），再进入对应画面；配合 <c>--companion</c>、<c>--mentor</c>、<c>--side</c>、<c>--custody</c> 选路线，
+    /// 可再接 <c>--autoplay</c> 从这里继续走查。位置见 <see cref="Application.Dev.ChapterOnePoint"/>，写法不分大小写、可带下划线。
+    /// </summary>
+    public static Application.Dev.ChapterOnePoint? Jump { get; private set; }
+
+    /// <summary>讨教人选（<c>--mentor=linghu|huang|xiao</c>，决定主角流派）；不给时同 <see cref="Companion"/>。</summary>
+    public static string? Mentor { get; private set; }
+
+    /// <summary>副页保管（<c>--custody=public|sealed</c>）。</summary>
+    public static string? Custody { get; private set; }
+
+    /// <summary>
+    /// 战斗测试台（<c>--battle=escort|sluice</c>，开发用）：直接进战斗原型页，按剧情路线的真实组成开打第一章押运队战或旧渡首领战，
+    /// 路线由 <c>--companion</c>、<c>--mentor</c>、<c>--side</c> 决定；<c>--level</c>、<c>--variants</c>、<c>--seed</c> 覆盖等级、变体与种子。
+    /// </summary>
+    public static string? BenchBattle { get; private set; }
+
+    /// <summary>战斗测试台的主角等级（<c>--level=1..8</c>）；不给时按剧情走到该处的等级。</summary>
+    public static int? BenchLevel { get; private set; }
+
+    /// <summary>战斗测试台的遭遇变体（<c>--variants=variant.ch01.sluice_jammed,…</c>，<c>none</c> 为不套用）；不给时按路线事实。</summary>
+    public static IReadOnlyList<string>? BenchVariants { get; private set; }
+
+    /// <summary>战斗测试台的随机种子（<c>--seed=N</c>）。</summary>
+    public static ulong? BenchSeed { get; private set; }
+
+    /// <summary>战斗测试台自动打完（<c>--battle-auto</c>）：开自动战斗、按 1 倍速演出，结束后打印战果并退出（胜 0、败 4）。</summary>
+    public static bool BattleAuto { get; private set; }
+
+    /// <summary>
     /// 自动走查的剧情战改为实时播放（<c>--battle-live</c>，开发用，M3-06）：开启自动战斗按 1 倍速完整演出，而不是跳过动画快进，
     /// 用于核对战斗喊声的字幕、配音与节奏。
     /// </summary>
@@ -234,6 +265,32 @@ public static class DevCapture
                 case "--battle-stress":
                     BattleStress = true;
                     Scene = ScenePaths.BattlePrototype;
+                    break;
+                case "--jump":
+                    Jump = Enum.Parse<Application.Dev.ChapterOnePoint>(value.Replace("_", "", StringComparison.Ordinal).Replace("-", "", StringComparison.Ordinal), ignoreCase: true);
+                    NewGame = true;
+                    break;
+                case "--mentor":
+                    Mentor = value;
+                    break;
+                case "--custody":
+                    Custody = value;
+                    break;
+                case "--battle":
+                    BenchBattle = value;
+                    Scene = ScenePaths.BattlePrototype;
+                    break;
+                case "--level":
+                    BenchLevel = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--variants":
+                    BenchVariants = value == "none" ? [] : value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                    break;
+                case "--seed":
+                    BenchSeed = ulong.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--battle-auto":
+                    BattleAuto = true;
                     break;
                 case "--battle-live":
                     BattleLive = true;

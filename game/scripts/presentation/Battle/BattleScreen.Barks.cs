@@ -66,7 +66,7 @@ public sealed partial class BattleScreen
         _barkUntil = now + hold;
         _barkPriority = bark.Priority;
         AddLog($"{name}：“{bark.Text}”");
-        if (DevCapture.Autoplay > 0 || AppHost.DevInfo)
+        if (DevCapture.Autoplay > 0 || DevCapture.BattleAuto || AppHost.DevInfo)
         {
             GD.Print($"[bark] {bark.LineId}（{bark.Trigger}，优先级 {bark.Priority}，{(state == VoiceState.Playing ? $"配音 {seconds:0.0} 秒" : state.ToString())}）{name}：{bark.Text}");
         }

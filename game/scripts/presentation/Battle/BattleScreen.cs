@@ -140,6 +140,12 @@ public sealed partial class BattleScreen : Control
             return;
         }
 
+        if (DevCapture.BenchBattle is not null)
+        {
+            StartBenchFromArgs();
+            return;
+        }
+
         switch (DevCapture.Tab)
         {
             case 1:
@@ -196,6 +202,7 @@ public sealed partial class BattleScreen : Control
     {
         Pump();
         AutoplayResult();
+        ReportBench();
         StepStress(delta);
     }
 
@@ -263,6 +270,22 @@ public sealed partial class BattleScreen : Control
         _build = build;
         _seed = seed;
         CloseOverlay();
+        if (_benchStory)
+        {
+            // 测试台：剧情路线的真实组成（BattleScreen.Bench）。
+            if (StoryBenchSetup(encounter, build, seed, out var note) is { } story)
+            {
+                Begin(story, note);
+            }
+            else
+            {
+                GD.PushError($"测试台开不了战：{note}");
+                ShowSetup();
+                Toast(note);
+            }
+
+            return;
+        }
 
         var content = _engine.Content;
         var allies = new List<AllyEntry>
@@ -509,6 +532,12 @@ public sealed partial class BattleScreen : Control
         if (_story is not null && unitId.StartsWith("char.", StringComparison.Ordinal))
         {
             return _story.Name(unitId);
+        }
+
+        // 测试台的主角模板由成长现推（build.char.hero），名字取人物表。
+        if (_benchStory && unitId.StartsWith("char.", StringComparison.Ordinal) && Adapters.GeneratedContent.World is { } world)
+        {
+            return world.Name(unitId);
         }
 
         if (_session?.State.TryUnit(unitId) is not { } unit)
