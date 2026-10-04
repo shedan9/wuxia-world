@@ -374,29 +374,62 @@ public partial class InnLanternGuide : Node2D
     }
 }
 
-/// <summary>地上的光：吊灯下的暖黄光斑与门口斜进来的天光，叠加混合，画在壳之上、排序件之下。</summary>
+/// <summary>
+/// 地上的光：吊灯下的暖黄光斑与门口斜进来的光，叠加混合，画在壳之上、排序件之下。随光色时段（M3-01 光影）：
+/// 白天门口是雨后天光；日落时门口一道拉长的暖光；夜里吊灯光斑更大更亮，门口只剩一缕淡淡的月色。
+/// 所在的贴地层被整体调色压暗，本层用 <see cref="SceneTimes.Unlit"/> 抵消，灯光不跟着变暗。
+/// </summary>
 public partial class InnFloorLight : Node2D
 {
-    public InnFloorLight() => Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add };
+    private readonly SceneTime _light;
+
+    public InnFloorLight(SceneTime light = SceneTime.Day, Color? tint = null)
+    {
+        _light = light;
+        Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add };
+        Modulate = SceneTimes.Unlit(tint ?? Colors.White);
+    }
 
     public override void _Draw()
     {
+        var (radius, alpha) = _light switch
+        {
+            SceneTime.Night => (250f, 0.3f),
+            SceneTime.Dusk => (215f, 0.21f),
+            _ => (200f, 0.17f),
+        };
         foreach (var lamp in InnSamples.Lanterns)
         {
-            Pool(this, new Vector2(lamp.X, lamp.Y), 200, Cel.Glow with { A = 0.17f });
+            Pool(this, new Vector2(lamp.X, lamp.Y), radius, Cel.Glow with { A = alpha });
+            if (_light == SceneTime.Night)
+            {
+                // 灯下一小圈更亮的光心。
+                Pool(this, new Vector2(lamp.X, lamp.Y), 90, Cel.Glow with { A = 0.14f });
+            }
         }
 
-        // 门口天光：日在西南偏高处，光自门洞斜向东北落在地上。
+        // 门口的光：日在西南，光自门洞斜向东北落在地上（日落时更低更长、偏橙；夜里是一缕偏蓝的月色）。
+        var (color, length) = _light switch
+        {
+            SceneTime.Night => (new Color(0.55f, 0.68f, 0.95f, 0.1f), 200f),
+            SceneTime.Dusk => (new Color(1f, 0.72f, 0.42f, 0.32f), 420f),
+            _ => (InnTone.Daylight with { A = 0.3f }, 250f),
+        };
         var d = InnSamples.Room.End.Y;
-        var reach = new Vector2(0.49f, -0.87f) * 250;
+        var reach = new Vector2(0.49f, -0.87f) * length;
         Vector2[] spill = [new(InnSamples.DoorWest, d), new(InnSamples.DoorEast, d), new Vector2(InnSamples.DoorEast, d) + reach, new Vector2(InnSamples.DoorWest, d) + reach];
-        var near = InnTone.Daylight with { A = 0.3f };
-        var far = InnTone.Daylight with { A = 0 };
-        DrawPolygon(spill.Select(p => TownView.P(p)).ToArray(), [near, near, far, far]);
+        DrawPolygon(spill.Select(p => TownView.P(p)).ToArray(), [color, color, color with { A = 0 }, color with { A = 0 }]);
     }
 
     /// <summary>地面上的圆形光斑：中心亮、边缘淡出，经投影压扁。</summary>
     public static void Pool(CanvasItem ci, Vector2 center, float radius, Color color, float z = 0)
+    {
+        using var batch = new PolyBatch(ci);
+        Pool(batch, center, radius, color, z);
+    }
+
+    /// <summary>同上，攒进合批（28 个扇面合成一次绘制调用）。</summary>
+    internal static void Pool(PolyBatch batch, Vector2 center, float radius, Color color, float z = 0)
     {
         const int n = 28;
         var c = TownView.P(center, z);
@@ -407,7 +440,7 @@ public partial class InnFloorLight : Node2D
             var a1 = Mathf.Tau * (i + 1) / n;
             var p0 = TownView.P(center + new Vector2(Mathf.Cos(a0), Mathf.Sin(a0)) * radius, z);
             var p1 = TownView.P(center + new Vector2(Mathf.Cos(a1), Mathf.Sin(a1)) * radius, z);
-            ci.DrawPrimitive([c, p0, p1], [color, edge, edge], []);
+            batch.Add([c, p0, p1], [color, edge, edge]);
         }
     }
 }
@@ -857,6 +890,15 @@ public partial class InnPlantNode : TownPiece
 public partial class InnLanterns : Node2D
 {
     private readonly Node2D _halo = new() { Material = new CanvasItemMaterial { BlendMode = CanvasItemMaterial.BlendModeEnum.Add } };
+    private readonly float _glow;
+    private readonly float _haloRadius;
+
+    /// <summary>灯笼本身是光源，不随整体调色变暗（抵消所在悬空层的调色）；夜里光晕更大更亮。</summary>
+    public InnLanterns(SceneTime light = SceneTime.Day, Color? tint = null)
+    {
+        Modulate = SceneTimes.Unlit(tint ?? Colors.White);
+        (_glow, _haloRadius) = light == SceneTime.Night ? (0.5f, 96f) : (0.35f, 70f);
+    }
 
     public override void _Ready()
     {
@@ -867,13 +909,13 @@ public partial class InnLanterns : Node2D
             {
                 var c = TownView.P(l) + new Vector2(0, 38 * TownView.Upright);
                 const int n = 24;
-                var inner = Cel.Glow with { A = 0.35f };
+                var inner = Cel.Glow with { A = _glow };
                 var edge = Cel.Glow with { A = 0 };
                 for (var i = 0; i < n; i++)
                 {
                     var a0 = Mathf.Tau * i / n;
                     var a1 = Mathf.Tau * (i + 1) / n;
-                    _halo.DrawPrimitive([c, c + new Vector2(Mathf.Cos(a0), Mathf.Sin(a0)) * 70, c + new Vector2(Mathf.Cos(a1), Mathf.Sin(a1)) * 70], [inner, edge, edge], []);
+                    _halo.DrawPrimitive([c, c + new Vector2(Mathf.Cos(a0), Mathf.Sin(a0)) * _haloRadius, c + new Vector2(Mathf.Cos(a1), Mathf.Sin(a1)) * _haloRadius], [inner, edge, edge], []);
                 }
             }
         };

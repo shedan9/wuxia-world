@@ -573,5 +573,6 @@ void fragment() {
 	} else {
 		c = sand(world);
 	}
-	COLOR = vec4(c, 1.0);
+	// 乘上输入的 COLOR（含所在层的整体调色 Modulate，M3-01 光影），否则调色对地面无效。
+	COLOR = vec4(c, 1.0) * COLOR;
 }

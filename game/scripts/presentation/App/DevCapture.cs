@@ -23,6 +23,9 @@ public static class DevCapture
     public static int Tab { get; private set; }
     public static string? Output { get; private set; }
 
+    /// <summary>展示页的光色时段（<c>--light=day|dusk|night</c>，M3-01 光影截图用）；游戏模式按世界时辰，不读此项。</summary>
+    public static WuxiaWorld.Game.Preview.Pages.SceneTime? Light { get; private set; }
+
     /// <summary>
     /// 截图前依次模拟的输入：鼠标左键点击（逻辑画布坐标，<c>--click=x,y;x,y</c>）与按键（<c>--keys=Escape,C</c>）。
     /// 两个参数可各给多次，按命令行先后顺序执行，用于核对点击与按键交替的操作路径。
@@ -174,6 +177,14 @@ public static class DevCapture
                     break;
                 case "--capture":
                     Output = value;
+                    break;
+                case "--light":
+                    Light = value switch
+                    {
+                        "dusk" => WuxiaWorld.Game.Preview.Pages.SceneTime.Dusk,
+                        "night" => WuxiaWorld.Game.Preview.Pages.SceneTime.Night,
+                        _ => WuxiaWorld.Game.Preview.Pages.SceneTime.Day,
+                    };
                     break;
                 case "--motion":
                     _keepMotion = true;

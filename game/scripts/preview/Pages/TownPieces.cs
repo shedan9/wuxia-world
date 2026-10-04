@@ -16,6 +16,9 @@ public partial class TownPiece : Node2D, ISortable
 {
     protected List<Face> Faces { get; } = [];
 
+    /// <summary>各面的世界坐标顶点：地面投影（<see cref="SceneShadows"/>）用。</summary>
+    public IEnumerable<Vector3[]> ShadowFaces => Faces.Select(f => f.Points);
+
     public Rect2 Foot { get; protected set; }
 
     public Rect2 ScreenBox { get; protected set; }
@@ -650,6 +653,9 @@ public partial class TownHouseNode : TownPiece
 public partial class TownCorridorPart : TownPiece
 {
     private readonly List<Vector3> _lanternTops = [];
+
+    /// <summary>檐下灯笼的挂点（世界坐标）：夜里在此加光晕、地上铺光。</summary>
+    public IReadOnlyList<Vector3> LanternTops => _lanternTops;
 
     public static IEnumerable<TownCorridorPart> Build(Rect2 area)
     {

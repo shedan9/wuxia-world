@@ -12,6 +12,8 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 方砖地、木构架粉壁、柜台货架、八仙桌长凳、屏风雅座、楼梯、吊灯光斑与门口天光都是程序化赛璐璐占位。
 /// 行走、排序、遮挡淡出（屏风后的行人）与镜头由 <see cref="ExploreStage"/> 共用；
 /// 门口按 E 回到芦湾河街客栈门前。掌柜乔红绡、店小二、茶客为静态剪影，不写台词。
+/// 光影（M3-01）：按光色时段调色——白天雨后天光自门口斜入、吊灯照常点着；日落门口一道长长的暖光；夜里整堂压暗，
+/// 吊灯光斑更大更亮、门口只剩月色；家具与柱子压短的接地投影。展示页用 <c>--light=dusk|night</c> 看黄昏与夜。
 /// 截图参数 <c>--tab</c>：0 进门、1 屏风后雅座（屏风淡出）、2 柜台前（交互提示）、3 楼梯口、4 缩到 0.85 看全堂。
 /// </summary>
 public partial class ExploreInnPreview : ExploreStage
@@ -48,9 +50,18 @@ public partial class ExploreInnPreview : ExploreStage
 
     protected override void BuildScene()
     {
+        var (tint, wash) = Light switch
+        {
+            SceneTime.Night => (new Color(0.5f, 0.48f, 0.58f), Color.FromHtml("#0A0E1A") with { A = 0.22f }),
+            SceneTime.Dusk => (new Color(1f, 0.91f, 0.82f), Color.FromHtml("#3A2A20") with { A = 0.08f }),
+            _ => (Colors.White, Colors.Transparent),
+        };
         GroundLayer.AddChild(new InnBackdrop());
         GroundLayer.AddChild(new InnShell());
-        GroundLayer.AddChild(new InnFloorLight());
+        // 家具、柱、屏风与剖切墙的接地投影：光多来自头顶吊灯与门口，影子短、略偏东北（M3-01 光影）。
+        var shadows = new SceneShadows(Light == SceneTime.Night ? 0.26f : 0.2f);
+        GroundLayer.AddChild(shadows);
+        GroundLayer.AddChild(new InnFloorLight(Light, tint));
 
         foreach (var piece in InnCutWall.Build()) Add(piece);
         Add(new InnSill(), blocks: false);
@@ -74,7 +85,19 @@ public partial class ExploreInnPreview : ExploreStage
             Add(figure);
         }
 
-        OverheadLayer.AddChild(new InnLanterns());
+        foreach (var piece in Pieces.Where(p => !p.Walker && p is not InnSill))
+        {
+            shadows.Cast(piece.ShadowFaces, new Vector2(0.14f, -0.26f));
+        }
+
+        TintWorld(tint);
+        if (wash.A > 0)
+        {
+            // 夜里四角压暗、灯下最亮：一层自外向内收的暗色。
+            OverheadLayer.AddChild(new SceneWash(wash, wash with { A = wash.A * 0.6f }, wash with { A = wash.A * 1.4f }, wash with { A = wash.A * 0.8f }) { Area = ViewArea });
+        }
+
+        OverheadLayer.AddChild(new InnLanterns(Light, tint));
     }
 
     public override bool InWalkArea(Vector2 q)

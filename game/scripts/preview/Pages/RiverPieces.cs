@@ -738,8 +738,12 @@ public partial class RiverTideMark : Node2D
         var mud = Color.FromHtml("#6A5C46");
         var colors = new List<Color>();
         for (var i = 0; i < dense.Count; i++) colors.Add(mud with { A = 0.55f * Mathf.Sin(Mathf.Pi * i / (dense.Count - 1)) + 0.06f });
-        var poly = Proj(left.Concat(Enumerable.Reverse(right)));
-        DrawPolygon(poly, [.. colors, .. Enumerable.Reverse(colors)]);
+        // 逐段画四边形：两端宽度收到 0，左右边重合，整条外轮廓当一个多边形三角化会失败（报错且整段不画）。
+        var (pl, pr) = (Proj(left), Proj(right));
+        for (var i = 0; i < dense.Count - 1; i++)
+        {
+            DrawPrimitive([pl[i], pl[i + 1], pr[i + 1], pr[i]], [colors[i], colors[i + 1], colors[i + 1], colors[i]], []);
+        }
         var keel = Proj(dense.Skip(2).Take(dense.Count - 5));
         DrawPolyline(keel, Color.FromHtml("#43392D") with { A = 0.7f }, 4f, true);
         DrawPolyline(keel.Select(p => p + new Vector2(0, -1.5f)).ToArray(), Color.FromHtml("#B9CFCB") with { A = 0.45f }, 1.4f, true);

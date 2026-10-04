@@ -14,6 +14,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 人物与树为立着的精灵；行走、排序、遮挡与镜头由 <see cref="ExploreStage"/> 共用。
 /// 客栈门前按 E 进入客栈大堂页（<see cref="ExploreInnPreview"/>），从大堂出门回到门前。
 /// 房屋、树、杂件、平桥、街面、草地与驳岸已按架构文档 10.3 方案 C 换成 AI 出件，廊柱、坐栏与渡口石阶为几何面贴 AI 纹理，河水为着色器。
+/// 光影（M3-01）见 <c>ExploreTownPreview.Light.cs</c>：按光色时段调色、投影、接地暗影与夜间灯火；展示页用 <c>--light=dusk|night</c> 看黄昏与夜。
 /// 截图参数 <c>--tab</c>：0 旧渡石痕旁（交互提示）、1 南岸街被屋身遮挡、2 客栈门前、3 廊棚下、4 缩到 0.85 看平桥一带、5 西头民居（AI 出件样板）、6 廊棚西头外侧（屋面不淡出，查屋面与廊柱遮挡）、7 西头街口（看街外草地）。
 /// </summary>
 public partial class ExploreTownPreview : ExploreStage
@@ -51,16 +52,20 @@ public partial class ExploreTownPreview : ExploreStage
     protected override void BuildScene()
     {
         BuildGround(GroundLayer);
+        BeginWaterShadows();
         GroundLayer.AddChild(new TownGroundDetail());
         GroundLayer.AddChild(new TownLawn());
+        BeginGroundShadows();
 
-        foreach (var house in TownSamples.Houses) Add(new TownHouseNode(house));
+        var houses = TownSamples.Houses.Select(h => new TownHouseNode(h)).ToList();
+        foreach (var house in houses) Add(house);
         foreach (var part in TownCorridorPart.Build(TownSamples.Corridor)) Add(part);
         foreach (var tree in TownSamples.Trees) Add(new TownTreeNode(tree));
         foreach (var prop in TownSamples.Props) Add(new TownPropNode(prop), prop.Kind != PropKind.Boat);
         var bridge = TownSamples.Bridge;
         Add(new TownRailNode(bridge.Position.X + 12, bridge, "town.bridge.rail_w"));
         Add(new TownRailNode(bridge.End.X - 12, bridge, "town.bridge.rail_e"));
+        FinishLight(houses);
     }
 
     /// <summary>地面：先画低处的河面，再画两岸（同一平面 z = 0），岸线以外一律延伸成草地。</summary>
@@ -608,16 +613,18 @@ public partial class TownLawn : Node2D
 
     public override void _Draw()
     {
+        // 脚影合批：原先逐丛设变换画圆，一张图约 1400 次绘制调用（M3-01 光影整理时的分层归因查出）。
         var shadow = new Color(0.12f, 0.24f, 0.2f, 0.12f);
-        foreach (var t in _tufts)
+        using (var batch = new PolyBatch(this))
         {
-            var foot = TownView.P(t.Foot);
-            var rx = t.Height * (t.Variant < 0 ? 0.7f : 0.55f);
-            DrawSetTransform(foot, 0, new Vector2(1, 0.28f));
-            DrawCircle(Vector2.Zero, rx, shadow);
+            foreach (var t in _tufts)
+            {
+                var foot = TownView.P(t.Foot);
+                var rx = t.Height * (t.Variant < 0 ? 0.7f : 0.55f);
+                batch.Add(Cel.Ellipse(foot, rx, rx * 0.28f, 12), shadow);
+            }
         }
 
-        DrawSetTransform(Vector2.Zero, 0, Vector2.One);
         foreach (var t in _tufts)
         {
             Tufts.Draw(this, TownView.P(t.Foot) + new Vector2(0, 2), t.Height, t.Variant, t.Flip, t.Tint);

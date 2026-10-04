@@ -27,7 +27,13 @@ public partial class ExploreRiverPreview : ExploreStage
 
     private RiverGeo Geo => _geo ??= new RiverGeo(S);
 
-    private bool Dusk => Current == RiverSite.OldFerry;
+    /// <summary>
+    /// 黄昏光色：旧渡按设计是日落（白天到黄昏都用这一套，渡船过去最早也是酉时）；河滩只在酉时转黄昏。
+    /// 入夜两处都改夜色（M3-01 光影，按世界时辰；展示页用 <c>--light</c>）。
+    /// </summary>
+    private bool Dusk => Light != SceneTime.Night && (Current == RiverSite.OldFerry || Light == SceneTime.Dusk);
+
+    private bool Night => Light == SceneTime.Night;
 
     private RiverBackdrop _backdrop = null!;
     private RiverMist _mist = null!;
@@ -71,7 +77,7 @@ public partial class ExploreRiverPreview : ExploreStage
 
     protected override (string Region, string Name, string Time) PlaceInfo => Current == RiverSite.Shore
         ? ("芦湾", "芦湾河滩", "申时　·　雨后初晴")
-        : ("芦湾", "芦湾旧渡", "酉时　·　日落");
+        : ("芦湾", "芦湾旧渡", Night ? "亥时　·　夜" : "酉时　·　日落");
 
     protected override string Caption => "河岸专属布景（M3-01）：江面、泥滩、河堤水门与栈桥为着色器与几何贴 AI 纹理，芦苇为 AI 精灵，柳树、山石与船借城镇 / 山路出件";
 
@@ -178,12 +184,20 @@ public partial class ExploreRiverPreview : ExploreStage
             Add(new RiverStakeNode(chain.Stake, chain.Bow, chain: true), blocks: false);
         }
 
-        _mist = new RiverMist(Dusk);
+        _mist = new RiverMist(Dusk || Night);
         OverheadLayer.AddChild(_mist);
-        var light = new RiverLight(Dusk) { Area = CameraArea!.Value };
-        OverheadLayer.AddChild(light);
-        // 整体色调：雨后微冷、黄昏压暖（交互菱形在同一层之上，略受影响）。
-        GroundLayer.GetParent<Node2D>().Modulate = Dusk ? new Color(1f, 0.9f, 0.8f) : new Color(0.97f, 1f, 1f);
+        if (Night)
+        {
+            OverheadLayer.AddChild(new SceneWash(Color.FromHtml("#0E1830") with { A = 0.3f }, Color.FromHtml("#0E1830") with { A = 0.2f },
+                Color.FromHtml("#05080F") with { A = 0.32f }, Color.FromHtml("#0E1830") with { A = 0.24f }) { Area = CameraArea!.Value });
+        }
+        else
+        {
+            OverheadLayer.AddChild(new RiverLight(Dusk) { Area = CameraArea!.Value });
+        }
+
+        // 整体色调：雨后微冷、黄昏压暖、夜里压暗偏蓝。
+        TintWorld(Night ? new Color(0.4f, 0.47f, 0.66f) : Dusk ? new Color(1f, 0.9f, 0.8f) : new Color(0.97f, 1f, 1f));
     }
 
     /// <summary>一块地面：画面坐标多边形换成世界坐标，在高度 z 的水平面上由 town_ground 着色器铺纹样。</summary>

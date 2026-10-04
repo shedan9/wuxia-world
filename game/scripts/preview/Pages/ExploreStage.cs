@@ -130,6 +130,40 @@ public abstract partial class ExploreStage : Control
     /// <summary>脚步声的地面材质：<c>step.&lt;材质&gt;.N</c>（城镇石板、客栈木地板、野外泥土）。</summary>
     protected virtual string StepSurface => "stone";
 
+    /// <summary>光色时段：游戏模式取驱动方（按世界时辰），展示页取 <c>--light</c>，缺省白天。</summary>
+    protected SceneTime Light => Driver?.Light ?? DevCapture.Light ?? SceneTime.Day;
+
+    /// <summary>当前的整体调色（<see cref="TintWorld"/>）；发光件用 <see cref="SceneTimes.Unlit"/> 抵消它。</summary>
+    protected Color WorldTint { get; private set; } = Colors.White;
+
+    /// <summary>
+    /// 整体调色：乘在贴地层、排序层与悬空层上，交互菱形与 HUD 不受影响（河滩雨后偏冷、旧渡与城镇黄昏压暖、夜里压暗偏蓝）。
+    /// </summary>
+    protected void TintWorld(Color tint)
+    {
+        WorldTint = tint;
+        GroundLayer.Modulate = tint;
+        _sorted.Modulate = tint;
+        OverheadLayer.Modulate = tint;
+    }
+
+    /// <summary>镜头可到范围的投影外框（<see cref="CameraArea"/> 或世界范围四角），光色层按此铺满。</summary>
+    protected Rect2 ViewArea
+    {
+        get
+        {
+            if (CameraArea is { } area)
+            {
+                return area;
+            }
+
+            var b = Bounds;
+            var box = new Rect2(TownView.P(b.Position), Vector2.Zero);
+            foreach (var c in new[] { TownView.P(b.End), TownView.P(b.Position.X, b.End.Y), TownView.P(b.End.X, b.Position.Y) }) box = box.Expand(c);
+            return box;
+        }
+    }
+
     /// <summary>每帧的布景小动效（船随水晃……）。</summary>
     protected virtual void Animate(float seconds)
     {
@@ -316,7 +350,7 @@ public abstract partial class ExploreStage : Control
         if (Driver is null)
         {
             var (_, name, time) = PlaceInfo;
-            AddChild(ExploreHudKit.Place(region, name, time));
+            AddChild(ExploreHudKit.Place(region, name, SceneTimes.Label(Light, time)));
             AddChild(Tracker());
             AddChild(ExploreHudKit.Party());
             AddChild(ExploreHudKit.Shortcuts(("WASD", "行走"), ("Shift", "快走"), ("E", "交互"), ("滚轮", "缩放"), ("M", "地图"), ("Esc", "返回标题")));
@@ -733,6 +767,9 @@ public interface IExploreDriver
     IReadOnlyList<TownInteraction> Interactions { get; }
 
     (Vector2 Ground, float Height, string Label)? Goal { get; }
+
+    /// <summary>光色时段（按世界时辰）。</summary>
+    SceneTime Light { get; }
 
     /// <summary>底部说明条（布景占位说明）；空串不显示。</summary>
     string Caption { get; }

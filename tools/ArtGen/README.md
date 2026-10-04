@@ -229,3 +229,5 @@ cd tools/ArtGen
 ## 对话立绘统一比例（2026-10-04）
 
 立绘生成、抠图后不直接放进游戏：先把抠图存为 `art_source/ai/characters/<人物>_portrait_v1_ingame.png`，在 `jobs/portrait_norm.json` 里登记量点（头顶不含发髻、两眼瞳孔中线、下巴尖、两眼中点 x）、体型与身高，再运行 `.venv/Scripts/python portrait_norm.py`（`--out 目录` 先预览、`--only 人物` 只出一张），脚本按统一头身比例与眼线高度写入 `game/assets/portraits/<人物>_v1.png`，并提示发髻出画或下缘露在画面内。自动人脸检测（OpenCV `lbpcascade_animeface`）对写实男脸几乎认不出，量点用人工标注：按原图放大两倍、加 5 像素刻度读数。
+
+夜间发光图（M3-01 光影）：`.venv/Scripts/python glow_mask.py <件 id> [阈值参数] [--preview 对照图.png]` 从已入库的 AI 件取出暖色窗纸与红灯笼，写 `game/assets/art/<地区>/<id>.glow.png`（颜色取原件、alpha 为发光强度，外加一圈柔光）与 `.glow.json`（origin、px 同原件，`blobs` 为窗块中心与面积、`lanterns` 为灯笼中心，均为投影坐标）。引擎黄昏起把它叠加在件上并按 `blobs` / `lanterns` 在街面铺光。客栈用的阈值见资产台账；件换图后重跑，新 png 需让 Godot 导入一次（编辑器打开或 `--headless --import`）。

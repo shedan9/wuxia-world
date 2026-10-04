@@ -489,6 +489,8 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     public (Vector2 Ground, float Height, string Label)? Goal => _goal is { } g ? (g.Ground, g.Height, g.Label) : null;
 
+    public SceneTime Light => SceneTimes.FromClock(World.Clock);
+
     /// <summary>借景说明只在开发信息打开时显示（F12 / --dev），玩家看不到。</summary>
     public string Caption => AppHost.DevInfo ? _staging.Caption : "";
 
