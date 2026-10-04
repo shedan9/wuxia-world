@@ -425,6 +425,12 @@ public sealed partial class BattleScreen
 
             case UnitDowned d:
                 _views[d.Unit].Hp = 0;
+                if (animate)
+                {
+                    // 先跪倒，再随淡出离场。
+                    _views[d.Unit].Standee.SetPose("down");
+                }
+
                 _views[d.Unit].Refresh(animate);
                 AddLog($"{DisplayName(d.Unit)}倒下。");
                 return animate ? 0.4f : 0;
@@ -506,8 +512,9 @@ public sealed partial class BattleScreen
         }
     }
 
-    // ── 动作占位（正式骨骼动作待 M3-02） ─────────────────────
+    // ── 动作（M3-02：有关键姿势帧的人物换姿势，其余仍为位移补间） ─────────────────────
 
+    /// <summary>出手：先蓄势一拍，冲到目标面前换出手姿势，停一拍后收势退回待机。</summary>
     private void Lunge(UnitView actor, UnitView target)
     {
         var standee = actor.Standee;
@@ -515,15 +522,20 @@ public sealed partial class BattleScreen
         var toward = target.Standee.Position.X > home.X ? 1 : -1;
         var reach = Math.Abs(target.Standee.Position.X - home.X) - target.Standee.Size.X * 0.9f;
         var strike = home + new Vector2(toward * Math.Max(40, reach), (target.Standee.Position.Y - home.Y) * 0.4f);
+        standee.SetPose("windup");
         var tween = standee.CreateTween();
+        tween.TweenInterval(0.08f / _speed);
+        tween.TweenCallback(Callable.From(() => standee.SetPose("strike")));
         tween.TweenProperty(standee, "position", strike, 0.16f / _speed).SetTrans(Tween.TransitionType.Cubic).SetEase(Tween.EaseType.In);
         tween.TweenInterval(0.12f / _speed);
+        tween.TweenCallback(Callable.From(() => standee.SetPose(null)));
         tween.TweenProperty(standee, "position", home, 0.22f / _speed).SetTrans(Tween.TransitionType.Cubic).SetEase(Tween.EaseType.Out);
     }
 
     private void Flash(UnitView view)
     {
         var standee = view.Standee;
+        standee.PlayPose("hit", 0.34f / _speed);
         standee.Modulate = new Color(2.2f, 2.2f, 2.2f);
         standee.CreateTween().TweenProperty(standee, "modulate", Colors.White, 0.25f / _speed);
         var origin = view.FeetNow;

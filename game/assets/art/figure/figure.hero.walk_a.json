@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.walk_a",
+  "foot": [
+    135.4,
+    789.0
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.walk_a.png",
+  "sha256": "fa2198c6d4f43e462cdb8eeba0a3a0947ec49e7699a1926e590e1de8564ee50e",
+  "frame_of": "figure.hero"
+}

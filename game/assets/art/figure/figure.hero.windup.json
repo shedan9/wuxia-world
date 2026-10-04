@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.windup",
+  "foot": [
+    138.4,
+    794.1
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.windup.png",
+  "sha256": "a5691e00e2aba55d1d8ba86381c94e655d4bbb30cee8d6234b77e2c4a4f6d4b1",
+  "frame_of": "figure.hero"
+}

@@ -7,7 +7,7 @@ namespace WuxiaWorld.Game.Presentation.Battle;
 
 /// <summary>
 /// 战斗形象：有 AI 全身形象（<see cref="FigureArt"/>，与探索共用同一张）时贴图，否则画纸影剪影（头、肩、衣摆）；机关有 AI 道具图时贴图，否则画方框。带地面投影。
-/// 第一阶段只有静态站姿与迎敌架势，用于核对站位、比例与界面层级；正式战斗骨骼动作见架构文档 10.2，不以立绘平移代替。
+/// 有战斗关键姿势帧（M3-02，见 <see cref="SetPose"/>）的人物待机画迎敌架势，出手、受击、倒下换对应姿势；没有帧的人物仍是静态站姿。
 /// 选中时沿人物轮廓描边（<see cref="Outline"/>，贴图用 figure_outline 着色器，剪影占位直接描线），描边透明度呼吸。
 /// </summary>
 public partial class BattleStandee : Control
@@ -80,6 +80,44 @@ public partial class BattleStandee : Control
 
     private bool HasArt => ArtId is not null && FigureArt.Find(ArtId) is not null;
 
+    private string? _pose;
+    private int _poseToken;
+
+    /// <summary>
+    /// 当前该画的形象（M3-02 战斗关键姿势）：在做的动作（<c>windup</c> 蓄势、<c>strike</c> 出手、<c>hit</c> 受击、<c>down</c> 倒下）
+    /// 有对应帧（<c>&lt;形象&gt;.&lt;姿势&gt;</c>）就画它，否则画战斗待机 <c>&lt;形象&gt;.guard</c>，再没有就画全身站姿；缺帧的人物不受影响。
+    /// </summary>
+    private FigureArt? BodyArt => ArtId is null
+        ? null
+        : (_pose is { } pose ? FigureArt.Find($"{ArtId}.{pose}") : null) ?? FigureArt.Find($"{ArtId}.guard") ?? FigureArt.Find(ArtId);
+
+    /// <summary>换一个姿势；null 回到待机。</summary>
+    public void SetPose(string? pose)
+    {
+        _poseToken++;
+        if (_pose == pose)
+        {
+            return;
+        }
+
+        _pose = pose;
+        QueueRedraw();
+    }
+
+    /// <summary>做一个姿势并保持 seconds 秒后回待机（期间换了别的姿势则不回）。</summary>
+    public void PlayPose(string pose, float seconds)
+    {
+        SetPose(pose);
+        var token = _poseToken;
+        GetTree().CreateTimer(seconds).Timeout += () =>
+        {
+            if (_poseToken == token && IsInstanceValid(this))
+            {
+                SetPose(null);
+            }
+        };
+    }
+
     /// <summary>节点局部坐标 point 是否落在人物轮廓内：贴图按不透明像素，剪影按衣身多边形与头部，机关框按矩形。</summary>
     public bool HitTest(Vector2 point)
     {
@@ -92,7 +130,7 @@ public partial class BattleStandee : Control
             return prop.AlphaAt(point, new Vector2(cx, h - 4), h, facing) > 0.4f;
         }
 
-        if (!Mechanism && ArtId is not null && FigureArt.Find(ArtId) is { } art)
+        if (!Mechanism && BodyArt is { } art)
         {
             return art.AlphaAt(point, new Vector2(cx, h - 6), h * 0.92f, facing) > 0.4f;
         }
@@ -148,11 +186,12 @@ public partial class BattleStandee : Control
             return;
         }
 
-        if (!Mechanism && ArtId is not null && FigureArt.Find(ArtId) is { } art)
+        if (!Mechanism && BodyArt is { } art)
         {
             // 头顶到脚底为 Height 的 92%：留出发髻、兵刃高出头顶的余量，与剪影占位的头顶位置相当。
             SetOutlineWidth(art, h * 0.92f);
-            art.Draw(this, new Vector2(cx, h - 6), h * 0.92f, FacingLeft ? -1 : 1);
+            // 受击帧再绕脚底后仰一点（模型画不出大幅后仰），与闪白、抖动一起读成“被打退”。
+            art.Draw(this, new Vector2(cx, h - 6), h * 0.92f, FacingLeft ? -1 : 1, _pose == "hit" && art != FigureArt.Find(ArtId!) ? -0.07f : 0);
             return;
         }
 

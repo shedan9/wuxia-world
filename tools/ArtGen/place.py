@@ -15,6 +15,9 @@
 --figure：全身人物（figure.py 的输出，id 形如 figure.hero）：按不透明外框裁边、缩放到身高 --stature 像素（默认 800，
 战斗 1080p 下约 2 倍源图），json 记脚底中点 foot 与身高 stature，引擎按它们对齐地面与缩放（FigureArt.cs）；
 --top 给出头顶的 y（原图像素），长篙、刀尖高出头顶时用它代替外框顶边算身高。
+--frame-of 基础形象 id（M3-02，与 --figure 同用，id 形如 figure.hero.walk_a）：同一人物的行走帧、背面与战斗姿势（figure_sheet.py 的输出）。
+不按本帧重新量身高，而沿用基础形象入库时的缩放比例与 stature（迈步、跪倒时人物变矮，量身高会把它放大）；
+脚底 x 取骨架两胯中点（骨盆正下方，走路时身体不左右漂），脚底 y 取两踝附近列里最低的不透明像素。
 --backdrop 远岸水线 y：整张布景（backdrop.py 的输出，id 形如 battle.ferry_dusk）原样入库，json 记远岸水线在图中的 y，
 引擎把它对齐到版式规定的高度，水线以下由引擎画近景地面（BattleBackdrop.cs）。
 --prop：战斗道具（prop_guide.py 引导出件，id 形如 battle.sluice_gate）：按不透明外框裁边，json 记底边中点 foot 与整高 stature，
@@ -52,6 +55,7 @@ def main() -> int:
     parser.add_argument("--figure", action="store_true", help="全身人物：裁边、缩放到统一身高，记脚底与身高")
     parser.add_argument("--stature", type=int, default=800, help="--figure：头顶到脚底的输出像素")
     parser.add_argument("--top", type=int, help="--figure：头顶 y（原图像素），默认取外框顶边")
+    parser.add_argument("--frame-of", help="--figure：作为该基础形象的一帧入库（沿用其缩放比例与 stature，脚底取两胯中点）")
     parser.add_argument("--prop", action="store_true", help="战斗道具：裁边，记底边中点与整高（FigureArt 格式）")
     parser.add_argument("--backdrop", type=float, metavar="WATERLINE", help="整张布景：原样入库，记远岸水线 y（原图像素）")
     parser.add_argument("--regrade", help="按引导图分区调色 light,chroma（如 0.7,1.0）：保留材质细节，把各色块区的平均色拉回布局配色（regrade.py）")
@@ -239,15 +243,24 @@ def place_figure(args, src: Path, record: dict, art_dir: Path, game_dir: Path) -
 
     pose = POSES[record["pose"]]
     kx, ky = image.width / CANVAS[0], image.height / CANVAS[1]
-    anchor = (pose[8], pose[11]) if record["pose"] == "sit" else (pose[10], pose[13])
+    anchor = (pose[8], pose[11]) if record["pose"] == "sit" or args.frame_of else (pose[10], pose[13])
     foot_x = (anchor[0][0] + anchor[1][0]) / 2 * kx
     feet_cols = np.zeros(image.width, dtype=bool)
     for ankle in (pose[10], pose[13]):
         feet_cols[max(0, int(ankle[0] * kx) - 70):int(ankle[0] * kx) + 70] = True
     bottom = int(ys[feet_cols[xs]].max())
-    head_cols = np.abs(xs - pose[0][0] * kx) < 70
-    head = args.top if args.top is not None else int(ys[head_cols].min())
-    k = args.stature / (bottom - head)
+    if args.frame_of:
+        base_record = json.loads((REPO / "art_source" / "ai" / "figure" / f"{args.frame_of}.json").read_text(encoding="utf-8"))
+        base = base_record["figure"]
+        k, stature, head = base["scale"], base["stature"], None
+        # 基础形象的脚底取的是两踝中点：本帧的两胯中点加上基础姿势里“两踝中点 − 两胯中点”，切帧时人物不横跳。
+        bp = POSES[base_record["pose"]]
+        foot_x += ((bp[10][0] + bp[13][0]) - (bp[8][0] + bp[11][0])) / 2 * kx
+    else:
+        head_cols = np.abs(xs - pose[0][0] * kx) < 70
+        head = args.top if args.top is not None else int(ys[head_cols].min())
+        k = args.stature / (bottom - head)
+        stature = args.stature
     pad = 6
     box = (max(0, left - pad), max(0, top - pad), min(image.width, right + pad + 1), min(image.height, int(ys.max()) + pad + 1))
     out = image.crop(box)
@@ -256,9 +269,11 @@ def place_figure(args, src: Path, record: dict, art_dir: Path, game_dir: Path) -
     path = art_dir / f"{args.id}.png"
     out.save(path, optimize=True)
     shutil.copyfile(path, game_dir / f"{args.id}.png")
-    placed = {"id": args.id, "foot": foot, "stature": args.stature, "source": f"art_source/ai/figure/{args.id}.png", "sha256": sha(path)}
+    placed = {"id": args.id, "foot": foot, "stature": stature, "source": f"art_source/ai/figure/{args.id}.png", "sha256": sha(path)}
+    if args.frame_of:
+        placed["frame_of"] = args.frame_of
     (game_dir / f"{args.id}.json").write_text(json.dumps(placed, ensure_ascii=False, indent=2), encoding="utf-8")
-    fig = {"crop": list(box), "scale": round(k, 4), "top": head, "bottom": bottom, "stature": args.stature, "foot": foot}
+    fig = {"crop": list(box), "scale": round(k, 4), "top": head, "bottom": bottom, "stature": stature, "foot": foot, "frame_of": args.frame_of}
     (art_dir / f"{args.id}.json").write_text(
         json.dumps({**record, "figure": fig, "placed_as": args.id, "placed_sha256": placed["sha256"]}, ensure_ascii=False, indent=2), encoding="utf-8"
     )

@@ -510,6 +510,7 @@ public abstract partial class ExploreStage : Control
             if (Walkable(pos + new Vector2(step.X, 0))) pos.X += step.X;
             if (Walkable(pos + new Vector2(0, step.Y))) pos.Y += step.Y;
             if (input.X != 0) Hero.Facing = input.X > 0 ? 1 : -1;
+            Hero.TurnToward(dir);
             _heading = dir;
             Hero.Phase += (pos - Hero.Ground).Length() / 32;
             _stride += (pos - Hero.Ground).Length();
@@ -553,6 +554,7 @@ public abstract partial class ExploreStage : Control
             walker.Phase += step / 30;
             var sx = TownView.ScreenX(move);
             if (Mathf.Abs(sx) > step * 0.3f) walker.Facing = sx > 0 ? 1 : -1;
+            walker.TurnToward(move);
             walker.Place(pos, StepZ(pos));
         }
 

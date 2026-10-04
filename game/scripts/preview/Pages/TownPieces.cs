@@ -1156,8 +1156,21 @@ public partial class WalkerFigure : TownPiece
     public Color Tone { get; init; } = UiPalette.Accent;
     public FigureLook Look { get; init; }
     public int Facing { get; set; } = 1;
+
+    /// <summary>背对镜头（往画面上方走）：有背面帧（<c>&lt;形象&gt;.back</c>）时画背影，停下后保持。</summary>
+    public bool Back { get; set; }
+
     public float Phase { get; set; }
     public bool Moving { get; set; }
+
+    /// <summary>按屏幕上的位移方向换正面 / 背面：明显往上走转背面、往下走转正面，近乎水平时保持原样（不来回闪）。</summary>
+    public void TurnToward(Vector2 groundMove)
+    {
+        var len = groundMove.Length();
+        var dy = TownView.ScreenY(groundMove);
+        if (dy < -0.25f * len) Back = true;
+        else if (dy > 0.25f * len) Back = false;
+    }
 
     /// <summary>坐姿时凳面高度（世界单位）。</summary>
     private const float SeatZ = 45;
@@ -1196,6 +1209,8 @@ public partial class WalkerFigure : TownPiece
 
     private readonly string? _artId;
 
+    private static readonly string[] FrameKeys = ["walk_a", "walk_b", "back", "back_walk_a", "back_walk_b"];
+
     public void Place(Vector2 ground, float z = 0)
     {
         Ground = ground;
@@ -1205,8 +1220,16 @@ public partial class WalkerFigure : TownPiece
         ScreenBox = new Rect2(Position + new Vector2(-40, -Height - 20), new Vector2(80, Height + 30));
         if (FigureArt.Find(ArtId) is { } art)
         {
-            // 长篙、衣摆可能超出占位外框：按贴图两个朝向的外框合并，避免翻身时被裁或排序跳变。
+            // 长篙、衣摆、迈开的腿可能超出占位外框：按贴图（含行走帧与背面）两个朝向的外框合并，避免翻身、换帧时被裁或排序跳变。
             var box = art.Bounds(Vector2.Zero, Height, 1).Merge(art.Bounds(Vector2.Zero, Height, -1));
+            foreach (var key in FrameKeys)
+            {
+                if (FigureArt.Find($"{ArtId}.{key}") is { } frame)
+                {
+                    box = box.Merge(frame.Bounds(Vector2.Zero, Height, 1)).Merge(frame.Bounds(Vector2.Zero, Height, -1));
+                }
+            }
+
             ScreenBox = ScreenBox.Merge(new Rect2(Position + box.Position, box.Size));
         }
     }
@@ -1218,9 +1241,17 @@ public partial class WalkerFigure : TownPiece
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
         if (FigureArt.Find(ArtId) is { } art)
         {
-            // 第一阶段只有一张站姿：走动时按步频上下起伏、竖向微缩并略向前倾，正式行走帧见 M1 起的 4 / 8 向形象。
             var step = Moving ? Mathf.Abs(Mathf.Sin(Phase)) : 0;
-            art.Draw(this, new Vector2(0, -step * 4), Height, Facing, Moving ? 0.035f : 0, 1 - step * 0.018f);
+            if (WalkFrame(art) is { } frame)
+            {
+                // M3-02 行走帧：四拍一循环（迈左、过步、迈右、过步），过步即站姿；过步时身体略高，不再整张前倾伸缩。
+                frame.Draw(this, new Vector2(0, -step * 2), Height, Facing);
+                return;
+            }
+
+            // 没有行走帧的人物：一张站姿按步频上下起伏、竖向微缩并略向前倾（背面帧有则用背面）。
+            var still = Back && FigureArt.Find($"{ArtId}.back") is { } back ? back : art;
+            still.Draw(this, new Vector2(0, -step * 4), Height, Facing, Moving ? 0.035f : 0, 1 - step * 0.018f);
             return;
         }
 
@@ -1273,6 +1304,37 @@ public partial class WalkerFigure : TownPiece
             // 肩上白巾。
             Cel.Shape(this, [new(-dir * 20, shoulderY - 2), new(-dir * 8, shoulderY - 2), new(-dir * 10, shoulderY + 36), new(-dir * 22, shoulderY + 30)], Cel.Plaster, 1.6f);
         }
+    }
+
+    /// <summary>
+    /// 当前该画的行走帧（M3-02）：正面为站姿 + <c>walk_a</c> / <c>walk_b</c>，背面为 <c>back</c> + <c>back_walk_a</c> / <c>back_walk_b</c>。
+    /// 步相 Phase 每 π 一步，四分之一步一拍：0 迈左、1 过步、2 迈右、3 过步。所需帧不全时返回 null，退回整张起伏。
+    /// </summary>
+    private FigureArt? WalkFrame(FigureArt stand)
+    {
+        var idle = Back ? FigureArt.Find($"{ArtId}.back") : stand;
+        if (idle is null)
+        {
+            return null;
+        }
+
+        var prefix = Back ? "back_walk" : "walk";
+        if (FigureArt.Find($"{ArtId}.{prefix}_a") is not { } a || FigureArt.Find($"{ArtId}.{prefix}_b") is not { } b)
+        {
+            return null;
+        }
+
+        if (!Moving)
+        {
+            return idle;
+        }
+
+        return Mathf.PosMod(Mathf.RoundToInt(Phase / (Mathf.Pi / 2)), 4) switch
+        {
+            0 => a,
+            2 => b,
+            _ => idle,
+        };
     }
 
     private void DrawHead(Vector2 head, float h, int dir, float bob)

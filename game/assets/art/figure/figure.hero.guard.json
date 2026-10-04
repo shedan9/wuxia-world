@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.guard",
+  "foot": [
+    175.9,
+    803.0
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.guard.png",
+  "sha256": "fe960215deb894723d70b65af1ae27e8b25d501a6d2b554ac9b5d553744987ab",
+  "frame_of": "figure.hero"
+}

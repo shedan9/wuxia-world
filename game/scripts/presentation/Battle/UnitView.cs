@@ -287,6 +287,7 @@ public sealed class UnitView
         else if (!Down && _gone)
         {
             _gone = false;
+            Standee.SetPose(null);
             Standee.Visible = Hud.Visible = true;
             Standee.SelfModulate = Colors.White;
             Hud.Modulate = Colors.White;

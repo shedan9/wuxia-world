@@ -71,6 +71,9 @@ public static class TownView
     /// <summary>地面方向在屏幕上的水平分量：决定精灵朝左还是朝右。</summary>
     public static float ScreenX(Vector2 ground) => ground.X * _c - ground.Y * _s;
 
+    /// <summary>地面方向在屏幕上的竖直分量（向下为正，未乘俯角）：为负即往画面上方（远处）走，人物转成背面。</summary>
+    public static float ScreenY(Vector2 ground) => ground.X * _s + ground.Y * _c;
+
     /// <summary>三阶赛璐璐明暗：1 受光、约 0.84 侧光、约 0.7 背光。</summary>
     public static float Light(Vector3 normal)
     {
