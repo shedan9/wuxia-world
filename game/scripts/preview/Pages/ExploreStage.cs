@@ -265,7 +265,9 @@ public abstract partial class ExploreStage : Control
         _near = null;
         foreach (var item in Driver?.Interactions ?? Interactions)
         {
-            var marker = new InteractMarker { Position = TownView.P(item.Position, StepZ(item.Position) + item.MarkerHeight) };
+            // 交互点不在场景里画常驻菱形（2026-10-04 用户：太显眼、降低探索难度），靠近时只出底部“E + 动作 + 对象”提示；
+            // 节点仍保留为不可见的锚点，供鼠标点选与自动走查定位。
+            var marker = new InteractMarker { Position = TownView.P(item.Position, StepZ(item.Position) + item.MarkerHeight), Visible = false };
             _markers.AddChild(marker);
             _interactions.Add((item, marker));
         }

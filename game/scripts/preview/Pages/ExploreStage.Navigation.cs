@@ -14,7 +14,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 public abstract partial class ExploreStage
 {
     private const float Cell = 24;
-    private const float ClickMarkerPick = 70;
+    private const float ClickMarkerPick = 50;
 
     private bool[,]? _grid;
     private Vector2 _gridOrigin;
@@ -132,7 +132,7 @@ public abstract partial class ExploreStage
     /// <summary>自动行走卡住时通知（自动走查记问题用）：主角位置、下一格。</summary>
     public event Action<Vector2, Vector2>? RouteStuck;
 
-    /// <summary>鼠标左键点地：点到交互菱形附近就走去交互，否则走到点下的地面。</summary>
+    /// <summary>鼠标左键点地：点到交互物（自地面到原菱形高度的那一竖条）附近就走去交互，否则走到点下的地面。</summary>
     private bool ClickWalk(Vector2 screen)
     {
         if (Driver is { InputLocked: true })
@@ -140,13 +140,14 @@ public abstract partial class ExploreStage
             return false;
         }
 
-        // 先看点没点到交互菱形（屏幕上离菱形最近且在拾取半径内）。
+        // 先看点没点到交互物：菱形不再显示，按屏幕上自交互点地面到原菱形高度的竖条取最近者（拾取半径内）。
         TownInteraction? picked = null;
         var best = ClickMarkerPick;
         foreach (var (data, marker) in _interactions)
         {
-            var at = _world.Position + marker.Position * _zoom;
-            var d = at.DistanceTo(screen);
+            var top = _world.Position + marker.Position * _zoom;
+            var foot = _world.Position + TownView.P(data.Position, StepZ(data.Position)) * _zoom;
+            var d = Geometry2D.GetClosestPointToSegment(screen, foot, top).DistanceTo(screen);
             if (d < best)
             {
                 best = d;
