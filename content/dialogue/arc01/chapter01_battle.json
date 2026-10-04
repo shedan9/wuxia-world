@@ -1,0 +1,44 @@
+{
+  "arc": "arc.01",
+  "chapter": "chapter.01",
+  "status": "第一稿，未锁稿：第一章关键战斗语音（开发计划 M3-06），2026-10-04 起草。喊声短促、口语，一句一口气；招式句不念招式全名，免得像报菜名。由 BattleBarkDirector 按战斗事件挑选：同一时机只说一句，同一人的回合里后一句须更要紧，倍速只说优先级 3。武学分式名待原著对校（见 docs/canon/ANCHORS.md 第一章战斗武学映射），锁稿前随对白一并试玩修订。",
+  "barks": [
+    { "line_id": "ch01.battle.escort.linghu.start", "speaker": "char.linghu_chong", "trigger": "battle_start", "encounter": "battle.01.escort_skirmish", "priority": 3, "text": "冒充押运，也该先换双靴子。" },
+    { "line_id": "ch01.battle.escort.huang.start", "speaker": "char.huang_rong", "trigger": "battle_start", "encounter": "battle.01.escort_skirmish", "priority": 3, "text": "几位大哥，船上的人我们带走啦。" },
+    { "line_id": "ch01.battle.escort.xiao.start", "speaker": "char.xiao_feng", "trigger": "battle_start", "encounter": "battle.01.escort_skirmish", "priority": 3, "text": "让开。不想伤你们。" },
+    { "line_id": "ch01.battle.sluice.tang.start", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "battle_start", "encounter": "battle.01.old_ferry_sluice", "priority": 3, "text": "闸一开，船里的人谁也救不了！" },
+
+    { "line_id": "ch01.battle.linghu.skill.dugu_blade", "speaker": "char.linghu_chong", "trigger": "skill", "skill": "skill.sword.dugu_blade", "priority": 1, "cooldown_rounds": 3, "text": "刀再快，也有空当。" },
+    { "line_id": "ch01.battle.linghu.skill.dugu_rope", "speaker": "char.linghu_chong", "trigger": "skill", "skill": "skill.sword.dugu_rope", "priority": 1, "cooldown_rounds": 3, "text": "钩子绳子，最好破。" },
+    { "line_id": "ch01.battle.linghu.skill.dugu_formless", "speaker": "char.linghu_chong", "trigger": "skill", "skill": "skill.sword.dugu_formless", "priority": 1, "cooldown_rounds": 3, "text": "我没招式，你拿什么破？" },
+    { "line_id": "ch01.battle.huang.skill.dagou_trip", "speaker": "char.huang_rong", "trigger": "skill", "skill": "skill.staff.dagou_trip", "priority": 1, "cooldown_rounds": 3, "text": "当心脚下！" },
+    { "line_id": "ch01.battle.huang.skill.dagou_seal", "speaker": "char.huang_rong", "trigger": "skill", "skill": "skill.staff.dagou_seal", "priority": 1, "cooldown_rounds": 3, "text": "别动，乖乖站着。" },
+    { "line_id": "ch01.battle.huang.skill.dagou_lure", "speaker": "char.huang_rong", "trigger": "skill", "skill": "skill.staff.dagou_lure", "priority": 1, "cooldown_rounds": 3, "text": "来呀，往这儿打。" },
+    { "line_id": "ch01.battle.xiao.skill.kanglong", "speaker": "char.xiao_feng", "trigger": "skill", "skill": "skill.fist.xianglong_kanglong", "priority": 1, "cooldown_rounds": 3, "text": "接我一掌。" },
+    { "line_id": "ch01.battle.xiao.skill.jianlong", "speaker": "char.xiao_feng", "trigger": "skill", "skill": "skill.fist.xianglong_jianlong", "priority": 1, "cooldown_rounds": 3, "text": "都退开！" },
+
+    { "line_id": "ch01.battle.sluice.tang.charge.torrent", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "charge", "encounter": "battle.01.old_ferry_sluice", "skill": "skill.boss.sluice_torrent", "priority": 3, "text": "放水！都给我下去！" },
+    { "line_id": "ch01.battle.sluice.tang.charge.undertow", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "charge", "encounter": "battle.01.old_ferry_sluice", "skill": "skill.boss.undertow_hook", "priority": 3, "text": "看你往哪儿跑！" },
+    { "line_id": "ch01.battle.sluice.tang.phase.gate_broken", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "phase", "encounter": "battle.01.old_ferry_sluice", "phase": "phase.sluice_broken", "priority": 3, "text": "我的闸！" },
+    { "line_id": "ch01.battle.sluice.tang.phase.reinforcement", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "phase", "encounter": "battle.01.old_ferry_sluice", "phase": "phase.reinforcement", "priority": 3, "text": "人呢？都给我上！" },
+
+    { "line_id": "ch01.battle.hero.low_hp", "speaker": "char.hero", "trigger": "low_hp", "priority": 2, "text": "还撑得住……" },
+    { "line_id": "ch01.battle.lu.low_hp", "speaker": "char.lu_qinghe", "trigger": "low_hp", "priority": 2, "text": "我没事，还能撑。" },
+    { "line_id": "ch01.battle.linghu.low_hp", "speaker": "char.linghu_chong", "trigger": "low_hp", "priority": 2, "text": "这点伤，喝两碗就好。" },
+    { "line_id": "ch01.battle.huang.low_hp", "speaker": "char.huang_rong", "trigger": "low_hp", "priority": 2, "text": "哎哟，这下可真疼。" },
+    { "line_id": "ch01.battle.xiao.low_hp", "speaker": "char.xiao_feng", "trigger": "low_hp", "priority": 2, "text": "无妨。" },
+    { "line_id": "ch01.battle.sluice.tang.low_hp", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "low_hp", "encounter": "battle.01.old_ferry_sluice", "priority": 2, "text": "好硬的手……" },
+
+    { "line_id": "ch01.battle.hero.downed", "speaker": "char.hero", "trigger": "downed", "priority": 2, "text": "可恶……" },
+    { "line_id": "ch01.battle.lu.downed", "speaker": "char.lu_qinghe", "trigger": "downed", "priority": 2, "text": "师傅还在船上……" },
+    { "line_id": "ch01.battle.linghu.downed", "speaker": "char.linghu_chong", "trigger": "downed", "priority": 2, "text": "嘿，今天酒喝少了……" },
+    { "line_id": "ch01.battle.huang.downed", "speaker": "char.huang_rong", "trigger": "downed", "priority": 2, "text": "你们……可得赢呀。" },
+    { "line_id": "ch01.battle.xiao.downed", "speaker": "char.xiao_feng", "trigger": "downed", "priority": 2, "text": "大意了……" },
+    { "line_id": "ch01.battle.sluice.tang.downed", "speaker": "char.tang_shouting", "unit": "enemy.tang_shouting", "trigger": "downed", "encounter": "battle.01.old_ferry_sluice", "priority": 2, "text": "唐某……认栽。" },
+
+    { "line_id": "ch01.battle.linghu.victory", "speaker": "char.linghu_chong", "trigger": "victory", "priority": 3, "text": "收工。这一架打得痛快。" },
+    { "line_id": "ch01.battle.huang.victory", "speaker": "char.huang_rong", "trigger": "victory", "priority": 3, "text": "打完啦，快去看看船上的人。" },
+    { "line_id": "ch01.battle.xiao.victory", "speaker": "char.xiao_feng", "trigger": "victory", "priority": 3, "text": "人没事就好。" },
+    { "line_id": "ch01.battle.hero.victory", "speaker": "char.hero", "trigger": "victory", "priority": 3, "text": "赢了……快去救人。" }
+  ]
+}

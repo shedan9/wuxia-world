@@ -90,6 +90,15 @@ public static class DevCapture
     /// <summary>4 对 6 战斗压测（<c>--battle-stress</c>，开发用，开发计划 M3-07）：战斗原型页直接开 4 名己方对 6 名敌人的自动战斗，按 1 倍速完整播放，打完换种子再开。</summary>
     public static bool BattleStress { get; private set; }
 
+    /// <summary>
+    /// 自动走查的剧情战改为实时播放（<c>--battle-live</c>，开发用，M3-06）：开启自动战斗按 1 倍速完整演出，而不是跳过动画快进，
+    /// 用于核对战斗喊声的字幕、配音与节奏。
+    /// </summary>
+    public static bool BattleLive { get; private set; }
+
+    /// <summary>战斗喊声出现时截图存到给定目录（<c>--bark-shots=目录</c>，文件名为 line_id）。</summary>
+    public static string? BarkShots { get; private set; }
+
     /// <summary>自动走查的步数；0 为不自动。</summary>
     public static int Autoplay { get; private set; }
 
@@ -225,6 +234,12 @@ public static class DevCapture
                 case "--battle-stress":
                     BattleStress = true;
                     Scene = ScenePaths.BattlePrototype;
+                    break;
+                case "--battle-live":
+                    BattleLive = true;
+                    break;
+                case "--bark-shots":
+                    BarkShots = value;
                     break;
                 case "--text-size":
                     TextSize = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);

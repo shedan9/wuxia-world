@@ -51,7 +51,7 @@ if (errors.Count > 0)
 Console.WriteLine($"校验通过：招式 {bundle.Skills.Count}、状态 {bundle.Statuses.Count}、心法 / 轻功 / 天赋 {bundle.Arts.Count}、" +
     $"物品 {bundle.Items.Count}、战斗单位 {bundle.Combatants.Count}、遭遇 {bundle.Encounters.Count}、文本 {bundle.Text.Count} 条；" +
     $"地图 {world.Maps.Count}、路线 {world.Routes.Count}、事件 {world.Events.Count}、任务 {world.Quests.Count}、" +
-    $"对白 {world.Dialogues.Count()} 段 {world.Dialogues.Sum(d => d.Nodes.Count(n => n.Type == WuxiaWorld.Domain.World.DialogueNodeType.Line))} 句、" +
+    $"对白 {world.Dialogues.Count()} 段 {world.Dialogues.Sum(d => d.Nodes.Count(n => n.Type == WuxiaWorld.Domain.World.DialogueNodeType.Line))} 句、战斗喊声 {world.Barks.Count()} 句、" +
     $"物品目录 {world.Items.Count}、店铺 {world.Shops.Count}、人物 {world.Characters.Count}（剧情锚点 {world.Anchors.Count}，伙伴 {world.Characters.Count(c => c.Party == WuxiaWorld.Domain.World.PartyRole.Recruitable)}、暂时同行 {world.Characters.Count(c => c.Party == WuxiaWorld.Domain.World.PartyRole.Temporary)}）、大地图地标 {world.WorldMap?.Nodes.Count ?? 0}、等级上限 {world.Progression?.MaxLevel}；内容版本 {bundle.ContentVersion}");
 if (checkOnly)
 {

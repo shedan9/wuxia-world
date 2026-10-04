@@ -205,6 +205,75 @@ public sealed record DialogueDefinition
     public DialogueNode? Node(string? id) => Nodes.FirstOrDefault(n => n.Id == id);
 }
 
+/// <summary>战斗喊声的触发时机（架构文档 10.5“战斗语音”）。</summary>
+public enum BarkTrigger
+{
+    /// <summary>开战：全场只挑一句。</summary>
+    BattleStart,
+
+    /// <summary>施展 <c>skill</c>（反击不算）。</summary>
+    Skill,
+
+    /// <summary>开始蓄力（首领预兆）；给了 <c>skill</c> 时只认该招。</summary>
+    Charge,
+
+    /// <summary>遭遇阶段 <c>phase</c> 发动。</summary>
+    Phase,
+
+    /// <summary>本人气血首次跌到三成以下。</summary>
+    LowHp,
+
+    /// <summary>本人倒下。</summary>
+    Downed,
+
+    /// <summary>我方胜利：从仍站着的人里挑一句。</summary>
+    Victory,
+}
+
+/// <summary>
+/// 一句战斗喊声（“关键战斗语音”，开发计划 M3-06）：与对白一样有稳定 <c>line_id</c>、说话人与字幕，按章保存在对白目录
+/// （<c>content/dialogue/arcXX/chapterXX_battle.json</c>）。由 <c>BattleBarkDirector</c> 按战斗事件挑选，只是表现，不改变战果。
+/// </summary>
+public sealed record BattleBarkDefinition
+{
+    public required string LineId { get; init; }
+
+    /// <summary>说话人：人物 ID（字幕名与配音按它取）。</summary>
+    public required string Speaker { get; init; }
+
+    /// <summary>说话人在战斗里的单位 ID；我方单位 ID 就是人物 ID，可省略。</summary>
+    public string? Unit { get; init; }
+
+    public BarkTrigger Trigger { get; init; }
+
+    /// <summary>只在该遭遇里说；省略为任何遭遇。</summary>
+    public string? Encounter { get; init; }
+
+    /// <summary><see cref="BarkTrigger.Skill"/> 必填、<see cref="BarkTrigger.Charge"/> 可选的招式 ID。</summary>
+    public string? Skill { get; init; }
+
+    /// <summary><see cref="BarkTrigger.Phase"/> 的阶段 ID。</summary>
+    public string? Phase { get; init; }
+
+    /// <summary>1 普通（招式）、2 重要（重伤、倒下）、3 关键（开战、首领预兆、阶段、胜利）。倍速时只说 3；正在说的不被同级或更低的打断。</summary>
+    public int Priority { get; init; } = 1;
+
+    /// <summary>
+    /// 同一句再说要隔的轮数；0 为一场只说一次。只对招式有意义，其余时机本来就一场一次。
+    /// </summary>
+    public int CooldownRounds { get; init; }
+
+    public required string Text { get; init; }
+
+    /// <summary>喊声字幕的字数上限：短促，一口气说完。</summary>
+    public const int MaxChars = 20;
+
+    public const int MinPriority = 1;
+    public const int MaxPriority = 3;
+
+    public string UnitId => Unit ?? Speaker;
+}
+
 public sealed record MapExit
 {
     public required string Id { get; init; }

@@ -151,10 +151,18 @@ public sealed class SettingsPanel
             speeds.AddChild(b);
         }
 
+        var auto = Ui.Switch(GameSettings.AutoAdvance);
+        auto.Toggled += on =>
+        {
+            GameSettings.AutoAdvance = on;
+            GameSettings.Save();
+        };
+
         return Form(
             Setting("正文字号", $"拖动后下方预览立即变化，松手后整个界面换上新字号；默认 {FontScale.BaseBody} 号。页名、印章等标题字不随之缩放。", size),
             Ui.Panel(UiTheme.InsetPanel, Ui.Column(UiPalette.SpaceS, Ui.Text("文字预览", UiTheme.MutedLabel), sample)),
-            Setting("文字速度", "对话逐字显示的快慢；“立即”关闭逐字显示。", speeds));
+            Setting("文字速度", "对话逐字显示的快慢；“立即”关闭逐字显示。", speeds),
+            Setting("自动推进", "一句配音说完后自动进入下一句；没有配音的句子按字数留出读完的时间。遇到选项仍停下等你选，随时可按继续键提前进入下一句。", auto));
     }
 
     private void ApplyTextSize(int size)

@@ -19,26 +19,28 @@ DEST = ROOT / "game" / "assets" / "audio" / "voice"
 
 
 def voiced_lines(chapter: Path) -> dict:
-    """需要配音的台词（心里话不配音），按 line_id。"""
+    """需要配音的台词（心里话不配音）与战斗喊声，按 line_id。"""
     data = json.loads(chapter.read_text(encoding="utf-8"))
-    return {
+    lines = {
         n["line_id"]: n
-        for d in data["dialogues"]
+        for d in data.get("dialogues", [])
         for n in d["nodes"]
         if n["type"] == "line" and not n.get("inner")
     }
+    lines.update({b["line_id"]: b for b in data.get("barks", [])})
+    return lines
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--samples", default="build/voice/samples/minimax_cast")
-    ap.add_argument("--chapter", action="append", help="章节对白 JSON；可多次给出，缺省为第一章")
+    ap.add_argument("--chapter", action="append", help="对白 JSON（章节对白或战斗喊声）；可多次给出，缺省为第一篇全部对白文件")
     ap.add_argument("--status", default="trial", help="trial（试听版，未锁稿）或 final（锁稿后经审核的正式配音）")
     args = ap.parse_args()
 
     samples = ROOT / args.samples
     manifest = json.loads((samples / "manifest.json").read_text(encoding="utf-8"))
-    chapters = [ROOT / c for c in (args.chapter or ["content/dialogue/arc01/chapter01.json"])]
+    chapters = [ROOT / c for c in args.chapter] if args.chapter else sorted((ROOT / "content" / "dialogue" / "arc01").glob("*.json"))
     lines = {}
     for c in chapters:
         lines.update(voiced_lines(c))

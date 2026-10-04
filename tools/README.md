@@ -25,7 +25,7 @@ Windows 导出：`$env:GODOT_BIN = '<Godot .NET 编辑器路径>'; ./tools/scrip
 
 AI 配音试听：`python tools/VoiceBuilder/sample.py [--per-speaker N | --lines <line_id>...] [--dry-run]`，按 `voice_source/profiles/minimax_trial.json` 调 MiniMax 国内站生成小样到 `build/voice/samples/<档案名>/`（含 `index.html` 试听页）；密钥放在 `voice_source/secrets/minimax.env`，不入库。`--dry-run` 只列句子与字数，不计费。音色设计试听：`python tools/VoiceBuilder/design.py [--profile voice_source/profiles/minimax_design_v1.json]`（只取试听，不合成，不扣音色费；装了 `tools/VoiceBuilder/requirements.txt` 时自动检查试听音高与档案性别，不符重设）；多轮对比页：`python tools/VoiceBuilder/compare.py samples/<档案> design/<档案> ... [--speakers <人物ID>...] [-o 文件名]` → `build/voice/compare.html`。档案 `voices` 的键写成 `人物ID@候选名` 时，同一人物的多个候选会并排生成。
 
-配音装入游戏：`python tools/VoiceBuilder/install.py [--samples build/voice/samples/minimax_cast] [--status trial|final]`，把一组已生成配音中文字与当前台词一致的句子复制到 `game/assets/audio/voice/<line_id>.mp3`（Git LFS）并写 `voice_manifest.json`；文字已改的句子列为过期不安装，不再需要的旧文件删除。装完用 Godot 编辑器打开工程或运行 `& $env:GODOT_BIN --headless --path game --import` 生成导入文件。不调用接口、不计费。
+配音装入游戏：`python tools/VoiceBuilder/install.py [--samples build/voice/samples/minimax_cast] [--status trial|final]`，把一组已生成配音中文字与当前台词一致的句子复制到 `game/assets/audio/voice/<line_id>.mp3`（Git LFS）并写 `voice_manifest.json`；文字已改的句子列为过期不安装，不再需要的旧文件删除。`sample.py` 与 `install.py` 缺省读第一篇全部对白文件，包括章节对白与战斗喊声（`chapterXX_battle.json` 的 `barks`）；`sample.py` 写出的清单只含本次涉及的句子，补生成喊声时不要用 `--chapter` 缩小范围，用 `--lines` 或 `--per-speaker 999` 只合成新句（已有句子沿用、不计费）。装完用 Godot 编辑器打开工程或运行 `& $env:GODOT_BIN --headless --path game --import` 生成导入文件。不调用接口、不计费。
 
 对白阅读版：`python tools/scripts/export-dialogue.py [content/dialogue/arcXX/chapterXX.json]`，把一章对白导出为 `build/review/dialogue/arcXX-chapterXX.md`，供审阅（生成物，不入库；意见按 `line_id` 落回 JSON）。
 

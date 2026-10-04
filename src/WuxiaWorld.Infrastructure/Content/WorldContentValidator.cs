@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using WuxiaWorld.Domain.Characters;
+using WuxiaWorld.Domain.Combat.Definitions;
 using WuxiaWorld.Domain.World;
 
 namespace WuxiaWorld.Infrastructure.Content;
@@ -959,7 +960,142 @@ public static partial class WorldContentValidator
             Err($"心里话 {inner} 句，超过全部台词 {spoken} 句的一成");
         }
 
+        ValidateBarks(w, combat, characters, lineIds, Err);
         return errors;
+    }
+
+    /// <summary>
+    /// 战斗喊声：<c>line_id</c> 与对白共用唯一性，说话人是已登记人物，字数与优先级在范围内，各时机所需字段齐全；
+    /// 有战斗内容时再查遭遇、阶段与招式存在，单位在该遭遇里登场（我方单位须是有战斗模板的人物），招式在说话人的招式表里。
+    /// </summary>
+    private static void ValidateBarks(WorldBundle w, CombatBundle? combat, HashSet<string> characters, HashSet<string> lineIds, Action<string> err)
+    {
+        var encounters = combat?.Encounters.ToDictionary(e => e.Id, StringComparer.Ordinal);
+        var templates = combat?.Combatants.ToDictionary(c => c.Id, StringComparer.Ordinal);
+        var skills = combat?.Skills.Select(s => s.Id).ToHashSet(StringComparer.Ordinal);
+        var allyTemplate = w.Characters.Where(c => c.Combatant is not null).ToDictionary(c => c.Id, c => c.Combatant!, StringComparer.Ordinal);
+        var heroes = w.Characters.Where(c => c.Origin == CharacterOrigin.Hero).Select(c => c.Id).ToHashSet(StringComparer.Ordinal);
+        foreach (var b in w.Barks)
+        {
+            var where = $"喊声 {b.LineId}";
+            if (!IdPattern().IsMatch(b.LineId))
+            {
+                err($"{where}：line_id 格式不对");
+            }
+
+            if (!lineIds.Add(b.LineId))
+            {
+                err($"{where}：line_id 重复");
+            }
+
+            if (!characters.Contains(b.Speaker))
+            {
+                err($"{where}：说话人 {b.Speaker} 不是已登记人物");
+            }
+
+            var text = b.Text.Trim();
+            if (text.Length == 0)
+            {
+                err($"{where}：字幕为空");
+            }
+            else if (text.Length > BattleBarkDefinition.MaxChars)
+            {
+                err($"{where}：{text.Length} 字，超过喊声 {BattleBarkDefinition.MaxChars} 字上限");
+            }
+
+            if (b.Priority is < BattleBarkDefinition.MinPriority or > BattleBarkDefinition.MaxPriority)
+            {
+                err($"{where}：priority 须在 {BattleBarkDefinition.MinPriority}–{BattleBarkDefinition.MaxPriority}");
+            }
+
+            if (b.CooldownRounds < 0 || (b.CooldownRounds > 0 && b.Trigger != BarkTrigger.Skill))
+            {
+                err($"{where}：cooldown_rounds 只用于招式句且不能为负");
+            }
+
+            if ((b.Trigger == BarkTrigger.Skill && b.Skill is null) || (b.Skill is not null && b.Trigger is not (BarkTrigger.Skill or BarkTrigger.Charge)))
+            {
+                err($"{where}：skill 只用于 skill / charge 时机，skill 时机必填");
+            }
+
+            if ((b.Phase is not null) != (b.Trigger == BarkTrigger.Phase))
+            {
+                err($"{where}：phase 时机必填 phase，其他时机不能填");
+            }
+
+            if (b.Trigger == BarkTrigger.Phase && b.Encounter is null)
+            {
+                err($"{where}：阶段句须指定 encounter");
+            }
+
+            if (b.Unit is not null && b.Unit == b.Speaker)
+            {
+                err($"{where}：unit 与说话人相同，省略即可");
+            }
+
+            if (encounters is null || templates is null || skills is null)
+            {
+                continue;
+            }
+
+            // 说话人的战斗模板：我方是人物登记的模板，敌方是遭遇里该单位的模板。
+            CombatantTemplate? template = null;
+            if (b.Unit is null)
+            {
+                if (!allyTemplate.TryGetValue(b.Speaker, out var t))
+                {
+                    err($"{where}：{b.Speaker} 没有战斗模板，不能作我方单位；敌方说话人须给出 unit");
+                }
+                else
+                {
+                    template = templates.GetValueOrDefault(t);
+                }
+            }
+
+            if (b.Encounter is not null)
+            {
+                if (!encounters.TryGetValue(b.Encounter, out var enc))
+                {
+                    err($"{where}：遭遇 {b.Encounter} 不存在");
+                    continue;
+                }
+
+                if (b.Phase is not null && enc.Phases.All(p => p.Id != b.Phase))
+                {
+                    err($"{where}：遭遇 {b.Encounter} 没有阶段 {b.Phase}");
+                }
+
+                if (b.Unit is not null)
+                {
+                    var slot = enc.Enemies.Concat(enc.Phases.SelectMany(p => p.Spawn)).FirstOrDefault(s => (s.UnitId ?? s.Template) == b.Unit);
+                    if (slot is null)
+                    {
+                        err($"{where}：单位 {b.Unit} 不在遭遇 {b.Encounter} 里");
+                    }
+                    else
+                    {
+                        template = templates.GetValueOrDefault(slot.Template);
+                    }
+                }
+            }
+            else if (b.Unit is not null)
+            {
+                err($"{where}：敌方单位的喊声须指定 encounter");
+            }
+
+            if (b.Skill is not null)
+            {
+                if (!skills.Contains(b.Skill))
+                {
+                    err($"{where}：招式 {b.Skill} 不存在");
+                }
+                else if (template is not null && !heroes.Contains(b.Speaker) && !template.Loadout.Skills.Contains(b.Skill, StringComparer.Ordinal))
+                {
+                    // 主角的招式随成长装配，不按模板查。
+                    err($"{where}：招式 {b.Skill} 不在 {template.Id} 的招式表里，喊声永远说不出来");
+                }
+            }
+        }
     }
 
     /// <summary>从 <paramref name="start"/> 起，越过非台词节点能直接走到的台词节点。</summary>

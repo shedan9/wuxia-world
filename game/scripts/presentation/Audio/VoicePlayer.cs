@@ -25,6 +25,7 @@ public enum VoiceState
 /// 台词配音播放（开发计划 M2-09，架构文档 10.5）：按 <c>line_id</c> 查 <c>res://assets/audio/voice/voice_manifest.json</c>
 /// （由 tools/VoiceBuilder/install.py 写出），核对生成时的文字哈希与当前台词一致才播放，否则降级为只显示字幕。
 /// 挂在 <c>AppHost</c> 下，走独立的 Voice 总线；同一时刻只播一句，换句、跳过或关闭对话时停止。
+/// 战斗喊声（M3-06）走另一路播放器 <see cref="PlayBark"/>，同样按清单与文字哈希核对；新一句打断旧的，谁可以打断谁由战斗页按优先级决定。
 /// </summary>
 public partial class VoicePlayer : Node
 {
@@ -32,6 +33,7 @@ public partial class VoicePlayer : Node
     private const string Dir = "res://assets/audio/voice/";
 
     private readonly AudioStreamPlayer _player = new();
+    private readonly AudioStreamPlayer _bark = new();
     private Dictionary<string, Entry> _lines = new(StringComparer.Ordinal);
     private string? _current;
 
@@ -50,6 +52,8 @@ public partial class VoicePlayer : Node
 
         _player.Bus = Bus;
         AddChild(_player);
+        _bark.Bus = Bus;
+        AddChild(_bark);
         LoadManifest();
     }
 
@@ -81,6 +85,44 @@ public partial class VoicePlayer : Node
     public VoiceState Play(string lineId, string text)
     {
         Stop();
+        var state = Resolve(lineId, text, out var stream);
+        if (stream is not null)
+        {
+            _player.Stream = stream;
+            _player.Play();
+            _current = lineId;
+        }
+
+        return state;
+    }
+
+    /// <summary>
+    /// 播一句战斗喊声，打断正在播的喊声（不碰对白那一路）。<paramref name="seconds"/> 为音频时长，不能播放时为 0。
+    /// </summary>
+    public VoiceState PlayBark(string lineId, string text, out double seconds)
+    {
+        StopBark();
+        var state = Resolve(lineId, text, out var stream);
+        seconds = stream?.GetLength() ?? 0;
+        if (stream is not null)
+        {
+            _bark.Stream = stream;
+            _bark.Play();
+        }
+
+        return state;
+    }
+
+    public void StopBark()
+    {
+        _bark.Stop();
+        _bark.Stream = null;
+    }
+
+    /// <summary>按清单找一句的音频：清单没有、文字已改（哈希不符）或文件读不出时给出原因，<paramref name="stream"/> 为 null。</summary>
+    private VoiceState Resolve(string lineId, string text, out AudioStream? stream)
+    {
+        stream = null;
         if (!_lines.TryGetValue(lineId, out var entry))
         {
             return VoiceState.Missing;
@@ -94,15 +136,13 @@ public partial class VoicePlayer : Node
         }
 
         var path = Dir + entry.File;
-        if (!ResourceLoader.Exists(path) || GD.Load<AudioStream>(path) is not { } stream)
+        if (!ResourceLoader.Exists(path) || GD.Load<AudioStream>(path) is not { } loaded)
         {
             GD.PushWarning($"配音文件读不出：{path}");
             return VoiceState.Broken;
         }
 
-        _player.Stream = stream;
-        _player.Play();
-        _current = lineId;
+        stream = loaded;
         return VoiceState.Playing;
     }
 
@@ -119,6 +159,7 @@ public partial class VoicePlayer : Node
     public override void _ExitTree()
     {
         Stop();
+        StopBark();
         _player.Stream = null;
     }
 
@@ -128,7 +169,8 @@ public partial class VoicePlayer : Node
         _current = null;
     }
 
-    public bool Playing => _player.Playing;
+    /// <summary>对白或喊声正在出声（配乐与环境声据此压低）。</summary>
+    public bool Playing => _player.Playing || _bark.Playing;
 
     private sealed record Entry(string File, string TextSha256);
 }

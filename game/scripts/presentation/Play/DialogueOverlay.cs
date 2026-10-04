@@ -36,6 +36,9 @@ public partial class DialogueOverlay : Control
     private Tween? _typing;
     private double _stageTimer = -1;
     private double _walkKeyDelay = 0.3;
+
+    /// <summary>自动推进的倒计时（秒）；负数为不计时。每句台词显示时重置，换句、选择与结束都会清掉，旧句的计时不会推进新句。</summary>
+    private double _autoTimer = -1;
     private bool _done;
 
     private Control _ui = null!;
@@ -138,6 +141,7 @@ public partial class DialogueOverlay : Control
             return;
         }
 
+        TickAutoAdvance(delta);
         if (_stageTimer < 0)
         {
             return;
@@ -219,9 +223,40 @@ public partial class DialogueOverlay : Control
         Advance();
     }
 
+    /// <summary>
+    /// 自动推进（设置“文字”页）：整句显示完、配音说完（重播时等重播完）、界面未隐藏、没开记录时才倒计时；
+    /// 有配音的说完后停 0.6 秒，无配音的按每秒 6 字留读完的时间（至少 1.5 秒）；标题卡与带字特写同样按字数停留。选项不自动。
+    /// </summary>
+    private void TickAutoAdvance(double delta)
+    {
+        if (!GameSettings.AutoAdvance || _autoTimer < 0 || _log is not null || !_ui.Visible
+            || (_typing is not null && _typing.IsRunning()) || Runner.AwaitingChoice || Runner.Ended)
+        {
+            return;
+        }
+
+        if (AppHost.Instance.Voice.Playing)
+        {
+            _autoTimer = 0.6;
+            return;
+        }
+
+        _autoTimer -= delta;
+        if (_autoTimer < 0)
+        {
+            if (AppHost.DevInfo)
+            {
+                GD.Print($"[dialogue] 自动推进：{Runner.Current?.LineId ?? Runner.Current?.CaptionId}");
+            }
+
+            Advance();
+        }
+    }
+
     private void Advance()
     {
         _stageTimer = -1;
+        _autoTimer = -1;
         AppHost.Instance.Voice.Stop();
         Runner.Continue();
         Show(first: false);
@@ -254,6 +289,7 @@ public partial class DialogueOverlay : Control
 
         _play.History.Add(("选择", view.Option.Text));
         _choices.Visible = false;
+        _autoTimer = -1;
         AppHost.Instance.Voice.Stop();
         Runner.Choose(view.Index);
         Show(first: false);
@@ -312,6 +348,7 @@ public partial class DialogueOverlay : Control
         _text.Text = text;
         _text.AddThemeColorOverride("default_color", node.Inner ? UiPalette.TextOnDarkMuted : UiPalette.TextOnDark);
         var voice = node.Inner ? "心里话，不配音" : VoiceNote(node);
+        _autoTimer = AppHost.Instance.Voice.Playing ? 0.6 : Math.Max(1.5, text.Length / 6.0);
         _lineId.Text = $"{node.LineId}　·　未锁稿　·　{voice}";
         _next.Visible = false;
         UpdatePortrait(speaker, node.Inner);
@@ -400,6 +437,9 @@ public partial class DialogueOverlay : Control
             }
 
             _play.History.Add(("画面", caption));
+
+            // 自动推进时，标题卡与带字特写也按字数停留后继续（至少 2.5 秒）。
+            _autoTimer = Math.Max(2.5, caption.Length / 6.0);
             return;
         }
 

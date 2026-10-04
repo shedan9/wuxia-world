@@ -36,6 +36,9 @@ public static class GameSettings
     /// <summary>正文字号（20–32，默认 24）：阅读用的字按它与 24 之比缩放（<see cref="FontScale"/>）。</summary>
     public static int TextSize { get; set; } = FontScale.BaseBody;
 
+    /// <summary>对话自动推进：一句配音说完（无配音的按字数留出读完的时间）后自动进入下一句；选项与演出不受影响。</summary>
+    public static bool AutoAdvance { get; set; }
+
     public const int TextSizeMin = 20;
     public const int TextSizeMax = 32;
 
@@ -73,6 +76,7 @@ public static class GameSettings
             Fullscreen = (bool)cfg.GetValue("display", "fullscreen", Fullscreen);
             TextSpeed = (TextSpeed)(int)cfg.GetValue("text", "speed", (int)TextSpeed);
             TextSize = Math.Clamp((int)cfg.GetValue("text", "size", TextSize), TextSizeMin, TextSizeMax);
+            AutoAdvance = (bool)cfg.GetValue("text", "auto_advance", AutoAdvance);
             ReduceMotion = (bool)cfg.GetValue("assist", "reduce_motion", ReduceMotion);
             HitShake = (bool)cfg.GetValue("assist", "hit_shake", HitShake);
             BattleSpeed = (int)cfg.GetValue("assist", "battle_speed", BattleSpeed) >= 2 ? 2 : 1;
@@ -104,6 +108,7 @@ public static class GameSettings
         cfg.SetValue("display", "fullscreen", Fullscreen);
         cfg.SetValue("text", "speed", (int)TextSpeed);
         cfg.SetValue("text", "size", TextSize);
+        cfg.SetValue("text", "auto_advance", AutoAdvance);
         cfg.SetValue("assist", "reduce_motion", ReduceMotion);
         cfg.SetValue("assist", "hit_shake", HitShake);
         cfg.SetValue("assist", "battle_speed", BattleSpeed);

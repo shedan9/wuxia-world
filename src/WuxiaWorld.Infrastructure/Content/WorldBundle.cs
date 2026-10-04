@@ -14,6 +14,9 @@ public sealed record DialogueChapter
     public string Status { get; init; } = "";
 
     public IReadOnlyList<DialogueDefinition> Dialogues { get; init; } = [];
+
+    /// <summary>该章的战斗喊声（通常单独放在 <c>chapterXX_battle.json</c>）。</summary>
+    public IReadOnlyList<BattleBarkDefinition> Barks { get; init; } = [];
 }
 
 /// <summary>
@@ -48,6 +51,9 @@ public sealed record WorldBundle
     public IReadOnlyDictionary<string, string> Text { get; init; } = new Dictionary<string, string>();
 
     public IEnumerable<DialogueDefinition> Dialogues => Chapters.SelectMany(c => c.Dialogues);
+
+    /// <summary>全部战斗喊声，按章节文件次序（同一时机的候选按此次序优先）。</summary>
+    public IEnumerable<BattleBarkDefinition> Barks => Chapters.SelectMany(c => c.Barks);
 
     public WorldContent ToContent() =>
         new(Maps, Routes, Events, Quests, Dialogues, Items, Characters, NewGame ?? throw new InvalidDataException("缺少新游戏设置 world/new_game.json"),

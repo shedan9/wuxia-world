@@ -299,6 +299,7 @@ public sealed partial class BattleScreen : Control
         _log.Clear();
         AddLog(logLine);
         Enqueue(_session.StartEvents);
+        StartBarks();
         PerfProbe.Activity = setup.EncounterId;
     }
 

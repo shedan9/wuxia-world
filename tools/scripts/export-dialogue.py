@@ -273,6 +273,40 @@ def render_dialogue(dlg: dict, events: dict[str, dict], interactables: dict[str,
     return head + [""] + out
 
 
+BARK_TRIGGERS = {
+    "battle_start": "开战",
+    "skill": "出招",
+    "charge": "蓄力预兆",
+    "phase": "阶段",
+    "low_hp": "重伤",
+    "downed": "倒下",
+    "victory": "胜利",
+}
+
+
+def render_barks(data: dict, barks: list[dict], namer: "Namer", path: str) -> list[str]:
+    """战斗喊声一览：按时机分组，写说话人、字幕、限定的遭遇 / 招式 / 阶段与优先级。"""
+    md = [
+        "## 战斗喊声",
+        "",
+        f"> 来自 `{path}`。状态：{data.get('status', '')}",
+        "",
+        "战斗中按事件挑句：同一时机只说一句；同一人的回合里后一句须更要紧；倍速只说优先级 3。“限定”一栏为空表示任何战斗都可能说。",
+        "",
+    ]
+    for trigger, label in BARK_TRIGGERS.items():
+        group = [b for b in barks if b["trigger"] == trigger]
+        if not group:
+            continue
+        md += [f"### {label}（{len(group)} 句）", "", "| 说话人 | 字幕 | 限定 | 优先级 | line_id |", "|---|---|---|---|---|"]
+        for b in group:
+            scope = "、".join(namer.name(b[k]) for k in ("encounter", "skill", "phase") if b.get(k))
+            again = f"，隔 {b['cooldown_rounds']} 轮可再说" if b.get("cooldown_rounds") else ""
+            md.append(f"| {namer.name(b['speaker'])} | {b['text']} | {scope} | {b.get('priority', 1)}{again} | `{b['line_id']}` |")
+        md.append("")
+    return md
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("chapter", nargs="?", default="content/dialogue/arc01/chapter01.json")
@@ -338,10 +372,16 @@ def main() -> int:
         md.append(f"第 {k} 段 · {'未锁稿' if d['status'] == 'draft' else '已锁稿'}")
         md.extend(render_dialogue(d, events, interactables, namer))
 
+    # 同章的战斗喊声（chapterXX_battle.json）附在最后。
+    battle = src.removesuffix(".json") + "_battle.json"
+    barks = load_json(battle).get("barks", []) if os.path.exists(battle) else []
+    if barks:
+        md.extend(render_barks(load_json(battle), barks, namer, os.path.relpath(battle, ROOT).replace(os.sep, "/")))
+
     os.makedirs(os.path.dirname(output), exist_ok=True)
     with open(output, "w", encoding="utf-8", newline="\n") as f:
         f.write("\n".join(md).rstrip() + "\n")
-    print(f"已写出 {os.path.relpath(output, ROOT)}：{len(dialogues)} 段 {lines} 句")
+    print(f"已写出 {os.path.relpath(output, ROOT)}：{len(dialogues)} 段 {lines} 句" + (f"，战斗喊声 {len(barks)} 句" if barks else ""))
     return 0
 
 

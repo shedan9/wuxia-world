@@ -57,6 +57,12 @@ public sealed partial class BattleScreen
             GD.Print($"[autoplay] 战斗 {_pending.InstanceId}：按战败暂退");
             CallDeferred(MethodName.GiveUpForAutoplay);
         }
+        else if (DevCapture.Autoplay > 0 && DevCapture.BattleLive)
+        {
+            // 实时演出：自动战斗按 1 倍速打完，结算页出现后由 AutoplayResult 确认。
+            _speed = 1;
+            _auto = true;
+        }
         else if (DevCapture.Autoplay > 0)
         {
             FastForward(stopWhen: s => s.Ended);

@@ -38,10 +38,20 @@ def load(path: str):
         return json.load(f)
 
 
-def chapter_lines(chapter: str) -> list[dict]:
-    """需要配音的台词：心里话（inner）只显示字幕、不配音。"""
-    data = load(chapter)
-    return [n for d in data["dialogues"] for n in d["nodes"] if n["type"] == "line" and not n.get("inner")]
+def chapter_lines(chapters: list[str]) -> list[dict]:
+    """需要配音的台词：对白里的台词（心里话 inner 只显示字幕、不配音）与战斗喊声（barks）。"""
+    lines = []
+    for chapter in chapters:
+        data = load(chapter)
+        lines += [n for d in data.get("dialogues", []) for n in d["nodes"] if n["type"] == "line" and not n.get("inner")]
+        lines += data.get("barks", [])
+    return lines
+
+
+def default_chapters() -> list[str]:
+    """第一篇全部对白文件（章节对白与战斗喊声），按文件名排序。"""
+    folder = os.path.join(ROOT, "content", "dialogue", "arc01")
+    return [f"content/dialogue/arc01/{f}" for f in sorted(os.listdir(folder)) if f.endswith(".json")]
 
 
 def _write_manifest(out_dir: str, profile: str, manifest: list[dict]) -> None:
@@ -52,7 +62,8 @@ def _write_manifest(out_dir: str, profile: str, manifest: list[dict]) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--profile", default="voice_source/profiles/minimax_trial.json")
-    ap.add_argument("--chapter", default="content/dialogue/arc01/chapter01.json")
+    ap.add_argument("--chapter", action="append", help="对白 JSON（章节对白或战斗喊声）；可多次给出，缺省为第一篇全部对白文件。"
+                    "清单只保留本次涉及的句子，所以通常不要缩小范围，用 --lines 指定要新合成的句子即可")
     ap.add_argument("--per-speaker", type=int, default=2)
     ap.add_argument("--lines", nargs="*", help="指定 line_id；给出时忽略 --per-speaker")
     ap.add_argument("--dry-run", action="store_true")
@@ -64,7 +75,7 @@ def main() -> int:
     variants: dict[str, list[str]] = {}
     for key in voices:
         variants.setdefault(key.split("@", 1)[0], []).append(key)
-    lines = chapter_lines(args.chapter)
+    lines = chapter_lines(args.chapter or default_chapters())
 
     if args.lines:
         wanted = set(args.lines)

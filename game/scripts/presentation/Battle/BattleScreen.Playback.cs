@@ -161,6 +161,7 @@ public sealed partial class BattleScreen
             Sound(e);
         }
 
+        ObserveBark(e);
         switch (e)
         {
             case RoundStarted r:
