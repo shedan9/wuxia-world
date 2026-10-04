@@ -27,19 +27,13 @@ public sealed partial class BattleScreen
 
     private Label _actorName = null!;
     private Label _actorState = null!;
-    private Control _actorGlyph = null!;
-    private HBoxContainer _actorGlyphHost = null!;
     private ProgressBar _actorHp = null!;
     private ProgressBar _actorInner = null!;
-    private ProgressBar _actorMomentum = null!;
     private Label _actorHpText = null!;
     private Label _actorInnerText = null!;
-    private Label _actorMomentumText = null!;
     private HBoxContainer _slots = null!;
-    private Label _info = null!;
     private readonly Dictionary<string, Button> _basicButtons = [];
     private PanelContainer _dock = null!;
-    private Control _momentumRow = null!;
 
     private List<string> _roundOrder = [];
     private string? _current;
@@ -47,7 +41,6 @@ public sealed partial class BattleScreen
     // 局部刷新（M3-07）：行动顺序、招式卡按内容键比较，键不变就不重建；日志复用标签只改文字。
     private string? _orderKey;
     private string? _dockKey;
-    private string? _glyphActor;
 
     // ── 场上单位 ─────────────────────────────────────────
 
@@ -395,42 +388,49 @@ public sealed partial class BattleScreen
 
     // ── 指令区 ───────────────────────────────────────────
 
+    /// <summary>
+    /// 指令区（2026-10-05 用户要求精简）：画面底部居中的一条窄黛本，只留当前角色名与气血 / 内力两条细条、招式格、五个基本指令。
+    /// 势在顶栏已有（我方势），不再重复；招式说明不常驻，悬停招式格或换招时由其上方的说明小签给出；不放键帽提示行。
+    /// </summary>
     private Control BuildDock()
     {
         _dock = new PanelContainer
         {
-            ThemeTypeVariation = UiTheme.DarkPanel,
-            AnchorLeft = 0, AnchorRight = 1, AnchorTop = 1, AnchorBottom = 1,
-            OffsetLeft = 40, OffsetRight = -40, OffsetTop = -262, OffsetBottom = -24,
+            AnchorLeft = 0.5f, AnchorRight = 0.5f, AnchorTop = 1, AnchorBottom = 1,
+            OffsetBottom = -18,
 
-            // 字号放大后内容变高时向上长，底边不越出画面。
+            // 宽度随内容（招式格数、字号）向两侧长，高度向上长，底边不越出画面。
+            GrowHorizontal = GrowDirection.Both,
             GrowVertical = GrowDirection.Begin,
         };
 
-        _actorName = Ui.Text("", UiTheme.DarkTitleLabel, 32);
-        _actorState = Ui.Text("", UiTheme.GiltLabel, 17);
+        // 与黛本同一套黛底、泥金笔框与卷云角，角饰与边距缩小，配窄条。
+        _dock.AddThemeStyleboxOverride("panel", new OrnateBox
+        {
+            FillA = UiPalette.PanelDark with { A = 0.95f }, FillB = UiPalette.Abyss with { A = 0.97f },
+            Ragged = 1.6f, Seed = 29, Grain = Colors.White with { A = 0.045f },
+            Border = UiPalette.Gilt with { A = 0.7f }, BorderWidth = 1.4f, Brush = true,
+            Inner = UiPalette.Gilt with { A = 0.2f }, InnerInset = 6,
+            Wash = UiPalette.Accent with { A = 0.16f },
+            Corners = CornerStyle.Cloud, CornerSize = 30, CornerWidth = 1.8f, CornerColor = UiPalette.Gilt,
+            CornerOutset = -2,
+            Shadow = UiPalette.Abyss with { A = 0.5f }, ShadowSize = 18, ShadowOffset = new Vector2(0, 8),
+        }.Margins(26, 12));
+
+        _actorName = Ui.Text("", UiTheme.DarkTitleLabel, 24);
+        _actorState = Ui.Text("", UiTheme.GiltLabel, 14);
         _actorState.SizeFlagsVertical = SizeFlags.ShrinkEnd;
-        (_actorHp, _actorHpText) = Meter(UiTheme.HealthBar, out var hpRow, "气血");
-        (_actorInner, _actorInnerText) = Meter(UiTheme.InnerBar, out var innerRow, "内力");
-        (_actorMomentum, _actorMomentumText) = Meter(UiTheme.ExpBar, out var momentumRow, "势");
-        momentumRow.MouseFilter = MouseFilterEnum.Pass;
-        momentumRow.MouseDefaultCursorShape = CursorShape.Help;
-        _momentumRow = momentumRow;
-        var bars = Ui.Column(8, Ui.Row(UiPalette.SpaceS, _actorName, _actorState), hpRow, innerRow, momentumRow);
-        _actorGlyphHost = Ui.Row(0);
-        _actorGlyph = Ui.Glyph("主", UiPalette.Accent, 96);
-        _actorGlyphHost.AddChild(_actorGlyph);
-        _actorGlyphHost.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-        var actor = Ui.Row(UiPalette.SpaceL, _actorGlyphHost, bars);
+        (_actorHp, _actorHpText) = Meter(UiTheme.HealthBar, out var hpRow, "血");
+        (_actorInner, _actorInnerText) = Meter(UiTheme.InnerBar, out var innerRow, "内");
+        var actor = Ui.Column(6, Ui.Row(UiPalette.SpaceS, _actorName, _actorState), hpRow, innerRow);
+        actor.SizeFlagsVertical = SizeFlags.ShrinkCenter;
 
-        // 说明行随招式栏占满中间剩余的宽度自动折行（不写死宽度，字号放大时不把指令区撑出画面）。
-        _info = Ui.Text("", UiTheme.DarkMutedLabel, 17, wrap: true);
-        _slots = Ui.Row(UiPalette.SpaceM);
-        var skills = Ui.Column(UiPalette.SpaceS, _slots, _info);
+        _slots = Ui.Row(UiPalette.SpaceS);
 
-        var basics = new GridContainer { Columns = 2 };
-        basics.AddThemeConstantOverride("h_separation", UiPalette.SpaceS);
-        basics.AddThemeConstantOverride("v_separation", UiPalette.SpaceS);
+        var basics = new GridContainer { Columns = 3 };
+        basics.AddThemeConstantOverride("h_separation", 6);
+        basics.AddThemeConstantOverride("v_separation", 6);
+        basics.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         foreach (var (key, label, action) in new (string, string, Action)[]
                  {
                      ("battle_defend", "防御", () => Submit(new Defend(_session!.AwaitingPlayer!.Id))),
@@ -447,25 +447,24 @@ public sealed partial class BattleScreen
                     action();
                 }
             });
-            button.CustomMinimumSize = new Vector2(132, 40);
-            button.AddThemeFontSizeOverride("font_size", FontScale.Of(19));
-            var cap = Ui.KeyHint(KeyBindings.Label(key), "");
-            cap.MouseFilter = MouseFilterEnum.Ignore;
-            basics.AddChild(Ui.Row(4, cap, button));
+            button.CustomMinimumSize = new Vector2(86, 34);
+            button.AddThemeFontSizeOverride("font_size", FontScale.Of(16));
+            basics.AddChild(button);
             _basicButtons[key] = button;
         }
 
-        var hints = Ui.KeyHints(true, ("Tab", "换目标"), ("Enter", "施展"));
-        var right = Ui.Column(UiPalette.SpaceS, basics, hints);
-        _dock.AddChild(Ui.Row(UiPalette.SpaceXl, actor, VerticalRule(), Ui.Expand(skills), right));
+        _dock.AddChild(Ui.Row(UiPalette.SpaceL, actor, VerticalRule(), _slots, VerticalRule(), basics));
+        BuildInfoCard();
         return _dock;
     }
 
     private static (ProgressBar, Label) Meter(string variation, out Control row, string label)
     {
-        var bar = Ui.Bar(variation, 0, 1, 220);
-        var text = Ui.Text("", UiTheme.DarkMutedLabel, 16);
-        row = Ui.Row(UiPalette.SpaceS, Ui.MinSize(Ui.Text(label, UiTheme.DarkLabel, 18), 44), bar, text);
+        var bar = Ui.Bar(variation, 0, 1, 132);
+        bar.CustomMinimumSize = new Vector2(132, 8);
+        bar.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+        var text = Ui.Text("", UiTheme.DarkMutedLabel, 13);
+        row = Ui.Row(6, Ui.Text(label, UiTheme.DarkLabel, 14), bar, Ui.MinSize(text, 70));
         return (bar, text);
     }
 
@@ -487,40 +486,31 @@ public sealed partial class BattleScreen
             _actorState.Text = _session?.Ended == true ? "战斗结束" : pending is not null ? $"{pending} 行动中" : "";
             Ui.ClearChildren(_slots);
             _dockKey = null;
-            _info.Text = "";
+            ClearInfo();
             HideTargeting();
             return;
         }
 
+        var session = _session!;
         var name = DisplayName(actor.Id);
         _actorName.Text = name;
-        _actorState.Text = ready ? "请下令" : "结算中";
-        if (_glyphActor != actor.Id)
-        {
-            _glyphActor = actor.Id;
-            _actorGlyph.QueueFree();
-            _actorGlyph = Ui.Glyph(name[..1], actor.Id == "char.hero" ? UiPalette.Accent : UiPalette.Trim, 96);
-            _actorGlyphHost.AddChild(_actorGlyph);
-        }
+        _actorState.Text = ready ? "" : "结算中";
         SetMeter(_actorHp, _actorHpText, actor.Hp, actor.Stats.MaxHp);
         SetMeter(_actorInner, _actorInnerText, actor.Inner, actor.Stats.MaxInner);
-        SetMeter(_actorMomentum, _actorMomentumText, _session!.State.AllyMomentum, CombatConstants.MaxMomentum);
-        _momentumRow.TooltipText = MomentumTip(Side.Ally);
-        _actorMomentum.TooltipText = _momentumRow.TooltipText;
 
         foreach (var (key, button) in _basicButtons)
         {
             var reason = key switch
             {
-                "battle_retreat" => _engine.Validate(_session.State, new Retreat(actor.Id)),
-                "battle_item" => _session.State.Items.Count == 0 ? "没有可用物品" : null,
+                "battle_retreat" => _engine.Validate(session.State, new Retreat(actor.Id)),
+                "battle_item" => session.State.Items.Count == 0 ? "没有可用物品" : null,
                 _ => null,
             };
             button.Disabled = reason is not null;
             button.TooltipText = reason ?? "";
             if (key == "battle_item")
             {
-                button.Text = $"物品 {_session.State.Items.Values.Sum()}";
+                button.Text = $"物品 {session.State.Items.Values.Sum()}";
             }
         }
 
@@ -573,32 +563,37 @@ public sealed partial class BattleScreen
         var button = new Button
         {
             ThemeTypeVariation = UiTheme.CardButton, ToggleMode = true, ButtonGroup = _slotGroup,
-            CustomMinimumSize = new Vector2(116, 116), Disabled = reason is not null,
+            CustomMinimumSize = new Vector2(86, 80), Disabled = reason is not null,
             ButtonPressed = _mode == Mode.Skill && _skill == skillId,
-            TooltipText = reason is null ? name : $"{name}：{reason}",
         };
         button.SetMeta("skill", skillId);
+        // 说明不用系统提示框：悬停时在格子上方弹出说明小签（与换招时同一张）。
+        button.MouseEntered += () => HoverSlot(button, skillId);
+        button.MouseExited += () => HoverSlot(null, null);
 
         var body = Ui.Column(2);
         body.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         body.Alignment = BoxContainer.AlignmentMode.Center;
         // 卡面用短名（“破刀式”），全名写在提示与下方说明行。
         var shortName = _bundle.ShortName(skillId);
-        var glyph = Ui.Glyph(_bundle.Glyph(skillId), skillId == CoreIds.BasicAttack ? UiPalette.TextMuted : UiPalette.Trim, 48);
+        var glyph = Ui.Glyph(_bundle.Glyph(skillId), skillId == CoreIds.BasicAttack ? UiPalette.TextMuted : UiPalette.Trim, 34);
         glyph.SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
-        var caption = Ui.Text(shortName, UiTheme.DarkLabel, 17);
+        var caption = Ui.Text(shortName, UiTheme.DarkLabel, 14);
         caption.HorizontalAlignment = HorizontalAlignment.Center;
         // 卡面只写消耗，冷却写在下方说明行里，免得三项挤出卡面。
         var costText = def.InnerCost == 0 && def.MomentumCost == 0 ? "无消耗"
-            : string.Join(" · ", new[] { def.InnerCost > 0 ? $"内 {def.InnerCost}" : null, def.MomentumCost > 0 ? $"势 {def.MomentumCost}" : null }.OfType<string>());
-        var cost = Ui.Text(costText, UiTheme.DarkMutedLabel, 14);
+            : string.Join(" ", new[] { def.InnerCost > 0 ? $"内{def.InnerCost}" : null, def.MomentumCost > 0 ? $"势{def.MomentumCost}" : null }.OfType<string>());
+        var cost = Ui.Text(costText, UiTheme.DarkMutedLabel, 12);
         cost.HorizontalAlignment = HorizontalAlignment.Center;
         body.AddChild(glyph);
         body.AddChild(caption);
         body.AddChild(cost);
         button.AddChild(Ui.IgnoreMouse(body));
-        var cap = Ui.KeyHint(key, "");
-        Ui.Place(cap, 0, 0, 6, 6, 40, 34);
+        // 数字键是招式格本身的标识（UI 规范保留），缩成左上角一个小字。
+        var cap = Ui.Text(key, UiTheme.GiltLabel, 13);
+        cap.AddThemeColorOverride("font_outline_color", UiPalette.Abyss);
+        cap.AddThemeConstantOverride("outline_size", 4);
+        Ui.Place(cap, 0, 0, 5, 2, 30, 20);
         button.AddChild(Ui.IgnoreMouse(cap));
 
         if (reason is not null)
@@ -606,14 +601,14 @@ public sealed partial class BattleScreen
             var veil = new ColorRect { Color = UiPalette.Abyss with { A = 0.72f }, MouseFilter = MouseFilterEnum.Ignore };
             veil.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
             button.AddChild(veil);
-            var note = Ui.Text(cooldown > 0 ? $"冷却 {cooldown}" : reason.TrimEnd('。'), UiTheme.GiltLabel, cooldown > 0 ? 22 : 16);
+            var note = Ui.Text(cooldown > 0 ? $"冷却 {cooldown}" : reason.TrimEnd('。'), UiTheme.GiltLabel, cooldown > 0 ? 18 : 13);
             note.HorizontalAlignment = HorizontalAlignment.Center;
             note.VerticalAlignment = VerticalAlignment.Center;
             note.AutowrapMode = TextServer.AutowrapMode.Arbitrary;
             note.AddThemeColorOverride("font_outline_color", UiPalette.Abyss);
             note.AddThemeConstantOverride("outline_size", 6);
             body.Modulate = new Color(1, 1, 1, 0.35f);
-            button.AddChild(Ui.Place(note, 0, 0, 4, 0, 112, 116));
+            button.AddChild(Ui.Place(note, 0, 0, 3, 0, 83, 80));
         }
         else
         {

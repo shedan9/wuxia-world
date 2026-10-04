@@ -91,6 +91,22 @@ public partial class BattleStandee : Control
         ? null
         : (_pose is { } pose ? FigureArt.Find($"{ArtId}.{pose}") : null) ?? FigureArt.Find($"{ArtId}.guard") ?? FigureArt.Find(ArtId);
 
+    /// <summary>当前所画形象贴图在节点局部坐标中的外框；没有贴图（剪影、机关框）时为 null。</summary>
+    public Rect2? ArtRect
+    {
+        get
+        {
+            var h = Size.Y;
+            var facing = FacingLeft ? -1 : 1;
+            if (Mechanism)
+            {
+                return ArtId is not null && FigureArt.Find(ArtId) is { } prop ? prop.Bounds(new Vector2(Size.X / 2, h - 4), h, facing) : null;
+            }
+
+            return BodyArt?.Bounds(new Vector2(Size.X / 2, h - 6), h * 0.92f, facing);
+        }
+    }
+
     /// <summary>换一个姿势；null 回到待机。</summary>
     public void SetPose(string? pose)
     {

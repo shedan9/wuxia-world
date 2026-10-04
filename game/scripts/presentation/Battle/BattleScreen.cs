@@ -119,7 +119,7 @@ public sealed partial class BattleScreen : Control
         _toast.AddThemeColorOverride("font_outline_color", UiPalette.Abyss);
         _toast.AddThemeConstantOverride("outline_size", 8);
         _toast.MouseFilter = MouseFilterEnum.Ignore;
-        Ui.Place(_toast, 0.5f, 1, -600, -312, 600, -276);
+        Ui.Place(_toast, 0.5f, 1, -600, -214, 600, -178);
         _toast.Modulate = Colors.Transparent;
         AddChild(_toast);
 
@@ -201,6 +201,8 @@ public sealed partial class BattleScreen : Control
     public override void _Process(double delta)
     {
         Pump();
+        PlacePopup();
+        StepInfoCard();
         AutoplayResult();
         ReportBench();
         StepStress(delta);

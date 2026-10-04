@@ -227,24 +227,45 @@ public sealed partial class BattleScreen
         _popup.AddChild(column);
         _popup.Visible = true;
         _popup.ResetSize();
-        // 跟在人物右侧，与头顶血条齐平；右边放不下（后排敌人靠画面右缘）时翻到人物左侧。
-        var size = _popup.GetCombinedMinimumSize();
-        var frame = view.Frame;
-        var x = frame.End.X + 12;
-        if (x + size.X > 1904)
-        {
-            x = frame.Position.X - size.X - 12;
-        }
-
-        var y = Math.Clamp(frame.Position.Y - 16, 170, 800 - size.Y);
-        _popup.Position = new Vector2(Math.Max(16, x), y);
+        PlacePopup();
         SyncEstimateTag();
     }
 
-    /// <summary>头顶预估小签只在预估没有并入悬停小窗时显示。</summary>
+    /// <summary>
+    /// 小窗跟在人物本位外框（<see cref="UnitView.HomeFrame"/>，含兵刃、衣袖伸出的部分，不随出手前冲移动）的右侧，与头顶血条齐平；
+    /// 右边放不下时翻到左侧，两边都放不下时贴着画面边、压在离人物较远的一侧。下沿不压指令区。每帧随人物重排位置（换位、复起）校正。
+    /// </summary>
+    private void PlacePopup()
+    {
+        if (!_popup.Visible || _popupUnit is null || !_views.TryGetValue(_popupUnit, out var view))
+        {
+            return;
+        }
+
+        var size = _popup.GetCombinedMinimumSize();
+        var frame = view.HomeFrame;
+        var right = _fx.Size.X - 16;
+        var x = frame.End.X + 14;
+        if (x + size.X > right)
+        {
+            x = frame.Position.X - size.X - 14;
+            if (x < 16)
+            {
+                x = frame.GetCenter().X > _fx.Size.X / 2 ? 16 : right - size.X;
+            }
+        }
+
+        var bottom = (_fx.GetGlobalTransform().AffineInverse() * _dock.GetGlobalRect().Position).Y - 12;
+        var y = Math.Clamp(frame.Position.Y - 16, 150, Math.Max(150, bottom - size.Y));
+        _popup.Position = new Vector2(x, y);
+    }
+
+    /// <summary>头顶预估小签只在预估没有并入悬停小窗时显示；小窗与小签相互重叠时（小签属于别人）也收起小签，不叠两层。</summary>
     private void SyncEstimateTag()
     {
-        _estimate.Visible = _estimateLines.Count > 0 && !(_popup.Visible && _popupUnit == _estimateFor);
+        var merged = _popup.Visible && _popupUnit == _estimateFor;
+        var overlap = _popup.Visible && _popup.GetRect().Intersects(_estimate.GetRect());
+        _estimate.Visible = _estimateLines.Count > 0 && !merged && !overlap;
     }
 
     private static Label Wrapped(string text, string variation, int size)

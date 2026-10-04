@@ -36,6 +36,9 @@ public sealed partial class BattleScreen
     private List<(string Text, string Variation, int Size)> _estimateLines = [];
     private string? _estimateFor;
 
+    /// <summary>最近一次弹出说明小签的招式（换招才弹）。</summary>
+    private string? _infoSkill;
+
     private void BuildTargeting()
     {
         _ground.AddChild(_range);
@@ -121,8 +124,13 @@ public sealed partial class BattleScreen
             child.SetPressedNoSignal(child.HasMeta("skill") && child.GetMeta("skill").AsString() == skill);
         }
 
-        var desc = _bundle.Describe(skill);
-        _info.Text = $"{_bundle.Name(skill)}　·　{CostText(def)}　·　{RuleText(def.TargetRule)}" + (desc is null ? "" : $"　·　{desc}");
+        // 换了招才弹说明小签（同一招重选、轮到下一人沿用同一招时不再弹）。
+        if (_infoSkill != skill)
+        {
+            _infoSkill = skill;
+            SetInfo(_bundle.Name(skill), $"{CostText(def)}　·　{RuleText(def.TargetRule)}", _bundle.Describe(skill), skill, sticky: false);
+        }
+
         RefreshTargeting();
     }
 
@@ -178,7 +186,8 @@ public sealed partial class BattleScreen
             child.SetPressedNoSignal(false);
         }
 
-        _info.Text = $"物品：{_bundle.Name(_item)}（余 {_session.State.Items[_item]}）　·　再按 {KeyBindings.Label("battle_item")} 换一种，Tab 换目标，Enter 使用，Esc 取消";
+        _infoSkill = null;
+        SetInfo($"物品：{_bundle.Name(_item)}（余 {_session.State.Items[_item]}）", items.Count > 1 ? "再点物品换一种" : null, _bundle.Describe(_item), null, sticky: true);
         RefreshTargeting();
     }
 
@@ -209,7 +218,8 @@ public sealed partial class BattleScreen
             child.SetPressedNoSignal(false);
         }
 
-        _info.Text = "换位：消耗本次行动，移到空位或与同伴互换　·　Tab 选位置，Enter 确认，Esc 取消";
+        _infoSkill = null;
+        SetInfo("换位", null, "消耗本次行动，移到空位或与同伴互换。", null, sticky: true);
         RefreshTargeting();
     }
 
@@ -421,6 +431,7 @@ public sealed partial class BattleScreen
         _estimate.Position = new Vector2(
             Math.Clamp(anchor.X - box.X / 2, 16, _fx.Size.X - box.X - 16),
             Math.Max(anchor.Y - box.Y - 6, 132));
+        SyncEstimateTag();
     }
 
     private void SkillLines(BattleUnit actor, BattleUnit target, List<(string, string, int)> lines)

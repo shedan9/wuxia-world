@@ -165,6 +165,22 @@ public sealed class UnitView
     /// <summary>形象画框。</summary>
     public Rect2 Frame => new(Standee.Position, Standee.Size);
 
+    /// <summary>
+    /// 站在本位（不含出手前冲、受击后退等补间位移）时人物实际所占的范围：画框并上当前姿势贴图的外框（刀、篙、甩开的衣袖会伸出画框）。
+    /// 悬停小窗按它排开，不会因为小窗恰在人物前冲时弹出而盖住人物本身。
+    /// </summary>
+    public Rect2 HomeFrame
+    {
+        get
+        {
+            var feet = FeetNow;
+            var h = Standee.Height;
+            var home = new Vector2(feet.X - h * 0.275f, feet.Y - h);
+            var frame = new Rect2(home, Standee.Size);
+            return Standee.ArtRect is { } art ? frame.Merge(new Rect2(home + art.Position, art.Size)) : frame;
+        }
+    }
+
     public void Layout(bool animate, float duration = 0.3f)
     {
         var feet = FeetNow;
