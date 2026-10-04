@@ -3,6 +3,230 @@
   "source": "voice_source/profiles/minimax_cast.json",
   "note": "试听版：台词未锁稿，音色为工作选角；锁稿后按改动增量重生成并逐句审核",
   "lines": {
+    "ch01.battle.escort.huang.start": {
+      "file": "ch01.battle.escort.huang.start.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "2799a6610a3728449ed65567f10fd4d9ea0ff1e81b170680df2e8e4c2788f81b",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.escort.linghu.start": {
+      "file": "ch01.battle.escort.linghu.start.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "4b8e41a75e7ca7ef3d2843e50a8056ad316f7b63141ee90fc4ca67c4ba1d5eae",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.escort.xiao.start": {
+      "file": "ch01.battle.escort.xiao.start.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "7f0f98a0c822b8cbe5a8e034182d193fe9ca90d477e6d28a20be901bc1e64958",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.hero.downed": {
+      "file": "ch01.battle.hero.downed.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "ed21a303e5d04ce20dc3019128d0a1b9543f7a003cdb9a3f9ece6e791dcf33a4",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.battle.hero.low_hp": {
+      "file": "ch01.battle.hero.low_hp.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "7f3fd3ed1a16e0e5ce9629a3d9574b903165f25edcad5ef11a061e9aadf65287",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.battle.hero.victory": {
+      "file": "ch01.battle.hero.victory.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "b671fc306b24f00d9de424224389b84b8bef210c7093d091a635657115c13f84",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.battle.huang.downed": {
+      "file": "ch01.battle.huang.downed.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "65b1e38e432d1a31244c703a9a69b87dfb04d129fcdd88ef52aa8a8c05861888",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.huang.low_hp": {
+      "file": "ch01.battle.huang.low_hp.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "c6a70c5a949d9e797daf903c5e6b98fef41f93fb3805d2bf1a6af12eb9f259ec",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.huang.skill.dagou_lure": {
+      "file": "ch01.battle.huang.skill.dagou_lure.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "dc7d2d588c42167838b6a87986fe8b82b1b15f8cfcf0af805a85c50117feb3e8",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.huang.skill.dagou_seal": {
+      "file": "ch01.battle.huang.skill.dagou_seal.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "9a0ec402d0024342e77644d35f79696aa0b3b9436fd5179dd131cce0db101c66",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.huang.skill.dagou_trip": {
+      "file": "ch01.battle.huang.skill.dagou_trip.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "699b54358bdf95c99a346dbdf620e38ee92d7572fbab319bc0ea9a4cc2732a71",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.huang.victory": {
+      "file": "ch01.battle.huang.victory.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "1c7ed32228065e0536a428bdecefea4f305017d3ae9ec4b76daf98dff8af872b",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.linghu.downed": {
+      "file": "ch01.battle.linghu.downed.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "cb337da7f759d6ff7bc9e5f98c9c343a2f2944e16325c92217a64fc05285b409",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.linghu.low_hp": {
+      "file": "ch01.battle.linghu.low_hp.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "ff9436187c180620182c22c442480f4a03f38c1daf50e29ba7856292da3a75fd",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.linghu.skill.dugu_blade": {
+      "file": "ch01.battle.linghu.skill.dugu_blade.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "a0379fc28b540596a26b864166ff4ff497cf72dacfab31be487e88d87d87f43d",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.linghu.skill.dugu_formless": {
+      "file": "ch01.battle.linghu.skill.dugu_formless.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "a2f561b6333e06d0070c2fbd0855646145a8b0a1fd18f8e913af6d964a02b6c8",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.linghu.skill.dugu_rope": {
+      "file": "ch01.battle.linghu.skill.dugu_rope.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "b127f41efb96d670b8103ced6d96bb5af5572d36195e71a66a9421020ca34448",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.linghu.victory": {
+      "file": "ch01.battle.linghu.victory.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "668752310ac07476ab1dbed5db2682ced3b0881a4f753f35631463233caaf49a",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.lu.downed": {
+      "file": "ch01.battle.lu.downed.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "53f4906c9fd40e7ae4a848da5c525f14b34dec3b7d5771d3c5f3bacf24ee0b1f",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.battle.lu.low_hp": {
+      "file": "ch01.battle.lu.low_hp.mp3",
+      "speaker": "char.lu_qinghe",
+      "text_sha256": "1d97a721cea01a8e97dfe0cf965655b817480d6d122dd3251e2f98521e6a1f40",
+      "voice": "Chinese (Mandarin)_Soft_Girl",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.charge.torrent": {
+      "file": "ch01.battle.sluice.tang.charge.torrent.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "4a0b8a86dede81188e91c0c3728518d8044ee730ee7a3f13dd594daeacf47b91",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.charge.undertow": {
+      "file": "ch01.battle.sluice.tang.charge.undertow.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "d5b221b92cb13729bb86532af5056f90f2633e491a8b3a62c609c9d7a25c7731",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.downed": {
+      "file": "ch01.battle.sluice.tang.downed.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "3de3e3667eef81d94798fb20b6e058d5b3d8cc2627b298568372edc04b1a8c1d",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.low_hp": {
+      "file": "ch01.battle.sluice.tang.low_hp.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "ad147fe77814324a05b97c6bb53adbbf1f67331227d85c63e30aba9a492c825a",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.phase.gate_broken": {
+      "file": "ch01.battle.sluice.tang.phase.gate_broken.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "d56038d9296c1b8be1442e4764bef6af34864a799248f475aae119fe892adf77",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.phase.reinforcement": {
+      "file": "ch01.battle.sluice.tang.phase.reinforcement.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "e2ca15e6fae561e79057deebc08164c33ed680292cb49b4debfbff42c8ec1f70",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.sluice.tang.start": {
+      "file": "ch01.battle.sluice.tang.start.mp3",
+      "speaker": "char.tang_shouting",
+      "text_sha256": "51d92c74fcf8892fa3a098a26ba5027ee39cd17457a12a4fe783b5b7139f517b",
+      "voice": "male-qn-badao",
+      "review": "pending"
+    },
+    "ch01.battle.xiao.downed": {
+      "file": "ch01.battle.xiao.downed.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "c3e2231165e3c3977aee19542ad92b632c0f0a9677c179e54b4020627df169cc",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.xiao.low_hp": {
+      "file": "ch01.battle.xiao.low_hp.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "27b932bccdd0e2ec3b6f0fee7d20a5284305f9a8b1bea3ce2f1333ff63447fd0",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.xiao.skill.jianlong": {
+      "file": "ch01.battle.xiao.skill.jianlong.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "a223047d86ffc0f894bd1236abb45e5be640003863006697dc5909e912a8ae10",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.xiao.skill.kanglong": {
+      "file": "ch01.battle.xiao.skill.kanglong.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "3535053ca0d31db3ac37c1b2e96d884868592fb5fe6749977bcf4112b434ad03",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.xiao.victory": {
+      "file": "ch01.battle.xiao.victory.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "5ae5e95f8eb6e0c5deefbcad1270155944ceade0f7a294b893e493267adcd0a3",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
     "ch01.companion_choice.huang.001": {
       "file": "ch01.companion_choice.huang.001.mp3",
       "speaker": "char.huang_rong",
