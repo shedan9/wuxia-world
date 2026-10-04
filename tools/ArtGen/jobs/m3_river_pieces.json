@@ -1,0 +1,51 @@
+{
+  "set": "m3_river_pieces",
+  "tier": "complex",
+  "model": "sdxl",
+  "size": [
+    1024,
+    1024
+  ],
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66
+  ],
+  "note": "2026-10-04 M3-01 芦湾河滩与旧渡专属布景：芦苇丛、倒伏芦苇、水边蒲草与漂木精灵，纯色底文生图后按底色抠图（同 m0_grass_tufts）。",
+  "style": {
+    "sprite": "single isolated game asset sprite, side view, plain flat light grey background, semi-realistic, cel shading, clean lineart, soft daylight",
+    "negative": "text, watermark, people, animals, birds, sky, clouds, horizon, ground plane, soil, water surface, reflection, pot, vase, scenery, landscape, multiple objects, grid, sprite sheet, photo, 3d render, blurry, lowres, neon, oversaturated, wheat, rice"
+  },
+  "jobs": [
+    {
+      "name": "r1_reeds_tall",
+      "style": "sprite",
+      "prompt": "one dense clump of tall common reeds, long slender stalks and narrow leaves, soft pale beige feathery plumes on top, muted jade green and teal leaves, slightly swaying"
+    },
+    {
+      "name": "r2_reeds_mid",
+      "style": "sprite",
+      "prompt": "one medium clump of river reeds, upright thin stalks with long drooping narrow leaves, a few small pale plumes, muted green with yellow-green tips"
+    },
+    {
+      "name": "r3_reeds_bent",
+      "style": "sprite",
+      "prompt": "one clump of river reeds bent over and flattened by heavy rain, stalks leaning sideways and drooping low, wet dark green leaves, wide low silhouette"
+    },
+    {
+      "name": "r4_cattail",
+      "style": "sprite",
+      "prompt": "one small clump of cattail and sedge by a river, a few brown cattail heads on straight stems, long narrow leaves, muted green"
+    },
+    {
+      "name": "r5_driftwood",
+      "style": "sprite",
+      "prompt": "one weathered grey driftwood log lying on its side, bleached wood with cracks, a short broken branch, low wide silhouette"
+    }
+  ]
+}

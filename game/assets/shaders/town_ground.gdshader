@@ -2,7 +2,7 @@
 // 地面多边形的顶点是 TownView 投影后的屏幕坐标；投影是线性的，着色器按同一视角参数反算回世界平面坐标
 // （x 向东、y 向南，约厘米），纹样全部按世界坐标取样，因此随视角正确压扁、转向，多块多边形之间连续。
 // kind：0 草地（三阶青绿 + 草簇）、1 石板街（错缝条石、雨后积水反光）、2 河水（两阶湖蓝 + 流动白浪线）、3 南岸泥沙地、
-// 4 山道土路（夯土、碎石、嵌石）、5 山地草坡（深一阶的青绿、苔斑、小石）。flow 为水流方向（自世界东向起算的弧度）。
+// 4 山道土路（夯土、碎石、嵌石）、5 山地草坡（深一阶的青绿、苔斑、小石）、6 江面（河岸布景，含水门引水渠）、7 雨后泥沙滩接草坡。flow 为水流方向（自世界东向起算的弧度）。
 // 正式地面按架构文档 10.3 逐类换成 AI 生成的可平铺纹理（ground_tex，按世界坐标每 tex_world 单位循环一次，见 tools/ArtGen/piece.py）：
 // 石板街（条石错缝格线经 ControlNet 引导）、草地、山道土路、山地草坡已换；积水反光、土路碎石与嵌石仍由本着色器叠加，
 // 南岸泥沙地仍为程序化。平铺纹理另乘一层大尺度明暗（fbm），避免大片地面看出循环。
@@ -384,6 +384,156 @@ vec3 meadow(vec2 w) {
 	return c;
 }
 
+// ── 河岸布景（M3-01，芦湾河滩与旧渡）：kind 6 江面、kind 7 雨后泥沙滩接草坡 ──────────────
+// 岸线与滩宽按画面坐标（A 水平、D 远近）的起伏线给出：D = x + y·sin(A / z + w) + b.x·sin(A / b.y + b.z)，与 RiverSamples.Wave 一致。
+uniform vec4 shore_a = vec4(0.0);
+uniform vec3 shore_b = vec3(0.0, 1.0, 0.0);
+uniform vec4 beach_a = vec4(300.0, 0.0, 1.0, 0.0);
+uniform vec3 beach_b = vec3(0.0, 1.0, 0.0);
+// 江面往远处没入水汽：水汽色与没入的远近。
+uniform vec3 mist_color = vec3(0.86, 0.91, 0.89);
+uniform float water_far = -1500.0;
+// 天光倒影的色调（雨后偏青灰，黄昏偏暖）。
+uniform vec3 sky_tint = vec3(0.70, 0.84, 0.84);
+// 水门引水渠：A 范围（宽为 0 表示没有）与闸口所在的 D；渠水朝镜头流。
+uniform vec2 channel_a = vec2(0.0);
+uniform float channel_d = 0.0;
+// 水中物件（世界坐标圆角矩形）：同运河，脚下暗影、朝镜头倒影与碎亮涟漪。
+uniform vec4 river_obj[8];
+uniform vec2 river_obj_shape[8];
+// 草坡纹理（滩外接草）。
+uniform sampler2D meadow_tex : repeat_enable, filter_linear_mipmap;
+uniform bool use_meadow = false;
+uniform float meadow_world = 480.0;
+uniform vec3 meadow_tint = vec3(1.0);
+
+float wave_at(vec4 a, vec3 b, float x) {
+	return a.x + a.y * sin(x / a.z + a.w) + b.x * sin(x / b.y + b.z);
+}
+
+vec3 river_objects(vec3 c, vec2 w) {
+	float t = TIME;
+	for (int i = 0; i < 8; i++) {
+		vec4 o = river_obj[i];
+		if (o.z <= 0.0) {
+			continue;
+		}
+		vec2 sh = river_obj_shape[i];
+		float d = round_box(w - o.xy, o.zw, sh.x);
+		float rj = (vnoise(vec2(w.x * 0.03 - t * 0.5, w.y * 0.06)) - 0.5) * 12.0;
+		vec2 view = vec2(-0.70710678, 0.70710678) * sh.y * 1.732;
+		float refl = min(round_box(w - o.xy - view * 0.5, o.zw * 0.92, sh.x), round_box(w - o.xy - view, o.zw * 0.8, sh.x)) + rj;
+		c = mix(c, c * vec3(0.66, 0.74, 0.74), step(refl, 0.0) * 0.75);
+		c = mix(c, vec3(0.14, 0.22, 0.23), (1.0 - smoothstep(0.0, 10.0, d)) * 0.6);
+		float ring_n = vnoise(vec2(w.x * 0.045 + t * 0.6, w.y * 0.045 - t * 0.4));
+		float ring = step(9.0 + 4.0 * ring_n, d) * step(d, 13.0 + 4.0 * ring_n) * step(0.5, ring_n);
+		c = mix(c, vec3(0.86, 0.94, 0.92), ring * 0.6);
+	}
+	return c;
+}
+
+// 江面：A 顺流（向右），D 远近。近岸浅水透出沙色、往外两阶加深，远处没入水汽；顺流的天光亮带与细浪线向下游漂，
+// 水线一道碎白沫，外侧一道随拍岸进退的浅沫线。引水渠里的水朝镜头流，闸口下翻白。
+vec3 river(vec2 w, float A, float D) {
+	float t = TIME;
+	float shore = wave_at(shore_a, shore_b, A);
+	float dist = shore - D;
+	bool in_channel = channel_a.y > channel_a.x && A > channel_a.x - 4.0 && A < channel_a.y + 4.0 && D > channel_d - 10.0;
+	vec3 shallow = vec3(0.45, 0.63, 0.58);
+	vec3 mid = vec3(0.31, 0.53, 0.53);
+	vec3 deep = vec3(0.22, 0.44, 0.47);
+	float n = fbm(vec2(A * 0.0018 - t * 0.015, D * 0.006));
+	if (in_channel) {
+		// 渠水：两侧贴壁暗、当中流急；闸口下一道翻白的跌水，往下游碎成顺流的白线。
+		float side = min(A - channel_a.x, channel_a.y - A);
+		float down = D - channel_d;
+		vec3 c = mix(mid * 0.92, deep * 0.9, smoothstep(10.0, 70.0, side));
+		float row = floor(A / 9.0);
+		float streak = step(0.8, vnoise(vec2(row * 2.3, D * 0.02 - t * 2.6))) * step(fract(A / 9.0), 0.4);
+		c = mix(c, vec3(0.80, 0.91, 0.89), streak * mix(0.7, 0.25, smoothstep(40.0, 500.0, down)));
+		float churn = vnoise(vec2(A * 0.09 + t * 0.9, D * 0.06 - t * 3.0));
+		float fall = 1.0 - smoothstep(14.0 + 18.0 * churn, 40.0 + 30.0 * churn, down);
+		c = mix(c, vec3(0.93, 0.97, 0.96), fall * step(0.3, churn) * 0.9);
+		c = mix(c, vec3(0.12, 0.20, 0.22), (1.0 - smoothstep(0.0, 10.0, side)) * 0.6);
+		return clamp(c, 0.0, 1.0);
+	}
+	// 三阶水色，交界随噪声起伏。
+	float edge1 = 60.0 + 40.0 * n;
+	float edge2 = 260.0 + 120.0 * n;
+	vec3 c = mix(shallow, mid, smoothstep(edge1 - 6.0, edge1 + 6.0, dist));
+	c = mix(c, deep, smoothstep(edge2 - 10.0, edge2 + 10.0, dist) * 0.85);
+	// 近岸浅水透出一点沙纹。
+	if (use_tex) {
+		vec3 bed = ground_texture(w + vec2(sin(D * 0.05 + t * 1.4), sin(A * 0.03 - t)) * 1.5);
+		c = mix(c, bed * vec3(0.78, 0.92, 0.92), (1.0 - smoothstep(0.0, edge1, dist)) * 0.35);
+	}
+	// 天光：顺流拉长的大块亮带，缓慢漂移。
+	float band = fbm(vec2(A * 0.0009 - t * 0.02, D * 0.005 + 4.0));
+	c = mix(c, mix(c, sky_tint, 0.4), smoothstep(0.6, 0.64, band) * 0.6);
+	// 细浪线：顺流的短白线，按行错开，向下游漂。
+	float row = floor(D / 20.0);
+	float wave = vnoise(vec2(A * 0.009 - t * 0.32 + row * 3.7, row * 1.9));
+	float line = step(0.82, wave) * step(fract(D / 20.0), 0.14);
+	c = mix(c, vec3(0.86, 0.95, 0.93), line * 0.55);
+	c = river_objects(c, w);
+	// 水线碎白沫 + 外侧随拍岸进退的浅沫线。
+	float lap = vnoise(vec2(A * 0.05 - t * 0.6, t * 0.5));
+	c = mix(c, vec3(0.92, 0.97, 0.95), step(dist, 3.0 + 4.0 * lap) * 0.85);
+	float swash = 16.0 + 9.0 * sin(t * 1.1 + A * 0.004);
+	float sw = step(abs(dist - swash), 1.6 + 1.2 * vnoise(vec2(A * 0.04, t))) * step(0.42, vnoise(vec2(A * 0.02 - t * 0.3, 7.0)));
+	c = mix(c, vec3(0.88, 0.95, 0.93), sw * 0.55);
+	// 远处没入水汽。
+	float haze = smoothstep(-380.0, water_far, D);
+	c = mix(c, mist_color, haze);
+	return clamp(c, 0.0, 1.0);
+}
+
+// 雨后泥沙滩：水线边一条湿深带（随拍岸进退的湿痕），往岸上渐干；低洼处积水映天光；外沿接草坡，交界参差、草里零星露沙。
+vec3 beach(vec2 w, float A, float D) {
+	float shore = wave_at(shore_a, shore_b, A);
+	float width = wave_at(beach_a, beach_b, A);
+	float u = (D - shore) / max(width, 40.0);
+	vec3 sand = use_tex ? ground_texture(w) : sand(w);
+	sand *= vec3(1.0, 0.98, 0.93);
+	// 湿带：越近水越深、偏冷，外沿按噪声打碎。
+	float wet_edge = 0.32 + 0.12 * fbm(vec2(A * 0.006, 3.0));
+	float wet = 1.0 - smoothstep(wet_edge - 0.05, wet_edge + 0.05, u + (fbm(w * 0.01) - 0.5) * 0.12);
+	vec3 c = mix(sand, sand * vec3(0.66, 0.74, 0.76), wet * 0.85);
+	c = mix(c, c * vec3(0.84, 0.9, 0.92), (1.0 - smoothstep(0.0, 0.12, u)) * 0.6);
+	// 退水留下的沙纹：平行水线的细暗纹，只在湿带。
+	float ripple = step(0.82, fract((D - shore) / 13.0 + fbm(w * 0.004) * 2.0));
+	c = mix(c, c * 0.88, ripple * wet * 0.5);
+	// 积水：中段低洼处成片，映天光，边上一圈湿暗。
+	float pud_n = fbm(w * 0.0045 + 11.0) + fbm(w * 0.03) * 0.12;
+	float zone = smoothstep(0.08, 0.2, u) * (1.0 - smoothstep(0.75, 0.95, u));
+	float puddle = step(0.74, pud_n) * zone;
+	float rim = step(0.70, pud_n) * zone * (1.0 - puddle);
+	float glint = step(0.94, fract((A * 0.7 - D * 0.3) * 0.006 + pud_n * 3.0));
+	vec3 pool = mix(mix(sky_tint, c * 0.9, 0.45), vec3(0.92, 0.96, 0.94), glint * 0.7);
+	c = mix(c, c * 0.8, rim * 0.6);
+	c = mix(c, pool, puddle * 0.65);
+	// 草坡：与芦湾街草地同一画法（三阶明暗色块，AI 草叶纹理只留亮度细纹），交界参差，草里间或露沙。
+	if (use_meadow) {
+		vec2 q = w * 0.0011;
+		q += (vec2(fbm(q * 1.7 + 3.1), fbm(q * 1.7 + 8.4)) - 0.5) * 1.6;
+		float ln = fbm(q);
+		vec3 g = mix(LAWN_MID, LAWN_LIT, smoothstep(0.565, 0.585, ln));
+		g = mix(g, LAWN_SHADE, 1.0 - smoothstep(0.415, 0.435, ln));
+		g *= 1.0 + (fbm(w * 0.006 + 2.0) - 0.5) * 0.12;
+		vec3 mt = texture(meadow_tex, w / meadow_world).rgb;
+		vec3 mm = textureLod(meadow_tex, vec2(0.5), 12.0).rgb;
+		g *= mix(1.0, clamp(dot(mt, LUMA) / max(dot(mm, LUMA), 0.05), 0.6, 1.4), 0.22);
+		float edge = 1.0 + (fbm(vec2(A * 0.004, D * 0.004) + 5.0) - 0.5) * 0.45 + (vnoise(w * 0.05) - 0.5) * 0.08;
+		float grassy = smoothstep(edge - 0.03, edge + 0.03, u);
+		grassy *= 1.0 - step(0.8, fbm(w * 0.006 + 40.0)) * (1.0 - smoothstep(1.0, 1.6, u)) * 0.85;
+		// 草与沙交界压一道暗边，草像长在沙上。
+		float lip = smoothstep(edge - 0.08, edge, u) * (1.0 - grassy);
+		c = mix(c, c * 0.82, lip * 0.5);
+		c = mix(c, clamp(g, 0.0, 1.0), grassy);
+	}
+	return clamp(c, 0.0, 1.0);
+}
+
 void vertex() {
 	// 反投影：屏幕 (X, Y) = ((x c - y s), ((x s + y c) sp - z cp)) * scale。
 	float c = cos(yaw);
@@ -416,6 +566,10 @@ void fragment() {
 		c = dirt(world);
 	} else if (kind == 5) {
 		c = meadow(world);
+	} else if (kind == 6 || kind == 7) {
+		float A = (world.x + world.y) * 0.70710678;
+		float D = (world.y - world.x) * 0.70710678;
+		c = kind == 6 ? river(world, A, D) : beach(world, A, D);
 	} else {
 		c = sand(world);
 	}

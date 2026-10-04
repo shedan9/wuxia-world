@@ -1672,6 +1672,8 @@ internal static class Tufts
         var region = variant < 0 && bush is { } b ? b : grass[Mathf.PosMod(variant, grass.Length)];
         var size = region.Size * (height / region.Size.Y);
         // 翻转用负宽度矩形（引擎按水平翻转画），不再每丛前后各设一次变换：变换命令会打断合批。
-        ci.DrawTextureRectRegion(atlas, new Rect2(foot.X - size.X / 2, foot.Y - size.Y, flip ? -size.X : size.X, size.Y), region, modulate);
+        // 负宽度时矩形自起点向左铺，起点取右缘，丛才落在原位（此前取左缘，翻转的丛向左偏了一个丛宽）。
+        var left = foot.X - size.X / 2;
+        ci.DrawTextureRectRegion(atlas, new Rect2(flip ? left + size.X : left, foot.Y - size.Y, flip ? -size.X : size.X, size.Y), region, modulate);
     }
 }

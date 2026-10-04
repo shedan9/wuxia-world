@@ -10,6 +10,9 @@ public enum StageLayout
     Town,
     Inn,
     Wild,
+
+    /// <summary>河岸专属布景（M3-01）：芦湾河滩与芦湾旧渡，见 <see cref="RiverSamples"/>。</summary>
+    River,
 }
 
 /// <summary>落点：主角站位与同行者排开的方向（世界平面单位向量）。</summary>
@@ -35,11 +38,14 @@ public sealed record MapStage(StageLayout Layout, string Region, string Caption)
     /// <summary>布景本身已画出的人物（客栈掌柜），作为事件参与者时不再另画一个。</summary>
     public IReadOnlySet<string> Residents { get; init; } = new HashSet<string>();
 
-    /// <summary>剧情人物在本图的固定站位（人物 ID → 位置、朝向）；未列出的围着事件锚点站。用于避开屏风、柱子等遮挡。</summary>
+    /// <summary>
+    /// 剧情人物在本图的固定站位（人物 ID 或“事件 ID/人物 ID” → 位置、朝向），后者优先；未列出的围着事件锚点站。
+    /// 用于避开屏风、柱子等遮挡，或让同一人物在不同事件里站在不同处（唐守亭先在闸桥上，战后被按在堤前泥地里）。
+    /// </summary>
     public IReadOnlyDictionary<string, (Vector2 At, int Facing)> Stand { get; init; } = new Dictionary<string, (Vector2, int)>();
 
-    /// <summary>借用山路布景时的改装（河滩、旧渡）。</summary>
-    public WildVariant Wild { get; init; }
+    /// <summary>河岸布景的地点（<see cref="StageLayout.River"/>）。</summary>
+    public RiverSite River { get; init; }
 
     /// <summary>本图的配乐（只配主要场景，次要场景为 null、只有环境声）。</summary>
     public string? Music { get; init; }
@@ -49,9 +55,9 @@ public sealed record MapStage(StageLayout Layout, string Region, string Caption)
 }
 
 /// <summary>
-/// 第一章四张地图的摆放（M2 第一版）。芦湾河滩与芦湾旧渡还没有专属布景，暂借 M0 山路布景的溪涧谷底，
-/// 底部说明条写明是借景；专属地图属 M3-01。坐标沿用 <see cref="TownSamples"/>、<see cref="InnSamples"/> 与
-/// <see cref="WildSamples"/> 的世界坐标（山路用画面坐标 A / D 经 <see cref="WildSamples.W(float, float)"/> 换算）。
+/// 第一章四张地图的摆放。芦湾街、江南客栈沿用 M0 已验收的城镇、客栈布景；芦湾河滩与芦湾旧渡自 2026-10-04 起用河岸专属布景
+/// （M3-01，此前暂借山路溪涧）。坐标沿用 <see cref="TownSamples"/>、<see cref="InnSamples"/> 的世界坐标；
+/// 河岸用画面坐标 A / D 经 <see cref="RiverSamples.W(float, float)"/> 换算。
 /// </summary>
 public static class MapStaging
 {
@@ -59,28 +65,28 @@ public static class MapStaging
     private static readonly Vector2 South = new(0, 1);
     private static readonly Vector2 West = new(-1, 0);
 
-    /// <summary>山路画面坐标里朝画面左（A 减小）的世界方向。</summary>
+    /// <summary>画面坐标里朝画面左（A 减小）的世界方向。</summary>
     private static readonly Vector2 FrameLeft = (WildSamples.W(0, 0) - WildSamples.W(1, 0)).Normalized();
 
-    private static Vector2 W(float a, float d) => WildSamples.W(a, d);
+    private static Vector2 W(float a, float d) => RiverSamples.W(a, d);
 
     public static readonly IReadOnlyDictionary<string, MapStage> Maps = new Dictionary<string, MapStage>
     {
-        ["map.jiangnan.luwan_shore"] = new(StageLayout.Wild, "芦湾", "芦湾河滩暂借山路布景的溪涧谷底（专属河滩布景属 M3-01）；人物为 AI 全身样稿，无样稿者为占位剪影")
+        ["map.jiangnan.luwan_shore"] = new(StageLayout.River, "芦湾", "芦湾河滩：河岸专属布景（M3-01）；芦苇为 AI 精灵，柳树、山石与渡船借城镇 / 山路出件")
         {
-            Wild = WildVariant.Shore,
+            River = RiverSite.Shore,
             Ambience = ["amb.river", "amb.reeds"],
             Spawns = new Dictionary<string, SpawnPoint>
             {
-                ["wake"] = new(W(1000, 860), FrameLeft),
-                ["path_end"] = new(W(420, 860), FrameLeft),
+                ["wake"] = new(W(1000, 300), FrameLeft),
+                ["path_end"] = new(W(300, 700), FrameLeft),
             },
             Points = new Dictionary<string, Vector2>
             {
-                ["exit:to_street"] = W(190, 880),
-                ["interact:stone_marks"] = W(2050, 760),
-                ["interact:tide_line"] = W(1500, 745),
-                ["anchor:wake"] = W(1000, 860),
+                ["exit:to_street"] = W(150, 760),
+                ["interact:stone_marks"] = W(2050, 40),
+                ["interact:tide_line"] = W(2760, 110),
+                ["anchor:wake"] = W(1000, 300),
             },
         },
         ["map.jiangnan.luwan_street"] = new(StageLayout.Town, "芦湾", "芦湾街：M0 已验收的河街布景；人物为 AI 全身样稿")
@@ -128,29 +134,37 @@ public static class MapStaging
                 ["char.xiao_feng"] = (new Vector2(1110, 614), -1),
             },
         },
-        ["map.jiangnan.old_ferry"] = new(StageLayout.Wild, "芦湾", "芦湾旧渡暂借山路布景的溪涧谷底，木桥北岸代水门（旧渡与水门布景属 M3-01）；人物为 AI 全身样稿，无样稿者为占位剪影")
+        ["map.jiangnan.old_ferry"] = new(StageLayout.River, "芦湾", "芦湾旧渡：河岸专属布景（M3-01）；栈桥、河堤与水门为几何贴 AI 纹理，大船借城镇乌篷船出件")
         {
-            Wild = WildVariant.OldFerry,
+            River = RiverSite.OldFerry,
             Ambience = ["amb.river", "amb.reeds"],
             Spawns = new Dictionary<string, SpawnPoint>
             {
-                ["landing"] = new(W(560, 860), FrameLeft),
-                ["sluice"] = new(W(1000, 420), FrameLeft),
+                ["landing"] = new(W(666, 124), new Vector2(-1, 0)),
+                ["sluice"] = new(W(2330, 540), FrameLeft),
             },
             Points = new Dictionary<string, Vector2>
             {
-                ["route:route.jiangnan.old_ferry_to_luwan"] = W(200, 880),
-                ["interact:locked_boat"] = W(1700, 745),
-                ["anchor:landing"] = W(820, 850),
-                ["anchor:sluice"] = W(1150, 380),
+                ["route:route.jiangnan.old_ferry_to_luwan"] = W(956, -166),
+                ["interact:locked_boat"] = W(1460, 110),
+                ["anchor:landing"] = W(780, 260),
+                ["anchor:sluice"] = W(2480, 480),
+            },
+            Stand = new Dictionary<string, (Vector2, int)>
+            {
+                // 唐守亭先站在闸桥上，战后被按在堤前泥地里；获救的杜三篙坐在他西边。
+                ["event.ch01.sluice_confrontation/char.tang_shouting"] = (W(2760, 80), -1),
+                ["event.ch01.copy_custody/char.tang_shouting"] = (W(2600, 560), -1),
+                ["event.ch01.copy_custody/char.du_sangao"] = (W(2420, 620), 1),
             },
             Extras = new Dictionary<string, Extra[]>
             {
+                // 押运队守在锁船旁。
                 ["event.ch01.escort_regroup"] =
                 [
-                    new(Looks.Escort, W(760, 800), -1),
-                    new(Looks.Escort, W(880, 900), -1),
-                    new(Looks.Escort, W(960, 820), -1),
+                    new(Looks.Escort, W(1360, 210), 1),
+                    new(Looks.Escort, W(1560, 150), -1),
+                    new(Looks.Escort, W(1640, 250), -1),
                 ],
             },
         },

@@ -168,6 +168,16 @@ cd tools/ArtGen
 - 四轮对比的结论：前景带大片地面的侧视整图，SDXL 会把地面画成水面或立墙；色块草图图生图（0.8–0.96）和草图边线引导都照搬平涂成矢量风；`cel shading, clean lineart` 会把 SDXL base 推向平涂。因此 AI 只画远景（风格词 `anime background art, scenery, painterly, semi-realistic`，文生图，多种子按构图挑选），水线以下的码头由引擎按透视铺石板纹理（架构文档 10.3“战斗布景”）。
 - 道具不经 Godot 布局：`prop_guide.py` 按任务文件 `props` 的色块坐标画正立面引导图（`detail` 色块不进结构图）。与客栈内墙相同，图生图 0.72 照描平涂，文生图材质好但配色跑偏，入库时 `--regrade` 调回。
 
+### 河岸芦苇（2026-10-04，M3-01）
+
+```powershell
+.venv/Scripts/python generate.py jobs/m3_river_pieces.json          # 芦苇、倒伏芦苇、香蒲各 6 张候选（纯色底）
+# 选定后：把候选复制一份 <名>__raw.png，再按底色软抠图、裁边、记脚底入库（倒影线用 --erase 擦去）
+.venv/Scripts/python place.py out/m3_river_pieces/r1_reeds_tall_22.png river.reed.1 --recut 22 --soft 10,50 --prop
+```
+
+游戏里按 `river.reed.N.json` 的脚底中点对齐地面、按指定高度缩放（`RiverReedNode`）。
+
 ## 局部重绘
 
 `inpaint.py` 读取 `jobs/*_fix.json`，对一张已生成的图依次做：`erase`（用周围纸色逐层填平旧物件）、`paint` / `tint`（画入粗略新形状或对皮肤区调色，`min_luma`/`max_luma` 把墨线、头发和纸底排除在外）、按 `mask` 与 `strength` 重绘，再只把遮罩内结果羽化贴回，其余像素不变。坐标以源图像素计；先用 `--preview` 输出预处理图和遮罩叠加图核对位置，再正式运行。多步修整写成串联任务，后一步的 `source` 指向前一步选定的输出。

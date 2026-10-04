@@ -103,7 +103,8 @@ public partial class ExplorationScreen : Control, IExploreDriver
         {
             StageLayout.Town => new ExploreTownPreview { Driver = this },
             StageLayout.Inn => new ExploreInnPreview { Driver = this },
-            _ => new ExploreWildPreview { Driver = this, Variant = staging.Wild },
+            StageLayout.River => new ExploreRiverPreview { Driver = this, Site = staging.River },
+            _ => new ExploreWildPreview { Driver = this },
         };
         _view.MouseFilter = MouseFilterEnum.Ignore;
         AddChild(_view);
@@ -163,6 +164,17 @@ public partial class ExplorationScreen : Control, IExploreDriver
             {
                 DevCapture.StagingProblems++;
                 GD.Print($"[staging] {World.MapId} {key} 交互距离内无处可站");
+            }
+        }
+
+        // 剧情人物的固定站位与群众站位也须落在能站人的地方（不在水里、墩里或苇丛里）。
+        foreach (var (who, at) in _staging.Stand.Select(s => (s.Key, s.Value.At))
+                     .Concat(_staging.Extras.SelectMany(e => e.Value.Select((x, i) => ($"{e.Key} 群众 {i + 1}", x.At)))))
+        {
+            if (!_view.CanStand(at))
+            {
+                DevCapture.StagingProblems++;
+                GD.Print($"[staging] {World.MapId} 站位 {who} 站不住人");
             }
         }
 
@@ -401,7 +413,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
                         continue;
                     }
 
-                    if (_staging.Stand.TryGetValue(who, out var stand))
+                    if (_staging.Stand.TryGetValue(e.Id + "/" + who, out var stand) || _staging.Stand.TryGetValue(who, out stand))
                     {
                         actors.Add(new ExploreActor(Looks.Of(who), stand.At, stand.Facing));
                         continue;
