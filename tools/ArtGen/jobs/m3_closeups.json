@@ -1,0 +1,22 @@
+{
+  "set": "m3_closeups_v2",
+  "tier": "complex",
+  "model": "sdxl",
+  "size": [1344, 768],
+  "steps": 32,
+  "cfg": 6.0,
+  "seeds": [11, 22, 33, 44, 55, 66],
+  "style": {
+    "closeup": "close-up, anime background art, painterly, semi-realistic, cel shading, soft light, natural muted colors, detailed, masterpiece",
+    "negative": "text, letters, chinese characters, calligraphy, watermark, signature, red seal stamp, people, person, hands, face, frame, border, blurry, lowres, photo, 3d render, ink wash, sepia, japanese style, torii"
+  },
+  "jobs": [
+    {"name": "stone_marks", "style": "closeup", "prompt": "tall grey stone marker post at river edge, deeply chiseled straight horizontal grooves stacked like a ruler, lower part under shallow water, wet dark stone, reeds"},
+    {"name": "ferry_notice", "style": "closeup", "prompt": "a sheet of blank damp paper pasted on an old wooden notice board at a riverside ferry, wet glossy paper, rain drops, weathered wood planks, small roof eave above"},
+    {"name": "ferry_tag", "style": "closeup", "prompt": "a row of small wooden boat tags hanging from a rope on a wooden rack, one blank wooden tag in focus with a fresh rope knot and a knife scraped mark across its back, rough grain"},
+    {"name": "tide_line", "style": "closeup", "prompt": "fresh drag marks of a boat hull in wet riverbank mud, two parallel grooves leading into the roots of tall reeds, puddles, low angle"},
+    {"name": "chain_lock", "style": "closeup", "prompt": "a rusty iron chain wrapped around a wooden mooring post at the bow of an old wooden boat, a heavy iron padlock with its keyhole packed with mud, river water"},
+    {"name": "relay_copy", "style": "closeup", "prompt": "a folded sheet of old paper opened on muddy ground, faint brush strokes too small to read, a small vermilion square seal mark at the corner, dusk light"},
+    {"name": "red_list", "style": "closeup", "prompt": "a long sheet of red paper freshly pasted beside a wooden inn door at night, neat columns of black brush strokes too small to read, lantern light, wooden door frame"}
+  ]
+}

@@ -125,6 +125,9 @@ public partial class CueDirector : Node, ICuePlayer
         }
 
         _running.Clear();
+
+        // 文书特写只在本段演出里显示，继续下一句时淡出。
+        HideDocument();
     }
 
     public void EndDialogue()
@@ -156,6 +159,37 @@ public partial class CueDirector : Node, ICuePlayer
     }
 
     // ── 时间线各步用到的操作 ────────────────────────────
+
+    private DocumentCloseup? _document;
+
+    /// <summary>文书特写卡压在黑场之上、对话框之下。</summary>
+    internal void ShowDocument(DocumentCloseup card)
+    {
+        HideDocument();
+        _document = card;
+        _layer.AddChild(card);
+        _layer.MoveChild(card, _black.GetIndex() + 1);
+    }
+
+    internal void CompleteDocument()
+    {
+        if (_document is { } card && IsInstanceValid(card))
+        {
+            card.Complete();
+        }
+    }
+
+    private void HideDocument()
+    {
+        if (_document is not { } card || !IsInstanceValid(card))
+        {
+            _document = null;
+            return;
+        }
+
+        _document = null;
+        Motion.FadeOut(card, Motion.Quick, card.QueueFree);
+    }
 
     internal ExploreStage View => _view;
 

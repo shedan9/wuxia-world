@@ -97,6 +97,9 @@ public sealed class Cue
     public Cue Black(float fadeIn = 0.7f, float hold = 0.6f, float fadeOut = 0.9f, Action<CueDirector>? onDark = null) =>
         Add(new BlackStep(fadeIn, hold, fadeOut, onDark), fadeIn + hold + fadeOut);
 
+    /// <summary>画面正中显示一张文书特写卡（<see cref="DocumentCloseup"/>），演出结束（继续下一句）时淡出。</summary>
+    public Cue Document(DocumentKind kind, float seconds = 2.8f) => Add(new DocumentStep(kind), seconds);
+
     /// <summary>某人物在演出里的位置：本段已安排的落点，否则画面上的当前位置。</summary>
     public Vector2 Where(string who) => _planned.TryGetValue(who, out var p) ? p : _ctx?.At(who) ?? Vector2.Zero;
 
@@ -434,4 +437,11 @@ internal sealed class BlackStep(float fadeIn, float hold, float fadeOut, Action<
             onDark?.Invoke(d);
         }
     }
+}
+
+internal sealed class DocumentStep(DocumentKind kind) : CueStep
+{
+    public override void Start(CueDirector d) => d.ShowDocument(new DocumentCloseup(kind));
+
+    public override void Snap(CueDirector d) => d.CompleteDocument();
 }

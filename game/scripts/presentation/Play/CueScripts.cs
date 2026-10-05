@@ -244,13 +244,16 @@ public static class CueScripts
         },
 
         // 唐守亭从怀里摸出转信副页：镜头推近。
+        // 唐守亭从怀里摸出转信副页：镜头推近，副页特写，求援书的转信章滑过来叠在签押上——笔势相同。
         ["dlg.ch01.copy_custody/cue.003"] = (c, q) => q
             .At(0).Pan(c.Stand("char.tang_shouting", "event.ch01.copy_custody"), rate: 2.6f, height: 50, zoom: 1.35f, seconds: 1.2f)
-            .Hold(1.8f),
+            .At(0.6f).Sound("ui.open", -6).Document(DocumentKind.RelayCopy, seconds: 3.4f)
+            .Hold(4f),
 
         // ── 章末：客栈门口的红纸名单 ─────────────────────
         ["dlg.ch01.epilogue/cue.001"] = (c, q) => q
             .At(0).Pan(c.Point("anchor:door"), rate: 2f, height: 140, zoom: 1.25f, seconds: 1.4f)
-            .Hold(2.2f),
+            .At(0.7f).Document(DocumentKind.RedList, seconds: 2.8f)
+            .Hold(3.6f),
     };
 }
