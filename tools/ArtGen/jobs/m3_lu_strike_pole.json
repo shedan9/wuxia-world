@@ -1,0 +1,19 @@
+{
+  "set": "m3_lu_strike_pole",
+  "note": "M3 打磨：陆青禾出手帧第二步，在擦掉竖篙的原图上贴代码画的竹篙（weapon.py kind=pole）：篙头向右略上斜刺出，篙尾从身后穿过、在披帛左侧露出。",
+  "jobs": [
+    {
+      "name": "lu_strike_pole",
+      "pose": "strike",
+      "kind": "pole",
+      "source": "out/m3_lu_strike_nopole/lu_strike_nopole_44.png",
+      "canvas": [1216, 1216],
+      "pommel": [90, 335],
+      "tip": [1190, 212],
+      "width": 24,
+      "node": 150,
+      "hidden_until": [538, 285],
+      "behind": [[563, 281, 21]]
+    }
+  ]
+}

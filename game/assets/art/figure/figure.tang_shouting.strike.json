@@ -1,11 +1,11 @@
 {
   "id": "figure.tang_shouting.strike",
   "foot": [
-    246.8,
-    815.4
+    247.6,
+    799.2
   ],
   "stature": 800,
   "source": "art_source/ai/figure/figure.tang_shouting.strike.png",
-  "sha256": "5218e39b5069d4f6f9b72433e590d7fe5e1ed8f3188252ac9ff300056e38e601",
+  "sha256": "f5fbf710de99e02bad851dca7f18bd834a9910056507d797a4802e764719ad35",
   "frame_of": "figure.tang_shouting"
 }

@@ -2,10 +2,10 @@
   "id": "figure.tang_shouting.walk_a",
   "foot": [
     237.3,
-    764.0
+    755.9
   ],
   "stature": 800,
   "source": "art_source/ai/figure/figure.tang_shouting.walk_a.png",
-  "sha256": "8da5decaa75a5ddd61e244b61a1062cecf330f4f3d16c837cda58781933cdac8",
+  "sha256": "15e21168bbf10863a35876841e58285ba3c080326dc740b8352cabd0ff092e2b",
   "frame_of": "figure.tang_shouting"
 }

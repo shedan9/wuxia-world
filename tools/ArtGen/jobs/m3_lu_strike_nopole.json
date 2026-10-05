@@ -1,0 +1,21 @@
+{
+  "set": "m3_lu_strike_nopole",
+  "model": "animagine4",
+  "steps": 32,
+  "cfg": 5.0,
+  "seeds": [11, 22, 33, 44],
+  "negative": "lowres, bad anatomy, bamboo, pole, stick, staff, rod, spear, vertical line, extra limbs, text, watermark, blurry",
+  "note": "M3 打磨：陆青禾出手帧原为竖握竹篙的弓步。第一步擦掉竖篙（握篙的手保留），篙后被挡住的裙身、披帛与底色由 inpaint 补出；第二步 weapon.py 贴代码画的斜刺竹篙，第三步重绘握篙的手。",
+  "jobs": [
+    {
+      "name": "lu_strike_nopole",
+      "source": "out/m3_cast_frames/lu_qinghe_strike_22__raw.png",
+      "keep": [{"ellipse": [562, 274, 30, 32]}],
+      "erase": [{"poly": [[524, 0], [592, 0], [592, 250], [586, 300], [578, 1172], [522, 1172], [526, 300]]}],
+      "mask": [{"poly": [[516, 0], [600, 0], [600, 250], [594, 300], [586, 1178], [514, 1178], [518, 300]]}],
+      "feather": 5,
+      "prompt": "1girl, solo, adult woman, hanfu, cream long jacket with wide cream sleeves, red inner cuffs, long translucent pale teal shawl hanging down, dark brown waist wrap, cream long skirt with brown folds and brown hem, lunging, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 1.0
+    }
+  ]
+}

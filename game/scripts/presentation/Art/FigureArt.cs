@@ -82,10 +82,10 @@ public sealed class FigureArt
     /// 同 <see cref="Draw"/>，但贴图四周外扩 pad 个贴图像素画出（外扩处 UV 超出 0–1，由着色器取透明），
     /// 供裙摆摆动着色器（figure_skirt）把裙摆横移到原外框以外。
     /// </summary>
-    public void DrawPadded(CanvasItem ci, Vector2 feet, float height, int facing, float pad)
+    public void DrawPadded(CanvasItem ci, Vector2 feet, float height, int facing, float pad, float stretch = 1)
     {
         var k = height / Stature;
-        ci.DrawSetTransform(feet, 0, new Vector2(k * facing, k));
+        ci.DrawSetTransform(feet, 0, new Vector2(k * facing, k * stretch));
         var size = Texture.GetSize();
         var grow = new Vector2(pad, pad);
         ci.DrawTextureRectRegion(Texture, new Rect2(-Foot - grow, size + grow * 2), new Rect2(-grow, size + grow * 2));

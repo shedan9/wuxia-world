@@ -197,7 +197,8 @@ public partial class CueDirector : Node, ICuePlayer
 
     /// <summary>
     /// 按键名找人物：<c>hero</c> 为主角，<c>char.*</c> 先找画面上的同行者与站位人物，再找本段演出加上的；
-    /// 其余键名（<c>escort.1</c>）只找本段演出加上的。找到后由演出接管。
+    /// <c>escort.N</c> 先找本段演出加上的，再按摆放顺序认领画面上第 N 位押运打手（摆放表里的群众，
+    /// 如战败折返后守在锁船旁的押运队）。找到后由演出接管。
     /// </summary>
     internal WalkerFigure? Find(string who)
     {
@@ -214,6 +215,14 @@ public partial class CueDirector : Node, ICuePlayer
         {
             var art = Looks.Of(who).ArtId;
             figure = _view.Figures.FirstOrDefault(f => f.ArtId == art && IsInstanceValid(f));
+        }
+        else if (who.StartsWith("escort.", StringComparison.Ordinal) && int.TryParse(who["escort.".Length..], out var n) && n >= 1)
+        {
+            figure = _view.Figures.Where(f => f.ArtId == Looks.Escort.ArtId && IsInstanceValid(f)).Skip(n - 1).FirstOrDefault();
+            if (figure is not null)
+            {
+                _spawned[who] = figure;
+            }
         }
 
         if (figure is not null)

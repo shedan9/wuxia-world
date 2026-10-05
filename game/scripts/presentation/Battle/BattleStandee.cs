@@ -38,7 +38,6 @@ public partial class BattleStandee : Control
             }
 
             _outlineMaterial?.SetShaderParameter("enabled", value is not null);
-            SetProcess(value is not null);
             QueueRedraw();
         }
     }
@@ -58,11 +57,24 @@ public partial class BattleStandee : Control
         MouseFilter = MouseFilterEnum.Ignore;
         PivotOffset = new Vector2(Size.X / 2, Size.Y);
         TextureFilter = TextureFilterEnum.LinearWithMipmaps;
-        SetProcess(_outline is not null);
     }
+
+    /// <summary>待机呼吸：没在做动作时以脚底为轴竖向伸缩 ±0.8%（约 3 秒一周期，各人相位错开）；减少动效、机关道具与剪影占位时为 1。</summary>
+    private float _breath = 1;
+
+    private readonly float _breathPhase = GD.Randf() * Mathf.Tau;
 
     public override void _Process(double delta)
     {
+        var breath = _pose is null && !Mechanism && Motion.Enabled && HasArt
+            ? 1 + 0.008f * Mathf.Sin(Time.GetTicksMsec() / 1000f * Mathf.Tau / 3f + _breathPhase)
+            : 1;
+        if (!Mathf.IsEqualApprox(breath, _breath))
+        {
+            _breath = breath;
+            QueueRedraw();
+        }
+
         if (_outline is not { } color || _outlineMaterial is null)
         {
             return;
@@ -216,7 +228,7 @@ public partial class BattleStandee : Control
             // 头顶到脚底为 Height 的 92%：留出发髻、兵刃高出头顶的余量，与剪影占位的头顶位置相当。
             SetOutlineWidth(art, h * 0.92f);
             // 受击帧再绕脚底后仰一点（模型画不出大幅后仰），与闪白、抖动一起读成“被打退”。
-            art.Draw(this, new Vector2(cx, h - 6), h * 0.92f, FacingLeft ? -1 : 1, _pose == "hit" && art != FigureArt.Find(ArtId!) ? -0.07f : 0);
+            art.Draw(this, new Vector2(cx, h - 6), h * 0.92f, FacingLeft ? -1 : 1, _pose == "hit" && art != FigureArt.Find(ArtId!) ? -0.07f : 0, _pose is null ? _breath : 1);
             return;
         }
 

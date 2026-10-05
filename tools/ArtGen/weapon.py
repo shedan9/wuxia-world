@@ -12,6 +12,9 @@ AI 直接在手里画剑时，剑形、长短、曲直每张都不一样（常�
   canvas   [宽, 高]：向右补宽（灰底延续左上角颜色），伸出画外的剑身留在补出的部分；place.py 横向比例按高度算
   pommel / tip  剑首与剑尖的画布坐标
   behind   可选，[[x, y, r], ...]：这些圆内保留人物原像素（手指压在剑柄上），之后再由 inpaint 修手
+  kind     可选，"jian"（缺省，直剑，pommel → tip）或 "pole"（竹篙，pommel 为篙尾、tip 为篙头，粗细 width，竹节间距 node）
+  hidden_until  可选，[x, y]：自 pommel 到这一点的一段在人物身后，只画在底色上（与左上角底色色差 < key_threshold，缺省 30），
+           被身体挡住的部分不画——竹篙从背后穿过、从另一侧露出
 输出 out/<set>/<name>.png 与同名 .json（源图哈希、全部参数）。
 """
 
@@ -24,7 +27,7 @@ import math
 import sys
 from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageChops, ImageDraw
 
 ROOT = Path(__file__).resolve().parent
 
@@ -38,6 +41,9 @@ GUARD_LIT = (176, 142, 78)
 GUARD_SHADE = (122, 94, 48)
 GRIP = (70, 48, 36)
 GRIP_WRAP = (42, 28, 22)
+BAMBOO_LIT = (138, 186, 74)
+BAMBOO_SHADE = (84, 132, 46)
+BAMBOO_NODE = (58, 92, 34)
 
 
 def jian(length: float) -> list[tuple[str, list[tuple[float, float]], tuple[int, int, int]]]:
@@ -108,6 +114,53 @@ def draw_jian(size: tuple[int, int], pommel: tuple[float, float], tip: tuple[flo
     return layer.resize(size, Image.LANCZOS)
 
 
+def draw_pole(size: tuple[int, int], butt: tuple[float, float], tip: tuple[float, float], width: float, node: float) -> Image.Image:
+    """竹篙：两端平切的长圆杆，受光 / 背光两阶，竹节处一道深色节环（与人物线稿同一黑描线）。"""
+    W, H = size[0] * SS, size[1] * SS
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    px, py = butt[0] * SS, butt[1] * SS
+    dx, dy = (tip[0] - butt[0]) * SS, (tip[1] - butt[1]) * SS
+    length = math.hypot(dx, dy)
+    ux, uy = dx / length, dy / length
+    nx, ny = -uy, ux
+    if ny > 0:
+        nx, ny = -nx, -ny
+    half = width * SS / 2
+
+    def world(a: float, b: float) -> tuple[float, float]:
+        return (px + ux * a + nx * -b, py + uy * a + ny * -b)
+
+    stroke = 3.2 * SS
+    body = [world(0, -half), world(length, -half * 0.9), world(length, half * 0.9), world(0, half)]
+    d.polygon(body, fill=OUTLINE)
+    d.line(body + [body[0]], fill=OUTLINE, width=int(stroke * 2), joint="curve")
+    d.polygon([world(0, 0), world(length, 0), world(length, half * 0.9), world(0, half)], fill=BAMBOO_SHADE)
+    d.polygon([world(0, -half), world(length, -half * 0.9), world(length, 0), world(0, 0)], fill=BAMBOO_LIT)
+    # 受光一侧的细高光。
+    d.line([world(6 * SS, -half * 0.45), world(length - 6 * SS, -half * 0.4)], fill=(186, 220, 128), width=int(1.6 * SS))
+    a = node * SS * 0.6
+    while a < length - 8 * SS:
+        d.line([world(a, -half), world(a, half)], fill=BAMBOO_NODE, width=int(2.4 * SS))
+        d.line([world(a + 3 * SS, -half * 0.85), world(a + 3 * SS, half * 0.85)], fill=BAMBOO_LIT, width=int(1.2 * SS))
+        a += node * SS
+    return layer.resize(size, Image.LANCZOS)
+
+
+def hidden_mask(base: Image.Image, size: tuple[int, int], butt, until, threshold: float) -> Image.Image:
+    """自篙尾到 until 这一段的“身后区”：只有底色像素可画。返回 L 遮罩，255 处兵器不画（人物挡住）。"""
+    import numpy as np
+    arr = np.asarray(base, np.float32)
+    key = arr[4, 4]
+    figure = np.sqrt(((arr - key) ** 2).sum(-1)) >= threshold
+    # 段内：在 butt → until 方向上的投影不超过 until 的那一侧。
+    ys, xs = np.mgrid[0:size[1], 0:size[0]]
+    ux, uy = until[0] - butt[0], until[1] - butt[1]
+    t = ((xs - butt[0]) * ux + (ys - butt[1]) * uy) / (ux * ux + uy * uy)
+    block = figure & (t <= 1.0)
+    return Image.fromarray((block * 255).astype(np.uint8), "L")
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()
@@ -122,7 +175,14 @@ def main() -> int:
         size = tuple(job.get("canvas", src.size))
         base = Image.new("RGB", size, tuple(int(v) for v in src.getpixel((4, 4))))
         base.paste(src, (0, 0))
-        sword = draw_jian(size, tuple(job["pommel"]), tuple(job["tip"]))
+        if job.get("kind") == "pole":
+            sword = draw_pole(size, tuple(job["pommel"]), tuple(job["tip"]), job.get("width", 26), job.get("node", 150))
+        else:
+            sword = draw_jian(size, tuple(job["pommel"]), tuple(job["tip"]))
+        if job.get("hidden_until"):
+            block = hidden_mask(base, size, job["pommel"], job["hidden_until"], job.get("key_threshold", 30))
+            alpha = sword.getchannel("A")
+            sword.putalpha(ImageChops.subtract(alpha, block))
         armed = base.copy()
         armed.paste(sword, (0, 0), sword)
         if job.get("behind"):

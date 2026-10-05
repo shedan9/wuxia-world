@@ -62,7 +62,7 @@ def mask(rgba, args):
         keep[part] = 255
         blobs.append((float(centroids[i][0]), float(centroids[i][1]), int(area)))
     # 灯笼：纯红、饱和度极高的小块，单独取中心（引擎在灯笼处加光晕、地上铺光），也并进发光图。
-    red = ((h < 12) | (h > 340)) & (s > 0.75) & (v > 0.4) & (alpha > 0.5)
+    red = ((h < 12) | (h > 340)) & (s > args.lantern_sat) & (v > 0.4) & (alpha > 0.5)
     red = cv2.morphologyEx(red.astype(np.uint8) * 255, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
     count, labels, stats, centroids = cv2.connectedComponentsWithStats(red, connectivity=8)
     lanterns = []
@@ -142,6 +142,7 @@ def main():
     p.add_argument("--core-ratio", type=float, default=0.18)
     p.add_argument("--min-area", type=int, default=60)
     p.add_argument("--lantern-area", type=int, default=20)
+    p.add_argument("--lantern-sat", type=float, default=0.75, help="灯笼的最低饱和度（暗旧的灯笼可调低）")
     p.add_argument("--halo", type=float, default=7, help="窗外柔光的模糊半径（像素）")
     p.add_argument("--halo-strength", type=float, default=0.45)
     p.add_argument("--feather", type=float, default=1.5)

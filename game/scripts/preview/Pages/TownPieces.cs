@@ -1229,6 +1229,16 @@ public partial class WalkerFigure : TownPiece
     private float _skirtSway;
     private float _skirtRipple;
 
+    /// <summary>
+    /// 站着不动时的呼吸：以脚底为轴竖向伸缩 ±0.6%（约 3.8 秒一周期，各人相位错开），站岗的 NPC 不再像贴纸。
+    /// 走动、减少动效与程序化占位时为 1。
+    /// </summary>
+    private float _breath = 1;
+
+    private readonly float _breathPhase = GD.Randf() * Mathf.Tau;
+
+    private bool HasArt => FigureArt.Find(ArtId) is not null;
+
     public override void _Ready()
     {
         if (SkirtAmp.ContainsKey(ArtId) && FigureArt.Find(ArtId) is not null)
@@ -1240,9 +1250,17 @@ public partial class WalkerFigure : TownPiece
 
     public override void _Process(double delta)
     {
+        var breath = !Moving && Motion.Enabled && HasArt
+            ? 1 + 0.006f * Mathf.Sin(Time.GetTicksMsec() / 1000f * Mathf.Tau / 3.8f + _breathPhase)
+            : 1;
+        if (!Mathf.IsEqualApprox(breath, _breath))
+        {
+            _breath = breath;
+            QueueRedraw();
+        }
+
         if (_skirt is null)
         {
-            SetProcess(false);
             return;
         }
 
@@ -1339,7 +1357,7 @@ public partial class WalkerFigure : TownPiece
 
             // 没有行走帧的人物：一张站姿按步频上下起伏、竖向微缩并略向前倾（背面帧有则用背面）。
             var still = Back && FigureArt.Find($"{ArtId}.back") is { } back ? back : art;
-            still.Draw(this, new Vector2(0, -step * 4), Height, Facing, Moving ? 0.035f : 0, 1 - step * 0.018f);
+            still.Draw(this, new Vector2(0, -step * 4), Height, Facing, Moving ? 0.035f : 0, (1 - step * 0.018f) * _breath);
             return;
         }
 
@@ -1436,7 +1454,7 @@ public partial class WalkerFigure : TownPiece
     {
         if (_skirt is null)
         {
-            frame.Draw(this, feet, Height, Facing);
+            frame.Draw(this, feet, Height, Facing, 0, _breath);
             return;
         }
 
@@ -1448,7 +1466,7 @@ public partial class WalkerFigure : TownPiece
         _skirt.SetShaderParameter("ripple", _skirtRipple * swayPx);
         _skirt.SetShaderParameter("ripple_phase", Phase * 2);
         _skirt.SetShaderParameter("keep_x", frame.KeepX ?? 1e9f);
-        frame.DrawPadded(this, feet, Height, Facing, swayPx * 2.5f);
+        frame.DrawPadded(this, feet, Height, Facing, swayPx * 2.5f, _breath);
     }
 
     /// <summary>当前该画的跑步帧：步相每 π 一步，偶数步 <c>run_a</c>、奇数步 <c>run_b</c>（背面加 <c>back_</c> 前缀）；缺帧时返回 null，退回行走帧。</summary>

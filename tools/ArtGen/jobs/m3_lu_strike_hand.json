@@ -1,0 +1,20 @@
+{
+  "set": "m3_lu_strike_hand",
+  "model": "animagine4",
+  "steps": 32,
+  "cfg": 5.0,
+  "seeds": [11, 22, 33, 44, 55, 66],
+  "negative": "lowres, bad anatomy, bad hands, extra digits, extra fingers, fused fingers, missing fingers, open palm, extra limbs, vertical pole, text, watermark, blurry",
+  "note": "M3 打磨：陆青禾出手帧第三步，只重绘握篙的手（去掉原竖篙残段，手改为横握竹篙）。",
+  "jobs": [
+    {
+      "name": "lu_strike_hand",
+      "source": "out/m3_lu_strike_pole/lu_strike_pole.png",
+      "erase": [{"rect": [548, 238, 580, 258]}, {"rect": [548, 302, 576, 316]}],
+      "mask": [{"ellipse": [563, 280, 40, 44]}],
+      "feather": 6,
+      "prompt": "1girl, solo, adult woman, hanfu, cream long sleeves, red inner cuffs, right hand clenched in a fist tightly gripping a horizontal green bamboo pole, thrusting the pole forward, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.85
+    }
+  ]
+}

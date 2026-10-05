@@ -1,0 +1,518 @@
+{
+  "set": "m3_tang_hair",
+  "model": "animagine4",
+  "steps": 32,
+  "cfg": 5.0,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "negative": "lowres, bad anatomy, ponytail, high ponytail, flowing hair, hair blowing in wind, floating hair, hair ribbon streamers, long ribbons, bald, hat, crown, extra head, text, watermark, blurry",
+  "note": "M3 打磨：唐守亭迈步与战斗帧原为高马尾（提示词误写 high ponytail），与基础形象的头顶圆发髻、红绳、长发垂背不符。擦掉飞起的马尾，头顶重绘为发髻。",
+  "jobs": [
+    {
+      "name": "tang_walk_a_hair",
+      "source": "out/m3_cast_walk/tang_shouting_walk_a_44__raw.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              175,
+              60
+            ],
+            [
+              372,
+              60
+            ],
+            [
+              380,
+              128
+            ],
+            [
+              335,
+              145
+            ],
+            [
+              300,
+              205
+            ],
+            [
+              255,
+              265
+            ],
+            [
+              175,
+              268
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              175,
+              60
+            ],
+            [
+              372,
+              60
+            ],
+            [
+              380,
+              128
+            ],
+            [
+              335,
+              145
+            ],
+            [
+              300,
+              205
+            ],
+            [
+              255,
+              265
+            ],
+            [
+              175,
+              268
+            ]
+          ]
+        },
+        {
+          "ellipse": [
+            395,
+            100,
+            65,
+            42
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, middle-aged man, scar on cheek, fierce expression, black hair in a small round topknot bun on the crown of the head tied with a short red cord, long straight black hair hanging down behind the back, white shirt, long dark grey sleeveless vest, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 1.0
+    },
+    {
+      "name": "tang_walk_b_hair",
+      "source": "out/m3_cast_walk/tang_shouting_walk_b_44__raw.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              175,
+              60
+            ],
+            [
+              372,
+              60
+            ],
+            [
+              380,
+              128
+            ],
+            [
+              335,
+              145
+            ],
+            [
+              300,
+              205
+            ],
+            [
+              255,
+              265
+            ],
+            [
+              175,
+              268
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              175,
+              60
+            ],
+            [
+              372,
+              60
+            ],
+            [
+              380,
+              128
+            ],
+            [
+              335,
+              145
+            ],
+            [
+              300,
+              205
+            ],
+            [
+              255,
+              265
+            ],
+            [
+              175,
+              268
+            ]
+          ]
+        },
+        {
+          "ellipse": [
+            395,
+            100,
+            65,
+            42
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, middle-aged man, scar on cheek, fierce expression, black hair in a small round topknot bun on the crown of the head tied with a short red cord, long straight black hair hanging down behind the back, white shirt, long dark grey sleeveless vest, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 1.0
+    },
+    {
+      "name": "tang_windup_hair",
+      "source": "out/m3_cast_frames/tang_shouting_windup_22__raw.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              30,
+              250
+            ],
+            [
+              320,
+              85
+            ],
+            [
+              380,
+              85
+            ],
+            [
+              368,
+              165
+            ],
+            [
+              330,
+              215
+            ],
+            [
+              292,
+              262
+            ],
+            [
+              292,
+              300
+            ],
+            [
+              170,
+              440
+            ],
+            [
+              80,
+              500
+            ],
+            [
+              30,
+              500
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              30,
+              250
+            ],
+            [
+              320,
+              85
+            ],
+            [
+              380,
+              85
+            ],
+            [
+              368,
+              165
+            ],
+            [
+              330,
+              215
+            ],
+            [
+              292,
+              262
+            ],
+            [
+              292,
+              300
+            ],
+            [
+              170,
+              440
+            ],
+            [
+              80,
+              500
+            ],
+            [
+              30,
+              500
+            ]
+          ]
+        },
+        {
+          "ellipse": [
+            392,
+            112,
+            62,
+            42
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, middle-aged man, scar on cheek, fierce expression, black hair in a small round topknot bun on the crown of the head tied with a short red cord, long straight black hair hanging down behind the back, white shirt, dark grey sleeveless vest, fighting stance, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 1.0
+    },
+    {
+      "name": "tang_strike_hair",
+      "source": "out/m3_cast_frames/tang_shouting_strike_22__raw.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              275,
+              55
+            ],
+            [
+              480,
+              55
+            ],
+            [
+              470,
+              108
+            ],
+            [
+              425,
+              140
+            ],
+            [
+              385,
+              200
+            ],
+            [
+              365,
+              262
+            ],
+            [
+              330,
+              295
+            ],
+            [
+              275,
+              265
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              275,
+              55
+            ],
+            [
+              480,
+              55
+            ],
+            [
+              470,
+              108
+            ],
+            [
+              425,
+              140
+            ],
+            [
+              385,
+              200
+            ],
+            [
+              365,
+              262
+            ],
+            [
+              330,
+              295
+            ],
+            [
+              275,
+              265
+            ]
+          ]
+        },
+        {
+          "ellipse": [
+            468,
+            108,
+            62,
+            42
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, middle-aged man, scar on cheek, fierce expression, black hair in a small round topknot bun on the crown of the head tied with a short red cord, long straight black hair hanging down behind the back, white shirt, dark grey sleeveless vest, lunging attack, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 1.0
+    },
+    {
+      "name": "tang_hit_hair",
+      "source": "out/m3_cast_frames/tang_shouting_hit_22__raw.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              262,
+              85
+            ],
+            [
+              345,
+              85
+            ],
+            [
+              345,
+              140
+            ],
+            [
+              318,
+              172
+            ],
+            [
+              300,
+              262
+            ],
+            [
+              242,
+              335
+            ],
+            [
+              195,
+              325
+            ],
+            [
+              228,
+              240
+            ],
+            [
+              275,
+              170
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "poly": [
+            [
+              262,
+              85
+            ],
+            [
+              345,
+              85
+            ],
+            [
+              345,
+              140
+            ],
+            [
+              318,
+              172
+            ],
+            [
+              300,
+              262
+            ],
+            [
+              242,
+              335
+            ],
+            [
+              195,
+              325
+            ],
+            [
+              228,
+              240
+            ],
+            [
+              275,
+              170
+            ]
+          ]
+        },
+        {
+          "ellipse": [
+            350,
+            112,
+            55,
+            40
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, middle-aged man, scar on cheek, pained expression, black hair in a small round topknot bun on the crown of the head tied with a short red cord, long straight black hair hanging down behind the back, white shirt, dark grey sleeveless vest, recoiling from a hit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 1.0
+    },
+    {
+      "name": "tang_down_hair",
+      "source": "out/m3_cast_frames/tang_shouting_down_11__raw.png",
+      "erase": [
+        {
+          "poly": [
+            [
+              430,
+              355
+            ],
+            [
+              500,
+              355
+            ],
+            [
+              500,
+              395
+            ],
+            [
+              430,
+              395
+            ]
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "ellipse": [
+            470,
+            398,
+            58,
+            48
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, middle-aged man, kneeling, head bowed, black hair in a small round topknot bun on the crown of the head tied with a short red cord, long straight black hair hanging down, white shirt, dark grey sleeveless vest, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.95
+    }
+  ]
+}
