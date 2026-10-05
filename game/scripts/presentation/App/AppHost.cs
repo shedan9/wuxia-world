@@ -67,7 +67,7 @@ public partial class AppHost : Node
 
         GetTree().NodeAdded += FocusOnHover;
         PerfProbe.Begin(this);
-        if (!GameSettings.Fullscreen && DevCapture.Output is null && PerfProbe.Output is null)
+        if ((!GameSettings.Fullscreen || DevCapture.Endure > 0) && DevCapture.Output is null && PerfProbe.Output is null)
         {
             EnterWindowed();
         }
@@ -162,6 +162,15 @@ public partial class AppHost : Node
         }
 
         var area = DisplayServer.ScreenGetUsableRect(DisplayServer.WindowGetCurrentScreen());
+        if (DevCapture.Endure > 0)
+        {
+            // 长时稳定性测试要跑两小时：窗口缩小放在屏幕右下角，少挡开发者的其他窗口。
+            var small = new Vector2I(area.Size.X * 2 / 5, area.Size.X * 2 / 5 * 9 / 16);
+            DisplayServer.WindowSetSize(small);
+            DisplayServer.WindowSetPosition(area.Position + area.Size - small - new Vector2I(24, 24));
+            return;
+        }
+
         var size = new Vector2I((int)(area.Size.X * 0.8f), (int)(area.Size.Y * 0.8f));
         DisplayServer.WindowSetSize(size);
         DisplayServer.WindowSetPosition(area.Position + (area.Size - size) / 2);

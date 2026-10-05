@@ -1,4 +1,5 @@
 using Godot;
+using WuxiaWorld.Application.Persistence;
 using WuxiaWorld.Domain.World;
 using WuxiaWorld.Game.Presentation.App;
 
@@ -16,12 +17,20 @@ public partial class ExplorationScreen
     private static readonly Key[] SoakKeys =
         [Key.J, Key.Escape, Key.C, Key.Escape, Key.I, Key.Escape, Key.P, Key.Escape, Key.M, Key.M, Key.Escape, Key.Escape, Key.F5];
 
-    private sealed record SoakPoint(int Visit, string Map, long Nodes, long Objects, long Orphans, long Managed, long Private, long WorkingSet, int Connections);
+    private sealed record SoakPoint(int Visit, string Map, long Nodes, long Objects, long Orphans, long Managed, long Private, long WorkingSet, int Connections,
+        double Minutes, int Frames, double FrameP99, double FrameMax);
+
+    /// <summary>长时稳定性：本图这段漫游的逐帧耗时（毫秒），窗口最小化期间的帧不计。</summary>
+    private static readonly List<double> EndureFrames = [];
+
+    /// <summary>长时稳定性：窗口最小化（不绘制）累计的秒数。</summary>
+    private static double _endureHidden;
 
     private static readonly List<SoakPoint> SoakSamples = [];
     private static readonly Dictionary<string, string> SoakSeen = new(StringComparer.Ordinal);
     private static readonly List<string> SoakProblems = [];
     private static string? _soakWorld;
+    private static int _soakLoads;
     private static ulong _soakStart;
 
     private async void SoakVisit()
@@ -66,21 +75,58 @@ public partial class ExplorationScreen
             CloseModal();
         }
 
+        if (DevCapture.Endure > 0)
+        {
+            // 长时稳定性：在本图用漫游的寻路走一段，期间记帧耗时。
+            EndureFrames.Clear();
+            _strollLeft = DevCapture.EndureStroll;
+            _strollHome = _view.HeroGround;
+            _strollLast = null;
+            _strolling = true;
+            while (_strolling && IsInsideTree() && !_leaving)
+            {
+                await SoakFrames(1);
+            }
+
+            if (!IsInsideTree() || _leaving)
+            {
+                SoakProblems.Add($"第 {visit} 次（{World.MapId}）：漫游中离开了本图");
+                return;
+            }
+        }
+
         // 让 QueueFree 的界面真正释放后再采样。
         await SoakFrames(12);
         SoakSamples.Add(TakeSoakSample(visit));
         SoakDiffNodes(visit);
-        if (visit % 10 == 0 || visit == 1)
+        if (visit % 10 == 0 || visit == 1 || DevCapture.Endure > 0)
         {
             var s = SoakSamples[^1];
-            GD.Print($"[soak] 第 {visit} 次 {s.Map}：节点 {s.Nodes}，对象 {s.Objects}，孤立节点 {s.Orphans}，托管 {s.Managed / 1024} KB，"
-                + $"私有内存 {s.Private / 1024 / 1024} MB，工作集 {s.WorkingSet / 1024 / 1024} MB，常驻信号连接 {s.Connections}");
+            GD.Print($"[soak] 第 {visit} 次 {s.Map}（{s.Minutes:0.0} 分）：节点 {s.Nodes}，对象 {s.Objects}，孤立节点 {s.Orphans}，托管 {s.Managed / 1024} KB，"
+                + $"私有内存 {s.Private / 1024 / 1024} MB，工作集 {s.WorkingSet / 1024 / 1024} MB，常驻信号连接 {s.Connections}"
+                + (s.Frames > 0 ? $"，漫游 {s.Frames} 帧 P99 {s.FrameP99:0.0} 毫秒、最长 {s.FrameMax:0.0} 毫秒" : ""));
         }
 
-        if (visit >= DevCapture.Soak)
+        if (DevCapture.Endure > 0 ? SoakSamples[^1].Minutes >= DevCapture.Endure : visit >= DevCapture.Soak)
         {
             SoakReport(maps.Count);
             return;
+        }
+
+        if (DevCapture.Endure > 0 && DevCapture.EndureLoadEvery > 0 && visit % DevCapture.EndureLoadEvery == 0)
+        {
+            // 读回本次到图时的快速存档：经读档路径（新会话、重新载入探索页）重进本图。
+            var failed = false;
+            GameMenu.LoadInto(SaveSlot.Quick, m =>
+            {
+                failed = true;
+                SoakProblems.Add($"第 {visit} 次（{World.MapId}）：快速读档失败：{m}");
+            });
+            if (!failed)
+            {
+                _soakLoads++;
+                return;
+            }
         }
 
         var next = maps[(maps.IndexOf(World.MapId) + 1) % maps.Count];
@@ -154,9 +200,12 @@ public partial class ExplorationScreen
         System.GC.WaitForPendingFinalizers();
         long Monitor(Performance.Monitor m) => (long)Performance.GetMonitor(m);
         using var process = System.Diagnostics.Process.GetCurrentProcess();
+        var frames = EndureFrames.Order().ToList();
+        EndureFrames.Clear();
         return new SoakPoint(visit, World.MapId, Monitor(Performance.Monitor.ObjectNodeCount), Monitor(Performance.Monitor.ObjectCount),
             Monitor(Performance.Monitor.ObjectOrphanNodeCount), System.GC.GetTotalMemory(forceFullCollection: true), process.PrivateMemorySize64, process.WorkingSet64,
-            PersistentConnections());
+            PersistentConnections(), (Time.GetTicksMsec() - _soakStart) / 60000.0, frames.Count,
+            frames.Count > 0 ? frames[Math.Min(frames.Count - 1, (int)(frames.Count * 0.99))] : 0, frames.Count > 0 ? frames[^1] : 0);
     }
 
     /// <summary>常驻对象（场景树、视口、各自动加载节点与其子节点、渲染服务器）上的信号连接总数；页面重进后重复订阅会让它增长。</summary>
@@ -197,6 +246,11 @@ public partial class ExplorationScreen
             // 单次采样会碰上正在播放的音效播放器、未消失的提示条等瞬时节点：同一张图末几轮的最小值仍高于首几轮的最大值才算增长。
             foreach (var map in first.Select(s => s.Map).Distinct())
             {
+                if (!last.Any(s => s.Map == map))
+                {
+                    continue;
+                }
+
                 void Grow(string what, Func<SoakPoint, long> f, string hint = "")
                 {
                     var before = first.Where(s => s.Map == map).Max(f);
@@ -231,6 +285,19 @@ public partial class ExplorationScreen
             {
                 SoakProblems.Add($"对象数增长 {objects:0}（容差 200）");
             }
+
+            if (DevCapture.Endure > 0)
+            {
+                EndureTrend(steady);
+                var p99 = (first.Where(s => s.Frames > 0).Select(s => s.FrameP99).DefaultIfEmpty().Average(),
+                    last.Where(s => s.Frames > 0).Select(s => s.FrameP99).DefaultIfEmpty().Average());
+                GD.Print($"[soak] 漫游帧耗时 P99 均值：首 {rounds} 轮 {p99.Item1:0.0} 毫秒，末 {rounds} 轮 {p99.Item2:0.0} 毫秒；"
+                    + $"全程最长 {SoakSamples.Max(s => s.FrameMax):0.0} 毫秒，共 {SoakSamples.Sum(s => s.Frames)} 帧");
+                if (p99.Item2 > p99.Item1 * 1.5 + 2)
+                {
+                    SoakProblems.Add($"漫游帧耗时变慢：P99 均值 {p99.Item1:0.0} → {p99.Item2:0.0} 毫秒");
+                }
+            }
         }
         else
         {
@@ -248,9 +315,53 @@ public partial class ExplorationScreen
             GD.Print($"[soak] 问题：{p}");
         }
 
-        GD.Print($"[soak] 结束：换图 {DevCapture.SoakVisits} 次，用时 {(Time.GetTicksMsec() - _soakStart) / 1000.0:0} 秒，"
+        if (DevCapture.Endure > 0)
+        {
+            GD.Print($"[soak] 窗口最小化（只走逻辑、不绘制）累计 {_endureHidden / 60:0.0} 分钟，这段时间的帧不计入帧耗时");
+        }
+
+        GD.Print($"[soak] 结束：到图 {DevCapture.SoakVisits} 次（其中快速读档重进 {_soakLoads} 次），用时 {(Time.GetTicksMsec() - _soakStart) / 1000.0:0} 秒，"
             + $"主线阶段 {MainStage()}，问题 {SoakProblems.Count} 处");
         GetTree().Quit(SoakProblems.Count == 0 ? 0 : 5);
+    }
+
+    /// <summary>
+    /// 长时稳定性：稳定段内存与对象数随时间的增长斜率（按地图分组扣掉各图自身的均值后做最小二乘，避免不同地图的布景差异被当成增长）。
+    /// 私有内存每小时增长超过 32 MB、托管内存超过 2 MB 记为问题。
+    /// </summary>
+    private static void EndureTrend(List<SoakPoint> steady)
+    {
+        double Slope(Func<SoakPoint, double> f)
+        {
+            double num = 0, den = 0;
+            foreach (var g in steady.GroupBy(s => s.Map))
+            {
+                var t = g.Average(s => s.Minutes);
+                var y = g.Average(f);
+                foreach (var s in g)
+                {
+                    num += (s.Minutes - t) * (f(s) - y);
+                    den += (s.Minutes - t) * (s.Minutes - t);
+                }
+            }
+
+            return den > 0 ? num / den * 60 : 0;
+        }
+
+        var priv = Slope(s => s.Private / 1024.0 / 1024.0);
+        var managed = Slope(s => s.Managed / 1024.0 / 1024.0);
+        var working = Slope(s => s.WorkingSet / 1024.0 / 1024.0);
+        GD.Print($"[soak] 每小时增长斜率（{steady.Count} 个采样，{steady[0].Minutes:0}–{steady[^1].Minutes:0} 分）：私有内存 {priv:+0.0;-0.0} MB，"
+            + $"托管内存 {managed:+0.00;-0.00} MB，工作集 {working:+0.0;-0.0} MB，对象 {Slope(s => s.Objects):+0;-0}，节点 {Slope(s => s.Nodes):+0;-0}");
+        if (priv > 32)
+        {
+            SoakProblems.Add($"私有内存每小时增长 {priv:0.0} MB（容差 32 MB）");
+        }
+
+        if (managed > 2)
+        {
+            SoakProblems.Add($"托管内存每小时增长 {managed:0.00} MB（容差 2 MB）");
+        }
     }
 
     private string MainStage()
@@ -259,11 +370,22 @@ public partial class ExplorationScreen
         return main is not null && World.Quests.TryGetValue(main.Id, out var q) ? $"{q.Status}/{q.Stage}" : "无";
     }
 
+    /// <summary>
+    /// 等 n 帧。长时稳定性按逻辑帧等：窗口最小化时引擎不再绘制、<c>FramePostDraw</c> 不发，按画完的帧等会让走查停住
+    /// （2026-10-05 首次 2 小时实跑第 5 次到图后窗口被最小化，就此卡住）；逻辑帧照常推进，走查与内存采样不中断。
+    /// </summary>
     private async Task SoakFrames(int n)
     {
         for (var i = 0; i < n; i++)
         {
-            await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+            if (DevCapture.Endure > 0)
+            {
+                await ToSignal(GetTree(), SceneTree.SignalName.ProcessFrame);
+            }
+            else
+            {
+                await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+            }
         }
     }
 }

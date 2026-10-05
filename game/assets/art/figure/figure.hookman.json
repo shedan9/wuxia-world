@@ -1,0 +1,10 @@
+{
+  "id": "figure.hookman",
+  "foot": [
+    181.0,
+    807.6
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hookman.png",
+  "sha256": "3a0f84c40e60fc2f7e33c4e8acb10a510d070144b87b5df2b0e79a622859d9d4"
+}

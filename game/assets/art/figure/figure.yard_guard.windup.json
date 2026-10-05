@@ -1,0 +1,11 @@
+{
+  "id": "figure.yard_guard.windup",
+  "foot": [
+    305.4,
+    784.7
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.yard_guard.windup.png",
+  "sha256": "a70e34e40a5babc351c620a88c6d84771b92b945e0be0eb0704ce46797441567",
+  "frame_of": "figure.yard_guard"
+}

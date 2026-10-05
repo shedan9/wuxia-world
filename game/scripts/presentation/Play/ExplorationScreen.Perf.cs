@@ -152,6 +152,25 @@ public partial class ExplorationScreen
         }
 
         _strollLeft -= delta;
+        if (DevCapture.Endure > 0)
+        {
+            // 长时稳定性的漫游段：只走、记帧耗时，走满由 SoakVisit 接着采样与换图。
+            if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Minimized)
+            {
+                _endureHidden += delta;
+            }
+            else
+            {
+                EndureFrames.Add(delta * 1000);
+            }
+
+            if (_strollLeft <= 0)
+            {
+                _strolling = false;
+                return true;
+            }
+        }
+
         if (_strollLeft <= 0)
         {
             _strolling = false;

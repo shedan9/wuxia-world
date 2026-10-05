@@ -69,6 +69,19 @@ public static class DevCapture
     /// </summary>
     public static int Soak { get; private set; }
 
+    /// <summary>
+    /// 长时稳定性（<c>--endure=分钟</c>，开发计划 M3 验收“连续 2 小时无阻断异常”、架构文档 12.1 稳定性）：在耐久走查的基础上按时长连续跑——
+    /// 每到一图开关各界面并快速存档后，用漫游的寻路在交互点之间走 <see cref="EndureStroll"/> 秒，再采样内存与这段漫游的帧耗时；
+    /// 每 <see cref="EndureLoadEvery"/> 次到图改为按 F9 读回刚才的快速存档（走读档路径重进本图）。到时后按耐久走查同样的比较出结论，另算内存随时间的增长斜率。
+    /// </summary>
+    public static double Endure { get; private set; }
+
+    /// <summary>长时稳定性每到一图漫游几秒（<c>--endure-stroll=秒</c>，缺省 45）。</summary>
+    public static double EndureStroll { get; private set; } = 45;
+
+    /// <summary>长时稳定性每几次到图改为快速读档一次（<c>--endure-load=N</c>，缺省 5；0 不读档）。</summary>
+    public static int EndureLoadEvery { get; private set; } = 5;
+
     /// <summary>耐久走查已经到过的地图次数（跨场景累计）。</summary>
     public static int SoakVisits { get; set; }
 
@@ -278,6 +291,16 @@ public static class DevCapture
                     break;
                 case "--soak":
                     Soak = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--endure":
+                    Endure = double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    Soak = int.MaxValue;
+                    break;
+                case "--endure-stroll":
+                    EndureStroll = double.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
+                    break;
+                case "--endure-load":
+                    EndureLoadEvery = int.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                     break;
                 case "--hold":
                     Hold = value;

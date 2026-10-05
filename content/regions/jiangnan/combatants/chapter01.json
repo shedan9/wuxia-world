@@ -18,7 +18,7 @@
     "overrides": { "max_hp": 125 },
     "tags": ["hook"],
     "ai": "ai.skirmisher",
-    "art_id": "figure.escort"
+    "art_id": "figure.hookman"
   },
   {
     "id": "combatant.enemy.yard_guard",
@@ -29,7 +29,7 @@
     "overrides": { "max_hp": 240 },
     "tags": ["armored", "blade"],
     "ai": "ai.guardian",
-    "art_id": "figure.escort"
+    "art_id": "figure.yard_guard"
   },
   {
     "id": "combatant.enemy.tang_shouting",

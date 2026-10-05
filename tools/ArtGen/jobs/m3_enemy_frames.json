@@ -1,0 +1,106 @@
+{
+  "set": "m3_enemy_frames",
+  "note": "M3-02 飞钩手、护院的战斗关键姿势（参照格局部重绘，参数同 m3_cast_frames；参照为 m3_enemy_figures 选定的 hookman_b·111 与 yard_guard_b·99）",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "init": "reference",
+  "strength": 0.9,
+  "style": {
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe"
+  },
+  "jobs": [
+    {
+      "name": "hookman_windup",
+      "reference": "out/m3_enemy_figures/hookman_b_111__raw.png",
+      "reference_pose": "guard",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, lean wiry adult man, narrow sharp face, thin moustache, black hair in a tight bun, dark olive green short jacket, narrow sleeves, black leather bracers, brown cloth sash, grey-brown baggy trousers, leg wraps, black shoes, coil of rope with a small iron hook, drawing back the arm to throw the rope hook, focused expression"
+    },
+    {
+      "name": "hookman_strike",
+      "reference": "out/m3_enemy_figures/hookman_b_111__raw.png",
+      "reference_pose": "guard",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, lean wiry adult man, narrow sharp face, thin moustache, black hair in a tight bun, dark olive green short jacket, narrow sleeves, black leather bracers, brown cloth sash, grey-brown baggy trousers, leg wraps, black shoes, coil of rope with a small iron hook, throwing the rope hook forward, rope flying forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "hookman_hit",
+      "reference": "out/m3_enemy_figures/hookman_b_111__raw.png",
+      "reference_pose": "guard",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, lean wiry adult man, narrow sharp face, thin moustache, black hair in a tight bun, dark olive green short jacket, narrow sleeves, black leather bracers, brown cloth sash, grey-brown baggy trousers, leg wraps, black shoes, coil of rope with a small iron hook, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "hookman_down",
+      "reference": "out/m3_enemy_figures/hookman_b_111__raw.png",
+      "reference_pose": "guard",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, lean wiry adult man, narrow sharp face, thin moustache, black hair in a tight bun, dark olive green short jacket, narrow sleeves, black leather bracers, brown cloth sash, grey-brown baggy trousers, leg wraps, black shoes, coil of rope with a small iron hook, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    },
+    {
+      "name": "yard_guard_windup",
+      "reference": "out/m3_enemy_figures/yard_guard_b_99__raw.png",
+      "reference_pose": "guard",
+      "pose": "windup",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, big stocky muscular adult man, full black beard, black hair in a topknot, sleeveless dark charcoal vest, bare muscular arms, black sash, charcoal black baggy trousers, leg wraps, brown cloth shoes, holding a chinese dao broadsword, drawing back to strike, focused expression, dao broadsword"
+    },
+    {
+      "name": "yard_guard_strike",
+      "reference": "out/m3_enemy_figures/yard_guard_b_99__raw.png",
+      "reference_pose": "guard",
+      "pose": "strike",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, big stocky muscular adult man, full black beard, black hair in a topknot, sleeveless dark charcoal vest, bare muscular arms, black sash, charcoal black baggy trousers, leg wraps, brown cloth shoes, holding a chinese dao broadsword, slashing the dao broadsword forward, lunging forward, fierce expression, dynamic pose"
+    },
+    {
+      "name": "yard_guard_hit",
+      "reference": "out/m3_enemy_figures/yard_guard_b_99__raw.png",
+      "reference_pose": "guard",
+      "pose": "hit",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, big stocky muscular adult man, full black beard, black hair in a topknot, sleeveless dark charcoal vest, bare muscular arms, black sash, charcoal black baggy trousers, leg wraps, brown cloth shoes, holding a chinese dao broadsword, hit by a blow, recoiling, staggering backwards, pained expression",
+      "strength": 0.95,
+      "control": 0.95
+    },
+    {
+      "name": "yard_guard_down",
+      "reference": "out/m3_enemy_figures/yard_guard_b_99__raw.png",
+      "reference_pose": "guard",
+      "pose": "down",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, big stocky muscular adult man, full black beard, black hair in a topknot, sleeveless dark charcoal vest, bare muscular arms, black sash, charcoal black baggy trousers, leg wraps, brown cloth shoes, holding a chinese dao broadsword, kneeling on one knee, exhausted, head down, one hand on the ground",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    }
+  ]
+}

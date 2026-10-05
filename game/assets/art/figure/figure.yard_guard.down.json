@@ -1,0 +1,11 @@
+{
+  "id": "figure.yard_guard.down",
+  "foot": [
+    171.7,
+    579.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.yard_guard.down.png",
+  "sha256": "6717b4a3b5ebfc2fa387d5ef0adb2dc444ffb0ccda62a4505e9d6e0674ff4563",
+  "frame_of": "figure.yard_guard"
+}

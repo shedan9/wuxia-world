@@ -1,0 +1,71 @@
+{
+  "set": "m3_enemy_figures",
+  "note": "M3-02 第一章另两类敌人的独立形象（此前飞钩手、护院与押运打手共用 figure.escort，战斗中分不清）。同押运打手的迎敌架势骨架；配色避开押运打手的赭红短打。",
+  "model": "animagine4",
+  "size": [
+    832,
+    1216
+  ],
+  "steps": 28,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66
+  ],
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, ninja, mask, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_short_b": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, ninja, mask, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe, western clothes, puffer jacket, biker, armor plates"
+  },
+  "jobs": [
+    {
+      "name": "hookman",
+      "style": "figure",
+      "pose": "guard",
+      "negative_style": "negative_short",
+      "prompt": "1boy, solo, lean wiry adult man, about 30 years old, narrow sharp face, thin moustache, cunning eyes, black hair in a tight bun with a dark grey cloth wrap, dark olive green short jacket, narrow sleeves, black leather bracers, coil of hemp rope slung across the chest, dark grey trousers, leg wraps, black shoes, holding an iron grappling hook on a rope, fighting stance"
+    },
+    {
+      "name": "yard_guard",
+      "style": "figure",
+      "pose": "guard",
+      "negative_style": "negative_short",
+      "prompt": "1boy, solo, big burly adult man, about 40 years old, heavy build, thick neck, full black beard, stern face, black hair in a topknot, brown padded leather vest with iron studs over a dark navy short jacket, wide leather belt, dark navy trousers, leg wraps, black boots, holding a chinese dao broadsword with both hands, fighting stance"
+    },
+    {
+      "name": "yard_guard_b",
+      "style": "figure",
+      "pose": "guard",
+      "negative_style": "negative_short_b",
+      "seeds": [
+        77,
+        88,
+        99,
+        111,
+        122,
+        133
+      ],
+      "prompt": "1boy, solo, big stocky adult man, about 40 years old, broad shoulders, thick arms, square face, short black beard, stern eyes, black hair in a topknot with a dark cloth band, dark navy cross-collar short jacket ending at the hips, narrow sleeves, sleeveless brown leather armor vest, wide dark sash, dark navy baggy trousers, leg wraps, black cloth shoes, holding a chinese dao broadsword in front with both hands, fighting stance"
+    },
+    {
+      "name": "hookman_b",
+      "style": "figure",
+      "pose": "guard",
+      "negative_style": "negative_short_b",
+      "seeds": [
+        77,
+        88,
+        99,
+        111
+      ],
+      "prompt": "1boy, solo, lean wiry adult man, about 30 years old, narrow sharp face, thin moustache, cunning eyes, black hair in a tight bun with a dark grey cloth wrap, dark olive green short jacket, narrow sleeves, black leather bracers, dark grey trousers, leg wraps, black shoes, coil of rope in one hand, small iron four-pronged grappling hook dangling from the other hand on a short rope, fighting stance"
+    }
+  ]
+}

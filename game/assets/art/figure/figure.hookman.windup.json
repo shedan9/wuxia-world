@@ -1,0 +1,11 @@
+{
+  "id": "figure.hookman.windup",
+  "foot": [
+    174.9,
+    827.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hookman.windup.png",
+  "sha256": "c176d1ebb1703e2c2019abfc1bd80e19231c2b2dee46286e3932575565386db0",
+  "frame_of": "figure.hookman"
+}
