@@ -122,6 +122,7 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | 环境声 4 段 | 河水 `amb.river`（两段溪流叠加，−24 LUFS）、风吹芦苇 `amb.reeds`（−27）、水镇街巷 `amb.town`（清晨鸟鸣 + 远处低通河水，−27）、客栈大堂 `amb.inn`（低通人声嘈杂 + 炉火 + 收拾碗盏，−28）；立体声 60 秒无缝循环 | `game/assets/audio/amb/` | 2026-10-02 入库；CLAP 听辨全部符合，窗口扫描未见人声、音乐、交通；**未经人耳试听** |
 | 环境声：后院夜 `amb.yard_night` | 夏夜虫鸣实录（高通 250 Hz 滤掉原录音背景里的雷雨低频，−29 LUFS），立体声 60 秒无缝循环；后院切磋用 | `game/assets/audio/amb/` | 2026-10-05 入库；CLAP 听辨“夜间虫鸣”排第一，逐窗扫描无可疑（叠芦苇风声的一版被扫出“飞机”嫌疑，未采用）；**未经人耳试听** |
 | 音效 51 个 | 界面（木键轻响、木鱼式确认、纸页、翻页、卷轴）、通知（铜钱入袋、木鱼一叩、小锣、铃）、脚步（泥石路 / 木地板 / 石板各 6 变体）、交互（衣料）、战斗（拔刀、兵刃破空 4、劈砍入肉 3、拳掌击中 3、兵刃相格 3、倒地、运气呼吸、衣料、蓄力、胜锣、败鼓）、旅行（摇橹入水、衣袂） | `game/assets/audio/sfx/`、`sfx_manifest.json`（每条记来源 ID 与 CLAP 结果） | 2026-10-02 入库；CLAP 听辨 0 个不符（三种路面连走均符合）；**未经人耳试听**，正式验收在 M3-06 |
+| 剧情演出音效 6 个 | 拍桌（掌击木桌 + 纸页层）、舱板下咳嗽、撬舱板的木头吱呀、踏浅滩水花、闸板落下、芦苇窸窣；对白演出提示调用（架构文档 9.4.18） | `game/assets/audio/sfx/cue.*.ogg`、`sfx_manifest.json` | 2026-10-05 入库；CLAP 听辨咳嗽、水花、闸板、木头吱呀符合；拍桌听成“木块敲击”（0.45）、芦苇听成“纸张沙沙”（0.98，同属窸窣类，换过 3 个素材仍如此）；**未经人耳试听** |
 
 | Freesound ID | 标题 | 作者 | 用于 |
 |---|---|---|---|
@@ -134,6 +135,7 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | [148849](https://freesound.org/people/iluppai/sounds/148849/) | 1ring | iluppai | `notify.skill` |
 | [162370](https://freesound.org/people/lewisisminted/sounds/162370/) | Punch #1.mp3 | lewisisminted | `battle.hit.blunt` |
 | [164315](https://freesound.org/people/Rickmk2/sounds/164315/) | Footsteps on wooden flooring.wav | Rickmk2 | `step.wood` |
+| [178615](https://freesound.org/people/Montacue/sounds/178615/) | The Rustle of a Bush | Montacue | `cue.reeds_rustle` |
 | [202107](https://freesound.org/people/spookymodem/sounds/202107/) | Unrolling Scroll.wav | spookymodem | `ui.close` |
 | [316643](https://freesound.org/people/bevibeldesign/sounds/316643/) | dishes clearing.aiff | bevibeldesign | `amb.inn` |
 | [326868](https://freesound.org/people/JohnBuhr/sounds/326868/) | Sword_Clash (7).wav | JohnBuhr | `battle.block` |
@@ -151,7 +153,9 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | [422513](https://freesound.org/people/Nightflame/sounds/422513/) | Swinging staff whoosh (strong) 04.wav | Nightflame | `battle.swing` |
 | [444920](https://freesound.org/people/NomadApe/sounds/444920/) | Fire crackling in fireplace | NomadApe | `amb.inn` |
 | [450628](https://freesound.org/people/kyles/sounds/450628/) | river or stream thick soft flow bubbly2.flac | kyles | `amb.river` |
+| [452609](https://freesound.org/people/kyles/sounds/452609/) | door wood old heavy kick open good impact 1 with rattle 1 without.wav | kyles | `cue.gate_drop` |
 | [455727](https://freesound.org/people/kyles/sounds/455727/) | crowd int medium murmur restaurant busy buffet dishes cutlery tinkling Montreal, Canada.flac | kyles | `amb.inn` |
+| [456814](https://freesound.org/people/Breviceps/sounds/456814/) | Creaking Wood | Breviceps | `cue.wood_creak` |
 | [464492](https://freesound.org/people/elynch0901/sounds/464492/) | Face/Body Being Punched | elynch0901 | `battle.hit.blunt` |
 | [471095](https://freesound.org/people/spycrah/sounds/471095/) | Sword clash 1.wav | spycrah | `battle.block` |
 | [474575](https://freesound.org/people/ethanchase7744/sounds/474575/) | Sword stab.wav | ethanchase7744 | `battle.hit.blade` |
@@ -163,13 +167,16 @@ AI 生成图在多数司法辖区可能无法取得著作权保护，别人复�
 | [577619](https://freesound.org/people/paulfabb/sounds/577619/) | Sword Drawing 1.wav | paulfabb | `battle.draw` |
 | [607215](https://freesound.org/people/jonopodmore/sounds/607215/) | Mokugyo.wav | jonopodmore | `notify.clue` |
 | [613960](https://freesound.org/people/Garuda1982/sounds/613960/) | strong wind on field with rustling reeds | Garuda1982 | `amb.reeds` |
-| [614081](https://freesound.org/people/mateusboga/sounds/614081/) | Opening a book | mateusboga | `ui.open` |
+| [614081](https://freesound.org/people/mateusboga/sounds/614081/) | Opening a book | mateusboga | `ui.open`、`cue.table_slap`（纸声层） |
 | [614924](https://freesound.org/people/Rimmer/sounds/614924/) | Bird song early morning long.wav | Rimmer | `amb.town` |
 | [682127](https://freesound.org/people/HenKonen/sounds/682127/) | Footsteps Dirt Road 1.wav | HenKonen | `step.dirt` |
 | [683185](https://freesound.org/people/NearTheAtmoshphere/sounds/683185/) | Power Up | NearTheAtmoshphere | `battle.charge` |
 | [692828](https://freesound.org/people/hollandm/sounds/692828/) | Woodblock-soft.wav | hollandm | `ui.confirm` |
+| [706380](https://freesound.org/people/agglow/sounds/706380/) | shaking-hit-table-hard.wav | agglow | `cue.table_slap` |
 | [707576](https://freesound.org/people/Garuda1982/sounds/707576/) | gentle river flow | Garuda1982 | `amb.river`、`amb.town` |
 | [717167](https://freesound.org/people/rrehl/sounds/717167/) | - Deep Breath | rrehl | `battle.heal` |
 | [742356](https://freesound.org/people/NoisyRedFox/sounds/742356/) | SingleKnock_Wood | NoisyRedFox | `ui.cancel` |
 | [757207](https://freesound.org/people/HenKonen/sounds/757207/) | Footsteps stone floor | HenKonen | `step.stone` |
 | [840321](https://freesound.org/people/Robo9418/sounds/840321/) | Wooden Short Click! | Robo9418 | `ui.move` |
+| [848383](https://freesound.org/people/riippumattog/sounds/848383/) | old man cough | riippumattog | `cue.cough` |
+| [861369](https://freesound.org/people/ChristopherJngs/sounds/861369/) | Splashing Footsteps Shallow Water | ChristopherJngs | `cue.splash` |

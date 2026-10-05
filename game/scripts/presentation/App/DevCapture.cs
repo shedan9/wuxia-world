@@ -100,6 +100,15 @@ public static class DevCapture
     /// </summary>
     public static Application.Dev.ChapterOnePoint? Jump { get; private set; }
 
+    /// <summary>
+    /// 演出核对（<c>--cue=对话 ID/节点 ID[,…]</c>，开发用）：进探索页后不开剧情，直接在布景上依次播放这几段演出（各段之间停 1 秒），
+    /// 配合 <c>--jump</c> 与 <c>--write-movie</c> 录像核对镜头与走位。
+    /// </summary>
+    public static string[] Cues { get; private set; } = [];
+
+    /// <summary>演出核对时主角先站到摆放表的这个位置（<c>--cue-hero=anchor:sluice</c>），模拟玩家走到事件锚点后开演。</summary>
+    public static string? CueHero { get; private set; }
+
     /// <summary>讨教人选（<c>--mentor=linghu|huang|xiao</c>，决定主角流派）；不给时同 <see cref="Companion"/>。</summary>
     public static string? Mentor { get; private set; }
 
@@ -311,6 +320,12 @@ public static class DevCapture
                 case "--jump":
                     Jump = Enum.Parse<Application.Dev.ChapterOnePoint>(value.Replace("_", "", StringComparison.Ordinal).Replace("-", "", StringComparison.Ordinal), ignoreCase: true);
                     NewGame = true;
+                    break;
+                case "--cue-hero":
+                    CueHero = value;
+                    break;
+                case "--cue":
+                    Cues = value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                     break;
                 case "--mentor":
                     Mentor = value;

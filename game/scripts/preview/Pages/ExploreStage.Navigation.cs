@@ -149,8 +149,8 @@ public abstract partial class ExploreStage
         var best = ClickMarkerPick;
         foreach (var (data, marker) in _interactions)
         {
-            var top = _world.Position + marker.Position * _zoom;
-            var foot = _world.Position + TownView.P(data.Position, StepZ(data.Position)) * _zoom;
+            var top = _world.Position + marker.Position * _world.Scale.X;
+            var foot = _world.Position + TownView.P(data.Position, StepZ(data.Position)) * _world.Scale.X;
             var d = Geometry2D.GetClosestPointToSegment(screen, foot, top).DistanceTo(screen);
             if (d < best)
             {
@@ -179,7 +179,7 @@ public abstract partial class ExploreStage
             }
         }
 
-        var projected = (screen - _world.Position) / _zoom;
+        var projected = (screen - _world.Position) / _world.Scale.X;
         var ground = TownView.GroundAt(projected, StepZ(Hero.Ground));
         if (WalkToGround(ground))
         {

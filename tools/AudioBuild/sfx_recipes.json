@@ -47,7 +47,13 @@
     "battle.defeat": {"expect": "a drum hit", "from": [{"id": 139507, "pitch": -5}], "lp": 3000, "max": 2.6, "fade": 1.2, "level": -4},
 
     "travel.oar": {"expect": "rowing a boat with oars, water splashes", "from": [{"id": 478973, "start": 2.3, "end": 7.2}], "layer": [{"id": 480840, "at": 0.0, "rel": -6}], "fade": 0.6, "level": -6},
-    "travel.whoosh": {"expect": "cloth rustling", "from": [{"id": 19291, "start": 0.4, "end": 1.6}], "fade": 0.3, "level": -8}
+    "travel.whoosh": {"expect": "cloth rustling", "from": [{"id": 19291, "start": 0.4, "end": 1.6}], "fade": 0.3, "level": -8},
+    "cue.table_slap": {"expect": "a hand slapping a wooden table", "from": [{"id": 706380}], "layer": [{"id": 614081, "at": 0.0, "rel": -12}], "max": 0.7, "fade": 0.2, "level": -4},
+    "cue.cough": {"expect": "an old man coughing", "from": [{"id": 848383}], "lp": 5000, "fade": 0.1, "level": -8},
+    "cue.wood_creak": {"expect": "creaking wood", "from": [{"id": 456814}], "max": 1.8, "fade": 0.35, "level": -6},
+    "cue.splash": {"expect": "footsteps splashing in shallow water", "from": [{"id": 861369, "start": 3.4, "end": 5.4}], "fade": 0.3, "level": -4},
+    "cue.gate_drop": {"expect": "a heavy wooden board falling", "from": [{"id": 452609, "start": 0.0, "end": 1.7}], "fade": 0.4, "level": -3},
+    "cue.reeds_rustle": {"expect": "rustling reeds and bushes", "from": [{"id": 178615}], "hp": 180, "fade": 0.08, "level": -10}
   },
   "ambience": {
     "amb.river": {"expect": "a flowing river stream", "seconds": 60, "fade": 4, "lufs": -24, "layers": [

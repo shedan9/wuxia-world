@@ -39,6 +39,7 @@ public partial class DialogueOverlay : Control
     private readonly PlaySession _play;
     private readonly DialogueSession _session;
     private readonly Action<DialogueSession> _ended;
+    private readonly ICuePlayer? _cues;
     private Tween? _typing;
     private double _stageTimer = -1;
     private double _walkKeyDelay = 0.3;
@@ -68,11 +69,12 @@ public partial class DialogueOverlay : Control
     private Tween? _blackoutTween;
     private Control? _log;
 
-    public DialogueOverlay(PlaySession play, DialogueSession session, Action<DialogueSession> ended)
+    public DialogueOverlay(PlaySession play, DialogueSession session, Action<DialogueSession> ended, ICuePlayer? cues = null)
     {
         _play = play;
         _session = session;
         _ended = ended;
+        _cues = cues;
     }
 
     private DialogueRunner Runner => _session.Runner;
@@ -286,6 +288,7 @@ public partial class DialogueOverlay : Control
     {
         _stageTimer = -1;
         _autoTimer = -1;
+        _cues?.Finish();
         AppHost.Instance.Voice.Stop();
         Runner.Continue();
         Show(first: false);
@@ -319,6 +322,7 @@ public partial class DialogueOverlay : Control
         _play.History.Add(("选择", view.Option.Text));
         _choices.Visible = false;
         _autoTimer = -1;
+        _cues?.Finish();
         AppHost.Instance.Voice.Stop();
         Runner.Choose(view.Index);
         Show(first: false);
@@ -422,13 +426,21 @@ public partial class DialogueOverlay : Control
     }
 
     /// <summary>
-    /// 演出提示：标题卡与带文字的特写停下等玩家读完；场景、动作与无字特写收起对话框、拉上黑边停一拍后自动继续
-    /// （正式镜头与动作属 M3，这里先给出节奏上的停顿），制作说明不显示。
+    /// 演出提示：标题卡与带文字的特写停下等玩家读完；场景、动作与无字特写收起对话框、拉上黑边，
+    /// 有演出脚本（<see cref="CueScripts"/>）的按脚本摇镜头、让人物走位，演完自动继续，没有的停一拍；点击可跳到演出结束。
+    /// 有演出的节点两侧立绘退下，让出画面。制作说明不显示。
     /// </summary>
     private void ShowStage(DialogueNode node, bool first)
     {
         _typing?.Kill();
         _box.Visible = false;
+        var cue = _cues?.Play(Runner.Definition.Id, node, Runner.State);
+        if (cue is not null && node.Kind != StageKind.Title)
+        {
+            Tint(_portrait, Colors.Transparent);
+            Tint(_hero, Colors.Transparent);
+        }
+
         if (node.Caption is { Length: > 0 } caption && node.Kind is StageKind.Title or StageKind.Closeup)
         {
             Bars(node.Kind == StageKind.Title);
@@ -454,8 +466,10 @@ public partial class DialogueOverlay : Control
             {
                 _cardPanel.RemoveThemeStyleboxOverride("panel");
                 _cardText.RemoveThemeColorOverride("font_color");
-                _card.OffsetTop = -300;
-                _card.OffsetBottom = 40;
+
+                // 特写的纸卡放在画面下部，让出镜头推近的物件（告示、船牌）。
+                _card.OffsetTop = cue is null ? -300 : 130;
+                _card.OffsetBottom = cue is null ? 40 : 400;
             }
 
             _card.Visible = true;
@@ -474,7 +488,11 @@ public partial class DialogueOverlay : Control
         }
 
         Bars(true);
-        if (node.Kind == StageKind.Scene)
+        if (cue is not null)
+        {
+            // 立绘已在上面退下。
+        }
+        else if (node.Kind == StageKind.Scene)
         {
             // 场景镜头：人物退到一边，让出画面。
             Tint(_portrait, Colors.Transparent);
@@ -500,7 +518,7 @@ public partial class DialogueOverlay : Control
             StageKind.Action => 1.1,
             _ => 0.9,
         };
-        _stageTimer = Motion.Enabled ? hold : 0.01;
+        _stageTimer = cue is { } length ? length + 0.25 : Motion.Enabled ? hold : 0.01;
     }
 
     /// <summary>黑场淡入 / 淡出。</summary>

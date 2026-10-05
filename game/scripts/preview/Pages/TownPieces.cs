@@ -1178,6 +1178,15 @@ public partial class WalkerFigure : TownPiece
         else if (dy > -0.2f * len) Back = false;
     }
 
+    /// <summary>
+    /// 剧情演出指定的姿势帧（<c>&lt;形象&gt;.&lt;姿势&gt;</c>，如 <c>down</c> 跪倒、<c>guard</c> 迎敌）：有这一帧时代替站姿与行走帧，
+    /// 没有时照常画。为 null 时不指定。
+    /// </summary>
+    public string? Pose { get; set; }
+
+    /// <summary>剧情演出的腾空高度（逻辑像素，向上为正）：人物整身抬起，地上的影子不动（跃起、落下）。</summary>
+    public float Lift { get; set; }
+
     /// <summary>坐姿时凳面高度（世界单位）。</summary>
     private const float SeatZ = 45;
 
@@ -1276,7 +1285,7 @@ public partial class WalkerFigure : TownPiece
         {
             // 长篙、衣摆、迈开的腿可能超出占位外框：按贴图（含行走帧与背面）两个朝向的外框合并，避免翻身、换帧时被裁或排序跳变。
             var box = art.Bounds(Vector2.Zero, Height, 1).Merge(art.Bounds(Vector2.Zero, Height, -1));
-            foreach (var key in FrameKeys)
+            foreach (var key in Pose is { } pose ? FrameKeys.Append(pose) : FrameKeys)
             {
                 if (FigureArt.Find($"{ArtId}.{key}") is { } frame)
                 {
@@ -1291,10 +1300,18 @@ public partial class WalkerFigure : TownPiece
     public override void _Draw()
     {
         DrawSetTransform(-Position, 0, Vector2.One);
-        Cel.GroundShadow(this, Ground, 34, 26, 0.3f, Z);
-        DrawSetTransform(Vector2.Zero, 0, Vector2.One);
+        // 腾空时影子留在地上、随高度收小变淡。
+        var air = Mathf.Clamp(Lift / 220, 0, 0.6f);
+        Cel.GroundShadow(this, Ground, 34 * (1 - air), 26 * (1 - air), 0.3f * (1 - air), Z);
+        DrawSetTransform(new Vector2(0, -Lift), 0, Vector2.One);
         if (FigureArt.Find(ArtId) is { } art)
         {
+            if (Pose is { } pose && FigureArt.Find($"{ArtId}.{pose}") is { } posed)
+            {
+                DrawFrame(posed, Vector2.Zero);
+                return;
+            }
+
             var step = Moving ? Mathf.Abs(Mathf.Sin(Phase)) : 0;
             if (Moving && Running && RunFrame() is { } run)
             {

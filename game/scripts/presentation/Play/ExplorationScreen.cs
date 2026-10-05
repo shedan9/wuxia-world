@@ -35,6 +35,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
     private Control? _hud;
     private Control _overlay = null!;
     private DialogueOverlay? _dialogue;
+    private CueDirector _cues = null!;
     private Control? _modal;
 
     /// <summary>HUD 建立时的世界修订号；暂停菜单里分配潜能、换装备、买卖后回到探索页时据此刷新 HUD。</summary>
@@ -117,6 +118,8 @@ public partial class ExplorationScreen : Control, IExploreDriver
         _overlay = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _overlay.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_overlay);
+        _cues = new CueDirector(_view, staging, _overlay);
+        AddChild(_cues);
 
         Toasts(play.PendingToasts.Concat(arrivalNotes).ToList());
 
@@ -137,6 +140,18 @@ public partial class ExplorationScreen : Control, IExploreDriver
         if (DevCapture.Stroll > 0)
         {
             CallDeferred(MethodName.StrollVisit);
+            return;
+        }
+
+        if (DevCapture.Cues.Length > 0)
+        {
+            // 演出核对：不开剧情，直接在布景上播放指定的演出。
+            if (DevCapture.CueHero is { } spot && _staging.Points.TryGetValue(spot, out var at))
+            {
+                _view.PlaceHero(at + new Vector2(-60, 60));
+            }
+
+            Callable.From(() => _cues.PlaySequence(DevCapture.Cues, World)).CallDeferred();
             return;
         }
 
@@ -573,7 +588,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     private void ShowDialogue(DialogueSession session)
     {
-        _dialogue = new DialogueOverlay(_play, session, Finish);
+        _dialogue = new DialogueOverlay(_play, session, Finish, _cues);
         _hudLayer.Visible = false;
         _view.HudVisible = false;
         _view.ToastsPaused = true;
@@ -582,6 +597,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     private void Finish(DialogueSession session)
     {
+        _cues.EndDialogue();
         var r = Game.FinishDialogue(session);
         _dialogue?.QueueFree();
         _dialogue = null;

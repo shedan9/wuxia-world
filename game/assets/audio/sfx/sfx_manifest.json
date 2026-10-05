@@ -1041,6 +1041,133 @@
         "p": 1.0,
         "ok": true
       }
+    },
+    "cue.table_slap": {
+      "file": "cue.table_slap.ogg",
+      "seconds": 0.556,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 706380,
+          "title": "shaking-hit-table-hard.wav",
+          "author": "agglow",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/agglow/sounds/706380/"
+        },
+        {
+          "freesound": 614081,
+          "title": "Opening a book",
+          "author": "mateusboga",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/mateusboga/sounds/614081/"
+        }
+      ],
+      "clap": {
+        "expect": "a hand slapping a wooden table",
+        "top": "a wooden block knock",
+        "p": 0.45,
+        "ok": false
+      }
+    },
+    "cue.cough": {
+      "file": "cue.cough.ogg",
+      "seconds": 0.871,
+      "peak_db": -8.0,
+      "sources": [
+        {
+          "freesound": 848383,
+          "title": "old man cough",
+          "author": "riippumattog",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/riippumattog/sounds/848383/"
+        }
+      ],
+      "clap": {
+        "expect": "an old man coughing",
+        "top": "an old man coughing",
+        "p": 0.99,
+        "ok": true
+      }
+    },
+    "cue.wood_creak": {
+      "file": "cue.wood_creak.ogg",
+      "seconds": 1.8,
+      "peak_db": -6.0,
+      "sources": [
+        {
+          "freesound": 456814,
+          "title": "Creaking Wood",
+          "author": "Breviceps",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Breviceps/sounds/456814/"
+        }
+      ],
+      "clap": {
+        "expect": "creaking wood",
+        "top": "a wooden block knock",
+        "p": 0.43,
+        "ok": true
+      }
+    },
+    "cue.splash": {
+      "file": "cue.splash.ogg",
+      "seconds": 2.0,
+      "peak_db": -4.0,
+      "sources": [
+        {
+          "freesound": 861369,
+          "title": "Splashing Footsteps Shallow Water",
+          "author": "ChristopherJngs",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/ChristopherJngs/sounds/861369/"
+        }
+      ],
+      "clap": {
+        "expect": "footsteps splashing in shallow water",
+        "top": "footsteps splashing in shallow water",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "cue.gate_drop": {
+      "file": "cue.gate_drop.ogg",
+      "seconds": 0.926,
+      "peak_db": -3.0,
+      "sources": [
+        {
+          "freesound": 452609,
+          "title": "door wood old heavy kick open good impact 1 with rattle 1 without.wav",
+          "author": "kyles",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/kyles/sounds/452609/"
+        }
+      ],
+      "clap": {
+        "expect": "a heavy wooden board falling",
+        "top": "a heavy wooden board falling",
+        "p": 1.0,
+        "ok": true
+      }
+    },
+    "cue.reeds_rustle": {
+      "file": "cue.reeds_rustle.ogg",
+      "seconds": 1.115,
+      "peak_db": -10.0,
+      "sources": [
+        {
+          "freesound": 178615,
+          "title": "The Rustle of a Bush",
+          "author": "Montacue",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Montacue/sounds/178615/"
+        }
+      ],
+      "clap": {
+        "expect": "rustling reeds and bushes",
+        "top": "paper rustling",
+        "p": 0.98,
+        "ok": false
+      }
     }
   },
   "ambience": {
@@ -1168,7 +1295,14 @@
           "license": "CC0 1.0",
           "url": "https://freesound.org/people/Defelozedd94/sounds/522299/"
         }
-      ]
+      ],
+      "clap": {
+        "expect": "crickets chirping at night",
+        "top": "crickets chirping at night",
+        "p": 1.0,
+        "ok": true,
+        "suspect_windows": 0
+      }
     }
   }
 }

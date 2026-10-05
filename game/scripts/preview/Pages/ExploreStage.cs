@@ -474,10 +474,17 @@ public abstract partial class ExploreStage : Control
     {
         var dt = (float)delta;
         StepRoute(delta);
-        MoveHero(dt);
+        if (!Scripted(Hero))
+        {
+            MoveHero(dt);
+        }
+
         for (var i = 0; i < _followers.Count; i++)
         {
-            FollowTrail(_followers[i], FollowGap * (i + 1), dt);
+            if (!Scripted(_followers[i].Figure))
+            {
+                FollowTrail(_followers[i], FollowGap * (i + 1), dt);
+            }
         }
 
         DepthSort.Apply(_pieces.Cast<ISortable>().Append(Hero).Concat(_followers.Select(f => f.Figure)).ToList());
@@ -710,9 +717,14 @@ public abstract partial class ExploreStage : Control
     private void UpdateOcclusion(float dt)
     {
         var walkers = _followers.Select(f => f.Figure).Prepend(Hero).ToArray();
+
+        // 演出镜头对准的地方（物件特写、人物走位）同样不许被近处的树、屋挡住。
+        var focus = CameraFocus is { } f ? TownView.P(f.Ground, StepZ(f.Ground)) : (Vector2?)null;
         foreach (var piece in _pieces)
         {
-            var hidden = piece.Occluder && walkers.Any(w => piece.ZIndex > w.ZIndex && piece.Covers(w));
+            var hidden = piece.Occluder && (walkers.Any(w => piece.ZIndex > w.ZIndex && piece.Covers(w))
+                || focus is { } at && piece.ScreenBox.End.Y > at.Y + 30 && piece.ScreenBox.Grow(-piece.ScreenBox.Size.X * 0.12f) is var box
+                    && (box.HasPoint(at + new Vector2(0, -60)) || box.HasPoint(at + new Vector2(0, -160))));
             var target = hidden ? 0.4f : 1f;
             var a = piece.Modulate.A;
             var next = Motion.Enabled ? Mathf.MoveToward(a, target, dt * 3.5f) : target;
@@ -725,15 +737,17 @@ public abstract partial class ExploreStage : Control
 
     private void UpdateCamera(float dt)
     {
-        var target = Hero.Position + new Vector2(0, -80);
-        var view = Size / _zoom;
+        // 演出对准某处时镜头追向那里（剧情演出，见 ExploreStage.Cues），否则跟随主角。
+        var target = CameraFocus is { } focus ? TownView.P(focus.Ground, StepZ(focus.Ground) + focus.Height) : Hero.Position + new Vector2(0, -80);
+        var zoom = ViewZoom(dt);
+        var view = Size / zoom;
         var b = _cameraBounds;
         target.X = view.X >= b.Size.X ? b.GetCenter().X : Mathf.Clamp(target.X, b.Position.X + view.X / 2, b.End.X - view.X / 2);
         target.Y = view.Y >= b.Size.Y ? b.GetCenter().Y : Mathf.Clamp(target.Y, b.Position.Y + view.Y / 2, b.End.Y - view.Y / 2);
-        _camera = _cameraPlaced && Motion.Enabled ? _camera.Lerp(target, 1 - Mathf.Exp(-7 * dt)) : target;
+        _camera = _cameraPlaced && Motion.Enabled ? _camera.Lerp(target, 1 - Mathf.Exp(-CameraRate * dt)) : target;
         _cameraPlaced = true;
-        _world.Scale = new Vector2(_zoom, _zoom);
-        _world.Position = (Size / 2 - _camera * _zoom).Round();
+        _world.Scale = new Vector2(zoom, zoom);
+        _world.Position = (Size / 2 - _camera * zoom).Round();
     }
 
     /// <summary>目标在画面外时，箭头停在屏幕边缘（避开四角 HUD）指向它。</summary>
@@ -751,7 +765,7 @@ public abstract partial class ExploreStage : Control
         }
 
         _pointer.Label = goal.Label;
-        var screen = _world.Position + TownView.P(goal.Ground, StepZ(goal.Ground) + goal.Height) * _zoom;
+        var screen = _world.Position + TownView.P(goal.Ground, StepZ(goal.Ground) + goal.Height) * _world.Scale.X;
         // 内框避开四角 HUD：左侧地点与目标追踪、右上小地图、下方队伍与快捷键。
         var inner = new Rect2(530, 110, Size.X - 530 - 380, Size.Y - 110 - 180);
         if (inner.HasPoint(screen))
