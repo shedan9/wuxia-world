@@ -211,6 +211,7 @@ public sealed partial class BattleScreen
                 if (animate)
                 {
                     Flash(view);
+                    HitSpark(d, view);
                     Float(view, $"−{d.Amount}", d.Crit ? UiPalette.Gilt : UiPalette.Surface, d.Crit ? 64 : 52, 0);
                 }
 
@@ -554,6 +555,19 @@ public sealed partial class BattleScreen
         }
 
         shake.TweenProperty(standee, "position", home, 0.03f / _speed);
+    }
+
+    private int _sparkSeed;
+
+    /// <summary>受击处的打击特效：形状按最近一次出招的招式标签与伤害类别（<see cref="HitFx.KindOf"/>），方向按出手者在左还是在右，暴击放大。</summary>
+    private void HitSpark(Damaged d, UnitView view)
+    {
+        var tags = _lastSkill is { } id && _engine.Content.Skills.TryGetValue(id, out var skill) ? skill.Tags : [];
+        var facing = _views.TryGetValue(d.Source, out var source) && source.FeetNow.X > view.FeetNow.X ? -1 : 1;
+        var frame = view.HomeFrame;
+        var center = frame.Position + new Vector2(frame.Size.X * 0.5f, frame.Size.Y * 0.48f);
+        var scale = view.Standee.Height / 300f * (d.Crit ? 1.35f : 1f);
+        HitFx.Play(_fx, center, HitFx.KindOf(tags, d.Kind == DamageKind.Internal), facing, scale, _speed, ++_sparkSeed);
     }
 
     private void Glow(UnitView view)

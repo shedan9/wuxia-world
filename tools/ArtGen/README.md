@@ -234,6 +234,8 @@ cd tools/ArtGen
 
 人物行走帧与战斗关键姿势（M3-02）：`.venv/Scripts/python figure_sheet.py jobs/m3_hero_frames.json [--only 名称前缀] [--preview]`。任务给出参照原图（`reference`，入库形象的 `__raw` 生成原图）、参照姿势（`reference_pose`）与目标姿势（`pose`，骨架定义在 `figure.py` 的 `POSES`）；`init: reference` + `strength 0.9` 配色最稳，大幅改姿势用 `strength 1.0`。提示词必须写入库形象的实际外观。选定后 `.venv/Scripts/python place.py out/<集>/<名>_<种子>.png figure.<人物>.<帧> --figure --frame-of figure.<人物>` 入库（沿用基础形象的缩放、脚底按骨盆对齐）。帧名：`walk_a`、`walk_b`、`back`、`back_walk_a`、`back_walk_b`、`run_a`、`run_b`、`back_run_a`、`back_run_b`（探索；跑步骨架 `run_front_a/b`、`back_run_a/b`，持篙人物用 `*_pole_*` 一套），`guard`、`windup`、`strike`、`hit`、`down`（战斗）；缺帧时引擎退回站姿。图中有竖直竹篙的人物（陆青禾）入库加 `--pole`，按竹青色找篙杆左缘写入 json 的 `keep_x`，探索里裙摆着色器不横移篙杆。
 
+持兵战斗帧（M3-02，2026-10-05 主角持剑）：AI 在手里直接画剑时剑形、长短、曲直每张都不一样（弯刀、木棍、光束、双剑），从底色重绘还会丢衣服配色，出手帧的张掌也改不成握拳。改为两步：`.venv/Scripts/python weapon.py jobs/m3_hero_sword_armed.json` 在已入库空手帧原图上按剑首 `pommel`、剑尖 `tip` 两点贴一把代码画的赛璐璐直剑（`canvas` 向右补宽放下伸出的剑身，`behind` 圆内保留原图手指压在剑柄上），输出 `out/<集>/<名>.png` 与参数记录；再 `.venv/Scripts/python inpaint.py jobs/m3_hero_sword_hand.json` 只重绘握剑的手（张掌改握拳 strength 0.85，轻修 0.5，剑身不进遮罩）。选定后用 `cutout.py` 抠图、在旁边 `.json` 写入 `pose`，再 `place.py ... figure.<人物>.sword_<姿势> --figure --frame-of figure.<人物>`；`place.py` 横向比例按高度算，补宽画布可直接入库。落在地上的兵器要放在鞋底所在地面线上、两踝 ±70 像素取样列之外，否则会被量成脚底、把人物抬离地面。
+
 2026-10-04 全员批量（任务 `m3_cast_frames.json`、`m3_cast_back.json`、`m3_cast_lu_fix.json`，308 张候选，选 64 帧）经验：
 - 长裙人物（陆青禾、黄蓉）的正面迈步在 strength 0.9 下几乎画成站姿；strength 1.0、骨架 0.95 且全程约束、提示词写“前脚从裙下迈出”后迈步出来了，但外衣配色漂移（陆青禾裙子变褐、长篙消失，黄蓉的米白前襟消失），与站姿交替会闪，未采用，改由引擎裙摆着色器补动感。背面迈步同理几乎不动。
 - 迎敌、跪倒用 strength 1.0 从底色起步时，浅色衣服（陆青禾米白长衣）全变成褐色；改回 `init: reference`、strength 0.95、control 0.95 能改动姿势且保住衣色。

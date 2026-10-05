@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.sword_guard",
+  "foot": [
+    175.9,
+    803.0
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.sword_guard.png",
+  "sha256": "dec8a0e39568341e538bd222d854c6f2136c9e42c88a52dd46eb5d2997c00786",
+  "frame_of": "figure.hero"
+}

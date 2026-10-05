@@ -1,0 +1,124 @@
+{
+  "set": "m3_hero_sword_armed",
+  "note": "M3-02 主角持剑帧第一步：在已入库空手帧原图上贴代码画的直剑（weapon.py），手部再由 inpaint.py 重绘。",
+  "jobs": [
+    {
+      "name": "hero_sword_guard",
+      "pose": "guard",
+      "source": "out/m3_hero_battle_s100/hero_guard_11__raw.png",
+      "canvas": [
+        1216,
+        1216
+      ],
+      "pommel": [
+        462,
+        530
+      ],
+      "tip": [
+        903,
+        254
+      ],
+      "behind": [
+        [
+          500,
+          505,
+          34
+        ],
+        [
+          535,
+          488,
+          30
+        ]
+      ]
+    },
+    {
+      "name": "hero_sword_windup",
+      "pose": "windup",
+      "source": "out/m3_hero_frames_v3/hero_windup_11__raw.png",
+      "canvas": [
+        1216,
+        1216
+      ],
+      "pommel": [
+        346,
+        542
+      ],
+      "tip": [
+        86,
+        992
+      ],
+      "behind": [
+        [
+          322,
+          584,
+          30
+        ]
+      ]
+    },
+    {
+      "name": "hero_sword_strike",
+      "pose": "strike",
+      "source": "out/m3_hero_frames_v3/hero_strike_22__raw.png",
+      "canvas": [
+        1216,
+        1216
+      ],
+      "pommel": [
+        666,
+        270
+      ],
+      "tip": [
+        1186,
+        288
+      ],
+      "behind": [
+        [
+          716,
+          272,
+          30
+        ]
+      ]
+    },
+    {
+      "name": "hero_sword_hit",
+      "pose": "hit",
+      "source": "out/m3_hero_hit_s95/hero_hit_11__raw.png",
+      "canvas": [
+        1216,
+        1216
+      ],
+      "pommel": [
+        213,
+        517
+      ],
+      "tip": [
+        52,
+        1012
+      ],
+      "behind": [
+        [
+          198,
+          563,
+          28
+        ]
+      ]
+    },
+    {
+      "name": "hero_sword_down",
+      "pose": "down",
+      "source": "out/m3_hero_battle_s100/hero_down_11__raw.png",
+      "canvas": [
+        1216,
+        1216
+      ],
+      "pommel": [
+        642,
+        1121
+      ],
+      "tip": [
+        1160,
+        1117
+      ]
+    }
+  ]
+}

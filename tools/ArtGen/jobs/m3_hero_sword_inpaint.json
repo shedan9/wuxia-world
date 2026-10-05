@@ -1,0 +1,488 @@
+{
+  "set": "m3_hero_sword_inpaint",
+  "model": "animagine4",
+  "steps": 32,
+  "cfg": 5.0,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, blurry, cropped, modern clothes, curved blade, curved sword, saber, katana, dao, broadsword, two swords, scabbard, sheath, japanese clothes, ink wash, drop shadow, cast shadow",
+  "note": "M3-02 主角持剑战斗帧：以已入库空手帧原图为底（向右补画布到 1088 宽），先画直剑引导形，再只重绘剑与握剑的手（SDXL inpaint）。",
+  "jobs": [
+    {
+      "name": "hero_sword_guard",
+      "pose": "guard",
+      "source": "out/m3_hero_battle_s100/hero_guard_11__raw.png",
+      "canvas": {
+        "size": [
+          1088,
+          1216
+        ],
+        "scale": 1.0,
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "paint": [
+        {
+          "line": [
+            478,
+            528,
+            556,
+            470
+          ],
+          "width": 12,
+          "color": [
+            58,
+            40,
+            30
+          ]
+        },
+        {
+          "line": [
+            541.1369573560235,
+            448.66716232276315,
+            570.8630426439765,
+            491.33283767723685
+          ],
+          "width": 9,
+          "color": [
+            120,
+            100,
+            62
+          ]
+        },
+        {
+          "line": [
+            556,
+            470,
+            800,
+            300
+          ],
+          "width": 15,
+          "color": [
+            214,
+            222,
+            228
+          ]
+        },
+        {
+          "line": [
+            563.32,
+            464.9,
+            782.9200000000001,
+            311.9
+          ],
+          "width": 3,
+          "color": [
+            140,
+            152,
+            166
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "line": [
+            478,
+            528,
+            800,
+            300
+          ],
+          "width": 70
+        },
+        {
+          "ellipse": [
+            515,
+            495,
+            62,
+            52
+          ]
+        }
+      ],
+      "feather": 5,
+      "prompt": "1boy, solo, adult man, 25 years old, black hair tied in a small topknot, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, dark indigo inner robe, black narrow inner sleeves, long cream sash, baggy indigo trousers, white leg wraps, black cloth shoes, fighting stance, both hands gripping the hilt of a straight jian sword at the waist, blade pointing forward and up toward the opponent, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.72
+    },
+    {
+      "name": "hero_sword_windup",
+      "pose": "windup",
+      "source": "out/m3_hero_frames_v3/hero_windup_11__raw.png",
+      "canvas": {
+        "size": [
+          1088,
+          1216
+        ],
+        "scale": 1.0,
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "paint": [
+        {
+          "line": [
+            338,
+            566,
+            312,
+            604
+          ],
+          "width": 12,
+          "color": [
+            58,
+            40,
+            30
+          ]
+        },
+        {
+          "line": [
+            333.49336800634,
+            618.6299395673407,
+            290.50663199366,
+            589.3700604326593
+          ],
+          "width": 9,
+          "color": [
+            120,
+            100,
+            62
+          ]
+        },
+        {
+          "line": [
+            312,
+            604,
+            150,
+            842
+          ],
+          "width": 15,
+          "color": [
+            214,
+            222,
+            228
+          ]
+        },
+        {
+          "line": [
+            307.14,
+            611.14,
+            161.34,
+            825.34
+          ],
+          "width": 3,
+          "color": [
+            140,
+            152,
+            166
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "line": [
+            338,
+            566,
+            150,
+            842
+          ],
+          "width": 70
+        },
+        {
+          "ellipse": [
+            322,
+            582,
+            52,
+            52
+          ]
+        }
+      ],
+      "feather": 5,
+      "prompt": "1boy, solo, adult man, 25 years old, black hair tied in a small topknot, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, dark indigo inner robe, black narrow inner sleeves, long cream sash, baggy indigo trousers, white leg wraps, black cloth shoes, martial arts stance, rear hand holding a straight jian sword low and back, blade pointing down behind him, front hand raised in sword-finger gesture, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.72
+    },
+    {
+      "name": "hero_sword_strike",
+      "pose": "strike",
+      "source": "out/m3_hero_frames_v3/hero_strike_22__raw.png",
+      "canvas": {
+        "size": [
+          1088,
+          1216
+        ],
+        "scale": 1.0,
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "paint": [
+        {
+          "line": [
+            690,
+            274,
+            742,
+            268
+          ],
+          "width": 12,
+          "color": [
+            58,
+            40,
+            30
+          ]
+        },
+        {
+          "line": [
+            740.483107681418,
+            242.0442869931526,
+            743.516892318582,
+            293.9557130068474
+          ],
+          "width": 9,
+          "color": [
+            120,
+            100,
+            62
+          ]
+        },
+        {
+          "line": [
+            742,
+            268,
+            1050,
+            250
+          ],
+          "width": 15,
+          "color": [
+            214,
+            222,
+            228
+          ]
+        },
+        {
+          "line": [
+            751.24,
+            267.46,
+            1028.44,
+            251.26
+          ],
+          "width": 3,
+          "color": [
+            140,
+            152,
+            166
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "line": [
+            690,
+            274,
+            1050,
+            250
+          ],
+          "width": 70
+        },
+        {
+          "ellipse": [
+            712,
+            270,
+            56,
+            52
+          ]
+        }
+      ],
+      "feather": 5,
+      "prompt": "1boy, solo, adult man, 25 years old, black hair tied in a small topknot, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, dark indigo inner robe, black narrow inner sleeves, long cream sash, baggy indigo trousers, white leg wraps, black cloth shoes, sword thrust, arm extended, thrusting a straight jian sword forward, blade level and straight, lunging forward, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.72
+    },
+    {
+      "name": "hero_sword_hit",
+      "pose": "hit",
+      "source": "out/m3_hero_hit_s95/hero_hit_11__raw.png",
+      "canvas": {
+        "size": [
+          1088,
+          1216
+        ],
+        "scale": 1.0,
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "paint": [
+        {
+          "line": [
+            206,
+            540,
+            192,
+            590
+          ],
+          "width": 12,
+          "color": [
+            58,
+            40,
+            30
+          ]
+        },
+        {
+          "line": [
+            216.61053000065482,
+            598.3858102224453,
+            167.38946999934518,
+            581.6141897775547
+          ],
+          "width": 9,
+          "color": [
+            120,
+            100,
+            62
+          ]
+        },
+        {
+          "line": [
+            192,
+            590,
+            100,
+            860
+          ],
+          "width": 15,
+          "color": [
+            214,
+            222,
+            228
+          ]
+        },
+        {
+          "line": [
+            189.24,
+            598.1,
+            106.44,
+            841.1
+          ],
+          "width": 3,
+          "color": [
+            140,
+            152,
+            166
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "line": [
+            206,
+            540,
+            100,
+            860
+          ],
+          "width": 70
+        },
+        {
+          "ellipse": [
+            198,
+            561,
+            50,
+            48
+          ]
+        }
+      ],
+      "feather": 5,
+      "prompt": "1boy, solo, adult man, 25 years old, black hair tied in a small topknot, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, dark indigo inner robe, black narrow inner sleeves, long cream sash, baggy indigo trousers, white leg wraps, black cloth shoes, hit by a blow, recoiling, arm flung back still gripping a straight jian sword pointing down, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.72
+    },
+    {
+      "name": "hero_sword_down",
+      "pose": "down",
+      "source": "out/m3_hero_battle_s100/hero_down_11__raw.png",
+      "canvas": {
+        "size": [
+          1088,
+          1216
+        ],
+        "scale": 1.0,
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "paint": [
+        {
+          "line": [
+            560,
+            1174,
+            640,
+            1172
+          ],
+          "width": 12,
+          "color": [
+            58,
+            40,
+            30
+          ]
+        },
+        {
+          "line": [
+            639.4801039688103,
+            1146.0051984405197,
+            640.5198960311897,
+            1197.9948015594803
+          ],
+          "width": 9,
+          "color": [
+            120,
+            100,
+            62
+          ]
+        },
+        {
+          "line": [
+            640,
+            1172,
+            940,
+            1166
+          ],
+          "width": 15,
+          "color": [
+            214,
+            222,
+            228
+          ]
+        },
+        {
+          "line": [
+            649.0,
+            1171.82,
+            919.0,
+            1166.42
+          ],
+          "width": 3,
+          "color": [
+            140,
+            152,
+            166
+          ]
+        }
+      ],
+      "mask": [
+        {
+          "line": [
+            560,
+            1174,
+            940,
+            1166
+          ],
+          "width": 54
+        }
+      ],
+      "feather": 5,
+      "prompt": "1boy, solo, adult man, 25 years old, black hair tied in a small topknot, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, dark indigo inner robe, black narrow inner sleeves, long cream sash, baggy indigo trousers, white leg wraps, black cloth shoes, kneeling on one knee, exhausted, head down, a straight jian sword lying on the ground in front of him, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.72
+    }
+  ]
+}

@@ -84,12 +84,21 @@ public partial class BattleStandee : Control
     private int _poseToken;
 
     /// <summary>
+    /// 手持兵器的帧组（如 <c>sword</c>）：同一形象按所学流派换一套战斗帧（<c>&lt;形象&gt;.sword_guard</c> 等），
+    /// 主角学剑术时持剑、学拳掌或内功时空手。该组缺某一帧时退回空手的同名帧。
+    /// </summary>
+    public string? Armed { get; init; }
+
+    private FigureArt? Frame(string pose) =>
+        (Armed is { } armed ? FigureArt.Find($"{ArtId}.{armed}_{pose}") : null) ?? FigureArt.Find($"{ArtId}.{pose}");
+
+    /// <summary>
     /// 当前该画的形象（M3-02 战斗关键姿势）：在做的动作（<c>windup</c> 蓄势、<c>strike</c> 出手、<c>hit</c> 受击、<c>down</c> 倒下）
-    /// 有对应帧（<c>&lt;形象&gt;.&lt;姿势&gt;</c>）就画它，否则画战斗待机 <c>&lt;形象&gt;.guard</c>，再没有就画全身站姿；缺帧的人物不受影响。
+    /// 有对应帧（<c>&lt;形象&gt;.&lt;姿势&gt;</c>，持兵器时先找 <see cref="Armed"/> 组）就画它，否则画战斗待机 <c>guard</c>，再没有就画全身站姿；缺帧的人物不受影响。
     /// </summary>
     private FigureArt? BodyArt => ArtId is null
         ? null
-        : (_pose is { } pose ? FigureArt.Find($"{ArtId}.{pose}") : null) ?? FigureArt.Find($"{ArtId}.guard") ?? FigureArt.Find(ArtId);
+        : (_pose is { } pose ? Frame(pose) : null) ?? Frame("guard") ?? FigureArt.Find(ArtId);
 
     /// <summary>当前所画形象贴图在节点局部坐标中的外框；没有贴图（剪影、机关框）时为 null。</summary>
     public Rect2? ArtRect

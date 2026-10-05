@@ -40,7 +40,7 @@ public sealed class UnitView
     /// <summary>已从场上撤下（倒下后淡出完毕或直接隐去）。</summary>
     private bool _gone;
 
-    public UnitView(BattleUnit unit, string name)
+    public UnitView(BattleUnit unit, string name, string? armed = null)
     {
         Id = unit.Id;
         Side = unit.Side;
@@ -59,7 +59,7 @@ public sealed class UnitView
             : (Mechanism ? UiPalette.TextMuted : UiPalette.PanelDark.Lightened(0.15f));
         Standee = new BattleStandee
         {
-            Tone = tone, FacingLeft = unit.Side == Side.Enemy, Mechanism = Mechanism, Height = height,
+            Tone = tone, FacingLeft = unit.Side == Side.Enemy, Mechanism = Mechanism, Height = height, Armed = armed,
             // 占位模板没有形象时，剧情人物（char.*）用探索里同一张全身形象（figure.<人物>），没有才画剪影。
             ArtId = unit.Template.ArtId ?? (unit.Id.StartsWith("char.", StringComparison.Ordinal)
                 && Art.FigureArt.Find("figure." + unit.Id["char.".Length..]) is not null ? "figure." + unit.Id["char.".Length..] : null),

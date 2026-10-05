@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.sword_hit",
+  "foot": [
+    276.7,
+    790.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.sword_hit.png",
+  "sha256": "07f6f4df1b6320d82517d75786b7f3f49261a322ea13e9b443ec40c4e7bb81b5",
+  "frame_of": "figure.hero"
+}

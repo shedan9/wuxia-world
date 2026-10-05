@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.sword_down",
+  "foot": [
+    268.6,
+    536.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.sword_down.png",
+  "sha256": "3712b6ce17a88c9e18a1479a8583f657871a1115ee23b0174b62bb63b6cf90f4",
+  "frame_of": "figure.hero"
+}

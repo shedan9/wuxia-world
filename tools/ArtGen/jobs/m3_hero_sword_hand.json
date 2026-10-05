@@ -1,0 +1,86 @@
+{
+  "set": "m3_hero_sword_hand",
+  "model": "animagine4",
+  "steps": 32,
+  "cfg": 5.0,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66
+  ],
+  "negative": "lowres, bad anatomy, bad hands, extra digits, extra fingers, fused fingers, missing fingers, open palm, extra limbs, text, watermark, blurry, glow, light beam, curved blade, katana",
+  "note": "M3-02 主角持剑帧第二步：只重绘握剑的手（出手帧张掌改握拳）。",
+  "jobs": [
+    {
+      "name": "hero_sword_strike_hand",
+      "source": "out/m3_hero_sword_armed/hero_sword_strike.png",
+      "mask": [
+        {
+          "ellipse": [
+            708,
+            272,
+            60,
+            50
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, adult man, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, black narrow inner sleeves, arm extended, right hand clenched in a fist tightly gripping the hilt of a straight sword, sword thrust, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.85
+    },
+    {
+      "name": "hero_sword_guard_hand",
+      "source": "out/m3_hero_sword_armed/hero_sword_guard.png",
+      "mask": [
+        {
+          "ellipse": [
+            515,
+            497,
+            66,
+            48
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, adult man, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, black narrow inner sleeves, both hands gripping the hilt of a straight sword at the waist, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.5
+    },
+    {
+      "name": "hero_sword_windup_hand",
+      "source": "out/m3_hero_sword_armed/hero_sword_windup.png",
+      "mask": [
+        {
+          "ellipse": [
+            322,
+            586,
+            42,
+            44
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, adult man, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, black narrow inner sleeves, hand clenched in a fist gripping the hilt of a straight sword, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.5
+    },
+    {
+      "name": "hero_sword_hit_hand",
+      "source": "out/m3_hero_sword_armed/hero_sword_hit.png",
+      "mask": [
+        {
+          "ellipse": [
+            198,
+            565,
+            40,
+            42
+          ]
+        }
+      ],
+      "feather": 6,
+      "prompt": "1boy, solo, adult man, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, black narrow inner sleeves, hand clenched in a fist gripping the hilt of a straight sword, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+      "strength": 0.5
+    }
+  ]
+}

@@ -74,7 +74,10 @@ public sealed partial class BattleScreen
 
     private UnitView AddView(BattleUnit unit)
     {
-        var view = new UnitView(unit, DisplayName(unit.Id));
+        // 带剑术招式的人物用持剑帧组（有该组帧的形象才生效，如学剑术的主角；令狐冲的基础帧本就持剑）。
+        var skills = _engine.Content.Skills;
+        var armed = unit.Skills.Any(id => skills.TryGetValue(id, out var skill) && skill.HasTag("sword")) ? "sword" : null;
+        var view = new UnitView(unit, DisplayName(unit.Id), armed);
         _figures.AddChild(view.Standee);
         _huds.AddChild(view.Hud);
         _huds.AddChild(view.Intent);

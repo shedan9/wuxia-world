@@ -263,7 +263,9 @@ def place_figure(args, src: Path, record: dict, art_dir: Path, game_dir: Path) -
     from figure import CANVAS, POSES
 
     pose = POSES[record["pose"]]
-    kx, ky = image.width / CANVAS[0], image.height / CANVAS[1]
+    # 生成画布可能向右补宽（inpaint.py 的 canvas，如持剑帧伸出的剑身），横向比例按高度算，补宽部分不影响骨架坐标。
+    ky = image.height / CANVAS[1]
+    kx = ky
     anchor = (pose[8], pose[11]) if record["pose"] == "sit" or args.frame_of else (pose[10], pose[13])
     foot_x = (anchor[0][0] + anchor[1][0]) / 2 * kx
     feet_cols = np.zeros(image.width, dtype=bool)

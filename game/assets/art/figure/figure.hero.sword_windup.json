@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.sword_windup",
+  "foot": [
+    253.2,
+    794.1
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.sword_windup.png",
+  "sha256": "3126a8de51b6203f78e43a21ddcdde69fd2bb1344caae73e5c0be425af49349d",
+  "frame_of": "figure.hero"
+}

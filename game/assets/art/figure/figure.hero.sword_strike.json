@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.sword_strike",
+  "foot": [
+    216.4,
+    832.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.sword_strike.png",
+  "sha256": "f82bce86bba05eae02cd1ce530de1986d3cbd113545c8f1120ee6fd51b2661a4",
+  "frame_of": "figure.hero"
+}
