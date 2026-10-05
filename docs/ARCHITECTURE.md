@@ -273,6 +273,8 @@ M2 第一批（2026-10-01，世界规则层）实际落地的结构，规格见 
 | `src/WuxiaWorld.Domain/World/` | `WorldState`（可存档世界状态、深拷贝与状态哈希）、`Condition` / `Conditions`（条件原语）、`WorldEffect`（效果原语与事务结果）、`Definitions`（任务、对白、地图、地区事件、路线、物品目录、店铺、成长设置、人物、新游戏）、`WorldContent`（索引）、`WorldRules`（效果执行、任务状态机、事件筛选与人物占用、店铺买卖、升级换算与旧档补齐）、`GrowthRules`（潜能、装备、装配、修炼与战斗模板推导）、`DialogueRunner`（对话图执行） |
 | `src/WuxiaWorld.Application/World/GameSession.cs` | 一局游戏的会话：对话、交互、场景切换与战斗结算均在副本上执行后整体提交 |
 | `src/WuxiaWorld.Application/Persistence/SaveGame.cs` | 存档槽、存档头、`ISaveStore` 端口、读档相容性检查 `SaveCompatibility` |
+| `src/WuxiaWorld.Application/Persistence/SaveResume.cs` | 读档后恢复成可玩会话：相容检查、出生点校正、旧档成长补齐与说明汇总（游戏读档与旧档回归测试共用） |
+| `tests/Fixtures/saves/` | 旧档回归样本：历史版本真实代码写下的第一章存档（见第 11 节） |
 | `src/WuxiaWorld.Infrastructure/Saves/FileSaveStore.cs` | JSON 文件存档：校验和、临时文件替换、备份回退、结构版本迁移 |
 | `src/WuxiaWorld.Infrastructure/Content/` | 新增 `ContentFiles`（文件枚举、共用内容版本、文本表合并）、`WorldBundle` 与 `WorldContentLoader`、`WorldContentValidator` |
 | `content/world/new_game.json`、`content/characters/characters.json`、`content/characters/anchors.json`、`content/shared/items/catalog.json` | 新游戏、人物定义（经典人物以 `story_anchor` 引用剧情锚点，未选定写 `pending`）、经典人物剧情锚点（`StoryAnchorDefinition`，见 9.4.3）、物品目录（战斗物品须在目录中有条目；装备带固定加成） |
@@ -1060,6 +1062,13 @@ M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读
 首期不接入云存档，后续在文件适配器上增加同步，不改变领域存档结构。
 
 M2 第一批实现（2026-10-01，`FileSaveStore`）：存档文件为 `{"checksum":…,"payload":{"header":…,"world":…}}`，校验和为 payload 原文的 SHA-256，存档头另记世界状态哈希，读档后复核。槽位文件 `manual_01`–`manual_10`、`quick`、`auto_1`–`auto_3`，各带 `.bak`；自动槽取空槽或写入序号最旧者。写入顺序：写 `.tmp` 并落盘 → 回读复核 → 正式文件有效时用 `File.Replace` 把它转为 `.bak`，正式文件已损坏时直接覆盖、不让坏文件顶掉有效备份；任何失败保留原有效存档并返回原因。读取：正式文件损坏、截断或被改动时退回 `.bak` 并在结果中说明；结构版本更新者拒绝加载；旧版本按 `ISaveMigration` 逐版迁移 JSON，原文件另存 `.vN.bak`（2026-10-02 起当前结构版本 4：v1 → v2 补世界状态的 `cultivation` 与 `builds` 空字段，读档后再按内容补齐旧档成长数据，见 9.4.2，迁移样本测试用 v1 结构的讨教后存档；v2 → v3 补到过的小地图 `visited`，旧档只能补上当前所在的地图，其余地标下次到达时记下，见 6.5，迁移样本测试用 v2 结构的选好同行者后存档；v3 → v4 补阵位 `formation` 与同行记录 `companions`，按队伍次序取默认格位、在队伙伴经验与主角持平，见 9.4.4，迁移样本测试用 v3 结构的章末另加一名同行者的存档）。`SaveCompatibility` 列出当前内容中已不存在的地图、物品、任务、任务阶段、人物与途中事件，读档界面据此拒绝或要求映射。时间戳只作显示；断电式中断以截断文件模拟，真实掉电与缩略图尚未测试。2026-10-02 存读档界面接入（9.4.1）：存档目录为 `user://saves`（Windows 下 `%APPDATA%\Godot\app_userdata\武侠世界\saves`），存档头的游戏版本暂记 `m2-dev`。2026-10-02 补删除与缩略图：`ISaveStore.Delete` 删除槽位的正式文件、`.bak`、`.tmp`、迁移前原件 `.vN.bak` 与缩略图（槽位主干互不为前缀），空槽再删也算成功；`WriteThumbnail` / `ReadThumbnail` 读写 `<槽位>.s<写入序号>.jpg`，按序号对应存档，正式存档已换而缩略图没跟上时不会张冠李戴，写缩略图时只留正式存档与备份对应的两张；缩略图先写临时文件再改名，写不成或读不出只影响卡片显示，不影响存档加载。2026-10-03 进程中断实测（M2 第十三批）：`tools/SaveCrashTest` 让子进程用 `FileSaveStore` 对同一槽位连续写档、每写成一份打印确认，父进程随机时刻强杀后读槽位，要求读得出、校验通过且写入序号不小于最后确认的一份；Windows 上 `File.Replace` 被打断时正式文件可能缺失，此时由 `.bak` 接上（200 轮中出现 3 次），残留的 `.tmp` 由下次写入覆盖。进程强杀不等于掉电，系统缓存未落盘的情形仍待真实断电测试。2026-10-03（M3-05）存档头加 `play_seconds`（累计游戏时长，只供显示）：属可选字段，旧存档缺此项按 0 读入，结构版本仍为 4；但旧版程序按“不认识的字段即拒绝”读不了新写的存档（结构版本本就不承诺向旧版程序兼容）。
+
+2026-10-05 旧档迁移回归（M3 第十八批，对应 M3 验收“存档恢复和旧档迁移回归通过”与 12.3“涉及老档必须带迁移样本”）：
+
+- **样本**：`tests/Fixtures/saves/v{结构版本}.{位置}.json` 共 19 份，是用历史版本的真实代码沿第一章写下的快速存档（在临时工作树检出旧提交，用当时的走查器 / `ChapterOneRoute` 走到各处后以当时的 `FileSaveStore` 写档，生成代码不入库）。v1 取自 `1523447^`（加入成长之前）、v2 取自 `3e7f6ff^`（加入大地图与伙伴之前），各 7 处：会面后、讨教后（大堂）、河滩做完支线查证、码头启程前、押运队战后、副页保管前、章末；v4 取自 `7e8b810`（后院地图之前，讨教与切磋都在大堂），5 处：会面后、讨教后（大堂）、码头启程前、副页保管前、章末。v3 只在 `3e7f6ff` 一次提交内存在过，玩家手里没有，不设样本。样本按原始字节入库（`.gitattributes` 设 `-text`，校验和不受换行转换影响），一经入库不再改写；以后升结构版本或改动会影响旧档的内容（地图、事件搬家、任务阶段）时，用改动前的代码补一组样本。
+- **读档共用一段**：读档后的相容检查、出生点校正、旧档成长补齐与说明汇总从游戏层 `PlaySession.Load` 抽到 `src/WuxiaWorld.Application/Persistence/SaveResume.cs`（`SaveResume.Resume` → `SaveResumeResult`），游戏与测试走同一段代码。
+- **回归测试** `OldSaveRegressionTests`：每份样本读入 → 断言迁移与否、迁移前原件 `.vN.bak`、内容版本说明、v1 的成长补齐说明，以及迁移补出的主角构成、到过的地图、阵位与同行记录 → 用当前内容从样本所在处走到章末（主线与支线均完成）→ 当前版本另存再读，不再迁移、世界哈希不变；另有一项核对后院改版前在大堂的讨教后存档读入后，切磋入口在后院可找到。`ChapterOneRoute` 为此在“回大堂选同行者”一步只在人确在后院时才出后院。
+- **导出包实测**：v1 讨教后、v2 河滩支线查证后、v4 讨教后三份样本放进临时存档目录，以 `--continue --autoplay=80 --walk` 真实行走读档续玩，均读入并给出迁移说明、主线走完、无行走问题。
 
 ## 12. 性能、测试与工程约束
 

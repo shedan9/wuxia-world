@@ -55,6 +55,7 @@ public sealed class ChapterOneRoute(GameSession game)
     public const string MainQuest = "quest.main.01.jiangnan_guest";
     public const string SideQuest = "quest.side.01.missing_ferryman";
     public const string FerryRoute = "route.jiangnan.luwan_to_old_ferry";
+    public const string YardMap = "map.jiangnan.inn_yard";
 
     /// <summary>可选的同行者 / 讨教人选（选项 ID 的末段）。</summary>
     public static readonly IReadOnlyList<string> Companions = ["linghu", "huang", "xiao"];
@@ -192,7 +193,11 @@ public sealed class ChapterOneRoute(GameSession game)
                 PlayAuto(); // 切磋点评
             }
 
-            Exit("to_hall");
+            // 后院改版前的旧档（讨教在大堂）读入后人已在大堂，不必再从后院回来。
+            if (Game.World.MapId == YardMap)
+            {
+                Exit("to_hall");
+            }
 
             if (Side && FinishSideSteps)
             {

@@ -91,44 +91,16 @@ public sealed class PlaySession
 
         var store = OpenStore();
         var read = store.Read(slot);
-        if (read.Game is not { } save)
-        {
-            error = read.Error ?? "存档无法读取";
-            return null;
-        }
-
         var rules = new WorldRules(world.ToContent());
-        var problems = SaveCompatibility.Check(save.World, rules.Content);
-        if (problems.Count > 0)
+        var resumed = SaveResume.Resume(read, rules, new GrowthRules(rules, combat.ToContent()), world.ContentVersion);
+        if (resumed.Game is not { } game)
         {
-            error = "存档与当前内容不相容：" + string.Join("；", problems.Take(4));
+            error = resumed.Error;
             return null;
         }
 
-        var game = new GameSession(rules, save.World, new GrowthRules(rules, combat.ToContent()));
-        var list = new List<string>(read.Notes);
-        if (read.FromBackup)
-        {
-            list.Add("正式存档已损坏，已读取上一份备份");
-        }
-
-        if (save.Header.ContentVersion != world.ContentVersion)
-        {
-            list.Add("存档写于另一内容版本，已按当前内容继续");
-        }
-
-        if (game.RepairSpawn() is { } repaired)
-        {
-            list.Add(repaired);
-        }
-
-        if (game.UpgradeLegacy() is { } upgraded)
-        {
-            list.Add(upgraded);
-        }
-
-        notes = list;
-        return new PlaySession(game, world, combat, store) { PlaySeconds = save.Header.PlaySeconds };
+        notes = resumed.Notes;
+        return new PlaySession(game, world, combat, store) { PlaySeconds = read.Game!.Header.PlaySeconds };
     }
 
     private static bool LoadContent(out WorldBundle world, out CombatBundle combat, out string? error)

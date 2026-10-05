@@ -22,3 +22,6 @@ game/assets/**/*.otf filter=lfs diff=lfs merge=lfs -text
 # 保留 .gitkeep 为普通文件
 **/.gitkeep !filter !diff !merge text
 art_source/**/*.md !filter !diff !merge text
+
+# 旧档回归样本：校验和按原始字节计算，不做换行转换
+tests/Fixtures/saves/*.json -text
