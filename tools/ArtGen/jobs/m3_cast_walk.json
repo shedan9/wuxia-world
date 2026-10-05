@@ -1,0 +1,115 @@
+{
+  "set": "m3_cast_walk",
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "init": "reference",
+  "strength": 0.9,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress"
+  },
+  "note": "M3 演出：唐守亭、押运打手、杜三篙的正面行走（押运打手另有跑步）与黄蓉坐姿，参照格局部重绘（figure_sheet.py），参数同 m3_cast_frames。",
+  "jobs": [
+    {
+      "name": "tang_shouting_walk_a",
+      "reference": "out/m0_figures/tang_shouting_11__raw.png",
+      "reference_pose": "guard",
+      "pose": "walk_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_long",
+      "prompt": "1boy, solo, same man, middle-aged man, scar on cheek, fierce expression, long black hair in a high ponytail with red tie, white shirt, long dark grey sleeveless vest, red sash, white baggy trousers, black shoes, holding a chinese dao broadsword, broadsword lowered at his side, walking forward, striding, menacing"
+    },
+    {
+      "name": "escort_walk_a",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "walk_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, club held at his side, walking forward, striding"
+    },
+    {
+      "name": "escort_run_a",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "run_front_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, running forward, charging, leaning forward, dynamic pose"
+    },
+    {
+      "name": "du_sangao_walk_a",
+      "reference": "out/m2_figures/du_sangao_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "walk_pole_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, old man, about 60 years old, weathered tanned face, grey beard, grey hair in a small bun, thin, tired, ferryman, faded dark blue short jacket with patches, rolled sleeves, rope belt, rolled up grey trousers, bare shins, straw sandals, holding a tall bamboo pole, walking slowly, tired, leaning on the bamboo pole"
+    },
+    {
+      "name": "tang_shouting_walk_b",
+      "reference": "out/m0_figures/tang_shouting_11__raw.png",
+      "reference_pose": "guard",
+      "pose": "walk_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_long",
+      "prompt": "1boy, solo, same man, middle-aged man, scar on cheek, fierce expression, long black hair in a high ponytail with red tie, white shirt, long dark grey sleeveless vest, red sash, white baggy trousers, black shoes, holding a chinese dao broadsword, broadsword lowered at his side, walking forward, striding, menacing"
+    },
+    {
+      "name": "escort_walk_b",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "walk_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, club held at his side, walking forward, striding"
+    },
+    {
+      "name": "escort_run_b",
+      "reference": "out/m0_figures/escort_44__raw.png",
+      "reference_pose": "guard",
+      "pose": "run_front_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, rough adult man, long brown hair, dark blue headband, rust red short jacket, rolled sleeves, dark sash, dark brown baggy trousers, black shoes, holding a long wooden club, running forward, charging, leaning forward, dynamic pose"
+    },
+    {
+      "name": "du_sangao_walk_b",
+      "reference": "out/m2_figures/du_sangao_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "walk_pole_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, old man, about 60 years old, weathered tanned face, grey beard, grey hair in a small bun, thin, tired, ferryman, faded dark blue short jacket with patches, rolled sleeves, rope belt, rolled up grey trousers, bare shins, straw sandals, holding a tall bamboo pole, walking slowly, tired, leaning on the bamboo pole"
+    },
+    {
+      "name": "huang_rong_sit",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "sit",
+      "style": "sheet",
+      "negative_style": "negative_seated",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, sitting on a stone ledge, legs dangling, playful smile, winking",
+      "strength": 1.0,
+      "init": "background",
+      "control": 0.9
+    }
+  ]
+}

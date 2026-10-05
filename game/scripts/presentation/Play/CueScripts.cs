@@ -202,10 +202,10 @@ public static class CueScripts
             .At(1.05f).Pose("char.linghu_chong", "guard")
             .Hold(1.9f),
 
-        // 黄蓉不知何时已坐在水门的石栏上，晃着脚朝主角眨眼（坐姿帧未做，暂以站在闸桥上淡入代替）。
+        // 黄蓉不知何时已坐在水门的石栏上，朝主角笑（坐姿帧连着一块石墩，摆在闸门西柱外侧的堤沿上当石栏）。
         ["dlg.ch01.sluice_confrontation/cue.003"] = (c, q) => q
-            .At(0).Pan(W(2620, 0), rate: 2.2f, height: 180, zoom: 1.05f, seconds: 1.2f)
-            .At(0.5f).Appear("char.huang_rong", W(2610, -20), -1, fade: 0.6f)
+            .At(0).Pan(W(2540, 60), rate: 2.2f, height: 180, zoom: 1.05f, seconds: 1.2f)
+            .At(0.5f).Appear("char.huang_rong", W(2540, 70), -1, fade: 0.6f, pose: "sit")
             .Hold(2.2f),
 
         // 萧峰大步踏过浅滩，水花溅起老高。

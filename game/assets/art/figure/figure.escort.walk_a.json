@@ -1,0 +1,11 @@
+{
+  "id": "figure.escort.walk_a",
+  "foot": [
+    273.7,
+    808.8
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.escort.walk_a.png",
+  "sha256": "d76410d35fb08e55677fa29d534c19bd1615a4a09d9ce8442d4ac134bc3b3b93",
+  "frame_of": "figure.escort"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "figure.huang_rong.sit",
+  "foot": [
+    302.5,
+    645.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.huang_rong.sit.png",
+  "sha256": "401d1044a9e2b4518091af56be135a7d0b2b295bcfdc0f219567d9b6e5b37377",
+  "frame_of": "figure.huang_rong"
+}

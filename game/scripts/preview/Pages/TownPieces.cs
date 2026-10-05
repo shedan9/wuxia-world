@@ -1220,6 +1220,9 @@ public partial class WalkerFigure : TownPiece
         ["figure.linghu_chong"] = 0.45f,
     };
 
+    /// <summary>基础形象本身是迎敌架势的人物（入库时就是战斗姿势，不另做站姿）。</summary>
+    private static readonly HashSet<string> GuardBase = ["figure.tang_shouting", "figure.escort"];
+
     private static readonly Shader SkirtShader = GD.Load<Shader>("res://assets/shaders/figure_skirt.gdshader");
 
     private ShaderMaterial? _skirt;
@@ -1412,6 +1415,12 @@ public partial class WalkerFigure : TownPiece
         if (!Moving)
         {
             return idle;
+        }
+
+        if (GuardBase.Contains(ArtId))
+        {
+            // 基础形象是迎敌架势的人物（唐守亭、押运打手）：过步不能回到架势帧，两张迈步帧交替。
+            return Mathf.PosMod(Mathf.FloorToInt(Phase / Mathf.Pi), 2) == 0 ? a : b;
         }
 
         return Mathf.PosMod(Mathf.RoundToInt(Phase / (Mathf.Pi / 2)), 4) switch

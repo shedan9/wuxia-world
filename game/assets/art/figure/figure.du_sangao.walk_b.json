@@ -1,0 +1,11 @@
+{
+  "id": "figure.du_sangao.walk_b",
+  "foot": [
+    128.5,
+    852.0
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.du_sangao.walk_b.png",
+  "sha256": "5f58b403a4f3c73cea4ecd857632ce8fb6dc7bea5afb80f5e4703ec7db541fc7",
+  "frame_of": "figure.du_sangao"
+}
