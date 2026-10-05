@@ -58,9 +58,10 @@
     "scene": "inn",
     "safe_spawn": "door",
     "town": true,
-    "spawns": ["door", "hall"],
+    "spawns": ["door", "hall", "kitchen"],
     "exits": [
-      { "id": "out", "to": "map.jiangnan.luwan_street", "spawn": "inn_door" }
+      { "id": "out", "to": "map.jiangnan.luwan_street", "spawn": "inn_door" },
+      { "id": "to_yard", "to": "map.jiangnan.inn_yard", "spawn": "back_door" }
     ],
     "interactables": [
       {
@@ -69,6 +70,16 @@
         "once": true,
         "effects": [{ "type": "grant_item", "id": "item.misc.dry_rations", "amount": 2 }]
       }
+    ]
+  },
+  {
+    "id": "map.jiangnan.inn_yard",
+    "region": "region.jiangnan",
+    "scene": "yard",
+    "safe_spawn": "back_door",
+    "spawns": ["back_door"],
+    "exits": [
+      { "id": "to_hall", "to": "map.jiangnan.inn", "spawn": "kitchen" }
     ]
   },
   {

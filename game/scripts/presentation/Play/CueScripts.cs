@@ -86,10 +86,11 @@ public static class CueScripts
             .Pan((c.Hero + c.Stand("char.huang_rong") + c.Stand("char.xiao_feng")) / 3, rate: 1.4f, height: 100, zoom: 1f, seconds: 2f)
             .Hold(2.2f),
 
-        // 讨教：镜头慢慢扫过各占一角的三人，等主角自己走过去。
+        // 讨教：镜头慢慢扫过各占一角的三人，最后退到三人中心偏东处——选项框占右半屏，三人留在左半边。
         ["dlg.ch01.mentor_choice/cue.001"] = (c, q) => q
             .At(0).Pan(c.Stand("char.linghu_chong"), rate: 1.6f, height: 110, zoom: 1.08f, seconds: 1.2f)
-            .At(1.2f).Pan(c.Stand("char.xiao_feng"), rate: 1.1f, height: 110, zoom: 1f, seconds: 1.8f)
+            .At(1.2f).Pan((c.Stand("char.linghu_chong") + c.Stand("char.huang_rong") + c.Stand("char.xiao_feng")) / 3 + new Vector2(240, 240),
+                rate: 1.1f, height: 110, zoom: 1f, seconds: 1.8f)
             .Hold(3f),
 
         // 时间流逝：黑场里过了半夜，亮回来时主角收势站在原处。
@@ -118,8 +119,19 @@ public static class CueScripts
                 return;
             }
 
+            // 后院里切磋后没有开放事件再摆这位侠客（选同行者在大堂），不在画面上就让他站回原位、与主角相对。
             var hero = c.Hero;
-            var mentor = c.At(m);
+            var mentor = c.Has(m) ? c.At(m) : c.Stand(m);
+            if (mentor.DistanceTo(hero) < 70)
+            {
+                mentor = hero + (mentor == hero ? new Vector2(90, 0) : (mentor - hero).Normalized() * 90);
+            }
+
+            if (!c.Has(m))
+            {
+                q.At(0).Appear(m, mentor, Toward(mentor, hero), fade: 0);
+            }
+
             var away = (hero - mentor).Normalized();
             q.At(0).Face(m, Toward(mentor, hero)).Face("hero", Toward(hero, mentor))
                 .Pan((hero + mentor) / 2, rate: 2.4f, height: 110, zoom: 1.15f, seconds: 1f)

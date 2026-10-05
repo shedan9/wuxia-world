@@ -36,7 +36,7 @@ public sealed class GrowthTests : IDisposable
         return (rules, new GrowthRules(rules, TestContent.Real));
     }
 
-    /// <summary>走到讨教之后、选同行者之前（芦湾客栈）。</summary>
+    /// <summary>走到讨教之后、选同行者之前（在后院讨教完，回到芦湾客栈大堂）。</summary>
     private static ChapterOneWalkthroughTests.Walker AfterTraining(string mentor = "linghu")
     {
         var (rules, growth) = Rules();
@@ -46,8 +46,10 @@ public sealed class GrowthTests : IDisposable
         w.Exit("to_street");
         w.Exit("to_inn");
         w.PlayAuto();
+        w.Exit("to_yard");
         w.Pick("choice." + mentor);
         w.PlayEvent("event.ch01.mentor_choice");
+        w.Exit("to_hall");
         return w;
     }
 

@@ -13,6 +13,9 @@ public enum StageLayout
 
     /// <summary>河岸专属布景（M3-01）：芦湾河滩与芦湾旧渡，见 <see cref="RiverSamples"/>。</summary>
     River,
+
+    /// <summary>客栈后院（讨教与切磋的场地），见 <see cref="YardSamples"/>。</summary>
+    Yard,
 }
 
 /// <summary>落点：主角站位与同行者排开的方向（世界平面单位向量）。</summary>
@@ -55,7 +58,7 @@ public sealed record MapStage(StageLayout Layout, string Region, string Caption)
 }
 
 /// <summary>
-/// 第一章四张地图的摆放。芦湾街、江南客栈沿用 M0 已验收的城镇、客栈布景；芦湾河滩与芦湾旧渡自 2026-10-04 起用河岸专属布景
+/// 第一章五张地图的摆放。芦湾街、江南客栈沿用 M0 已验收的城镇、客栈布景；客栈后院为 2026-10-05 新做的布景（<see cref="YardSamples"/>）；芦湾河滩与芦湾旧渡自 2026-10-04 起用河岸专属布景
 /// （M3-01，此前暂借山路溪涧）。坐标沿用 <see cref="TownSamples"/>、<see cref="InnSamples"/> 的世界坐标；
 /// 河岸用画面坐标 A / D 经 <see cref="RiverSamples.W(float, float)"/> 换算。
 /// </summary>
@@ -116,18 +119,15 @@ public static class MapStaging
             {
                 ["door"] = new(InnSamples.FrontDoor, North),
                 ["hall"] = new(new Vector2(760, 600), West),
+                ["kitchen"] = new(new Vector2(772, 120), South),
             },
             Points = new Dictionary<string, Vector2>
             {
                 ["exit:out"] = new(630, 900),
+                ["exit:to_yard"] = new(772, 40), // 北墙后厨门帘
                 ["interact:rations_basket"] = new(390, 280),
                 ["anchor:hall"] = new(1010, 560),
                 ["anchor:door"] = new(630, 640),
-
-                // 讨教后的后院切磋：入口在那位侠客的站位上（与下方 Stand 相同），走近谁就是找谁。
-                ["anchor:spar_linghu"] = new(995, 850),
-                ["anchor:spar_huang"] = new(920, 672),
-                ["anchor:spar_xiao"] = new(1110, 614),
             },
             Residents = new HashSet<string> { "char.qiao_hongxiao" },
 
@@ -137,6 +137,32 @@ public static class MapStaging
                 ["char.linghu_chong"] = (new Vector2(995, 850), -1),
                 ["char.huang_rong"] = (new Vector2(920, 672), -1),
                 ["char.xiao_feng"] = (new Vector2(1110, 614), -1),
+            },
+        },
+        ["map.jiangnan.inn_yard"] = new(StageLayout.Yard, "芦湾", "客栈后院：客房楼与东院墙为 AI 立面，柴堆、劈柴墩、石桌为 AI 出件，井台、水缸、樟树借城镇出件；固定月夜布光")
+        {
+            Ambience = ["amb.yard_night"],
+            Spawns = new Dictionary<string, SpawnPoint>
+            {
+                ["back_door"] = new(YardSamples.BackDoor, West),
+            },
+            Points = new Dictionary<string, Vector2>
+            {
+                ["exit:to_hall"] = new(772, 985),
+                ["anchor:yard"] = new(690, 560),
+
+                // 讨教后的切磋：入口在那位侠客的站位上（与下方 Stand 相同），走近谁就是找谁。
+                ["anchor:spar_linghu"] = new(330, 290),
+                ["anchor:spar_huang"] = new(540, 590),
+                ["anchor:spar_xiao"] = new(1120, 300),
+            },
+
+            // 讨教时三人“各占一角”：令狐冲在柴堆旁、黄蓉在井台边、萧峰在樟树下的东院墙边。
+            Stand = new Dictionary<string, (Vector2, int)>
+            {
+                ["char.linghu_chong"] = (new Vector2(330, 290), 1),
+                ["char.huang_rong"] = (new Vector2(540, 590), 1),
+                ["char.xiao_feng"] = (new Vector2(1120, 300), -1),
             },
         },
         ["map.jiangnan.old_ferry"] = new(StageLayout.River, "芦湾", "芦湾旧渡：河岸专属布景（M3-01）；栈桥、河堤与水门为几何贴 AI 纹理，大船借城镇乌篷船出件")

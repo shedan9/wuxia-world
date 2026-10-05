@@ -97,6 +97,9 @@ public static class InnSamples
     /// <summary>从街上进门时站在门内。</summary>
     public static readonly Vector2 FrontDoor = new(630, 740);
 
+    /// <summary>从后院回来时站在后厨门帘前。</summary>
+    public static readonly Vector2 KitchenDoor = new(772, 120);
+
     public static readonly TownInteraction[] Interactions =
     [
         new("interact.inn.exit", new Vector2(630, 915), 240, "离开", "江南客栈", "提示", "回到芦湾河街", "",
@@ -105,6 +108,8 @@ public static class InnSamples
         new("interact.inn.menu", new Vector2(650, 190), 280, "查看", "客栈水牌", "物品", "水牌上写着菱角、黄酒、阳春面（样例）", "行囊 → 商店"),
         new("interact.inn.guest", new Vector2(208, 470), 190, "旁听", "邻桌茶客", "见闻", "已记录：茶客说起渡口近来夜里常有船灯（样例）", "札记 → 见闻"),
         new("interact.inn.booth", new Vector2(1020, 440), 200, "查看", "屏风后的雅座", "提示", "三侠会面在此落座（第二阶段玩法 Demo）", "第一章 江南会客"),
+        new("interact.inn.backyard", new Vector2(772, 40), 260, "前往", "后院", "提示", "穿过后厨门帘到客栈后院", "",
+            "res://scenes/preview/ExploreYard.tscn", "yard.back_door"),
         new("interact.inn.stairs", new Vector2(1230, 790), 250, "上楼", "客房", "提示", "M0 只做大堂，楼上客房未制作", "M0-03"),
     ];
 

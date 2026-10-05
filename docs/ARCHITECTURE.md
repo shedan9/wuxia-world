@@ -277,7 +277,7 @@ M2 第一批（2026-10-01，世界规则层）实际落地的结构，规格见 
 | `src/WuxiaWorld.Infrastructure/Content/` | 新增 `ContentFiles`（文件枚举、共用内容版本、文本表合并）、`WorldBundle` 与 `WorldContentLoader`、`WorldContentValidator` |
 | `content/world/new_game.json`、`content/characters/characters.json`、`content/characters/anchors.json`、`content/shared/items/catalog.json` | 新游戏、人物定义（经典人物以 `story_anchor` 引用剧情锚点，未选定写 `pending`）、经典人物剧情锚点（`StoryAnchorDefinition`，见 9.4.3）、物品目录（战斗物品须在目录中有条目；装备带固定加成） |
 | `content/world/progression.json`、`content/regions/<地区>/shops/` | 成长设置（等级经验表、主角基础属性、熟练度、流派入门武学、开局衣物、旧档追赶）与店铺货单（9.4.2） |
-| `content/regions/jiangnan/{maps,routes,events,quests,text}/` | 第一章四张地图、两条水路、十个地区事件、主线与失踪渡工支线、地区文本表 |
+| `content/regions/jiangnan/{maps,routes,events,quests,text}/` | 第一章五张地图（含客栈后院）、两条水路、十个地区事件、主线与失踪渡工支线、地区文本表 |
 | `content/dialogue/arc01/chapter01.json` | 第一章对白第一稿（15 段 104 句台词，其中主角心里话 5 句；27 个演出提示；未锁稿）；M0 对话展示页也从这里读取开场 |
 | `content/dialogue/arc01/chapter01_battle.json` | 第一章关键战斗语音第一稿（32 句，未锁稿；2026-10-04 起，规格见 9.4.9） |
 | `tests/Domain/WuxiaWorld.Domain.Tests/` | 新增世界规则、存档、第一章走查测试 |
@@ -288,7 +288,7 @@ M2 第二批（2026-10-02，界面接入）实际落地的结构，规格见 9.4
 |---|---|
 | `game/scenes/world/Exploration.tscn`、`game/scripts/presentation/Play/ExplorationScreen.cs` | 游戏内探索页：按当前地图选用 M0 布景，由 `GameSession` 驱动落点、交互点、出口、路线、事件、同行者与站位人物；对话、换图、剧情战与菜单都从这里发起 |
 | `game/scripts/presentation/Play/PlaySession.cs` | 一局游戏的表现层宿主（`AppHost.Play` 持有）：内容包、`GameSession`、存档端口、待提交的换图票据、跨场景提示与对话记录 |
-| `game/scripts/presentation/Play/MapStaging.cs` | 第一章四张地图在布景里的摆放（落点、交互物、出口、路线登船点、事件锚点、群众、目标物）与人物外观 |
+| `game/scripts/presentation/Play/MapStaging.cs` | 第一章五张地图在布景里的摆放（落点、交互物、出口、路线登船点、事件锚点、群众、目标物）与人物外观 |
 | `game/scripts/presentation/Play/{DialogueOverlay,PlayHud,Journal,GameMenu}.cs` | 对话层、探索 HUD（地点时辰、目标追踪、队伍银两）、江湖札记、菜单与存读档槽 |
 | `game/scripts/presentation/Play/{PartyPage,FormationCell}.cs` | 队伍页（2026-10-02，M2-06，规格见 9.4.4）：阵位图、同行人物名册与详情 |
 | `game/scripts/presentation/Battle/BattleScreen.Story.cs` | 剧情战：按待开战斗与队伍开打，结算经 `SettleBattle` 一次性提交后回探索页 |
@@ -825,7 +825,7 @@ M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读
 
 2026-10-05 实现（M3 第十五批）。对应 STORY 第 2.1 节“可与其中一人短切磋”与开发计划 1.4 节“战斗 3–4 场：短教学/切磋、机制战、结局战”——此前第一章只有押运队冲突与水门首领战两场。切磋可选、只打一次，输赢都往下走，不改变主线事实。数值属第一章平衡配置，按 M3 试玩调整。
 
-- **流程**：讨教收尾时那位侠客邀一句（`ch01.mentor_choice.<人>.003`）。选同行者之前（主线 `companion` 阶段），大堂里讨教人选的站位上多一个“切磋”入口（事件 `event.ch01.mentor_spar_<linghu|huang|xiao>`，优先级 `timed`、可重复进入，只对讨教人选开放；入口锚点 `anchor:spar_<人>` 与该人物站位相同）。对白 `dlg.ch01.mentor_spar`：选“过几招，点到为止”后侠客提示一句他要教的那一手，请求切磋战（`retry: false`）；选“再练练，过会儿来”可稍后再来。战后自动事件 `event.ch01.mentor_spar_after` 接 `dlg.ch01.mentor_spar_after`，按讨教人选与胜负各一段点评。先回到大堂、有时间在人物页分配刚升的潜能（战斗待开时规则不许调整养成），这是切磋不直接接在讨教对白里的原因。
+- **流程**：讨教收尾时那位侠客邀一句（`ch01.mentor_choice.<人>.003`）。选同行者之前（主线 `companion` 阶段），后院里讨教人选的站位上多一个“切磋”入口（事件 `event.ch01.mentor_spar_<linghu|huang|xiao>`，优先级 `timed`、可重复进入，只对讨教人选开放；入口锚点 `anchor:spar_<人>` 与该人物站位相同）。对白 `dlg.ch01.mentor_spar`：选“过几招，点到为止”后侠客提示一句他要教的那一手，请求切磋战（`retry: false`）；选“再练练，过会儿来”可稍后再来。战后自动事件 `event.ch01.mentor_spar_after` 接 `dlg.ch01.mentor_spar_after`，按讨教人选与胜负各一段点评。先有时间在人物页分配刚升的潜能（战斗待开时规则不许调整养成），这是切磋不直接接在讨教对白里的原因。讨教、切磋与战后点评自 2026-10-05 起都在独立的客栈后院地图里演（见 9.4.19），此前借大堂。
 - **世界效果**：胜 `fact.ch01.spar = won`、经验 30、修为 20（遭遇定义）；败 `lost`、经验 15、修为 10（写在请求的战败效果里）；两种都给讨教人选信任 +1。事实只用于点评分支与关闭入口，不被主线条件引用。
 - **胜负规则**（`VictoryRule.Spar`，内核）：遭遇写 `"victory": "spar"`、`"yield_bp"`（认输线，万分比，第一章 3500）。伤害与持续伤害最多把气血压到 1 点，没有人倒下；每次行动后检查，我方全部压到认输线及以下为败（双方同时也按败），`victory_unit`（未给时为全部计入胜利的敌人）压到认输线为胜；结束前对收手的一方发 `UnitYielded`。切磋里撤退即拱手认输，成功率 100%，按战败效果结算。校验器检查认输线在 1–9999、只有切磋才写认输线。
 - **单人与不带药**：遭遇 `"solo": true` 时 `GameSession.StoryBattleSetup` 只让主角上场（前排正中），队伍里的陆青禾不入阵；切磋一律不带行囊里的药。
@@ -848,7 +848,19 @@ M1 已实现战斗部分：`tools/ContentCompiler` 用 `CombatContentLoader` 读
 - **演出音效** 6 个（`cue.*`，Freesound CC0 实录，见资产台账）：拍桌、舱板下咳嗽、木头吱呀、踏浅滩水花、闸板落下、芦苇窸窣；未经人耳试听。
 - **开发核对**：`--jump=<位置> --cue=<对话/节点>[,…] [--cue-hero=anchor:sluice]` 不开剧情、直接依次播放演出，配合 `--write-movie` 录像。
 - **演出用帧**：唐守亭、押运打手、杜三篙补正面迈步帧（押运打手另有跑步帧），黄蓉补坐姿帧 `sit`（连着一块石墩，水门对峙里摆在闸门西柱外的堤沿上）。唐守亭与押运打手的基础形象就是迎敌架势，行走时两张迈步帧交替、过步不回到架势帧（`WalkerFigure.GuardBase`）。
-- **已知不足**：客栈“后院”场景仍在大堂里演；唐守亭迈步帧与战斗帧同为高马尾，与基础形象略有出入。
+- **已知不足**：唐守亭迈步帧与战斗帧同为高马尾，与基础形象略有出入。（此前的“客栈后院仍在大堂里演”已由 9.4.19 解决。）
+
+### 9.4.19 客栈后院地图
+
+2026-10-05 实现（M3 第十七批）。对白演出提示写讨教在“客栈后院，夜”、切磋在“客栈后院，后半夜”，此前两段戏都借大堂演；本批新做一张独立地图。
+
+- **内容数据**：新地图 `map.jiangnan.inn_yard`（地名“客栈后院”，布景 `yard`，落点 `back_door`），出口 `to_hall` 回大堂；大堂加出口 `to_yard`（北墙后厨门帘）与落点 `kitchen`。讨教 `event.ch01.mentor_choice`（锚点 `yard`）、三个切磋入口 `event.ch01.mentor_spar_<人>` 与战后点评 `event.ch01.mentor_spar_after` 的地图改为后院，主线目标 `choose_mentor` 的地图同改；选同行者仍在大堂。大地图“芦湾”地标的地图列表加入后院。事件、任务、台词 ID 均未改：旧档若停在讨教阶段或点评待播，到后院即可继续，无需迁移。
+- **布局**（`Preview/Samples/YardSamples.cs`）：与城镇、大堂同一投影，院内净 14 × 10 米；南边是大堂后墙（大堂北墙，剖切到齐腰），后厨门洞 x 704–840 与大堂门帘同一处；北面两层客房楼正立面（向两侧伸出院墙），东面盖瓦高院墙开一扇后门，西面齐胸矮院墙。院中有井台、柴堆与劈柴墩、石桌鼓凳、水缸、樟树、两盆盆栽。讨教时三人“各占一角”：令狐冲在柴堆旁、黄蓉在井台边、萧峰在樟树下；切磋入口即该人物站位。
+- **布景**（`Preview/Pages/{ExploreYardPreview,YardPieces}.cs`，`StageLayout.Yard`）：客房楼与东院墙是 AI 整面立面（墙面局部坐标，同大堂内墙 `InnWallElevation` 做法），柴堆、劈柴墩、石桌为 AI 出件，井台、水缸、樟树与盆栽借城镇和大堂出件（`RiverArtNode` 挪位）。后院的戏都在夜里而规则时辰不推进（见 9.4.12），本页固定月夜布光：整体压暗偏蓝，两盏檐下灯笼、两扇亮窗与门洞里大堂的灯光铺到地上，四角压暗。地面用城镇石板着色器，新增 `puddles` 参数（缺省 1，城镇不变；后院为 0，只留潮痕）。环境声 `amb.yard_night`（与切磋战斗同一段虫鸣），无配乐。小地图为后院平面。
+- **出件**：方案 C，任务 `tools/ArtGen/jobs/m3_yard_pieces.json`，引导图 `PieceGuideExport --region=yard`；选图与参数见资产台账。
+- **展示页**：`res://scenes/preview/ExploreYard.tscn`，`--tab` 0 后厨门口、1 井台边、2 石桌旁、3 看全院；大堂展示页的后厨门帘可进后院。
+- **演出**：讨教 `dlg.ch01.mentor_choice/cue.001` 扫过令狐冲后，镜头收在三人站位中心偏东（世界 +240, +240，受镜头范围限制实际停在右边界）；讨教锚点 `anchor:yard` 取 (690, 560)，使选项框（占右半屏）不挡任何人。切磋后的点评 `dlg.ch01.mentor_spar_after/cue.001` 要讨教那位侠客与主角各退一步；后院里切磋入口关闭后已没有开放事件摆放这位侠客（在大堂时由选同行者事件摆着），脚本在他不在画面上时让他出现在原站位（离主角太近时沿两人连线推到 90 单位外）。
+- **走查路线**：`ChapterOneRoute` 讨教前 `Exit("to_yard")`、点评后 `Exit("to_hall")`；跳关 `SparBattle` 停在后院。
 
 ## 10. 高清美术、UI 与音频
 

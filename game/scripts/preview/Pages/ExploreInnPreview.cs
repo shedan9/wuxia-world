@@ -33,6 +33,12 @@ public partial class ExploreInnPreview : ExploreStage
     protected override (Vector2 Hero, Vector2 Lu, float Zoom) Start(string? arrival)
     {
         var door = InnSamples.FrontDoor;
+        if (arrival == "inn.kitchen")
+        {
+            var k = InnSamples.KitchenDoor;
+            return (k, k + new Vector2(0, 110), 1f);
+        }
+
         if (arrival is not null)
         {
             return (door, door + new Vector2(-40, 110), 1f);

@@ -11,7 +11,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// tools/ArtGen/piece.py 以它为图生图底图、以其线稿为 ControlNet 引导生成正式件，再按它的 alpha 抠出，
 /// 因此 AI 件的视角、尺度与占地天然与布局对齐。一件由多个部件组成时（平桥 = 贴地桥面 + 两道排序栏杆），
 /// 整件合成一张引导图，另为每个部件导出同框的 alpha 遮罩，生成后按遮罩拆回各层。
-/// 运行：<c>Godot --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --out=绝对目录 [--region=town|inn|wild] [--only=前缀] [--px=2]</c>。
+/// 运行：<c>Godot --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --out=绝对目录 [--region=town|inn|wild|yard] [--only=前缀] [--px=2]</c>。
 /// 输出 <c>&lt;id&gt;.png</c>、只有面与轮廓的结构图 <c>&lt;id&gt;__shape.png</c>（贴花关闭，供 ControlNet 取边线）、部件遮罩 <c>&lt;id&gt;__&lt;部件&gt;.png</c> 与 <c>&lt;id&gt;.json</c>
 /// （origin 为图像左上角对应的投影坐标，px 为每投影单位的像素数）。只做美术生产，不进展示目录。
 /// </summary>
@@ -119,6 +119,7 @@ public partial class PieceGuideExport : Node
     {
         "inn" => InnTargets(),
         "wild" => WildTargets(),
+        "yard" => YardTargets(),
         _ => TownTargets(),
     };
 
@@ -142,6 +143,19 @@ public partial class PieceGuideExport : Node
         }
 
         yield return ("inn.lantern", [new Part("body", new InnLanternGuide(), InnLanternGuide.Box)]);
+    }
+
+    /// <summary>客栈后院：柴堆、劈柴墩、石桌三件，客房楼与东院墙两面立面（墙面局部坐标，同大堂内墙）。</summary>
+    private static IEnumerable<(string Id, List<Part> Parts)> YardTargets()
+    {
+        yield return ("yard.woodpile", [Piece("body", new YardWoodpile())]);
+        yield return ("yard.stump", [Piece("body", new YardStump())]);
+        yield return ("yard.stone_table", [Piece("body", new YardStoneTable())]);
+        foreach (var (id, north) in new[] { ("yard.wall.north", true), ("yard.wall.east", false) })
+        {
+            var wall = new YardWallElevation(north);
+            yield return (id, [new Part("body", wall, wall.Box)]);
+        }
     }
 
     private static IEnumerable<(string Id, List<Part> Parts)> WildTargets()

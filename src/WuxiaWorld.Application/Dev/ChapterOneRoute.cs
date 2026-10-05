@@ -16,7 +16,7 @@ public enum ChapterOnePoint
     /// <summary>会面之后，客栈里，支线委托与讨教之前。</summary>
     Mentor,
 
-    /// <summary>讨教之后，客栈里：给了 <see cref="ChapterOneRoute.Spar"/> 时后院切磋待开；不切磋时就停在讨教之后、选同行者之前。</summary>
+    /// <summary>讨教之后，客栈后院里：给了 <see cref="ChapterOneRoute.Spar"/> 时后院切磋待开；不切磋时就停在讨教之后、选同行者之前。</summary>
     SparBattle,
 
     /// <summary>讨教与选同行者之后，芦湾街码头，乘船之前。</summary>
@@ -167,6 +167,7 @@ public sealed class ChapterOneRoute(GameSession game)
                 PlayEvent("event.ch01.side_offer");
             }
 
+            Exit("to_yard"); // 讨教与切磋在后院
             Pick("choice." + mentor);
             PlayEvent("event.ch01.mentor_choice");
             if (Spar is not null)
@@ -190,6 +191,8 @@ public sealed class ChapterOneRoute(GameSession game)
                 SettleSpar();
                 PlayAuto(); // 切磋点评
             }
+
+            Exit("to_hall");
 
             if (Side && FinishSideSteps)
             {

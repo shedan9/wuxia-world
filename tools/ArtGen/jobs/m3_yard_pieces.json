@@ -1,0 +1,226 @@
+{
+  "set": "m3_yard_pieces",
+  "guides": "out/guides/yard",
+  "tier": "complex",
+  "model": "sdxl",
+  "pixels": 1300000,
+  "background": "#B9C7C2",
+  "steps": 30,
+  "cfg": 5.5,
+  "canny": [
+    60,
+    160
+  ],
+  "note": "2026-10-05 客栈后院（讨教与切磋场地）：客房楼正立面、东院墙两面立面与柴堆、劈柴墩、石桌三件；方案 C 引导出件，同 m0_inn_walls / m0_inn_pieces。",
+  "style": {
+    "elevation": "no humans, orthographic front elevation, flat facade, no perspective, game background art, semi-realistic, cel shading, clean lineart, detailed texture, soft daylight",
+    "piece_rich": "no humans, isometric, game asset, simple background, grey background, semi-realistic, cel shading, detailed texture, soft daylight, masterpiece, high score, absurdres",
+    "negative_wall": "text, chinese characters, calligraphy, watermark, people, perspective, vanishing point, ground, floor, sky, trees in front, furniture in front, photo, 3d render, blurry, lowres, european, western windows, shutters, brick, glass windows, japanese architecture",
+    "negative": "text, watermark, signature, logo, people, person, sky, clouds, ground, grass field, scenery background, photo, 3d render, blurry, lowres, ink wash, sepia, japanese architecture"
+  },
+  "jobs": [
+    {
+      "name": "y1_wall_north",
+      "piece": "yard.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "two storey old chinese inn guest wing seen from courtyard, black clay roof tiles eave on top, upper floor dark wooden plank wall with paper lattice windows and wooden balcony railing, ground floor whitewashed plaster wall, dark red lacquered posts and beam, two wooden double doors, paper lattice windows, stone plinth",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "y1_wall_east",
+      "piece": "yard.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "old chinese courtyard wall, whitewashed lime plaster with faint rain stains and moss at the foot, black clay roof tiles coping on top, stone plinth, one small weathered wooden back gate with iron studs and a little tiled hood",
+      "mode": "txt2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "y1_woodpile",
+      "piece": "yard.woodpile",
+      "style": "piece_rich",
+      "prompt": "stack of split firewood logs under a small sloped wooden plank roof shelter, round log ends facing front, pale wood rings and dark bark",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.85,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "y1_stump",
+      "piece": "yard.stump",
+      "style": "piece_rich",
+      "prompt": "old wooden chopping block stump with an axe stuck in the top, two split firewood pieces lying beside it",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.7,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "y1_stone_table",
+      "piece": "yard.stone_table",
+      "style": "piece_rich",
+      "prompt": "round grey granite stone table on a stone pedestal with two drum shaped stone stools, chinese garden furniture, weathered stone",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.85,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ]
+    },
+    {
+      "name": "y2_wall_north_s80",
+      "piece": "yard.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "two storey old chinese inn guest wing seen from courtyard, black clay roof tiles eave on top, upper floor dark wooden plank wall with paper lattice windows and wooden balcony railing, ground floor whitewashed plaster wall, dark red lacquered posts and beam, two wooden double doors, paper lattice windows, stone plinth",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "strength": 0.8
+    },
+    {
+      "name": "y2_wall_east_s80",
+      "piece": "yard.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "old chinese courtyard wall, whitewashed lime plaster with faint rain stains and moss at the foot, black clay roof tiles coping on top, stone plinth, one small weathered wooden back gate with iron studs and a little tiled hood",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "strength": 0.8
+    },
+    {
+      "name": "y2_wall_north_s88",
+      "piece": "yard.wall.north",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "two storey old chinese inn guest wing seen from courtyard, black clay roof tiles eave on top, upper floor dark wooden plank wall with paper lattice windows and wooden balcony railing, ground floor whitewashed plaster wall, dark red lacquered posts and beam, two wooden double doors, paper lattice windows, stone plinth",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "strength": 0.88
+    },
+    {
+      "name": "y2_wall_east_s88",
+      "piece": "yard.wall.east",
+      "style": "elevation",
+      "negative_style": "negative_wall",
+      "prompt": "old chinese courtyard wall, whitewashed lime plaster with faint rain stains and moss at the foot, black clay roof tiles coping on top, stone plinth, one small weathered wooden back gate with iron studs and a little tiled hood",
+      "mode": "img2img",
+      "control_from": "guide",
+      "control": 0.8,
+      "control_end": 0.7,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "strength": 0.88
+    },
+    {
+      "name": "y3_stone_table_weak",
+      "piece": "yard.stone_table",
+      "style": "piece_rich",
+      "prompt": "round grey granite stone table on a thick round stone pedestal, two solid drum shaped stone stools with carved bands, chinese courtyard furniture, weathered solid stone, moss at the base",
+      "mode": "txt2img",
+      "control_from": "shape",
+      "control": 0.5,
+      "control_end": 0.5,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "negative": "cage, bars, metal, iron, columns, pillars, glass"
+    },
+    {
+      "name": "y3_stone_table_i2i",
+      "piece": "yard.stone_table",
+      "style": "piece_rich",
+      "prompt": "round grey granite stone table on a thick round stone pedestal, two solid drum shaped stone stools with carved bands, chinese courtyard furniture, weathered solid stone, moss at the base",
+      "mode": "img2img",
+      "control_from": "shape",
+      "control": 0.6,
+      "control_end": 0.6,
+      "seeds": [
+        11,
+        22,
+        33,
+        44,
+        55,
+        66
+      ],
+      "strength": 0.75,
+      "negative": "cage, bars, metal, iron, columns, pillars, glass"
+    }
+  ]
+}

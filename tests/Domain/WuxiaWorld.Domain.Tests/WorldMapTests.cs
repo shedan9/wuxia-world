@@ -41,8 +41,10 @@ public sealed class WorldMapTests : IDisposable
         w.Exit("to_street");
         w.Exit("to_inn");
         w.PlayAuto();
+        w.Exit("to_yard");
         w.Pick("choice.linghu");
         w.PlayEvent("event.ch01.mentor_choice");
+        w.Exit("to_hall");
         w.Pick("choice.linghu");
         w.PlayEvent("event.ch01.companion_choice");
         Assert.Equal("map.jiangnan.inn", w.Game.World.MapId);

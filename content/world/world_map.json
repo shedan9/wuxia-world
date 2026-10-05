@@ -6,7 +6,7 @@
       "region": "region.jiangnan",
       "icon": "inn",
       "pos": [1786, 904],
-      "maps": ["map.jiangnan.luwan_street", "map.jiangnan.inn", "map.jiangnan.luwan_shore"]
+      "maps": ["map.jiangnan.luwan_street", "map.jiangnan.inn", "map.jiangnan.inn_yard", "map.jiangnan.luwan_shore"]
     },
     {
       "id": "node.jiangnan.old_ferry",

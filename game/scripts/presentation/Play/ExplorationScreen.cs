@@ -105,6 +105,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
             StageLayout.Town => new ExploreTownPreview { Driver = this },
             StageLayout.Inn => new ExploreInnPreview { Driver = this },
             StageLayout.River => new ExploreRiverPreview { Driver = this, Site = staging.River },
+            StageLayout.Yard => new ExploreYardPreview { Driver = this },
             _ => new ExploreWildPreview { Driver = this },
         };
         _view.MouseFilter = MouseFilterEnum.Ignore;

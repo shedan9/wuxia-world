@@ -203,6 +203,8 @@ public class SparTests
 
         route.PlayAuto();
         Assert.Null(game.AutoEvent);
+        Assert.Equal("map.jiangnan.inn_yard", game.World.MapId);
+        route.Exit("to_hall");
         Assert.Contains(game.Events, e => e.Id == "event.ch01.companion_choice");
     }
 
@@ -219,8 +221,10 @@ public class SparTests
         Assert.Null(game.World.Battle);
         Assert.Contains(game.Events, e => e.Id == "event.ch01.mentor_spar_linghu");
 
+        route.Exit("to_hall");
         route.Pick("choice.xiao");
         route.PlayEvent("event.ch01.companion_choice");
+        route.Exit("to_yard");
         Assert.DoesNotContain(game.Events, e => e.Id.StartsWith("event.ch01.mentor_spar", StringComparison.Ordinal));
     }
 

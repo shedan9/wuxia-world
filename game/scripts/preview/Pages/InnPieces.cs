@@ -477,7 +477,7 @@ public partial class InnCutWall : TownPiece
     private static readonly Color PlasterLift = new(1.14f, 1.12f, 1.07f);
 
     /// <summary>外侧立面：粉壁 + 30 高条石墙脚。有 AI 纹理时粉壁贴 inn.wall.plaster、墙脚取驳岸条石纹理（town.embankment）最上一行。</summary>
-    private static void Base(CanvasItem ci, float w, float h)
+    internal static void Base(CanvasItem ci, float w, float h)
     {
         ci.DrawRect(new Rect2(0, -h, w, h), InnTone.Plaster);
         var plaster = PieceArt.FindTexture("inn.wall.plaster");

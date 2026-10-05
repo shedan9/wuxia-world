@@ -21,6 +21,8 @@ uniform float pitch = 0.7853982;
 uniform float scale = 1.2;
 uniform float plane_z = 0.0;
 uniform float flow = 0.0;
+// 石板地（kind 1）雨后积水的多少：1 为城镇雨后，0 为没有积水（客栈后院只留潮痕）。
+uniform float puddles = 1.0;
 // 本块地面的 AI 纹理；未设置时回退到程序化纹样。tint 逐通道相乘，把纹理调到青绿基调；
 // desat 先向亮度收拢饱和度（模型画的草偏艳绿），macro 为大尺度明暗起伏的幅度。
 uniform bool use_tex = false;
@@ -200,7 +202,7 @@ vec3 flagstone(vec2 w) {
 	vec3 stone = use_tex ? ground_texture(w) : flagstone_procedural(w);
 	// 雨后积水：只在少数低洼处，边缘由高频噪声打碎成小片。
 	float wet = fbm(w * 0.004 + 11.0) + fbm(w * 0.025) * 0.18;
-	float puddle = step(0.78, wet);
+	float puddle = step(0.78, wet) * puddles;
 	vec3 sky = vec3(0.70, 0.84, 0.86);
 	float glint = step(0.93, fract((w.x * 0.6 - w.y) * 0.004 + wet * 2.0));
 	vec3 water = mix(sky, vec3(0.93, 0.97, 0.95), glint);

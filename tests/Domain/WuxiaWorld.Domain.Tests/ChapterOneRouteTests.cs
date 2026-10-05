@@ -36,6 +36,7 @@ public class ChapterOneRouteTests
             [ChapterOnePoint.Start] = ("map.jiangnan.luwan_shore", null),
             [ChapterOnePoint.InnCouncil] = ("map.jiangnan.inn", null),
             [ChapterOnePoint.Mentor] = ("map.jiangnan.inn", null),
+            [ChapterOnePoint.SparBattle] = ("map.jiangnan.inn_yard", null),
             [ChapterOnePoint.Departure] = ("map.jiangnan.luwan_street", null),
             [ChapterOnePoint.OldFerry] = ("map.jiangnan.old_ferry", null),
             [ChapterOnePoint.EscortBattle] = ("map.jiangnan.old_ferry", "battle.01.escort_skirmish"),

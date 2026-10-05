@@ -20,12 +20,12 @@
   },
   {
     "id": "event.ch01.mentor_choice",
-    "map": "map.jiangnan.inn",
+    "map": "map.jiangnan.inn_yard",
     "priority": "main_urgent",
     "when": { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "training" },
     "participants": ["char.linghu_chong", "char.huang_rong", "char.xiao_feng"],
     "dialogue": "dlg.ch01.mentor_choice",
-    "anchor": "hall"
+    "anchor": "yard"
   },
   {
     "id": "event.ch01.side_offer",
@@ -39,7 +39,7 @@
   },
   {
     "id": "event.ch01.mentor_spar_linghu",
-    "map": "map.jiangnan.inn",
+    "map": "map.jiangnan.inn_yard",
     "priority": "timed",
     "once": false,
     "when": {
@@ -56,7 +56,7 @@
   },
   {
     "id": "event.ch01.mentor_spar_huang",
-    "map": "map.jiangnan.inn",
+    "map": "map.jiangnan.inn_yard",
     "priority": "timed",
     "once": false,
     "when": {
@@ -73,7 +73,7 @@
   },
   {
     "id": "event.ch01.mentor_spar_xiao",
-    "map": "map.jiangnan.inn",
+    "map": "map.jiangnan.inn_yard",
     "priority": "timed",
     "once": false,
     "when": {
@@ -90,7 +90,7 @@
   },
   {
     "id": "event.ch01.mentor_spar_after",
-    "map": "map.jiangnan.inn",
+    "map": "map.jiangnan.inn_yard",
     "priority": "main_urgent",
     "auto": true,
     "when": { "type": "any", "of": [{ "type": "fact_equals", "id": "fact.ch01.spar", "value": "won" }, { "type": "fact_equals", "id": "fact.ch01.spar", "value": "lost" }] },

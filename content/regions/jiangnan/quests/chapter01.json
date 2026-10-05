@@ -45,7 +45,7 @@
           {
             "id": "choose_mentor",
             "kind": "talk",
-            "map": "map.jiangnan.inn",
+            "map": "map.jiangnan.inn_yard",
             "when": {
               "type": "any",
               "of": [

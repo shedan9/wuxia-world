@@ -258,8 +258,8 @@ public partial class RiverReedNode : TownPiece
 }
 
 /// <summary>
-/// 借来的 AI 出件（城镇柳树、山石、船、刻痕石）：出件按原布景的投影位置对齐，这里挪到新位置，可缩放、左右翻转。
-/// 原点在脚底投影；船随水轻晃，水里的件脚下压一圈暗影与碎沫。
+/// 借来的 AI 出件（城镇柳树、山石、船、刻痕石；客栈后院另借井台、水缸、樟树与大堂盆栽）：出件按原布景的投影位置对齐，
+/// 这里挪到新位置，可缩放、左右翻转。原点在脚底投影；船随水轻晃，水里的件脚下压一圈暗影与碎沫。
 /// </summary>
 public partial class RiverArtNode : TownPiece
 {
@@ -313,8 +313,15 @@ public partial class RiverArtNode : TownPiece
             return TownView.P(ground, WildLayout.GroundZ(ground));
         }
 
+        if (artId.StartsWith("inn.plant.", StringComparison.Ordinal) && int.TryParse(parts[^1], out var plant))
+        {
+            return TownView.P(InnSamples.Plants[plant - 1]);
+        }
+
         return artId switch
         {
+            "town.prop.well" => TownView.P(new Vector2(2040, 380)),
+            "town.prop.jars" => TownView.P(new Vector2(1700, 1430)),
             "town.prop.boat.ferry" => TownView.P(new Vector3(1640, 2080, -80)),
             "town.prop.boat.2" => TownView.P(new Vector3(3900, 2450, -80)),
             "town.prop.stone_mark" => TownView.P(new Vector3(1180, 1790, 0)),

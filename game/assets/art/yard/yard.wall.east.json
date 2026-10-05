@@ -1,0 +1,10 @@
+{
+  "id": "yard.wall.east",
+  "origin": [
+    -12,
+    -282
+  ],
+  "px": 2.078125,
+  "source": "art_source/ai/yard/yard.wall.east.png",
+  "sha256": "be3b1f346ff1da8f35d58b4713d95fe0e3cd2883e9f54aaeda09e65d0061c1d0"
+}
