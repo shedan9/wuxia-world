@@ -1,0 +1,23 @@
+{
+  "id": "town.house.south.1.glow",
+  "origin": [
+    2236.2563,
+    244.85999
+  ],
+  "px": 0.9956483899042646,
+  "derived_from": "town.house.south.1.png",
+  "tool": "tools/ArtGen/glow_mask.py",
+  "blobs": [
+    [
+      3177.5,
+      768.9,
+      5333.3
+    ],
+    [
+      2732.2,
+      991.9,
+      5518.9
+    ]
+  ],
+  "lanterns": []
+}

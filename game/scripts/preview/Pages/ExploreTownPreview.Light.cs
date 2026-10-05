@@ -7,7 +7,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 
 /// <summary>
 /// 芦湾街的光影（M3-01）：按光色时段（<see cref="SceneTime"/>）整体调色、铺光色层，房屋、廊棚、桥栏与杂件把投影压到地上，
-/// 墙脚压一道接地暗影；黄昏起客栈窗纸与灯笼发光、廊下灯笼点亮，地上铺暖色光斑。
+/// 墙脚压一道接地暗影；黄昏起客栈与民居的窗纸、灯笼发光（民居发光图取自格子窗，见 glow_mask.py --lattice），廊下灯笼点亮，地上铺暖色光斑。
 /// 白天与河滩同为雨后初晴的申时（同一套偏冷调色），黄昏与旧渡同一套暖调。
 /// </summary>
 public partial class ExploreTownPreview
@@ -92,7 +92,7 @@ public partial class ExploreTownPreview
             roof.AddChild(halos);
         }
 
-        // 客栈：窗纸与灯笼发光（发光图作房屋子节点，前面走过的人照样挡住），灯笼与一层窗下的街面铺光。
+        // 客栈与民居：窗纸与灯笼发光（有发光图的房屋才亮，发光图作房屋子节点，前面走过的人照样挡住），灯笼与一层窗下的街面铺光。
         foreach (var (node, house) in houses.Zip(TownSamples.Houses))
         {
             if (PieceArt.Find($"town.{house.Id}.glow") is not { } glow)

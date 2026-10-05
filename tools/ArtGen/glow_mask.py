@@ -5,12 +5,18 @@
 
   .venv/Scripts/python glow_mask.py town.house.inn --core-sat 0.48 --core-val 0.22 --loose-sat 0.42 --loose-val 0.18 --core-ratio 0.3
   .venv/Scripts/python glow_mask.py town.house.inn --preview out/glow_inn.png
+  .venv/Scripts/python glow_mask.py town.house.north.1 town.house.south.1 --lattice   # 白天画法的格子窗（窗纸灰暗）
+
+--lattice：民居 AI 件的窗是深色窗棂配灰白窗纸，没有亮窗纸可取。改为先找“白墙上的一块深色格子”——深色连通块、
+四周一圈是亮墙、外框高大于宽（门楣宽大于高、门高宽比更大，都排除），块内按 Otsu 分出比窗棂亮的窗格，
+夜里窗格换成暖色窗纸亮起、窗棂保持深色。各窗亮度按 id 取固定随机数略有出入，约四分之一的窗不点灯（至少留一扇亮）。
 
 输出 game/assets/art/<地区>/<id>.glow.png（颜色取原件、窗外一圈暖色柔光，alpha 为发光强度）与 .glow.json（origin、px 同原件；
 blobs 为各发光窗块在投影坐标中的中心与面积，lanterns 为灯笼中心，供引擎铺地面灯光与光晕）。
 """
 import argparse
 import json
+import zlib
 from pathlib import Path
 
 import cv2
@@ -69,6 +75,62 @@ def mask(rgba, args):
     return np.maximum(soft, (keep * 0.85).astype(np.uint8)), blobs, lanterns
 
 
+def lattice_windows(rgba, args, seed):
+    """白天画法的格子窗：返回发光图的 RGB、核心遮罩（0–1）与各亮窗块（中心 x、y、面积）。"""
+    rgb = rgba[..., :3]
+    alpha = rgba[..., 3]
+    _, s, v = hue_sat_val(rgb)
+    dark = ((v < 0.45) & (alpha > 0.5)).astype(np.uint8) * 255
+    dark = cv2.morphologyEx(dark, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
+    count, labels, stats, _ = cv2.connectedComponentsWithStats(dark, connectivity=8)
+    rng = np.random.default_rng(seed)
+    core = np.zeros(v.shape, np.float32)
+    color = np.zeros(rgb.shape, np.float32)
+    paper = np.array([0.92, 0.6, 0.3], np.float32)
+    found = []
+    for i in range(1, count):
+        x, y, w, h, area = stats[i]
+        if area < 150 or w * h > 20000 or w < 14 or h < 14 or not 1.1 < h / w < 1.6:
+            continue
+        comp = (labels == i).astype(np.uint8) * 255
+        closed = cv2.morphologyEx(comp, cv2.MORPH_CLOSE, np.ones((9, 9), np.uint8))
+        contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        hull = np.zeros_like(comp)
+        cv2.drawContours(hull, contours, -1, 255, -1)
+        inside = hull > 0
+        ring = (cv2.dilate(hull, np.ones((13, 13), np.uint8)) > 0) & ~inside & (alpha > 0.5)
+        if not ring.any() or v[ring].mean() < 0.6:
+            continue
+        inner = cv2.erode(hull, np.ones((5, 5), np.uint8)) > 0
+        values = (v[inner] * 255).astype(np.uint8)
+        if values.size < 50:
+            continue
+        cut, _ = cv2.threshold(values.reshape(-1, 1), 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        pane = inner & (v * 255 > cut) & (s < 0.3)
+        ratio = pane.sum() / inner.sum()
+        if not 0.15 < ratio < 0.8:
+            continue
+        cy, cx = np.argwhere(inside).mean(0)
+        found.append((pane, float(cx), float(cy), int(inside.sum())))
+    if not found:
+        return color, core, []
+    lit = rng.random(len(found)) >= args.unlit
+    if not lit.any():
+        lit[rng.integers(len(found))] = True
+    blobs = []
+    for (pane, cx, cy, area), on in zip(found, lit):
+        if not on:
+            continue
+        level = rng.uniform(0.75, 1.0)
+        # 窗纸本身的明暗留一点纹理：比该窗平均亮的格更亮。
+        lum = v[pane]
+        tex = 0.85 + 0.6 * (lum - lum.mean())
+        color[pane] = np.clip(paper[None, :] * tex[:, None], 0, 1)
+        core[pane] = level
+        blobs.append((cx, cy, area))
+    return color, core, blobs
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("ids", nargs="+")
@@ -83,6 +145,9 @@ def main():
     p.add_argument("--halo", type=float, default=7, help="窗外柔光的模糊半径（像素）")
     p.add_argument("--halo-strength", type=float, default=0.45)
     p.add_argument("--feather", type=float, default=1.5)
+    p.add_argument("--lattice", action="store_true", help="白天画法的格子窗：认出窗棂间的窗格，夜里换成暖色窗纸")
+    p.add_argument("--unlit", type=float, default=0.25, help="--lattice 时不点灯的窗的比例")
+    p.add_argument("--no-lanterns", action="store_true", help="不取红色灯笼（门上的红门环等会被误认）")
     p.add_argument("--preview", help="另存一张原图 + 遮罩的对照图")
     args = p.parse_args()
 
@@ -92,14 +157,29 @@ def main():
         meta = json.loads(Path(f"{base}.json").read_text(encoding="utf-8"))
         rgba = np.asarray(Image.open(f"{base}.png").convert("RGBA")).astype(np.float32) / 255
         m, blobs, lanterns = mask(rgba, args)
+        if args.no_lanterns:
+            lanterns = []
         h, w = m.shape
         # 颜色取原件本身（叠加后窗格、灯笼的花纹仍在，只是亮起来），窗外一圈柔光取暖色；alpha 为内核遮罩加一圈外晕。
         core = m.astype(np.float32) / 255
-        halo = cv2.GaussianBlur(core, (0, 0), args.halo) * args.halo_strength
-        alpha = np.maximum(core, halo)
         src = rgba[..., :3]
         warm = np.array([1.0, 0.78, 0.5], np.float32)
         rgb = np.where(core[..., None] > 0.05, np.clip(src * 1.15 + warm * 0.12, 0, 1), warm)
+        if args.lattice:
+            # 格子窗：窗格换暖色窗纸（只亮窗格，窗棂不亮）；灯笼仍按上面的红色取法。
+            seed = zlib.crc32(id_.encode("utf-8"))
+            pane_rgb, pane_core, blobs = lattice_windows(rgba, args, seed)
+            red = np.zeros_like(core)
+            for x, y, a in lanterns:
+                r = max(3, int(np.sqrt(a / np.pi) + 2))
+                cv2.circle(red, (int(x), int(y)), r, 1.0, -1)
+            red = np.minimum(core, red)
+            rgb = np.where(pane_core[..., None] > 0, pane_rgb, np.where(red[..., None] > 0.05, rgb, warm))
+            soft = cv2.GaussianBlur(pane_core, (0, 0), args.feather * 0.6)
+            core = np.maximum(np.maximum(pane_core * 0.9, soft), red)
+            m = (core * 255).astype(np.uint8)
+        halo = cv2.GaussianBlur(core, (0, 0), args.halo) * args.halo_strength
+        alpha = np.maximum(core, halo)
         out = np.zeros((h, w, 4), np.uint8)
         out[..., :3] = (rgb * 255).astype(np.uint8)
         out[..., 3] = (np.clip(alpha, 0, 1) * 255).astype(np.uint8)
