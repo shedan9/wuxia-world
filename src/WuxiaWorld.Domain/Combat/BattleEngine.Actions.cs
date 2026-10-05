@@ -88,7 +88,8 @@ public sealed partial class BattleEngine
             {
                 var ours = s.Living(actor.Side).Select(EffectiveSpeed).DefaultIfEmpty(0).Average();
                 var theirs = s.Living(Targeting.Opposite(actor.Side)).Select(EffectiveSpeed).DefaultIfEmpty(0).Average();
-                var chance = Bp.Clamp(
+                // 切磋里撤退就是拱手认输，对方不会追，总能成。
+                var chance = s.Spar ? Bp.One : Bp.Clamp(
                     CombatConstants.RetreatBaseBp + (int)Math.Floor(ours - theirs) * CombatConstants.RetreatPerSpeedBp,
                     CombatConstants.RetreatMinBp,
                     CombatConstants.RetreatMaxBp);

@@ -1,6 +1,7 @@
 using Godot;
 using WuxiaWorld.Application.Combat;
 using WuxiaWorld.Domain.Combat;
+using WuxiaWorld.Domain.World;
 using WuxiaWorld.Game.Presentation.App;
 using Side = WuxiaWorld.Domain.Combat.Side;
 using WuxiaWorld.Game.Presentation.Ui;
@@ -48,9 +49,11 @@ public sealed partial class BattleScreen
         {
             var index = i;
             var id = EncounterIds[i];
-            var locked = _engine.Content.Encounter(id).Locked;
-            var note = locked ? "首领机制战：水门开闸、蓄力预兆、半血增援；三人同行" : "普通战：押运打手两名、飞钩手一名；可撤退";
-            var button = Ui.Toggle($"{_bundle.Name(id)}", UiTheme.ChoiceButton, encounterGroup, () => { _encounter = index; }, i == _encounter);
+            var spar = id == SparSlot;
+            var locked = !spar && _engine.Content.Encounter(id).Locked;
+            var note = spar ? "讨教后的后院切磋：主角单人对讨教人选（按所选流派），点到为止、气血压到三成五即认输"
+                : locked ? "首领机制战：水门开闸、蓄力预兆、半血增援；三人同行" : "普通战：押运打手两名、飞钩手一名；可撤退";
+            var button = Ui.Toggle(spar ? "后院切磋" : _bundle.Name(id), UiTheme.ChoiceButton, encounterGroup, () => { _encounter = index; }, i == _encounter);
             button.TooltipText = note;
             button.CustomMinimumSize = new Vector2(300, 56);
             encounters.AddChild(button);
@@ -203,7 +206,14 @@ public sealed partial class BattleScreen
         Veil();
 
         var state = session.State;
-        var (title, sub) = state.Outcome switch
+        var foe = state.VictoryUnit is { } mark ? DisplayName(mark) : "对手";
+        var (title, sub) = state.Spar ? state.Outcome switch
+        {
+            // 切磋点到为止：输赢都只是一招，没有“再战 / 暂退”。
+            BattleOutcome.Victory => ("胜了一招", $"{foe}收手认输　·　点到为止"),
+            BattleOutcome.Defeat => ("输了一招", "守不住了，收手认输　·　点到为止"),
+            _ => ("拱手认输", "点到为止"),
+        } : state.Outcome switch
         {
             BattleOutcome.Victory => (session.Record.Setup.EncounterId.EndsWith("sluice", StringComparison.Ordinal) ? "旧渡解围" : "击退押运队", "战斗胜利"),
             BattleOutcome.Defeat => ("力战不支", _story is null ? "我方全员失去战斗能力（原型不写存档，可同种子重试）" : "我方全员失去战斗能力"),
@@ -227,15 +237,21 @@ public sealed partial class BattleScreen
         if (_story is not null)
         {
             // 剧情战：给玩家看所得与消耗；技术记录只在开发信息打开时附在下面。
-            record.AddChild(Ui.Section(state.Outcome == BattleOutcome.Victory ? "所得" : "战况", dark: true));
+            record.AddChild(Ui.Section(state.Outcome == BattleOutcome.Victory || state.Spar ? "所得" : "战况", dark: true));
             var won = state.Outcome == BattleOutcome.Victory;
-            record.AddChild(Line("经验", won ? $"+{encounter.Experience}" : "—", ""));
-            record.AddChild(Line("修为", won && encounter.Cultivation > 0 ? $"+{encounter.Cultivation}" : "—", ""));
-            if (won && _story.Game.Growth is { } growth)
+
+            // 切磋输了也有所得（写在请求的战败效果里）；普通剧情战输了没有。
+            var lostExp = state.Spar ? _pending!.OnDefeat.Where(e => e.Type == WorldEffectType.GrantExperience).Sum(e => e.Amount) : 0;
+            var lostCult = state.Spar ? _pending!.OnDefeat.Where(e => e.Type == WorldEffectType.GrantCultivation).Sum(e => e.Amount) : 0;
+            var exp = won ? encounter.Experience : lostExp;
+            var cult = won ? encounter.Cultivation : lostCult;
+            record.AddChild(Line("经验", exp > 0 ? $"+{exp}" : "—", ""));
+            record.AddChild(Line("修为", cult > 0 ? $"+{cult}" : "—", ""));
+            if (exp > 0 && _story.Game.Growth is { } growth)
             {
                 // 结算后会不会升级：按提交前的经验预先算出，提示去人物页分配潜能。
                 var before = growth.Level(_story.Game.World);
-                var after = _story.Game.Rules.LevelOf(_story.Game.World.Experience + encounter.Experience);
+                var after = _story.Game.Rules.LevelOf(_story.Game.World.Experience + exp);
                 if (after > before)
                 {
                     record.AddChild(Line("升级", $"第 {before} 级 → 第 {after} 级", $"{KeyBindings.Label("open_character")} 人物页分配潜能"));
@@ -244,7 +260,7 @@ public sealed partial class BattleScreen
 
             var used = Consumed();
             record.AddChild(Line("用去", used.Count == 0 ? "无" : string.Join("、", used.Select(u => $"{_story.Name(u.Key)}{(u.Value > 1 ? $" ×{u.Value}" : "")}")), ""));
-            if (state.Outcome != BattleOutcome.Victory)
+            if (state.Outcome != BattleOutcome.Victory && !state.Spar)
             {
                 record.AddChild(Ui.Text("再战会从头重开这一场；暂退回到此地的安全处，随时可以回来再打。", UiTheme.DarkMutedLabel, 18, wrap: true));
             }
@@ -266,7 +282,7 @@ public sealed partial class BattleScreen
 
         Control actions = _story is null
             ? Ui.KeyActions(true, ("R", "同种子重来", () => ResultKey(Key.R)), ("N", "换种子再战", () => ResultKey(Key.N)), ("B", "重新配置", () => ResultKey(Key.B)))
-            : state.Outcome == BattleOutcome.Victory
+            : state.Outcome == BattleOutcome.Victory || state.Spar
                 ? Ui.KeyActions(true, ("Enter", "继续", () => StoryResultKey(Key.Enter)))
                 : Ui.KeyActions(true, ("R", "再战", () => StoryResultKey(Key.R)), ("B", "暂退", () => StoryResultKey(Key.B)));
 

@@ -83,7 +83,7 @@ foreach (var scenario in Scenarios.All.Where(s => only is null || s.Id == only))
     Console.WriteLine("  流派    策略     胜率    平均轮  P90轮  剩余气血  内力消耗  用药  超时");
     foreach (var build in builds)
     {
-        foreach (var policyName in new[] { build, "greedy", "basic" })
+        foreach (var policyName in new[] { build, "aware", "greedy", "basic" })
         {
             var policy = Policies.ByName(policyName);
             var stats = Run(engine, content, scenario, build, policy, runs, seed0, heroOf, party, variants);
@@ -148,14 +148,16 @@ static Stats Run(BattleEngine engine, CombatContent content, Scenarios.Scenario 
         {
             EncounterId = scenario.Id,
             Seed = seed0 + (ulong)r,
-            Allies =
-            [
-                new AllyEntry(heroOf(content.Combatant($"combatant.hero.{build}")), "char.hero", new Position(0, 1)),
-                new AllyEntry(content.Combatant("combatant.lu_qinghe"), "char.lu_qinghe", new Position(1, 1)),
-                .. guests,
-            ],
+            Allies = scenario.Solo
+                ? [new AllyEntry(heroOf(content.Combatant($"combatant.hero.{build}")), "char.hero", new Position(0, 1))]
+                :
+                [
+                    new AllyEntry(heroOf(content.Combatant($"combatant.hero.{build}")), "char.hero", new Position(0, 1)),
+                    new AllyEntry(content.Combatant("combatant.lu_qinghe"), "char.lu_qinghe", new Position(1, 1)),
+                    .. guests,
+                ],
             Variants = active,
-            Items = new Dictionary<string, int> { [Policies.GoldenSore] = 2, [Policies.QiPill] = 1 },
+            Items = scenario.Solo ? new Dictionary<string, int>() : new Dictionary<string, int> { [Policies.GoldenSore] = 2, [Policies.QiPill] = 1 },
         };
         var session = new BattleSession(engine, setup);
         var spent = 0;

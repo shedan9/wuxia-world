@@ -19,6 +19,7 @@ public static class BattleAi
             AiProfiles.Mechanism => Mechanism(engine, state, actor),
             AiProfiles.Guardian => Guardian(engine, state, actor),
             AiProfiles.BossTang => BossTang(engine, state, actor),
+            AiProfiles.Sparring => Sparring(engine, state, actor),
             AiProfiles.Skirmisher => BestAttack(engine, state, actor, skirmish: true),
             _ => BestAttack(engine, state, actor, skirmish: false),
         };
@@ -77,6 +78,19 @@ public static class BattleAi
         if (charged.Skill is not null && state.Round >= 2)
         {
             return new UseSkill(actor.Id, charged.Skill.Id, charged.Targets.Count > 0 ? charged.Targets[0].Id : null);
+        }
+
+        return BestAttack(engine, state, actor, skirmish: false);
+    }
+
+    /// <summary>教招：第 2 轮起蓄力招可用就亮出起手，对准气血比例最高者（教的是怎么应对，不是专挑软柿子）；否则莽攻。</summary>
+    private static BattleCommand Sparring(BattleEngine engine, BattleState state, BattleUnit actor)
+    {
+        var charged = engine.UsableSkills(state, actor.Id).FirstOrDefault(u => u.Skill.Charged);
+        if (charged.Skill is not null && state.Round >= 2)
+        {
+            var mark = charged.Targets.OrderByDescending(Ratio).ThenBy(t => t.Id, StringComparer.Ordinal).FirstOrDefault();
+            return new UseSkill(actor.Id, charged.Skill.Id, mark?.Id);
         }
 
         return BestAttack(engine, state, actor, skirmish: false);

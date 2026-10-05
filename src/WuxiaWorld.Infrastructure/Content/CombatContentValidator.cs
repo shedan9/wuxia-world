@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using WuxiaWorld.Domain.Characters;
 using WuxiaWorld.Domain.Combat;
 using WuxiaWorld.Domain.Combat.Definitions;
+using WuxiaWorld.Domain.Common;
 
 namespace WuxiaWorld.Infrastructure.Content;
 
@@ -125,7 +126,7 @@ public static partial class CombatContentValidator
             }
 
             if (c.Ai is not (AiProfiles.Player or AiProfiles.Brawler or AiProfiles.Skirmisher or AiProfiles.Guardian
-                or AiProfiles.BossTang or AiProfiles.Mechanism or AiProfiles.Dummy))
+                or AiProfiles.BossTang or AiProfiles.Mechanism or AiProfiles.Dummy or AiProfiles.Sparring))
             {
                 Err($"{c.Id}：未知 AI 档案 {c.Ai}");
             }
@@ -222,7 +223,29 @@ public static partial class CombatContentValidator
                 Err($"{e.Id}：胜利条件指向不存在的单位 {e.VictoryUnit}");
             }
 
-            if (e.Victory == VictoryRule.DefeatAll && !e.Enemies.Any(s => combatants.TryGetValue(s.Template, out var t) && t.CountsForVictory))
+            if (e.Victory == VictoryRule.Spar)
+            {
+                if (e.YieldBp is <= 0 or >= Bp.One)
+                {
+                    Err($"{e.Id}：切磋的认输线须在 1–9999 万分比之间（现为 {e.YieldBp}）");
+                }
+
+                if (e.VictoryUnit is not null && !units.Contains(e.VictoryUnit))
+                {
+                    Err($"{e.Id}：切磋的认输对象指向不存在的单位 {e.VictoryUnit}");
+                }
+            }
+            else if (e.YieldBp != 0)
+            {
+                Err($"{e.Id}：只有切磋（victory: spar）才设认输线");
+            }
+
+            if (e.Backdrop is { } backdrop && !backdrop.StartsWith("battle.", StringComparison.Ordinal))
+            {
+                Err($"{e.Id}：战斗布景 ID 应以 battle. 开头（{backdrop}）");
+            }
+
+            if (e.Victory is VictoryRule.DefeatAll or VictoryRule.Spar && !e.Enemies.Any(s => combatants.TryGetValue(s.Template, out var t) && t.CountsForVictory))
             {
                 Err($"{e.Id}：没有计入胜利的敌人");
             }

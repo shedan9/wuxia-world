@@ -114,7 +114,8 @@ public sealed partial class BattleEngine
 
     private static int DealDamage(Ctx ctx, BattleUnit source, BattleUnit target, int amount, DamageKind kind, bool crit)
     {
-        var lost = Math.Min(amount, target.Hp);
+        // 切磋点到为止：最多压到 1 点气血，不会倒下。
+        var lost = Math.Min(amount, ctx.State.Spar ? Math.Max(0, target.Hp - 1) : target.Hp);
         target.Hp -= lost;
         ctx.Emit(new Damaged(source.Id, target.Id, amount, kind, crit, target.Hp));
         if (source.Side != target.Side)

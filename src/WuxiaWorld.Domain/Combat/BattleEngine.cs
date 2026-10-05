@@ -62,6 +62,7 @@ public sealed partial class BattleEngine(CombatContent content)
             Locked = encounter.Locked,
             Victory = encounter.Victory,
             VictoryUnit = encounter.VictoryUnit,
+            YieldBp = encounter.YieldBp,
             Rng = new Pcg32(setup.Seed, CombatConstants.BattleStream),
         };
 
@@ -390,7 +391,7 @@ public sealed partial class BattleEngine(CombatContent content)
             if (def.TickDamageBp > 0 && !actor.IsDown)
             {
                 var dmg = (int)Math.Max(1, Bp.Apply((long)actor.Stats.MaxHp * st.Stacks, def.TickDamageBp));
-                actor.Hp = Math.Max(0, actor.Hp - dmg);
+                actor.Hp = Math.Max(ctx.State.Spar ? Math.Min(1, actor.Hp) : 0, actor.Hp - dmg);
                 ctx.Emit(new StatusTicked(actor.Id, st.StatusId, dmg, actor.Hp));
                 if (actor.IsDown)
                 {
@@ -471,7 +472,29 @@ public sealed partial class BattleEngine(CombatContent content)
         }
 
         BattleOutcome outcome;
-        if (!s.Living(Side.Ally).Any())
+        if (s.Spar)
+        {
+            // 切磋：我方都收了手为败（同时收手也按败），对手收手为胜。
+            if (s.Living(Side.Ally).All(s.Yielded))
+            {
+                outcome = BattleOutcome.Defeat;
+            }
+            else if (s.VictoryUnit is not null ? s.TryUnit(s.VictoryUnit) is { } mark && s.Yielded(mark)
+                     : s.Living(Side.Enemy).Where(u => u.Template.CountsForVictory).All(s.Yielded))
+            {
+                outcome = BattleOutcome.Victory;
+            }
+            else
+            {
+                return;
+            }
+
+            foreach (var u in s.Living(Side.Ally).Concat(s.Living(Side.Enemy)).Where(s.Yielded))
+            {
+                ctx.Emit(new UnitYielded(u.Id));
+            }
+        }
+        else if (!s.Living(Side.Ally).Any())
         {
             // 双方同时失去战斗能力按失败处理（架构文档 7.3）。
             outcome = BattleOutcome.Defeat;

@@ -192,6 +192,90 @@
       "voice": "male-qn-badao",
       "review": "pending"
     },
+    "ch01.battle.spar.huang.charge": {
+      "file": "ch01.battle.spar.huang.charge.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "196a8df19631af1cf9d9e8c646ed83977c56162a7522f1023f1ac486da3ed22c",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.spar.huang.hero.victory": {
+      "file": "ch01.battle.spar.huang.hero.victory.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "68853a5d40b9ab4140f4e73599e6e3bfff946815d3c2f97f4d1a0a3f04568a44",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.battle.spar.huang.interrupted": {
+      "file": "ch01.battle.spar.huang.interrupted.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "4e41bf21fe28691fff5badb484d680f593a88aea6182aa62543983791380a0c4",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.spar.huang.start": {
+      "file": "ch01.battle.spar.huang.start.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "d6a806a6f0950cf89ab1c4db69f099b77185cd0043c3cfb5cedb57334416a8d0",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.battle.spar.linghu.charge": {
+      "file": "ch01.battle.spar.linghu.charge.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "3d9a932f44066355f9c813c48dc576db19b319bcb991b7645009a093de57dbd1",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.spar.linghu.hero.victory": {
+      "file": "ch01.battle.spar.linghu.hero.victory.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "6642d87f7f02c1cf1b6d8fca0ddbbc09f0ce211b29f38477ed7f9f93d5738a44",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.battle.spar.linghu.interrupted": {
+      "file": "ch01.battle.spar.linghu.interrupted.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "3e229726ca81febb6f2ba0bb03083d8bc52264347ed988187e9f833097487c6e",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.spar.linghu.start": {
+      "file": "ch01.battle.spar.linghu.start.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "ebd384716956e3ded110536b59b8cacc5b28d4051a526efa86df30ecad8c10ff",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.battle.spar.xiao.charge": {
+      "file": "ch01.battle.spar.xiao.charge.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "c95ba012f99c9265dd28037807936b5ccc6612c6bd02ecee8aed1dfc661ac891",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.spar.xiao.hero.victory": {
+      "file": "ch01.battle.spar.xiao.hero.victory.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "c01f0abb6e5f8b37e5bcfbfb077324e53a1c6bcc81fb188eb0a8cbed2a71a66f",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.battle.spar.xiao.interrupted": {
+      "file": "ch01.battle.spar.xiao.interrupted.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "12c880167e896cdb82c7b3cc87723f89ed9f19f8fc8f4ec84f89871c8fa7f05c",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.battle.spar.xiao.start": {
+      "file": "ch01.battle.spar.xiao.start.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "66fa562f3627e5a6642ebdbf5629cc7ba606da1bdf1b0565630090d2f27c3177",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
     "ch01.battle.xiao.downed": {
       "file": "ch01.battle.xiao.downed.mp3",
       "speaker": "char.xiao_feng",
@@ -647,6 +731,13 @@
       "voice": "ttv-voice-2026100114191726-dLDCBpC9",
       "review": "pending"
     },
+    "ch01.mentor_choice.huang.003": {
+      "file": "ch01.mentor_choice.huang.003.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "39bc615bf6b6f9a496596bbe6b8356aee2dc2d208de2161c547ba74809eae659",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
     "ch01.mentor_choice.linghu.001": {
       "file": "ch01.mentor_choice.linghu.001.mp3",
       "speaker": "char.linghu_chong",
@@ -661,6 +752,13 @@
       "voice": "Chinese (Mandarin)_Stubborn_Friend",
       "review": "pending"
     },
+    "ch01.mentor_choice.linghu.003": {
+      "file": "ch01.mentor_choice.linghu.003.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "9f5c1aa289591a6d587655bb6fc9f0a86607eefced02325603433fcb40d69077",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
     "ch01.mentor_choice.xiao.001": {
       "file": "ch01.mentor_choice.xiao.001.mp3",
       "speaker": "char.xiao_feng",
@@ -672,6 +770,132 @@
       "file": "ch01.mentor_choice.xiao.002.mp3",
       "speaker": "char.xiao_feng",
       "text_sha256": "d98d7d9d773209ffd1cf97115b8205f3223da9e6e283b1ec7a4d5208f768b186",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_choice.xiao.003": {
+      "file": "ch01.mentor_choice.xiao.003.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "bff224a4d22249e3569cc77119b782757d0408a1d0a49ebce87bcf124c7a7d75",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.huang.001": {
+      "file": "ch01.mentor_spar.huang.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "f138bcd0c59e1b3797a066c08e15184f3217dd250d3b5a8f1cca02cfd4997315",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.huang.002": {
+      "file": "ch01.mentor_spar.huang.002.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "6796e6333ca91ad061d1974939bacc0b72808bb6f0a6693736e71963deda9daa",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.huang.003": {
+      "file": "ch01.mentor_spar.huang.003.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "2e911d69c865823ced59dc5d48a7c0d7247e65c97c9aa09a6a8db59b34452364",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.linghu.001": {
+      "file": "ch01.mentor_spar.linghu.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "9c406f27634e3635f5c35a463f307e5f3a0855583e004b6ce0584cd7679f57d0",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.linghu.002": {
+      "file": "ch01.mentor_spar.linghu.002.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "73ef6386a43ed66349d16621295aa3143aefe5491b348ff1fdf5bc30d398c88f",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.linghu.003": {
+      "file": "ch01.mentor_spar.linghu.003.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "a7a0b7432eea91165302a5abe4541e34fa65b22800610b37bbd4a04d99267b88",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.xiao.001": {
+      "file": "ch01.mentor_spar.xiao.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "015814314b35adf7f5779f330d26764b09c246c66142a60b49f47410ade6aec9",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.xiao.002": {
+      "file": "ch01.mentor_spar.xiao.002.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "370e2c884176d598c60d3432cbea9c93058455fd830ebe6585a73ced0222005b",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_spar.xiao.003": {
+      "file": "ch01.mentor_spar.xiao.003.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "061dc3a2e5c7e436c621c77aa82c3cb6759345d51a920b40239a336272405fc7",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.hero.001": {
+      "file": "ch01.mentor_spar_after.hero.001.mp3",
+      "speaker": "char.hero",
+      "text_sha256": "78cad5f610f4ad9ddc05d2eaf6a308e35f6fdd4f076d1758df1ab5b22046fc35",
+      "voice": "ttv-voice-2026100114014626-LIHIWaaR",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.huang.lost.001": {
+      "file": "ch01.mentor_spar_after.huang.lost.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "fdf8e3673b3fa21bb9c112e32742afeac42fb52f163a5e80bd514565654c23f6",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.huang.won.001": {
+      "file": "ch01.mentor_spar_after.huang.won.001.mp3",
+      "speaker": "char.huang_rong",
+      "text_sha256": "7fb222e12f1bff73babf5d51307c16994febd2d10ca8ecf46419938c3a2f42d3",
+      "voice": "ttv-voice-2026100114191726-dLDCBpC9",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.linghu.lost.001": {
+      "file": "ch01.mentor_spar_after.linghu.lost.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "249dccb7771c6a009c9b14e986d65b11ddefc6eb71c348b4ad17cec903b0ea90",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.linghu.won.001": {
+      "file": "ch01.mentor_spar_after.linghu.won.001.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "aa9aa004fbe13347477faa5f64d4712abb9643077bcc1c804f1a36d387b406d2",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.linghu.won.002": {
+      "file": "ch01.mentor_spar_after.linghu.won.002.mp3",
+      "speaker": "char.linghu_chong",
+      "text_sha256": "fa23ae54c3f211858fbe2d5310609359d1be16a75f92d540549b775e337125d0",
+      "voice": "Chinese (Mandarin)_Stubborn_Friend",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.xiao.lost.001": {
+      "file": "ch01.mentor_spar_after.xiao.lost.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "edcaa9be2abd327d317eaa235458fb53b1354b25ac20181ce1829b47e5afb325",
+      "voice": "Chinese (Mandarin)_Reliable_Executive",
+      "review": "pending"
+    },
+    "ch01.mentor_spar_after.xiao.won.001": {
+      "file": "ch01.mentor_spar_after.xiao.won.001.mp3",
+      "speaker": "char.xiao_feng",
+      "text_sha256": "430dd59530e93af9abcb6c4f20fb1584d51c07fda1c0ab3ed093feff8da9bc6f",
       "voice": "Chinese (Mandarin)_Reliable_Executive",
       "review": "pending"
     },

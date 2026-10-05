@@ -65,6 +65,9 @@
       {"id": 455727, "start": 30, "lp": 2500, "mono_width": 0.6, "lufs": -30},
       {"id": 444920, "start": 5, "lufs": -38},
       {"id": 316643, "start": 0, "hp": 300, "lufs": -40}
+    ]},
+    "amb.yard_night": {"expect": "crickets chirping at night", "seconds": 60, "fade": 4, "lufs": -29, "layers": [
+      {"id": 522299, "start": 40, "hp": 250, "lufs": -29}
     ]}
   }
 }

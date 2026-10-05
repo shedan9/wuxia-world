@@ -16,6 +16,9 @@ public enum ChapterOnePoint
     /// <summary>会面之后，客栈里，支线委托与讨教之前。</summary>
     Mentor,
 
+    /// <summary>讨教之后，客栈里：给了 <see cref="ChapterOneRoute.Spar"/> 时后院切磋待开；不切磋时就停在讨教之后、选同行者之前。</summary>
+    SparBattle,
+
     /// <summary>讨教与选同行者之后，芦湾街码头，乘船之前。</summary>
     Departure,
 
@@ -65,6 +68,9 @@ public sealed class ChapterOneRoute(GameSession game)
 
     /// <summary>讨教人选（决定所学流派：令狐冲剑术、黄蓉内功、萧峰拳掌）；不给时同 <see cref="Companion"/>。</summary>
     public string? Mentor { get; init; }
+
+    /// <summary>讨教后找那位侠客后院切磋：<c>won</c> / <c>lost</c> 按该结果结算；null 不切磋。</summary>
+    public string? Spar { get; init; }
 
     /// <summary>副页保管：<c>public</c> / <c>sealed</c>。</summary>
     public string Custody { get; init; } = "public";
@@ -147,7 +153,7 @@ public sealed class ChapterOneRoute(GameSession game)
             return;
         }
 
-        if (Reached < ChapterOnePoint.Departure)
+        if (Reached < ChapterOnePoint.SparBattle)
         {
             if (DeclineSideFirst)
             {
@@ -163,6 +169,28 @@ public sealed class ChapterOneRoute(GameSession game)
 
             Pick("choice." + mentor);
             PlayEvent("event.ch01.mentor_choice");
+            if (Spar is not null)
+            {
+                // 像真实玩家那样先去人物页分了刚升级的潜能，再去找人切磋。
+                AutoAllocate();
+                Pick("choice.spar");
+                PlayEvent("event.ch01.mentor_spar_" + mentor);
+            }
+        }
+
+        if (Stop(ChapterOnePoint.SparBattle, stop))
+        {
+            return;
+        }
+
+        if (Reached < ChapterOnePoint.Departure)
+        {
+            if (Spar is not null)
+            {
+                SettleSpar();
+                PlayAuto(); // 切磋点评
+            }
+
             if (Side && FinishSideSteps)
             {
                 Exit("out");
@@ -365,6 +393,20 @@ public sealed class ChapterOneRoute(GameSession game)
         }
     }
 
+    /// <summary>按 <see cref="Spar"/> 结算待开的切磋（不经 <see cref="Fighter"/>：切磋输赢都能往下走）。</summary>
+    private void SettleSpar()
+    {
+        var b = Game.World.Battle ?? throw Stuck("没有待开的切磋");
+        var won = Spar == "won";
+        var encounter = (Combat ?? Game.Growth?.Combat)?.Encounter(b.Encounter);
+        var r = Game.SettleBattle(b.InstanceId, won ? BattleEnd.Victory : BattleEnd.Defeat,
+            experience: won ? encounter?.Experience ?? 0 : 0, cultivation: won ? encounter?.Cultivation ?? 0 : 0);
+        if (!r.Ok)
+        {
+            throw Stuck($"结算切磋 {b.Encounter} 失败：{r.Error}");
+        }
+    }
+
     private void Commit(Transition t, string what)
     {
         var r = Game.CommitTransition(t);
@@ -406,5 +448,5 @@ public sealed class ChapterOneRoute(GameSession game)
     }
 
     private InvalidOperationException Stuck(string what) =>
-        new($"第一章路线（{Companion}{(Side ? " + 支线" : "")}）走到 {Reached} 之后卡住：{what}（地图 {Game.World.MapId}）");
+        new($"第一章路线（{Companion}{(Side ? " + 支线" : "")}{(Spar is null ? "" : " + 切磋")}）走到 {Reached} 之后卡住：{what}（地图 {Game.World.MapId}）");
 }

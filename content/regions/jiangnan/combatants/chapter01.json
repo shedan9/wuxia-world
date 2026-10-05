@@ -52,5 +52,38 @@
     "ai": "ai.mechanism",
     "counts_for_victory": false,
     "art_id": "battle.sluice_gate"
+  },
+  {
+    "id": "combatant.spar.linghu_chong",
+    "level": 5,
+    "attributes": { "physique": 6, "strength": 8, "root": 5, "agility": 8, "insight": 7 },
+    "loadout": { "skills": ["skill.spar.sword_tap", "skill.spar.sword_lunge"] },
+    "equipment": { "external_attack": 17 },
+    "overrides": { "max_hp": 480, "evasion": 0, "max_stance": 30 },
+    "tags": ["sword"],
+    "ai": "ai.spar",
+    "art_id": "figure.linghu_chong"
+  },
+  {
+    "id": "combatant.spar.huang_rong",
+    "level": 5,
+    "attributes": { "physique": 5, "strength": 6, "root": 7, "agility": 9, "insight": 5 },
+    "loadout": { "skills": ["skill.spar.staff_tap", "skill.spar.staff_sweep"] },
+    "equipment": { "external_attack": 21 },
+    "overrides": { "max_hp": 400, "evasion": 0, "max_stance": 60 },
+    "tags": ["staff"],
+    "ai": "ai.spar",
+    "art_id": "figure.huang_rong"
+  },
+  {
+    "id": "combatant.spar.xiao_feng",
+    "level": 5,
+    "attributes": { "physique": 9, "strength": 9, "root": 6, "agility": 5, "insight": 4 },
+    "loadout": { "skills": ["skill.spar.palm_push", "skill.spar.palm_press"] },
+    "equipment": { "external_attack": 14, "external_defense": 4 },
+    "overrides": { "max_hp": 380, "evasion": 0, "max_stance": 70 },
+    "tags": ["fist"],
+    "ai": "ai.spar",
+    "art_id": "figure.xiao_feng"
   }
 ]

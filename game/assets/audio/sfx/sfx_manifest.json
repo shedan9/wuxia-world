@@ -1155,6 +1155,20 @@
         "ok": true,
         "suspect_windows": 0
       }
+    },
+    "amb.yard_night": {
+      "file": "amb.yard_night.ogg",
+      "seconds": 60.0,
+      "lufs": -29.0,
+      "sources": [
+        {
+          "freesound": 522299,
+          "title": "Crickets At Night - Raw sound",
+          "author": "Defelozedd94",
+          "license": "CC0 1.0",
+          "url": "https://freesound.org/people/Defelozedd94/sounds/522299/"
+        }
+      ]
     }
   }
 }

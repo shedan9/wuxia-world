@@ -1,0 +1,30 @@
+{
+  "id": "battle.inn_yard_night",
+  "size": [
+    1920,
+    1080
+  ],
+  "waterline": 890.0,
+  "source": "art_source/ai/battle/battle.inn_yard_night.png",
+  "sha256": "bc940933b97c07ba00301833dcbfbab455c42b4ec27980a7bef040633ca051d5",
+  "ground": {
+    "texture": "inn.ground.brick",
+    "far_tint": [
+      0.6,
+      0.66,
+      0.84
+    ],
+    "near_tint": [
+      0.3,
+      0.35,
+      0.5
+    ],
+    "sky_glow": [
+      0.9,
+      0.6,
+      0.4
+    ],
+    "sun_x": 1225,
+    "leaves": false
+  }
+}

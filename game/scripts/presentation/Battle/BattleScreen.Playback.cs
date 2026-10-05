@@ -416,10 +416,11 @@ public sealed partial class BattleScreen
             }
 
             case RetreatAttempted r:
-                AddLog(r.Success ? "撤退成功。" : $"撤退失败（成功率 {r.ChanceBp / 100}%）。");
+                var spar = _session!.State.Spar;
+                AddLog(spar ? $"{DisplayName(r.Actor)}拱手认输。" : r.Success ? "撤退成功。" : $"撤退失败（成功率 {r.ChanceBp / 100}%）。");
                 if (animate)
                 {
-                    Banner(r.Success ? "全身而退" : "未能脱身");
+                    Banner(spar ? "拱手认输" : r.Success ? "全身而退" : "未能脱身");
                 }
 
                 return animate ? 0.5f : 0;
@@ -435,6 +436,19 @@ public sealed partial class BattleScreen
                 _views[d.Unit].Refresh(animate);
                 AddLog($"{DisplayName(d.Unit)}倒下。");
                 return animate ? 0.4f : 0;
+
+            case UnitYielded y:
+            {
+                // 切磋点到为止：压到认输线的一方收手，不倒下。
+                var ally = _session!.State.TryUnit(y.Unit)?.Side == Side.Ally;
+                AddLog(ally ? $"{DisplayName(y.Unit)}守不住了，收手认输。" : $"{DisplayName(y.Unit)}收手认输。");
+                if (animate)
+                {
+                    Banner(ally ? "输了这一招" : $"{DisplayName(y.Unit)}收手", ally ? UiPalette.Warm : UiPalette.Gilt);
+                }
+
+                return animate ? 0.9f : 0;
+            }
 
             case PhaseTriggered p:
                 AddLog(_bundle.Name(p.PhaseId));
@@ -500,12 +514,14 @@ public sealed partial class BattleScreen
                 return 0;
 
             case BattleEnded end:
-                AddLog(end.Outcome switch
-                {
-                    BattleOutcome.Victory => "战斗胜利。",
-                    BattleOutcome.Defeat => "我方全员失去战斗能力。",
-                    _ => "脱离战斗。",
-                });
+                AddLog(_session!.State.Spar
+                    ? end.Outcome == BattleOutcome.Victory ? "切磋结束：胜了这一场。" : "切磋结束：输了这一场。"
+                    : end.Outcome switch
+                    {
+                        BattleOutcome.Victory => "战斗胜利。",
+                        BattleOutcome.Defeat => "我方全员失去战斗能力。",
+                        _ => "脱离战斗。",
+                    });
                 return animate ? 0.4f : 0;
 
             default:

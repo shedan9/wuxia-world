@@ -31,12 +31,16 @@ public abstract partial class ExploreStage
     /// 沿路自动走到能触发 <paramref name="target"/> 的位置；<paramref name="interact"/> 为 true 时到达后自动交互
     /// （鼠标点交互点），为 false 时只走到（自动走查到达后自己注入 E）。走不到返回 false。
     /// </summary>
+    /// <summary>自动走向交互点时，终点离目标要比离其他交互点近出的余量（世界单位）。</summary>
+    private const float ArrivalMargin = 24;
+
     public bool WalkToInteraction(TownInteraction target, bool interact)
     {
         var points = Driver?.Interactions ?? Interactions;
         var reach = InteractRange - 30;
+        // 终点须明显离目标最近（留 ArrivalMargin 余量）：停在两个交互点分界上时，实际停步稍有偏差就会高亮成邻近的那个。
         var path = FindPath(c => c.DistanceTo(target.Position) <= reach
-            && points.MinBy(p => p.Position.DistanceTo(c))?.Id == target.Id);
+            && points.All(p => p.Id == target.Id || p.Position.DistanceTo(c) > c.DistanceTo(target.Position) + ArrivalMargin));
         return Follow(path, target, interact);
     }
 

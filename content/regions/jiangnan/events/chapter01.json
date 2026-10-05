@@ -38,6 +38,65 @@
     "anchor": "door"
   },
   {
+    "id": "event.ch01.mentor_spar_linghu",
+    "map": "map.jiangnan.inn",
+    "priority": "timed",
+    "once": false,
+    "when": {
+      "type": "all",
+      "of": [
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "companion" },
+        { "type": "fact_equals", "id": "fact.ch01.mentor", "value": "linghu" },
+        { "type": "not", "of": [{ "type": "any", "of": [{ "type": "fact_equals", "id": "fact.ch01.spar", "value": "won" }, { "type": "fact_equals", "id": "fact.ch01.spar", "value": "lost" }] }] }
+      ]
+    },
+    "participants": ["char.linghu_chong"],
+    "dialogue": "dlg.ch01.mentor_spar",
+    "anchor": "spar_linghu"
+  },
+  {
+    "id": "event.ch01.mentor_spar_huang",
+    "map": "map.jiangnan.inn",
+    "priority": "timed",
+    "once": false,
+    "when": {
+      "type": "all",
+      "of": [
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "companion" },
+        { "type": "fact_equals", "id": "fact.ch01.mentor", "value": "huang" },
+        { "type": "not", "of": [{ "type": "any", "of": [{ "type": "fact_equals", "id": "fact.ch01.spar", "value": "won" }, { "type": "fact_equals", "id": "fact.ch01.spar", "value": "lost" }] }] }
+      ]
+    },
+    "participants": ["char.huang_rong"],
+    "dialogue": "dlg.ch01.mentor_spar",
+    "anchor": "spar_huang"
+  },
+  {
+    "id": "event.ch01.mentor_spar_xiao",
+    "map": "map.jiangnan.inn",
+    "priority": "timed",
+    "once": false,
+    "when": {
+      "type": "all",
+      "of": [
+        { "type": "quest_state_is", "id": "quest.main.01.jiangnan_guest", "status": "active", "stage": "companion" },
+        { "type": "fact_equals", "id": "fact.ch01.mentor", "value": "xiao" },
+        { "type": "not", "of": [{ "type": "any", "of": [{ "type": "fact_equals", "id": "fact.ch01.spar", "value": "won" }, { "type": "fact_equals", "id": "fact.ch01.spar", "value": "lost" }] }] }
+      ]
+    },
+    "participants": ["char.xiao_feng"],
+    "dialogue": "dlg.ch01.mentor_spar",
+    "anchor": "spar_xiao"
+  },
+  {
+    "id": "event.ch01.mentor_spar_after",
+    "map": "map.jiangnan.inn",
+    "priority": "main_urgent",
+    "auto": true,
+    "when": { "type": "any", "of": [{ "type": "fact_equals", "id": "fact.ch01.spar", "value": "won" }, { "type": "fact_equals", "id": "fact.ch01.spar", "value": "lost" }] },
+    "dialogue": "dlg.ch01.mentor_spar_after"
+  },
+  {
     "id": "event.ch01.companion_choice",
     "map": "map.jiangnan.inn",
     "priority": "main_urgent",

@@ -107,6 +107,15 @@ public sealed class BattleState
     public VictoryRule Victory { get; init; }
     public string? VictoryUnit { get; init; }
 
+    /// <summary>切磋的认输线（万分比，见 <see cref="VictoryRule.Spar"/>）；其他胜负规则为 0。</summary>
+    public int YieldBp { get; init; }
+
+    /// <summary>切磋：点到为止，任何伤害都不会把人打倒。</summary>
+    public bool Spar => Victory == VictoryRule.Spar;
+
+    /// <summary>切磋中此人气血已压到认输线及以下（收手）。</summary>
+    public bool Yielded(BattleUnit u) => Spar && (long)u.Hp * Bp.One <= (long)u.Stats.MaxHp * YieldBp;
+
     // 可变结构体须以字段暴露，调用方才能原地推进随机状态；改成属性会拿到副本。
 #pragma warning disable CA1051
     public Pcg32 Rng;
@@ -166,7 +175,7 @@ public sealed class BattleState
     public BattleState Clone() => new()
     {
         EncounterId = EncounterId, RulesetVersion = RulesetVersion, Locked = Locked, Victory = Victory,
-        VictoryUnit = VictoryUnit, Rng = Rng, Round = Round, Order = [.. Order], TurnIndex = TurnIndex,
+        VictoryUnit = VictoryUnit, YieldBp = YieldBp, Rng = Rng, Round = Round, Order = [.. Order], TurnIndex = TurnIndex,
         Pending = Pending, Outcome = Outcome, Units = Units.ConvertAll(u => u.Clone()),
         AllyMomentum = AllyMomentum, EnemyMomentum = EnemyMomentum,
         Items = new SortedDictionary<string, int>(Items, StringComparer.Ordinal),

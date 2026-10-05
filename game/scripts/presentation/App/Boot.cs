@@ -40,6 +40,7 @@ public partial class Boot : Node
             var route = new Application.Dev.ChapterOneRoute(play.Game)
             {
                 Companion = DevCapture.Companion ?? "linghu", Mentor = DevCapture.Mentor, Side = DevCapture.Side, Custody = DevCapture.Custody ?? "public",
+                Spar = DevCapture.Spar is "none" ? null : DevCapture.Spar ?? (point == Application.Dev.ChapterOnePoint.SparBattle ? "won" : null),
                 AllocatePotential = true,
             };
             var started = Time.GetTicksMsec();

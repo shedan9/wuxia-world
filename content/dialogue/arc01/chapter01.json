@@ -831,6 +831,14 @@
           "line_id": "ch01.mentor_choice.linghu.002",
           "speaker": "char.linghu_chong",
           "text": "能看出自己输了三次，就算入门了。",
+          "next": "linghu.003"
+        },
+        {
+          "id": "linghu.003",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.linghu.003",
+          "speaker": "char.linghu_chong",
+          "text": "等手顺了，来找我过两招。点到为止，输了不丢人。",
           "next": "cue.002"
         },
         {
@@ -847,6 +855,14 @@
           "line_id": "ch01.mentor_choice.huang.002",
           "speaker": "char.huang_rong",
           "text": "人身上还有几处，一按就麻。我教你认，不教你打——打要自己练。",
+          "next": "huang.003"
+        },
+        {
+          "id": "huang.003",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.huang.003",
+          "speaker": "char.huang_rong",
+          "text": "练熟了就来找我试试。我只守不打——骗你的。",
           "next": "cue.002"
         },
         {
@@ -863,6 +879,14 @@
           "line_id": "ch01.mentor_choice.xiao.002",
           "speaker": "char.xiao_feng",
           "text": "沉肩，坐胯，掌不要往外推，要往下压。再来。",
+          "next": "xiao.003"
+        },
+        {
+          "id": "xiao.003",
+          "type": "line",
+          "line_id": "ch01.mentor_choice.xiao.003",
+          "speaker": "char.xiao_feng",
+          "text": "练熟了，来接我几掌。",
           "next": "cue.002"
         },
         {
@@ -870,6 +894,550 @@
           "type": "stage",
           "kind": "action",
           "direction": "时间流逝过场：月影西移，主角反复练招到后半夜；收势时甩了甩酸痛的手臂，神色比先前笃定。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.mentor_spar",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "scene",
+          "direction": "客栈后院，后半夜。月光照着井台和柴堆，讨教的那位侠客还没回房，见主角走近便站起身（接讨教对象）。",
+          "next": "who"
+        },
+        {
+          "id": "who",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "linghu"
+              },
+              "next": "linghu.001"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "huang"
+              },
+              "next": "huang.001"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "xiao"
+              },
+              "next": "xiao.001"
+            }
+          ],
+          "next": "linghu.001"
+        },
+        {
+          "id": "linghu.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.linghu.001",
+          "speaker": "char.linghu_chong",
+          "text": "来得正好，我酒也醒了。真过两招，还是再练练？",
+          "next": "ask"
+        },
+        {
+          "id": "huang.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.huang.001",
+          "speaker": "char.huang_rong",
+          "text": "这么晚还不睡，是来找打的？",
+          "next": "ask"
+        },
+        {
+          "id": "xiao.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.xiao.001",
+          "speaker": "char.xiao_feng",
+          "text": "来了。站稳。",
+          "next": "ask"
+        },
+        {
+          "id": "ask",
+          "type": "choice",
+          "options": [
+            {
+              "line_id": "ch01.mentor_spar.choice.spar",
+              "text": "过几招，点到为止",
+              "next": "go"
+            },
+            {
+              "line_id": "ch01.mentor_spar.choice.later",
+              "text": "再练练，过会儿来",
+              "next": "later"
+            }
+          ]
+        },
+        {
+          "id": "go",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "linghu"
+              },
+              "next": "linghu.002"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "huang"
+              },
+              "next": "huang.002"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "xiao"
+              },
+              "next": "xiao.002"
+            }
+          ],
+          "next": "linghu.002"
+        },
+        {
+          "id": "linghu.002",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.linghu.002",
+          "speaker": "char.linghu_chong",
+          "text": "我出手之前，会让你看见。看见了，就别等它落下来。",
+          "next": "fight.linghu"
+        },
+        {
+          "id": "huang.002",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.huang.002",
+          "speaker": "char.huang_rong",
+          "text": "我这一棍扫出去之前，总要先蓄一蓄劲。那一下，你最好按得准些。",
+          "next": "fight.huang"
+        },
+        {
+          "id": "xiao.002",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.xiao.002",
+          "speaker": "char.xiao_feng",
+          "text": "我要压下一掌时，你会知道。别躲，接住。",
+          "next": "fight.xiao"
+        },
+        {
+          "id": "fight.linghu",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "request_battle",
+              "id": "battle.01.spar_linghu",
+              "value": "req.ch01.spar",
+              "retry": false,
+              "on_victory": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.spar",
+                  "value": "won"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.linghu_chong",
+                  "axis": "trust",
+                  "amount": 1
+                }
+              ],
+              "on_defeat": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.spar",
+                  "value": "lost"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.linghu_chong",
+                  "axis": "trust",
+                  "amount": 1
+                },
+                {
+                  "type": "grant_experience",
+                  "amount": 15
+                },
+                {
+                  "type": "grant_cultivation",
+                  "amount": 10
+                }
+              ]
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "fight.huang",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "request_battle",
+              "id": "battle.01.spar_huang",
+              "value": "req.ch01.spar",
+              "retry": false,
+              "on_victory": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.spar",
+                  "value": "won"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.huang_rong",
+                  "axis": "trust",
+                  "amount": 1
+                }
+              ],
+              "on_defeat": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.spar",
+                  "value": "lost"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.huang_rong",
+                  "axis": "trust",
+                  "amount": 1
+                },
+                {
+                  "type": "grant_experience",
+                  "amount": 15
+                },
+                {
+                  "type": "grant_cultivation",
+                  "amount": 10
+                }
+              ]
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "fight.xiao",
+          "type": "effect",
+          "effects": [
+            {
+              "type": "request_battle",
+              "id": "battle.01.spar_xiao",
+              "value": "req.ch01.spar",
+              "retry": false,
+              "on_victory": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.spar",
+                  "value": "won"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.xiao_feng",
+                  "axis": "trust",
+                  "amount": 1
+                }
+              ],
+              "on_defeat": [
+                {
+                  "type": "set_fact",
+                  "id": "fact.ch01.spar",
+                  "value": "lost"
+                },
+                {
+                  "type": "change_relationship",
+                  "id": "char.xiao_feng",
+                  "axis": "trust",
+                  "amount": 1
+                },
+                {
+                  "type": "grant_experience",
+                  "amount": 15
+                },
+                {
+                  "type": "grant_cultivation",
+                  "amount": 10
+                }
+              ]
+            }
+          ],
+          "next": "end"
+        },
+        {
+          "id": "later",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "linghu"
+              },
+              "next": "linghu.003"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "huang"
+              },
+              "next": "huang.003"
+            },
+            {
+              "when": {
+                "type": "fact_equals",
+                "id": "fact.ch01.mentor",
+                "value": "xiao"
+              },
+              "next": "xiao.003"
+            }
+          ],
+          "next": "linghu.003"
+        },
+        {
+          "id": "linghu.003",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.linghu.003",
+          "speaker": "char.linghu_chong",
+          "text": "行，我就在这儿，不走。",
+          "next": "end"
+        },
+        {
+          "id": "huang.003",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.huang.003",
+          "speaker": "char.huang_rong",
+          "text": "去吧，我又不会跑。",
+          "next": "end"
+        },
+        {
+          "id": "xiao.003",
+          "type": "line",
+          "line_id": "ch01.mentor_spar.xiao.003",
+          "speaker": "char.xiao_feng",
+          "text": "好。",
+          "next": "end"
+        },
+        {
+          "id": "end",
+          "type": "end"
+        }
+      ]
+    },
+    {
+      "id": "dlg.ch01.mentor_spar_after",
+      "status": "draft",
+      "entry": "cue.001",
+      "nodes": [
+        {
+          "id": "cue.001",
+          "type": "stage",
+          "kind": "action",
+          "direction": "切磋收势。两人各退一步，在月光下喘着气（接讨教对象与胜负）。",
+          "next": "result"
+        },
+        {
+          "id": "result",
+          "type": "branch",
+          "branches": [
+            {
+              "when": {
+                "type": "all",
+                "of": [
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.mentor",
+                    "value": "linghu"
+                  },
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.spar",
+                    "value": "won"
+                  }
+                ]
+              },
+              "next": "linghu.won.001"
+            },
+            {
+              "when": {
+                "type": "all",
+                "of": [
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.mentor",
+                    "value": "linghu"
+                  },
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.spar",
+                    "value": "lost"
+                  }
+                ]
+              },
+              "next": "linghu.lost.001"
+            },
+            {
+              "when": {
+                "type": "all",
+                "of": [
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.mentor",
+                    "value": "huang"
+                  },
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.spar",
+                    "value": "won"
+                  }
+                ]
+              },
+              "next": "huang.won.001"
+            },
+            {
+              "when": {
+                "type": "all",
+                "of": [
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.mentor",
+                    "value": "huang"
+                  },
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.spar",
+                    "value": "lost"
+                  }
+                ]
+              },
+              "next": "huang.lost.001"
+            },
+            {
+              "when": {
+                "type": "all",
+                "of": [
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.mentor",
+                    "value": "xiao"
+                  },
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.spar",
+                    "value": "won"
+                  }
+                ]
+              },
+              "next": "xiao.won.001"
+            },
+            {
+              "when": {
+                "type": "all",
+                "of": [
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.mentor",
+                    "value": "xiao"
+                  },
+                  {
+                    "type": "fact_equals",
+                    "id": "fact.ch01.spar",
+                    "value": "lost"
+                  }
+                ]
+              },
+              "next": "xiao.lost.001"
+            }
+          ],
+          "next": "cue.002"
+        },
+        {
+          "id": "linghu.won.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.linghu.won.001",
+          "speaker": "char.linghu_chong",
+          "text": "好！我肩膀一动，你的剑就到了。这一下我可真没让。",
+          "next": "hero.001"
+        },
+        {
+          "id": "hero.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.hero.001",
+          "speaker": "char.hero",
+          "text": "你明明还留着后手。",
+          "next": "linghu.won.002"
+        },
+        {
+          "id": "linghu.won.002",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.linghu.won.002",
+          "speaker": "char.linghu_chong",
+          "text": "留着呢。不过你今晚看得出这一下，就够用了。",
+          "next": "cue.002"
+        },
+        {
+          "id": "linghu.lost.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.linghu.lost.001",
+          "speaker": "char.linghu_chong",
+          "text": "看见了吧？我那一下起手慢得很。下回别等它落下来，先点过去。",
+          "next": "cue.002"
+        },
+        {
+          "id": "huang.won.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.huang.won.001",
+          "speaker": "char.huang_rong",
+          "text": "哎哟，手麻了——你倒是按得准。行，今晚算你赢。",
+          "next": "cue.002"
+        },
+        {
+          "id": "huang.lost.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.huang.lost.001",
+          "speaker": "char.huang_rong",
+          "text": "棍子都扫到脚边了，才想起来按穴？下回我一蓄劲，你就动手。",
+          "next": "cue.002"
+        },
+        {
+          "id": "xiao.won.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.xiao.won.001",
+          "speaker": "char.xiao_feng",
+          "text": "好。掌接住了，人没退。到了旧渡，就这样站着。",
+          "next": "cue.002"
+        },
+        {
+          "id": "xiao.lost.001",
+          "type": "line",
+          "line_id": "ch01.mentor_spar_after.xiao.lost.001",
+          "speaker": "char.xiao_feng",
+          "text": "退了半步。下回我掌还没落，你先把架子摆稳。",
+          "next": "cue.002"
+        },
+        {
+          "id": "cue.002",
+          "type": "stage",
+          "kind": "action",
+          "direction": "时间流逝过场：月已西沉，侠客拍拍主角的肩回房；主角在井边站了一会儿，也回去歇下。",
           "next": "end"
         },
         {

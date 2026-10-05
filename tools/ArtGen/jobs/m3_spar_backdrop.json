@@ -1,0 +1,113 @@
+{
+  "set": "m3_spar_backdrop",
+  "tier": "complex",
+  "model": "sdxl",
+  "size": [
+    1360,
+    768
+  ],
+  "steps": 30,
+  "cfg": 5.5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55,
+    66,
+    77,
+    88,
+    99,
+    111,
+    222,
+    333
+  ],
+  "canny": [
+    30,
+    90
+  ],
+  "noise": 10,
+  "refine": {
+    "strength": 0.3,
+    "steps": 30
+  },
+  "style": {
+    "backdrop": "game battle background, side view, wide shot, no humans, semi-realistic, cel shading, clean lineart, painterly, detailed texture, rich detail, masterpiece, high score, absurdres",
+    "negative": "text, chinese characters, watermark, signature, people, person, character, crowd, japanese architecture, torii, european, castle, battlements, street lamp, blurry, lowres, photo, 3d render, ink wash, sepia, frame, border, flat color, vector art, minimalist",
+    "scenery": "anime background art, scenery, no humans, game background, painterly, semi-realistic, highly detailed, soft light, masterpiece, best quality"
+  },
+  "sketch": [
+    {
+      "vgrad": [
+        0,
+        0,
+        1920,
+        560
+      ],
+      "from": "#141E3C",
+      "to": "#3A5274"
+    },
+    {
+      "ellipse": [
+        1380,
+        90,
+        1500,
+        210
+      ],
+      "fill": "#E8ECDC"
+    },
+    {
+      "rect": [
+        0,
+        300,
+        1920,
+        590
+      ],
+      "fill": "#B8C4CC"
+    },
+    {
+      "poly": [
+        [
+          0,
+          300
+        ],
+        [
+          1920,
+          300
+        ],
+        [
+          1920,
+          250
+        ],
+        [
+          0,
+          250
+        ]
+      ],
+      "fill": "#22262E"
+    },
+    {
+      "rect": [
+        0,
+        590,
+        1920,
+        1080
+      ],
+      "fill": "#4A5462"
+    }
+  ],
+  "jobs": [
+    {
+      "name": "yard_far",
+      "mode": "txt2img",
+      "style": "scenery",
+      "prompt": "back courtyard of an old jiangnan inn at night seen from inside the courtyard, long white plaster wall with black tile roof and upturned eaves across the middle of the image, wooden back door and lattice windows glowing warm amber, red paper lanterns hanging under the eaves, a stone well with a wooden pulley frame, stacked firewood, bamboo clothesline with drying cloth, an osmanthus tree behind the wall, bright moon in a deep indigo night sky with soft clouds, cool blue moonlight, base of the wall at the middle of the image, open brick-paved courtyard ground in the foreground"
+    },
+    {
+      "name": "yard_wide",
+      "mode": "txt2img",
+      "style": "scenery",
+      "prompt": "wide distant view across a large open moonlit courtyard toward the back of an old jiangnan inn far away, low white plaster walls and black tile roofs with upturned eaves forming a horizontal band across the middle of the image, warm amber lattice windows, a few red paper lanterns under the eaves, a stone well and stacked firewood near the wall, osmanthus and bamboo behind the roofs, large deep indigo night sky with a bright moon and soft clouds in the upper half, cool blue moonlight, flat side view, horizon in the middle of the image"
+    }
+  ]
+}

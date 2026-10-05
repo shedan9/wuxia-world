@@ -24,6 +24,9 @@ public sealed partial class BattleScreen
     private PlaySession? _story;
     private PendingBattle? _pending;
 
+    /// <summary>自动走查 <c>--hold=result</c>：已停在结算页等截图。</summary>
+    private bool _resultHeld;
+
     private void StartStory(PlaySession play)
     {
         _story = play;
@@ -74,13 +77,21 @@ public sealed partial class BattleScreen
     /// <summary>自动走查：结算页出现后，胜利确认、战败暂退（回探索页后由“迎战”事件重开）。</summary>
     private void AutoplayResult()
     {
-        if (DevCapture.Autoplay <= 0 || _story is null || !_resultOpen)
+        if (DevCapture.Autoplay <= 0 || _story is null || !_resultOpen || _resultHeld)
         {
             return;
         }
 
         var victory = _session!.State.Outcome == BattleOutcome.Victory;
         GD.Print($"[autoplay] 战斗 {_pending!.InstanceId}：{_session.State.Outcome}，第 {_session.State.Round} 轮");
+        if (DevCapture.Holding("result") || DevCapture.HoldResult == _pending.Encounter)
+        {
+            // 停在结算页截图，不确认。
+            _resultHeld = true;
+            DevCapture.FinishAutoplay(GetTree(), 0);
+            return;
+        }
+
         StoryResultKey(victory ? Key.Enter : Key.B);
     }
 
@@ -105,7 +116,7 @@ public sealed partial class BattleScreen
             case Key.Enter or Key.KpEnter or Key.Space when victory:
                 SettleStory(BattleEnd.Victory, giveUp: false);
                 return true;
-            case Key.R when !victory:
+            case Key.R when !victory && !_session.State.Spar:
                 SettleStory(Ended(), giveUp: false);
                 return true;
             case Key.B or Key.Enter or Key.KpEnter when !victory:

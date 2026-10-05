@@ -28,6 +28,7 @@ internal static class Policies
         "sword" => new SwordPolicy(),
         "fist" => new FistPolicy(),
         "inner" => new InnerPolicy(),
+        "aware" => new AwarePolicy(),
         _ => throw new ArgumentException($"未知策略 {name}"),
     };
 
@@ -277,5 +278,36 @@ internal sealed class InnerPolicy : IPolicy
 
         var target = Policies.Focus(e, s, u, TargetRule.SingleAnyEnemy);
         return Policies.Try(e, s, u, "skill.inner.qi_bolt", target) ?? Policies.Basic(e, s, u);
+    }
+}
+
+/// <summary>
+/// 看预兆的贪心打法（第一章后院切磋要教的那一手）：破招的那一手（破势剑、点穴手）平时留着，对手蓄力时能打断就打断，
+/// 打不断就防御硬接；其余时候按贪心评分出招。
+/// </summary>
+internal sealed class AwarePolicy : IPolicy
+{
+    public string Name => "aware";
+
+    public BattleCommand Decide(BattleEngine e, BattleState s, BattleUnit u)
+    {
+        if (Policies.ChargingFoe(s, u) is { } charging)
+        {
+            if (e.Estimate(s, u.Id, "skill.sword.break_guard", charging.Id) is { Breaks: true }
+                && Policies.Try(e, s, u, "skill.sword.break_guard", charging) is { } interrupt)
+            {
+                return interrupt;
+            }
+
+            if (Policies.Try(e, s, u, "skill.inner.pressure_point", charging) is { } point)
+            {
+                return point;
+            }
+
+            return new Defend(u.Id);
+        }
+
+        var reserve = u.Template.Loadout.Skills.Contains("skill.sword.break_guard") ? "skill.sword.break_guard" : "skill.inner.pressure_point";
+        return BattleAi.BestAttack(e, s, u, skirmish: false, exclude: reserve);
     }
 }

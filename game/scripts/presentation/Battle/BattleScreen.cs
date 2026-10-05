@@ -33,13 +33,23 @@ public sealed partial class BattleScreen : Control
         ("inner", "内功调息", "劈空劲远取、回气诀疗伤驱散、点穴打断，势满周天归元；调息时受伤加重"),
     ];
 
-    private static readonly string[] EncounterIds = ["battle.01.escort_skirmish", "battle.01.old_ferry_sluice"];
+    /// <summary>原型配置可选的遭遇；<see cref="SparSlot"/> 是讨教后的后院切磋，对手按主角流派对应的讨教人选（见 <see cref="EncounterFor"/>）。</summary>
+    private static readonly string[] EncounterIds = ["battle.01.escort_skirmish", "battle.01.old_ferry_sluice", SparSlot];
+
+    private const string SparSlot = "spar";
+
+    private static string EncounterFor(int encounter, int build) =>
+        EncounterIds[encounter] == SparSlot ? $"battle.01.spar_{MentorOf(build)}" : EncounterIds[encounter];
 
     private static readonly Dictionary<string, int> StartingItems = new()
     {
         ["item.medicine.golden_sore"] = 2, ["item.medicine.qi_pill"] = 1, ["item.medicine.clear_heart"] = 1,
     };
 
+    /// <summary>遭遇没写布景时用的战斗布景（第一章两场河边战斗）。</summary>
+    private const string DefaultBackdrop = "battle.ferry_dusk";
+
+    private BattleBackdrop _backdrop = null!;
     private CombatBundle _bundle = null!;
     private BattleEngine _engine = null!;
     private BattleSession? _session;
@@ -77,7 +87,8 @@ public sealed partial class BattleScreen : Control
         _engine = new BattleEngine(DevCapture.BattleStress ? WithStress(bundle.ToContent()) : bundle.ToContent());
         _seed = (ulong)Time.GetTicksUsec();
 
-        AddChild(new BattleBackdrop { ArtId = "battle.ferry_dusk" });
+        _backdrop = new BattleBackdrop { ArtId = DefaultBackdrop };
+        AddChild(_backdrop);
         _field = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _field.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_field);
@@ -290,20 +301,45 @@ public sealed partial class BattleScreen : Control
         }
 
         var content = _engine.Content;
+        var encounterId = EncounterFor(encounter, build);
+        var hero = new AllyEntry(content.Combatant($"combatant.hero.{Builds[build].Id}"), "char.hero", new Position(0, 1));
+        if (content.Encounter(encounterId).Solo)
+        {
+            // 后院切磋：只有主角上场，不带药（与剧情流程一致）。
+            var duel = new BattleSetup { EncounterId = encounterId, Seed = seed, Allies = [hero] };
+            Begin(duel, $"{_bundle.Name(encounterId)}：主角（{Builds[build].Label}）· 种子 {seed}");
+            return;
+        }
+
         var allies = new List<AllyEntry>
         {
-            new(content.Combatant($"combatant.hero.{Builds[build].Id}"), "char.hero", new Position(0, 1)),
+            hero,
             new(content.Combatant("combatant.lu_qinghe"), "char.lu_qinghe", new Position(1, 1)),
         };
-        if (EncounterIds[encounter] == "battle.01.old_ferry_sluice")
+        if (encounterId == "battle.01.old_ferry_sluice")
         {
             // 与正式流程“令狐冲同行、萧峰援手”一路相同：两人用各自的角色模板，站位按队伍默认阵位（前排右、前排左）。
             allies.Add(new(content.Combatant("combatant.linghu_chong"), "char.linghu_chong", new Position(0, 2)));
             allies.Add(new(content.Combatant("combatant.xiao_feng"), "char.xiao_feng", new Position(0, 0)));
         }
 
-        var setup = new BattleSetup { EncounterId = EncounterIds[encounter], Seed = seed, Allies = allies, Items = StartingItems };
+        var setup = new BattleSetup { EncounterId = encounterId, Seed = seed, Allies = allies, Items = StartingItems };
         Begin(setup, $"{_bundle.Name(setup.EncounterId)}：主角（{Builds[build].Label}）· 种子 {seed}");
+    }
+
+    /// <summary>换战斗布景（按遭遇）；与当前相同时不动。新布景放在旧布景的层位上，不压住场地与界面。</summary>
+    private void SetBackdrop(string artId)
+    {
+        if (_backdrop.ArtId == artId)
+        {
+            return;
+        }
+
+        var index = _backdrop.GetIndex();
+        _backdrop.QueueFree();
+        _backdrop = new BattleBackdrop { ArtId = artId };
+        AddChild(_backdrop);
+        MoveChild(_backdrop, index);
     }
 
     /// <summary>按开战输入建立会话并开始播放；原型配置与剧情战共用。</summary>
@@ -312,15 +348,28 @@ public sealed partial class BattleScreen : Control
         CloseOverlay();
         _seed = setup.Seed;
         _session = new BattleSession(_engine, setup, _bundle.ContentVersion);
-        AppHost.Instance.Sound.PlayMusic(setup.EncounterId.EndsWith("sluice", StringComparison.Ordinal) ? "bgm.boss.old_ferry" : "bgm.battle.common", 0.8f);
-        // 第一章两场战斗都在河边（押运队登岸、旧渡水门）：配乐底下留一层河水声；开场拔刃一响。
-        AppHost.Instance.Sound.PlayAmbience("amb.river");
-        AppHost.Instance.Sound.Play("battle.draw", -4);
+        var encounter = _engine.Content.Encounter(setup.EncounterId);
+        SetBackdrop(encounter.Backdrop ?? DefaultBackdrop);
+        var sound = AppHost.Instance.Sound;
+        if (encounter.Victory == VictoryRule.Spar)
+        {
+            // 后院切磋：不上战斗配乐，只有后半夜的虫鸣；起手不拔刃。
+            sound.PlayMusic(null, 1.5f);
+            sound.PlayAmbience("amb.yard_night");
+        }
+        else
+        {
+            sound.PlayMusic(setup.EncounterId.EndsWith("sluice", StringComparison.Ordinal) ? "bgm.boss.old_ferry" : "bgm.battle.common", 0.8f);
+            // 第一章两场战斗都在河边（押运队登岸、旧渡水门）：配乐底下留一层河水声；开场拔刃一响。
+            sound.PlayAmbience("amb.river");
+            sound.Play("battle.draw", -4);
+        }
         ResetPlayback();
         _popupUnit = null;
         _popup.Visible = false;
         BuildUnits();
-        _sceneTitle.Text = $"{_bundle.Name(setup.EncounterId)}　·　{(_session.State.Locked ? "剧情战" : "普通战")}";
+        _sceneTitle.Text = $"{_bundle.Name(setup.EncounterId)}　·　{(_session.State.Spar ? "切磋，点到为止" : _session.State.Locked ? "剧情战" : "普通战")}";
+        _basicButtons["battle_retreat"].Text = _session.State.Spar ? "认输" : "撤退";
         _log.Clear();
         AddLog(logLine);
         Enqueue(_session.StartEvents);

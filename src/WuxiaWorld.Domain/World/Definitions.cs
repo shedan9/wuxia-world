@@ -220,8 +220,11 @@ public enum BarkTrigger
     /// <summary>遭遇阶段 <c>phase</c> 发动。</summary>
     Phase,
 
-    /// <summary>本人气血首次跌到三成以下。</summary>
+    /// <summary>本人气血首次跌到三成以下（切磋点到为止，不说）。</summary>
     LowHp,
+
+    /// <summary>本人的蓄力被打断（破招、点穴）。</summary>
+    Interrupted,
 
     /// <summary>本人倒下。</summary>
     Downed,

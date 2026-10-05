@@ -41,6 +41,12 @@ public static class AiProfiles
 
     /// <summary>木桩：只防御（教学与切磋用）。</summary>
     public const string Dummy = "ai.dummy";
+
+    /// <summary>
+    /// 教招（切磋的师父）：第 2 轮起，蓄力招一可用就先亮出起手、对准气血比例最高的对手，留一轮让徒弟应对（打断或防住）；
+    /// 其余时候按莽攻出招。
+    /// </summary>
+    public const string Sparring = "ai.spar";
 }
 
 public sealed record CombatantTemplate

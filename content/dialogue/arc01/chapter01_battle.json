@@ -1,7 +1,7 @@
 {
   "arc": "arc.01",
   "chapter": "chapter.01",
-  "status": "第一稿，未锁稿：第一章关键战斗语音（开发计划 M3-06），2026-10-04 起草。喊声短促、口语，一句一口气；招式句不念招式全名，免得像报菜名。由 BattleBarkDirector 按战斗事件挑选：同一时机只说一句，同一人的回合里后一句须更要紧，倍速只说优先级 3。武学分式名待原著对校（见 docs/canon/ANCHORS.md 第一章战斗武学映射），锁稿前随对白一并试玩修订。",
+  "status": "第一稿，未锁稿：第一章关键战斗语音（开发计划 M3-06），2026-10-04 起草。喊声短促、口语，一句一口气；招式句不念招式全名，免得像报菜名。由 BattleBarkDirector 按战斗事件挑选：同一时机只说一句，同一人的回合里后一句须更要紧，倍速只说优先级 3。武学分式名待原著对校（见 docs/canon/ANCHORS.md 第一章战斗武学映射），锁稿前随对白一并试玩修订。2026-10-05 增补讨教后后院切磋 12 句（三位侠客开场、蓄力起手提示、被破招时的反应，主角胜后“承让”），同样未锁稿。",
   "barks": [
     { "line_id": "ch01.battle.escort.linghu.start", "speaker": "char.linghu_chong", "trigger": "battle_start", "encounter": "battle.01.escort_skirmish", "priority": 3, "text": "冒充押运，也该先换双靴子。" },
     { "line_id": "ch01.battle.escort.huang.start", "speaker": "char.huang_rong", "trigger": "battle_start", "encounter": "battle.01.escort_skirmish", "priority": 3, "text": "几位大哥，船上的人我们带走啦。" },
@@ -39,6 +39,19 @@
     { "line_id": "ch01.battle.linghu.victory", "speaker": "char.linghu_chong", "trigger": "victory", "priority": 3, "text": "收工。这一架打得痛快。" },
     { "line_id": "ch01.battle.huang.victory", "speaker": "char.huang_rong", "trigger": "victory", "priority": 3, "text": "打完啦，快去看看船上的人。" },
     { "line_id": "ch01.battle.xiao.victory", "speaker": "char.xiao_feng", "trigger": "victory", "priority": 3, "text": "人没事就好。" },
-    { "line_id": "ch01.battle.hero.victory", "speaker": "char.hero", "trigger": "victory", "priority": 3, "text": "赢了……快去救人。" }
+    { "line_id": "ch01.battle.hero.victory", "speaker": "char.hero", "trigger": "victory", "priority": 3, "text": "赢了……快去救人。" },
+
+    { "line_id": "ch01.battle.spar.linghu.start", "speaker": "char.linghu_chong", "unit": "spar.linghu_chong", "trigger": "battle_start", "encounter": "battle.01.spar_linghu", "priority": 3, "text": "来，我慢慢出招。" },
+    { "line_id": "ch01.battle.spar.linghu.charge", "speaker": "char.linghu_chong", "unit": "spar.linghu_chong", "trigger": "charge", "encounter": "battle.01.spar_linghu", "skill": "skill.spar.sword_lunge", "priority": 3, "text": "肩动了——看见没有？" },
+    { "line_id": "ch01.battle.spar.linghu.interrupted", "speaker": "char.linghu_chong", "unit": "spar.linghu_chong", "trigger": "interrupted", "encounter": "battle.01.spar_linghu", "priority": 3, "text": "好！就是这一下。" },
+    { "line_id": "ch01.battle.spar.linghu.hero.victory", "speaker": "char.hero", "trigger": "victory", "encounter": "battle.01.spar_linghu", "priority": 3, "text": "承让……你手下留情了。" },
+    { "line_id": "ch01.battle.spar.huang.start", "speaker": "char.huang_rong", "unit": "spar.huang_rong", "trigger": "battle_start", "encounter": "battle.01.spar_huang", "priority": 3, "text": "看好喽，我可要出手啦。" },
+    { "line_id": "ch01.battle.spar.huang.charge", "speaker": "char.huang_rong", "unit": "spar.huang_rong", "trigger": "charge", "encounter": "battle.01.spar_huang", "skill": "skill.spar.staff_sweep", "priority": 3, "text": "这一棍要扫你下盘啦。" },
+    { "line_id": "ch01.battle.spar.huang.interrupted", "speaker": "char.huang_rong", "unit": "spar.huang_rong", "trigger": "interrupted", "encounter": "battle.01.spar_huang", "priority": 3, "text": "哎呀，手麻了！" },
+    { "line_id": "ch01.battle.spar.huang.hero.victory", "speaker": "char.hero", "trigger": "victory", "encounter": "battle.01.spar_huang", "priority": 3, "text": "承让。" },
+    { "line_id": "ch01.battle.spar.xiao.start", "speaker": "char.xiao_feng", "unit": "spar.xiao_feng", "trigger": "battle_start", "encounter": "battle.01.spar_xiao", "priority": 3, "text": "站稳了。" },
+    { "line_id": "ch01.battle.spar.xiao.charge", "speaker": "char.xiao_feng", "unit": "spar.xiao_feng", "trigger": "charge", "encounter": "battle.01.spar_xiao", "skill": "skill.spar.palm_press", "priority": 3, "text": "这一掌，接住。" },
+    { "line_id": "ch01.battle.spar.xiao.interrupted", "speaker": "char.xiao_feng", "unit": "spar.xiao_feng", "trigger": "interrupted", "encounter": "battle.01.spar_xiao", "priority": 3, "text": "好眼力。" },
+    { "line_id": "ch01.battle.spar.xiao.hero.victory", "speaker": "char.hero", "trigger": "victory", "encounter": "battle.01.spar_xiao", "priority": 3, "text": "接住了……承让。" }
   ]
 }

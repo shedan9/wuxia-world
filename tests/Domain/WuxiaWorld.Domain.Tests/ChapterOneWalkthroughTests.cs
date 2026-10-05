@@ -370,6 +370,24 @@ public class ChapterOneWalkthroughTests
         Assert.Equal("late", slow.Game.World.Facts["fact.ch01.side01_result"]);
         seen.UnionWith(slow.Lines);
 
+        // 讨教后的后院切磋：三位侠客各打赢、打输一次；先回绝一次再来。
+        foreach (var mentor in ChapterOneRoute.Companions)
+        {
+            foreach (var result in new[] { "won", "lost" })
+            {
+                var w = new Walker(Rules()) { Spar = result };
+                w.PlayChapter(mentor, "public", side: false);
+                Assert.Equal(result, w.Game.World.Facts["fact.ch01.spar"]);
+                seen.UnionWith(w.Lines);
+            }
+
+            var shy = new Walker(Rules());
+            shy.RunTo(mentor, ChapterOnePoint.SparBattle);
+            shy.Pick("choice.later");
+            shy.PlayEvent("event.ch01.mentor_spar_" + mentor);
+            seen.UnionWith(shy.Lines);
+        }
+
         // 押运队战败放弃后的再战入口。
         var regroup = new Walker(Rules());
         regroup.PlayUntilFerry("linghu", side: false);
@@ -421,6 +439,9 @@ public class ChapterOneWalkthroughTests
         public string OpeningPick { get; init; } = "choice.a";
         public string CouncilPick { get; init; } = "choice.insight";
 
+        /// <summary>讨教后去后院切磋：<c>won</c> / <c>lost</c>；null 不切磋。</summary>
+        public string? Spar { get; init; }
+
         /// <summary>真打剧情战：给出时由它开战并结算（须打赢），否则按胜利直接结算。</summary>
         public Action<GameSession>? Fighter { get; init; }
 
@@ -433,7 +454,7 @@ public class ChapterOneWalkthroughTests
             {
                 Companion = companion, Custody = custody, Side = side, FinishSideSteps = finishSideSteps, DeclineSideFirst = declineSideFirst,
                 ReadNoticeEarly = readNoticeEarly, FreeEarly = freeEarly, From = from,
-                OpeningPick = OpeningPick, CouncilPick = CouncilPick, Fighter = Fighter, OnDialogue = Collect, Combat = TestContent.Real,
+                OpeningPick = OpeningPick, CouncilPick = CouncilPick, Fighter = Fighter, OnDialogue = Collect, Combat = TestContent.Real, Spar = Spar,
             };
 
         public void PlayChapter(string companion, string custody, bool side, bool finishSideSteps = true,
@@ -460,6 +481,13 @@ public class ChapterOneWalkthroughTests
             route.RunTo(ChapterOnePoint.SluiceBattle);
             Assert.Equal(4, Game.World.Party.Count);
             route.RunTo(ChapterOnePoint.End);
+        }
+
+        /// <summary>按默认选择（不接支线）走到 <paramref name="point"/>；后续单步操作接着这条路线。</summary>
+        public void RunTo(string companion, ChapterOnePoint point)
+        {
+            _steps = Route(companion);
+            _steps.RunTo(point);
         }
 
         public void PlayUntilFerry(string companion, bool side)

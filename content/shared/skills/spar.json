@@ -1,0 +1,8 @@
+[
+  { "id": "skill.spar.sword_tap", "tags": ["sword", "external"], "target_rule": "single_reachable_enemy", "effects": [{ "type": "damage", "kind": "external", "scale_bp": 9500 }, { "type": "stance_damage", "amount": 10 }], "animation_id": "anim.sword.probe" },
+  { "id": "skill.spar.sword_lunge", "tags": ["sword", "external"], "target_rule": "single_reachable_enemy", "cooldown": 2, "charged": true, "effects": [{ "type": "damage", "kind": "external", "scale_bp": 16000 }, { "type": "stance_damage", "amount": 20 }], "animation_id": "anim.sword.lunge" },
+  { "id": "skill.spar.staff_tap", "tags": ["staff", "external"], "target_rule": "single_reachable_enemy", "effects": [{ "type": "damage", "kind": "external", "scale_bp": 9500 }, { "type": "stance_damage", "amount": 10 }], "animation_id": "anim.staff.jab" },
+  { "id": "skill.spar.staff_sweep", "tags": ["staff", "external", "sweep"], "target_rule": "reachable_row_enemies", "cooldown": 2, "charged": true, "effects": [{ "type": "damage", "kind": "external", "scale_bp": 14000 }, { "type": "stance_damage", "amount": 20 }, { "type": "apply_status", "status": "status.slow", "chance_bp": 6000 }], "animation_id": "anim.staff.sweep" },
+  { "id": "skill.spar.palm_push", "tags": ["fist", "external"], "target_rule": "single_reachable_enemy", "effects": [{ "type": "damage", "kind": "external", "scale_bp": 9500 }, { "type": "stance_damage", "amount": 15 }], "animation_id": "anim.fist.palm" },
+  { "id": "skill.spar.palm_press", "tags": ["fist", "external", "heavy"], "target_rule": "single_reachable_enemy", "cooldown": 2, "charged": true, "effects": [{ "type": "damage", "kind": "external", "scale_bp": 32000 }, { "type": "stance_damage", "amount": 30 }], "animation_id": "anim.fist.palm" }
+]

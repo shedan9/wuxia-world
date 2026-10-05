@@ -69,5 +69,38 @@
     ],
     "experience": 140,
     "cultivation": 60
+  },
+  {
+    "id": "battle.01.spar_linghu",
+    "enemies": [{ "template": "combatant.spar.linghu_chong", "unit_id": "spar.linghu_chong", "row": 0, "slot": 1 }],
+    "victory": "spar",
+    "victory_unit": "spar.linghu_chong",
+    "yield_bp": 3500,
+    "solo": true,
+    "backdrop": "battle.inn_yard_night",
+    "experience": 30,
+    "cultivation": 20
+  },
+  {
+    "id": "battle.01.spar_huang",
+    "enemies": [{ "template": "combatant.spar.huang_rong", "unit_id": "spar.huang_rong", "row": 0, "slot": 1 }],
+    "victory": "spar",
+    "victory_unit": "spar.huang_rong",
+    "yield_bp": 3500,
+    "solo": true,
+    "backdrop": "battle.inn_yard_night",
+    "experience": 30,
+    "cultivation": 20
+  },
+  {
+    "id": "battle.01.spar_xiao",
+    "enemies": [{ "template": "combatant.spar.xiao_feng", "unit_id": "spar.xiao_feng", "row": 0, "slot": 1 }],
+    "victory": "spar",
+    "victory_unit": "spar.xiao_feng",
+    "yield_bp": 3500,
+    "solo": true,
+    "backdrop": "battle.inn_yard_night",
+    "experience": 30,
+    "cultivation": 20
   }
 ]

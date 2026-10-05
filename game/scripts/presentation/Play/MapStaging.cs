@@ -123,6 +123,11 @@ public static class MapStaging
                 ["interact:rations_basket"] = new(390, 280),
                 ["anchor:hall"] = new(1010, 560),
                 ["anchor:door"] = new(630, 640),
+
+                // 讨教后的后院切磋：入口在那位侠客的站位上（与下方 Stand 相同），走近谁就是找谁。
+                ["anchor:spar_linghu"] = new(995, 850),
+                ["anchor:spar_huang"] = new(920, 672),
+                ["anchor:spar_xiao"] = new(1110, 614),
             },
             Residents = new HashSet<string> { "char.qiao_hongxiao" },
 

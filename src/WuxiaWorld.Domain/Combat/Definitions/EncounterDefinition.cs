@@ -71,6 +71,12 @@ public enum VictoryRule
 
     /// <summary>击倒指定单位即胜（首领）。</summary>
     DefeatUnit,
+
+    /// <summary>
+    /// 切磋、点到为止：谁也不会倒下（伤害与持续伤害最多压到 1 点气血），气血压到 <see cref="EncounterDefinition.YieldBp"/>
+    /// 及以下即算收手认输。我方全部认输为败；<see cref="EncounterDefinition.VictoryUnit"/>（未给时为全部计入胜利的敌人）认输为胜。
+    /// </summary>
+    Spar,
 }
 
 public sealed record EncounterDefinition
@@ -83,6 +89,16 @@ public sealed record EncounterDefinition
     public IReadOnlyList<EncounterSlot> Enemies { get; init; } = [];
     public VictoryRule Victory { get; init; } = VictoryRule.DefeatAll;
     public string? VictoryUnit { get; init; }
+
+    /// <summary>仅 <see cref="VictoryRule.Spar"/>：认输线，气血占上限的万分比（如 3500 为三成五）。</summary>
+    public int YieldBp { get; init; }
+
+    /// <summary>只由主角单独上场（一对一切磋等）；队伍里的其他人不入阵。由世界层组队时套用。</summary>
+    public bool Solo { get; init; }
+
+    /// <summary>战斗布景的美术 ID（<c>assets/art/battle/&lt;id&gt;</c>）；省略时用默认布景。只是表现，不影响结算。</summary>
+    public string? Backdrop { get; init; }
+
     public IReadOnlyList<EncounterPhase> Phases { get; init; } = [];
 
     /// <summary>剧情先手造成的开局变体（M3 前置，架构文档 7.6）。</summary>

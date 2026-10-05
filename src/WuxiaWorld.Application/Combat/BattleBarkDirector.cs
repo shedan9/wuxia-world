@@ -17,7 +17,8 @@ public enum BarkMode
 /// （阵营、最大气血；状态可能已领先于播放进度，所以不读气血等动态值），不改变战果。
 /// 规则：
 /// <list type="bullet">
-/// <item>候选限于本遭遇（或不限遭遇）且说话的单位在场；同一时机多句候选取优先级最高、再按文件次序。</item>
+/// <item>候选限于本遭遇（或不限遭遇）且说话的单位在场；同一时机多句候选取优先级最高，同级时指定了本遭遇的句子优先（切磋的“承让”压过通用的“快去救人”），再按文件次序。</item>
+/// <item>切磋点到为止：没有重伤句（认输线高于重伤线，跌到重伤线时已经收手）。</item>
 /// <item>每句一场只说一次；招式句给了 <c>cooldown_rounds</c> 的，隔够轮数可再说。</item>
 /// <item>普通句（优先级 1）同一人至少隔 <see cref="OrdinaryGapRounds"/> 轮才再说，免得经典人物每回合都开口。</item>
 /// <item>同一人的回合里，后一句须比已说的那句优先级更高（出招、对方重伤、倒下接连发生时不连喊三句）。</item>
@@ -77,11 +78,13 @@ public sealed class BattleBarkDirector
                 return Pick(BarkTrigger.Skill, mode, l => l.UnitId == u.Actor && l.Skill == u.SkillId);
             case ChargeStarted c:
                 return Pick(BarkTrigger.Charge, mode, l => l.UnitId == c.Actor && (l.Skill is null || l.Skill == c.SkillId));
+            case ChargeInterrupted c:
+                return Pick(BarkTrigger.Interrupted, mode, l => l.UnitId == c.Actor);
             case PhaseTriggered p:
                 return Pick(BarkTrigger.Phase, mode, l => l.Phase == p.PhaseId);
-            case Damaged d when Wounded(d.Target, d.HpAfter):
+            case Damaged d when !_state.Spar && Wounded(d.Target, d.HpAfter):
                 return Pick(BarkTrigger.LowHp, mode, l => l.UnitId == d.Target);
-            case StatusTicked k when Wounded(k.Unit, k.HpAfter):
+            case StatusTicked k when !_state.Spar && Wounded(k.Unit, k.HpAfter):
                 return Pick(BarkTrigger.LowHp, mode, l => l.UnitId == k.Unit);
             case UnitDowned d:
             {
@@ -109,7 +112,10 @@ public sealed class BattleBarkDirector
                 continue;
             }
 
-            if (best is null || l.Priority > best.Priority || (l.Priority == best.Priority && prefer is not null && l.UnitId == prefer && best.UnitId != prefer))
+            if (best is null || l.Priority > best.Priority
+                || (l.Priority == best.Priority && l.Encounter is not null && best.Encounter is null)
+                || (l.Priority == best.Priority && (l.Encounter is null) == (best.Encounter is null)
+                    && prefer is not null && l.UnitId == prefer && best.UnitId != prefer))
             {
                 best = l;
             }

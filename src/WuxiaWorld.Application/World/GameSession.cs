@@ -521,14 +521,22 @@ public sealed class GameSession
         var w = World;
         var pending = w.Battle ?? throw new InvalidOperationException("没有待开战斗");
         var content = growth.Combat;
-        var allies = PartyRules.Cells(w).Take(BattleSetup.MaxAllies)
-            .Select(x => new AllyEntry(growth.Template(w, x.Id), x.Id, new Position(PartyRules.RowOf(x.Cell), PartyRules.SlotOf(x.Cell))))
-            .ToList();
-        var items = w.Items.Where(i => content.Items.ContainsKey(i.Key) && i.Value > 0).ToDictionary(i => i.Key, i => i.Value);
+        var encounter = content.Encounter(pending.Encounter);
+        var hero = Rules.Content.Progression.Hero;
+        // 单人遭遇（一对一切磋）：只有主角上场，站前排正中。
+        var allies = encounter.Solo
+            ? [new AllyEntry(growth.Template(w, hero), hero, new Position(0, 1))]
+            : PartyRules.Cells(w).Take(BattleSetup.MaxAllies)
+                .Select(x => new AllyEntry(growth.Template(w, x.Id), x.Id, new Position(PartyRules.RowOf(x.Cell), PartyRules.SlotOf(x.Cell))))
+                .ToList();
+        // 切磋点到为止，不动用行囊里的药。
+        var items = encounter.Victory == VictoryRule.Spar
+            ? new Dictionary<string, int>()
+            : w.Items.Where(i => content.Items.ContainsKey(i.Key) && i.Value > 0).ToDictionary(i => i.Key, i => i.Value);
         return new BattleSetup
         {
             EncounterId = pending.Encounter, Seed = seed, Allies = allies, Items = items,
-            Variants = EncounterVariants.Active(content.Encounter(pending.Encounter), w),
+            Variants = EncounterVariants.Active(encounter, w),
         };
     }
 

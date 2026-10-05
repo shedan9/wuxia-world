@@ -11,7 +11,7 @@ namespace WuxiaWorld.Game.Presentation.Battle;
 /// 战斗测试台（开发用）：战斗原型页的“剧情路线”组成。开新游戏后在规则层沿 <see cref="ChapterOneRoute"/> 瞬间走到押运队战或旧渡首领战之前
 /// （对话直接走完、前一场按胜利结算、主角潜能按推荐分配），再用 <see cref="Application.World.GameSession.StoryBattleSetup"/> 取开战输入——
 /// 同行者、援手、阵位、等级、装备、武学、行囊药品与先手变体都与正式流程一致。可改主角等级与变体；结算不写回任何存档，结算页 R / N 按同一组成重开。
-/// 命令行：<c>--battle=escort|sluice</c>，配 <c>--companion</c>、<c>--mentor</c>、<c>--side</c>、<c>--level</c>、<c>--variants</c>、<c>--seed</c>、<c>--battle-auto</c>（见 <see cref="DevCapture"/>）。
+/// 命令行：<c>--battle=escort|sluice|spar</c>，配 <c>--companion</c>、<c>--mentor</c>、<c>--side</c>、<c>--level</c>、<c>--variants</c>、<c>--seed</c>、<c>--battle-auto</c>（见 <see cref="DevCapture"/>）。
 /// </summary>
 public sealed partial class BattleScreen
 {
@@ -52,7 +52,12 @@ public sealed partial class BattleScreen
     private void StartBenchFromArgs()
     {
         _benchStory = true;
-        _encounter = DevCapture.BenchBattle == "sluice" ? 1 : 0;
+        _encounter = DevCapture.BenchBattle switch
+        {
+            "sluice" => 1,
+            "spar" => 2,
+            _ => 0,
+        };
         var companion = DevCapture.Companion ?? "linghu";
         _benchCompanion = Math.Max(0, Array.FindIndex(BenchCompanions, c => c.Id == companion));
         _build = BuildOf(DevCapture.Mentor ?? companion);
@@ -78,19 +83,24 @@ public sealed partial class BattleScreen
         }
 
         var companion = BenchCompanions[_benchCompanion];
-        var route = new ChapterOneRoute(play.Game) { Companion = companion.Id, Mentor = MentorOf(build), Side = _benchSide, AllocatePotential = true };
+        var spar = EncounterIds[encounter] == SparSlot;
+        var route = new ChapterOneRoute(play.Game)
+        {
+            Companion = companion.Id, Mentor = MentorOf(build), Side = _benchSide, AllocatePotential = true, Spar = spar ? "won" : null,
+        };
         var sluice = EncounterIds[encounter].EndsWith("sluice", StringComparison.Ordinal);
         try
         {
             // 先停在开战的那段对话之前改等级、分潜能（战斗待开时不能调整养成），再走进战斗。
-            route.RunTo(sluice ? ChapterOnePoint.Sluice : ChapterOnePoint.OldFerry);
+            // 切磋停在讨教之前：讨教后路线会先按推荐分潜能再去找人切磋。
+            route.RunTo(spar ? ChapterOnePoint.Mentor : sluice ? ChapterOnePoint.Sluice : ChapterOnePoint.OldFerry);
             if (_benchLevel > 0)
             {
                 route.SetHeroLevel(_benchLevel);
             }
 
             route.AllocateRecommended();
-            route.RunTo(sluice ? ChapterOnePoint.SluiceBattle : ChapterOnePoint.EscortBattle);
+            route.RunTo(spar ? ChapterOnePoint.SparBattle : sluice ? ChapterOnePoint.SluiceBattle : ChapterOnePoint.EscortBattle);
         }
         catch (InvalidOperationException ex)
         {

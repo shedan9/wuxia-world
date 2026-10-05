@@ -10,13 +10,17 @@ namespace WuxiaWorld.Tools.BattleSimulator;
 internal static class Scenarios
 {
     /// <param name="Guest">第三名同行者：默认用内容里的占位同行者作 M1 基线对比；给了 --party 时换成经典人物的角色模板。</param>
-    public sealed record Scenario(string Id, string Title, string SuitedBuild, bool Guest = false);
+    /// <param name="Solo">只有主角上场、不带药（第一章讨教后的后院切磋）。</param>
+    public sealed record Scenario(string Id, string Title, string SuitedBuild, bool Guest = false, bool Solo = false);
 
     public static readonly Scenario[] All =
     [
         new("battle.01.escort_skirmish", "第一章·押运队冲突", "-"),
         new("battle.01.old_ferry_sluice", "第一章·旧渡水门（首领，三人）", "-", Guest: true),
         new("battle.01.old_ferry_sluice", "第一章·旧渡水门（首领，仅主角与陆青禾）", "-"),
+        new("battle.01.spar_linghu", "第一章·后院切磋令狐冲（单人，点到为止）", "sword", Solo: true),
+        new("battle.01.spar_huang", "第一章·后院切磋黄蓉（单人，点到为止）", "inner", Solo: true),
+        new("battle.01.spar_xiao", "第一章·后院切磋萧峰（单人，点到为止）", "fist", Solo: true),
         new("sim.challenge.armored", "挑战·铁甲护卫（高防单体）", "sword"),
         new("sim.challenge.protect", "挑战·飞钩围攻（保护后排）", "fist"),
         new("sim.challenge.attrition", "挑战·车轮缠斗（长战多状态）", "inner"),

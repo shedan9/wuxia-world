@@ -192,10 +192,15 @@ def main() -> int:
         })
         print(f"  ✓ {uid}（{extra.get('audio_length')} ms，计费 {used} 字）")
 
+    # 本次没涉及的旧句子（只用 --lines 补新句时）留在清单里：install.py 按清单安装，漏掉的会被当作缺音删除。
+    done = {j["uid"] for j in jobs}
+    voiced = {n["line_id"] for n in lines}
+    kept = [m for uid, m in old.items()
+            if uid not in done and m["line_id"] in voiced and os.path.exists(os.path.join(out_dir, m["file"]))]
+    manifest = kept + manifest
     _write_manifest(out_dir, args.profile, manifest)
 
     # 清掉已不需要配音的旧音频：台词已删除，或改成了心里话。
-    voiced = {n["line_id"] for n in lines}
     for f in os.listdir(out_dir):
         if f.endswith(f".{ext}") and f.removesuffix(f".{ext}").split("@", 1)[0] not in voiced:
             os.remove(os.path.join(out_dir, f))
@@ -207,7 +212,7 @@ def main() -> int:
     rows = []
     for m in manifest:
         key = f"{m['speaker']}@{m['variant']}" if m.get("variant") else m["speaker"]
-        note = voices[key].get("note", "")
+        note = voices.get(key, {}).get("note", "")
         rows.append(
             f"<tr><td>{html.escape(who(m['speaker']))}{'·' + html.escape(m['variant']) if m.get('variant') else ''}<br><small>{html.escape(m['voice_setting']['voice_id'])}</small></td>"
             f"<td>{html.escape(m['text'])}<br><small>{html.escape(m['line_id'])}</small></td>"

@@ -103,11 +103,14 @@ public static class DevCapture
     /// <summary>讨教人选（<c>--mentor=linghu|huang|xiao</c>，决定主角流派）；不给时同 <see cref="Companion"/>。</summary>
     public static string? Mentor { get; private set; }
 
+    /// <summary>讨教后去后院切磋（<c>--spar=won|lost</c>，跳关时按该结果结算）；不给时不切磋。<c>--jump=spar_battle</c> 时停在切磋开打之前（缺省按 <c>won</c>；<c>--spar=none</c> 不切磋，停在讨教之后）。</summary>
+    public static string? Spar { get; private set; }
+
     /// <summary>副页保管（<c>--custody=public|sealed</c>）。</summary>
     public static string? Custody { get; private set; }
 
     /// <summary>
-    /// 战斗测试台（<c>--battle=escort|sluice</c>，开发用）：直接进战斗原型页，按剧情路线的真实组成开打第一章押运队战或旧渡首领战，
+    /// 战斗测试台（<c>--battle=escort|sluice|spar</c>，开发用）：直接进战斗原型页，按剧情路线的真实组成开打第一章押运队战、旧渡首领战或讨教后的后院切磋（对手为讨教人选），
     /// 路线由 <c>--companion</c>、<c>--mentor</c>、<c>--side</c> 决定；<c>--level</c>、<c>--variants</c>、<c>--seed</c> 覆盖等级、变体与种子。
     /// </summary>
     public static string? BenchBattle { get; private set; }
@@ -140,7 +143,7 @@ public static class DevCapture
     public static int? TextSize { get; private set; }
 
     /// <summary>
-    /// 自动走查走满步数后停在哪里截图：<c>battle</c> 下一场剧情战打到第 2 轮、<c>choice</c> 下一个对话选项；
+    /// 自动走查走满步数后停在哪里截图：<c>battle</c> 下一场剧情战打到第 2 轮、<c>result</c> 下一场剧情战打完停在结算页、<c>choice</c> 下一个对话选项；
     /// <c>focus</c> 不截图，改跑焦点与版式走查（<see cref="FocusAudit"/>）；
     /// 缺省停在探索页。
     /// </summary>
@@ -151,6 +154,9 @@ public static class DevCapture
     /// 用于核对某句台词显示时的立绘、姓名牌与版式。
     /// </summary>
     public static string? HoldLine => Autoplay > 0 && Hold is { } hold && hold.StartsWith("line:", StringComparison.Ordinal) ? hold["line:".Length..] : null;
+
+    /// <summary><c>--hold=result:&lt;遭遇 ID&gt;</c>：自动走查打完这场剧情战时停在结算页截图（不看步数），例如讨教后一开局就打的后院切磋。</summary>
+    public static string? HoldResult => Autoplay > 0 && Hold is { } hold && hold.StartsWith("result:", StringComparison.Ordinal) ? hold["result:".Length..] : null;
 
     /// <summary>自动走查已走的步数（探索页每做一次交互加一，跨场景累计）。</summary>
     public static int AutoplaySteps { get; set; }
@@ -308,6 +314,9 @@ public static class DevCapture
                     break;
                 case "--mentor":
                     Mentor = value;
+                    break;
+                case "--spar":
+                    Spar = value;
                     break;
                 case "--custody":
                     Custody = value;

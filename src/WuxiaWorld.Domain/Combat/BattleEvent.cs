@@ -75,6 +75,9 @@ public sealed record RetreatAttempted(string Actor, int ChanceBp, bool Success) 
 
 public sealed record UnitDowned(string Unit) : BattleEvent;
 
+/// <summary>切磋中气血压到认输线，收手（随后紧跟 <see cref="BattleEnded"/>）。</summary>
+public sealed record UnitYielded(string Unit) : BattleEvent;
+
 public sealed record PhaseTriggered(string PhaseId) : BattleEvent;
 
 public sealed record UnitSpawned(string Unit, Side Side, Position Position) : BattleEvent;
