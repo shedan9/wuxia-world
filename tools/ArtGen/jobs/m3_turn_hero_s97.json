@@ -1,0 +1,247 @@
+{
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress"
+  },
+  "set": "m3_turn_hero",
+  "note": "m3_turn_hero 走跑帧第二轮：strength 0.9 时腿几乎迈不开，改 0.97、control 1.0 / control_end 0.9。",
+  "init": "reference",
+  "strength": 0.95,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "jobs": [
+    {
+      "name": "hero_quarter_walk_a_s97",
+      "reference": "out/m3_turn_hero/hero_quarter_44__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_walk_a",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, body turned to the right, three-quarter view, looking to the right, walking, mid-stride",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_quarter_walk_b_s97",
+      "reference": "out/m3_turn_hero/hero_quarter_44__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_walk_b",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, body turned to the right, three-quarter view, looking to the right, walking, mid-stride",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_quarter_run_a_s97",
+      "reference": "out/m3_turn_hero/hero_quarter_44__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_run_a",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, body turned to the right, three-quarter view, looking to the right, running, leaning forward, one foot off the ground",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_quarter_run_b_s97",
+      "reference": "out/m3_turn_hero/hero_quarter_44__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_run_b",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, body turned to the right, three-quarter view, looking to the right, running, leaning forward, one foot off the ground",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_side_walk_a_s97",
+      "reference": "out/m3_turn_hero/hero_side_33__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_walk_a",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from side, profile, side view, facing right, looking to the right, walking, mid-stride",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_side_walk_b_s97",
+      "reference": "out/m3_turn_hero/hero_side_33__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_walk_b",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from side, profile, side view, facing right, looking to the right, walking, mid-stride",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_side_run_a_s97",
+      "reference": "out/m3_turn_hero/hero_side_33__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_run_a",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from side, profile, side view, facing right, looking to the right, running, leaning forward, one foot off the ground",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_side_run_b_s97",
+      "reference": "out/m3_turn_hero/hero_side_33__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_run_b",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from side, profile, side view, facing right, looking to the right, running, leaning forward, one foot off the ground",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_back_quarter_walk_a_s97",
+      "reference": "out/m3_turn_hero/hero_bq_fromside_ear_33__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_walk_a",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from behind, back view, facing away, three-quarter back view, turned to the right, walking, mid-stride",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_back_quarter_walk_b_s97",
+      "reference": "out/m3_turn_hero/hero_bq_fromside_ear_33__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_walk_b",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from behind, back view, facing away, three-quarter back view, turned to the right, walking, mid-stride",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_back_quarter_run_a_s97",
+      "reference": "out/m3_turn_hero/hero_bq_fromside_ear_33__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_run_a",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from behind, back view, facing away, three-quarter back view, turned to the right, running, leaning forward, one foot off the ground",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "hero_back_quarter_run_b_s97",
+      "reference": "out/m3_turn_hero/hero_bq_fromside_ear_33__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_run_b",
+      "strength": 0.97,
+      "style": "sheet",
+      "negative_style": "negative_sheet",
+      "prompt": "1boy, solo, same man, adult man, 25 years old, mature face, black hair tied in a small topknot with cloth band, clean shaven, calm expression, cream short-sleeved cross-collar outer jacket with wide indigo cuffs, indigo collar trim, dark indigo inner robe, black narrow inner sleeves, long cream sash tied at waist with hanging ends, baggy indigo trousers gathered at the ankles, white leg wraps, black cloth shoes, from behind, back view, facing away, three-quarter back view, turned to the right, running, leaning forward, one foot off the ground",
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    }
+  ]
+}

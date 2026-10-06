@@ -1,0 +1,11 @@
+{
+  "id": "figure.huang_rong.quarter_walk_a",
+  "foot": [
+    214.4,
+    821.7
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.huang_rong.quarter_walk_a.png",
+  "sha256": "acb81906855e9ea9aacf5b5a29392d2613b4940aa074d2a6d0f7c9a88724215e",
+  "frame_of": "figure.huang_rong"
+}

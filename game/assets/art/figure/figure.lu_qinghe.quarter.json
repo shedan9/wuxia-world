@@ -1,0 +1,12 @@
+{
+  "id": "figure.lu_qinghe.quarter",
+  "foot": [
+    241.7,
+    842.9
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.lu_qinghe.quarter.png",
+  "sha256": "41ea692241627ebc9da69d59b6ecae9b6c053ff74582493f0f93ba751abaca1b",
+  "frame_of": "figure.lu_qinghe",
+  "keep_x": 320.0
+}

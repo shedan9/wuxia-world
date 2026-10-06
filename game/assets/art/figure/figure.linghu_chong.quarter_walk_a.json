@@ -1,0 +1,11 @@
+{
+  "id": "figure.linghu_chong.quarter_walk_a",
+  "foot": [
+    162.2,
+    817.7
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.linghu_chong.quarter_walk_a.png",
+  "sha256": "656b733300b76cd268db3ae37a0ddea53b065e50e6d8dd5fac15d56378c1b304",
+  "frame_of": "figure.linghu_chong"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "figure.linghu_chong.side",
+  "foot": [
+    126.1,
+    783.7
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.linghu_chong.side.png",
+  "sha256": "953eea5f288515ccd3d5f595de85a2cd3f65e27a2bdf80f3ba3e6874fffed5a5",
+  "frame_of": "figure.linghu_chong"
+}

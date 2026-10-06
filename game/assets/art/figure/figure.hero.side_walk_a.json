@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.side_walk_a",
+  "foot": [
+    134.0,
+    790.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.side_walk_a.png",
+  "sha256": "64b5f89d7a4f06129f0c233432ffa0b7e256bc4464959f9fcd0d76eb04348fd8",
+  "frame_of": "figure.hero"
+}

@@ -140,6 +140,105 @@ POSES: dict[str, list[tuple[float, float] | None]] = {
              (480, 500), (512, 506), (450, 486), None],
 }
 
+# ── 8 向行走的转身骨架（2026-10-06）：斜 45° 地图上沿街走是画面右上 / 左下，原有的正面帧（近乎正对镜头）与背面帧
+# （近乎正背）看起来像在往下 / 往上走。新增三个视角：quarter 四分之三正面（转 45°）、side 正侧（90°）、
+# back_quarter 四分之三背面（135°），均朝画面右侧，朝左由引擎翻转。关节按人体自身坐标写一次（r 向人物右侧、
+# y 为画布纵坐标、f 向人物前方），按转角做正交投影：转角 θ 时朝向为 (sin θ, cos θ)（x 向画面右、z 向观者），
+# 人物右侧为 (-cos θ, sin θ)。脸部关节背向镜头时不画（与背面骨架一样只留近侧耳朵）。
+_BODY_STAND = [
+    (0, 192, 40), (0, 272, 0), (64, 282, -4), (70, 430, -6), (66, 570, 4), (-64, 282, -4), (-70, 430, -6), (-66, 570, 4),
+    (36, 580, 0), (38, 822, 6), (38, 1068, 0), (-36, 580, 0), (-38, 822, 6), (-38, 1068, 0),
+    (17, 176, 34), (-17, 176, 34), (38, 182, -4), (-38, 182, -4),
+]
+
+
+def _body_walk(lead: int) -> list[tuple[float, float, float]]:
+    """行走：lead 侧（1 右、-1 左）腿向前着地、另一腿在后蹬地，手臂与腿反向摆。"""
+    j = [list(p) for p in _BODY_STAND]
+    fwd, back = (8, 9, 10), (11, 12, 13)
+    if lead < 0:
+        fwd, back = back, fwd
+    j[fwd[1]][1:] = [814, 44]
+    j[fwd[2]][1:] = [1060, 118]
+    j[back[1]][1:] = [826, -26]
+    j[back[2]][1:] = [1046, -112]
+    # 与领先腿同侧的手臂后摆，对侧手臂前摆。
+    arm_back, arm_fwd = ((3, 4), (6, 7)) if lead > 0 else ((6, 7), (3, 4))
+    j[arm_back[0]][1:] = [428, -30]
+    j[arm_back[1]][1:] = [556, -76]
+    j[arm_fwd[0]][1:] = [428, 30]
+    j[arm_fwd[1]][1:] = [554, 76]
+    j[1][2] = 6
+    return [tuple(p) for p in j]
+
+
+def _body_run(lead: int) -> list[tuple[float, float, float]]:
+    """跑步：上身前倾；lead 侧腿在身前撑地，另一腿后踢离地；后踢腿同侧的手臂屈肘前摆，对侧手臂后摆。"""
+    j = [list(p) for p in _BODY_STAND]
+    # 上身前倾：颈、肩、头整体前移下沉，胯略低。
+    for i in (0, 1, 2, 5, 14, 15, 16, 17):
+        j[i][1] += 12
+        j[i][2] += 44 if i in (0, 14, 15, 16, 17) else 32
+    for i in (8, 11):
+        j[i][1] = 592
+    sup, kick = ((8, 9, 10), (11, 12, 13)) if lead > 0 else ((11, 12, 13), (8, 9, 10))
+    j[sup[1]][1:] = [800, 66]
+    j[sup[2]][1:] = [1066, 28]
+    j[kick[1]][1:] = [814, -58]
+    j[kick[2]][1:] = [956, -170]
+    arm_fwd, arm_back = ((3, 4), (6, 7)) if lead < 0 else ((6, 7), (3, 4))
+    j[arm_fwd[0]][1:] = [410, 56]
+    j[arm_fwd[1]][1:] = [372, 118]
+    j[arm_back[0]][1:] = [404, -52]
+    j[arm_back[1]][1:] = [472, -104]
+    return [tuple(p) for p in j]
+
+
+def _with_pole(body: list[tuple[float, float, float]]) -> list[tuple[float, float, float]]:
+    """持篙（陆青禾）：左手在胸前握住竖起的长篙不摆，其余关节照常。"""
+    j = list(body)
+    j[6] = (-60, 396 + body[5][1] - 282, 50 + body[5][2])
+    j[7] = (-40, 300 + body[5][1] - 282, 70 + body[5][2])
+    return j
+
+
+TURN_VIEWS = {"quarter": 45, "side": 90, "back_quarter": 135}
+_TURN_BODIES = {
+    "stand": _BODY_STAND,
+    "walk_a": _body_walk(1),
+    "walk_b": _body_walk(-1),
+    "run_a": _body_run(1),
+    "run_b": _body_run(-1),
+}
+
+
+def turned(body: list[tuple[float, float, float]], yaw: float, cx: float = 416, tilt: float = 0.4,
+           hide: float = -0.15) -> list[tuple[float, float] | None]:
+    """人体坐标的关节按转角 yaw（度，0 正对镜头、90 朝画面右的正侧、180 正背）正交投影到画布。
+    tilt 模拟探索视角的俯角：离镜头近的关节画低一点、远的画高一点（迈出的远脚落点偏上），取值小于 sin 30° 以免人形被压歪。"""
+    t = math.radians(yaw)
+    fx, fz = math.sin(t), math.cos(t)
+    rx, rz = -math.cos(t), math.sin(t)
+    # 头心在颈部上方略偏前（前倾跑步时随颈部前移）。
+    head_f = body[1][2] + 6
+    out: list[tuple[float, float] | None] = []
+    for i, (r, y, f) in enumerate(body):
+        if i == 0 or i >= 14:
+            # 脸部关节：相对头心的水平方向背向镜头（指向观者的分量低于 hide）时被头挡住。
+            df = f - head_f
+            length = math.hypot(r, df) or 1
+            if (r * rz + df * fz) / length < hide:
+                out.append(None)
+                continue
+        out.append((cx + r * rx + f * fx, y + (r * rz + f * fz) * tilt))
+    return out
+
+
+for _view, _yaw in TURN_VIEWS.items():
+    for _name, _body in _TURN_BODIES.items():
+        POSES[f"{_view}_{_name}"] = turned(_body, _yaw)
+        POSES[f"{_view}_pole_{_name}"] = turned(_with_pole(_body), _yaw)
+
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()

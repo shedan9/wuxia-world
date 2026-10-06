@@ -1,0 +1,12 @@
+{
+  "id": "figure.lu_qinghe.side_walk_b",
+  "foot": [
+    176.2,
+    838.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.lu_qinghe.side_walk_b.png",
+  "sha256": "50850fcc5455f4cbfa2b4fcb37860afbe84e6d453ea3bd43abdde8b0ac6ea7d9",
+  "frame_of": "figure.lu_qinghe",
+  "keep_x": 228.0
+}

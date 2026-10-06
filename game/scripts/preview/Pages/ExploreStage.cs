@@ -545,7 +545,6 @@ public abstract partial class ExploreStage : Control
             var pos = Hero.Ground;
             if (Walkable(pos + new Vector2(step.X, 0))) pos.X += step.X;
             if (Walkable(pos + new Vector2(0, step.Y))) pos.Y += step.Y;
-            if (input.X != 0) Hero.Facing = input.X > 0 ? 1 : -1;
             Hero.TurnToward(dir);
             _heading = dir;
             // 快走换跑步帧；跑步一步跨得更远（步相按更长的步幅推进），步频只比走路略快。
@@ -594,8 +593,6 @@ public abstract partial class ExploreStage : Control
             if (speed > (WalkSpeed + RunSpeed) / 2) walker.Running = true;
             else if (speed < WalkSpeed * 1.05f) walker.Running = false;
             walker.Phase += step / (walker.Running ? 42 : 30);
-            var sx = TownView.ScreenX(move);
-            if (Mathf.Abs(sx) > step * 0.3f) walker.Facing = sx > 0 ? 1 : -1;
             walker.TurnToward(move);
             walker.Place(pos, StepZ(pos));
         }

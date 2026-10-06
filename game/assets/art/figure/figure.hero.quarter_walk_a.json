@@ -1,0 +1,11 @@
+{
+  "id": "figure.hero.quarter_walk_a",
+  "foot": [
+    142.8,
+    813.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.hero.quarter_walk_a.png",
+  "sha256": "e0578bf49980209679925bbad97c729eff6a72a79d6103dce3258925701f3688",
+  "frame_of": "figure.hero"
+}

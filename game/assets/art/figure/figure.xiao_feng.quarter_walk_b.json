@@ -1,0 +1,11 @@
+{
+  "id": "figure.xiao_feng.quarter_walk_b",
+  "foot": [
+    149.4,
+    809.2
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.xiao_feng.quarter_walk_b.png",
+  "sha256": "3961f21a5ee8c7c80c58fc4bbb0eceffccd413325edabf81591e56c6731e988d",
+  "frame_of": "figure.xiao_feng"
+}

@@ -1,0 +1,248 @@
+{
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress",
+    "negative_sheet_brown": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe, orange clothes, bright orange, yellow clothes, saturated colors"
+  },
+  "set": "m3_turn_cast",
+  "note": "萧峰走跑帧第二轮：第一轮衣色普遍漂成亮橙，提示词改写暗土棕、负面词排除橙黄。",
+  "init": "reference",
+  "strength": 0.95,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "jobs": [
+    {
+      "name": "xiao_feng_quarter_walk_a_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_quarter_11__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_walk_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, body turned to the right, three-quarter view, looking to the right, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_quarter_walk_b_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_quarter_11__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_walk_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, body turned to the right, three-quarter view, looking to the right, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_quarter_run_a_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_quarter_11__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, body turned to the right, three-quarter view, looking to the right, running, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_quarter_run_b_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_quarter_11__raw.png",
+      "reference_pose": "quarter_stand",
+      "pose": "quarter_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, body turned to the right, three-quarter view, looking to the right, running, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_side_walk_a_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_side_22__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_walk_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from side, profile, side view, facing right, looking to the right, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_side_walk_b_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_side_22__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_walk_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from side, profile, side view, facing right, looking to the right, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_side_run_a_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_side_22__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from side, profile, side view, facing right, looking to the right, running, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_side_run_b_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_side_22__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "side_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from side, profile, side view, facing right, looking to the right, running, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_back_quarter_walk_a_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_back_quarter_v2_88__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_walk_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from behind, back view, facing away, three-quarter back view, turned to the right, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_back_quarter_walk_b_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_back_quarter_v2_88__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_walk_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from behind, back view, facing away, three-quarter back view, turned to the right, walking, mid-stride"
+    },
+    {
+      "name": "xiao_feng_back_quarter_run_a_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_back_quarter_v2_88__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_run_a",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from behind, back view, facing away, three-quarter back view, turned to the right, running, leaning forward, one foot off the ground"
+    },
+    {
+      "name": "xiao_feng_back_quarter_run_b_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_back_quarter_v2_88__raw.png",
+      "reference_pose": "back_quarter_stand",
+      "pose": "back_quarter_run_b",
+      "style": "sheet",
+      "negative_style": "negative_sheet_brown",
+      "strength": 0.97,
+      "control": 1.0,
+      "control_end": 0.9,
+      "seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, dark muted earth-brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, dark muted earth-brown baggy trousers, tall brown boots, from behind, back view, facing away, three-quarter back view, turned to the right, running, leaning forward, one foot off the ground"
+    }
+  ]
+}

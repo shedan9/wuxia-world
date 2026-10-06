@@ -178,8 +178,6 @@ internal sealed class WalkStep(string who, Vector2 to, float speed, bool run, in
 
         var step = Math.Min(dist, speed * dt);
         var move = gap / dist * step;
-        var sx = TownView.ScreenX(move);
-        if (Mathf.Abs(sx) > step * 0.3f) _f.Facing = sx > 0 ? 1 : -1;
         _f.TurnToward(move);
         _f.Running = run;
         _f.Moving = true;
@@ -234,9 +232,17 @@ internal sealed class LeapStep(string who, Vector2? from, Vector2 to, float seco
 
         _from = from ?? _f.Ground;
         _f.SelfModulate = Colors.White;
-        var sx = TownView.ScreenX(to - _from);
-        _f.Facing = face ?? (sx >= 0 ? 1 : -1);
-        _f.Back = false;
+        if (face is { } dir)
+        {
+            // 演出指定了朝向：正面朝该侧起跳。
+            _f.Facing = dir;
+            _f.Back = false;
+        }
+        else
+        {
+            // 未指定时按跃向转身（8 向）。
+            _f.TurnToward(to - _from);
+        }
         _f.Running = true;
         _f.Moving = true;
         AppHost.Instance.Sound.Play("travel.whoosh", -10, 0.05f);

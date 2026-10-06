@@ -1128,7 +1128,30 @@ public partial class TownRailNode : TownPiece
     }
 }
 
-/// <summary>占位形象的装束：只为核对比例与辨认人物，正式形象为 4 向 / 8 向精灵（M1 起）。</summary>
+/// <summary>
+/// 探索形象的视角（2026-10-06 起 8 向）：五个视角都画成朝画面右侧，朝左由 <see cref="WalkerFigure.Facing"/> 水平翻转，
+/// 合起来是屏幕上的 8 个朝向。按人物在地面上的行进方向与镜头的夹角取档（每档 45°）：斜 45° 地图上沿街往右上走是
+/// 四分之三背面、往左下走是四分之三正面，横着走是正侧，正往画面上 / 下走才是正背 / 正面。
+/// </summary>
+public enum FigureView
+{
+    /// <summary>迎着镜头（往画面下方走）：入库的基础形象与 <c>walk_a</c> / <c>run_a</c> 等帧。</summary>
+    Front,
+
+    /// <summary>四分之三正面（往画面右下走）：<c>quarter</c>、<c>quarter_walk_a</c> ……</summary>
+    Quarter,
+
+    /// <summary>正侧（横着走）：<c>side</c>、<c>side_walk_a</c> ……</summary>
+    Side,
+
+    /// <summary>四分之三背面（往画面右上走，斜 45° 地图上沿街往里走）：<c>back_quarter</c>、<c>back_quarter_walk_a</c> ……</summary>
+    BackQuarter,
+
+    /// <summary>背对镜头（往画面上方走）：<c>back</c>、<c>back_walk_a</c> ……</summary>
+    Back,
+}
+
+/// <summary>占位形象的装束：只为核对比例与辨认人物，正式形象为 8 向精灵（<see cref="FigureView"/>）。</summary>
 public enum FigureLook
 {
     /// <summary>主角：束发。</summary>
@@ -1157,26 +1180,93 @@ public partial class WalkerFigure : TownPiece
     public FigureLook Look { get; init; }
     public int Facing { get; set; } = 1;
 
-    /// <summary>背对镜头（往画面上方走）：有背面帧（<c>&lt;形象&gt;.back</c>）时画背影，停下后保持。</summary>
-    public bool Back { get; set; }
+    /// <summary>当前视角（与 <see cref="Facing"/> 合成 8 向）；停下后保持。缺这一视角的帧时按 <see cref="Fallback"/> 退回相近视角。</summary>
+    public FigureView View { get; set; }
+
+    /// <summary>背对镜头（含四分之三背面）。设为 true 即正背面，false 即正面：剧情演出只区分面向与背向。</summary>
+    public bool Back
+    {
+        get => View >= FigureView.BackQuarter;
+        set => View = value ? FigureView.Back : FigureView.Front;
+    }
 
     public float Phase { get; set; }
     public bool Moving { get; set; }
 
-    /// <summary>快走（Shift 或点地自动行走、同行者追赶）：有跑步帧（<c>run_a</c> / <c>run_b</c>，背面 <c>back_run_a</c> / <c>back_run_b</c>）时换跑步姿势。</summary>
+    /// <summary>快走（Shift 或点地自动行走、同行者追赶）：有跑步帧（<c>run_a</c> / <c>run_b</c>，其他视角加前缀，如 <c>side_run_a</c>）时换跑步姿势。</summary>
     public bool Running { get; set; }
 
     /// <summary>
-    /// 按屏幕上的位移方向换正面 / 背面：明显往上走（含斜上）转背面，水平或往下走转正面（四分之三正面朝左右）。
-    /// 两个阈值之间留一段回差，沿足迹略带上下起伏的跟随不会来回闪。
+    /// 按地面上的位移方向转身（8 向）：取行进方向与“背离镜头”方向在地面上的夹角（0° 正往里走、180° 迎面走来，
+    /// 不受俯角压缩影响），每 45° 一档换视角；左右按屏幕水平分量翻转。离开当前档须再越过 8° 回差才换，
+    /// 沿足迹略带起伏的跟随、斜向键入的小偏差不会在相邻两档间来回闪；几乎竖直的移动不改左右。
     /// </summary>
     public void TurnToward(Vector2 groundMove)
     {
         var len = groundMove.Length();
-        var dy = TownView.ScreenY(groundMove);
-        if (dy < -0.4f * len) Back = true;
-        else if (dy > -0.2f * len) Back = false;
+        if (len < 1e-4f)
+        {
+            return;
+        }
+
+        var sx = TownView.ScreenX(groundMove) / len;
+        var away = -TownView.ScreenY(groundMove) / len;
+        var angle = Mathf.RadToDeg(Mathf.Atan2(Mathf.Abs(sx), away));
+        if (Mathf.Abs(angle - ViewAngle(View)) > 22.5f + 8)
+        {
+            View = Mathf.RoundToInt(angle / 45) switch
+            {
+                0 => FigureView.Back,
+                1 => FigureView.BackQuarter,
+                2 => FigureView.Side,
+                3 => FigureView.Quarter,
+                _ => FigureView.Front,
+            };
+        }
+
+        if (Mathf.Abs(sx) > 0.3f) Facing = sx > 0 ? 1 : -1;
     }
+
+    /// <summary>视角对应的行进方向与“背离镜头”方向的夹角（度）。</summary>
+    private static float ViewAngle(FigureView view) => view switch
+    {
+        FigureView.Back => 0,
+        FigureView.BackQuarter => 45,
+        FigureView.Side => 90,
+        FigureView.Quarter => 135,
+        _ => 180,
+    };
+
+    /// <summary>缺帧时依次退回的视角：侧身缺帧退四分之三正面再退正面，四分之三背面退正背面。</summary>
+    private static FigureView[] Fallback(FigureView view) => view switch
+    {
+        FigureView.Quarter => [FigureView.Quarter, FigureView.Front],
+        FigureView.Side => [FigureView.Side, FigureView.Quarter, FigureView.Front],
+        FigureView.BackQuarter => [FigureView.BackQuarter, FigureView.Back, FigureView.Front],
+        FigureView.Back => [FigureView.Back, FigureView.Front],
+        _ => [FigureView.Front],
+    };
+
+    /// <summary>视角的帧名前缀（正面为空：站姿即基础形象，行走帧为 <c>walk_a</c>）。</summary>
+    private static string Prefix(FigureView view) => view switch
+    {
+        FigureView.Quarter => "quarter",
+        FigureView.Side => "side",
+        FigureView.BackQuarter => "back_quarter",
+        FigureView.Back => "back",
+        _ => "",
+    };
+
+    /// <summary>某视角的一帧（<paramref name="frame"/> 为空即该视角的站姿）。</summary>
+    private FigureArt? ViewFrame(FigureView view, string frame = "")
+    {
+        var prefix = Prefix(view);
+        var key = prefix.Length == 0 ? frame : frame.Length == 0 ? prefix : $"{prefix}_{frame}";
+        return FigureArt.Find(key.Length == 0 ? ArtId : $"{ArtId}.{key}");
+    }
+
+    /// <summary>实际画的视角：当前视角或按 <see cref="Fallback"/> 退回到第一个有站姿帧的视角。</summary>
+    private FigureView Shown => Fallback(View).FirstOrDefault(v => ViewFrame(v) is not null);
 
     /// <summary>
     /// 剧情演出指定的姿势帧（<c>&lt;形象&gt;.&lt;姿势&gt;</c>，如 <c>down</c> 跪倒、<c>guard</c> 迎敌）：有这一帧时代替站姿与行走帧，
@@ -1293,7 +1383,13 @@ public partial class WalkerFigure : TownPiece
 
     private readonly string? _artId;
 
-    private static readonly string[] FrameKeys = ["walk_a", "walk_b", "back", "back_walk_a", "back_walk_b", "run_a", "run_b", "back_run_a", "back_run_b"];
+    /// <summary>行走与转身用到的全部帧名（Place 按它们合并外框）。</summary>
+    private static readonly string[] FrameKeys =
+    [
+        .. new[] { "", "quarter", "side", "back_quarter", "back" }.SelectMany(p => p.Length == 0
+            ? new[] { "walk_a", "walk_b", "run_a", "run_b" }
+            : new[] { p, $"{p}_walk_a", $"{p}_walk_b", $"{p}_run_a", $"{p}_run_b" }),
+    ];
 
     public void Place(Vector2 ground, float z = 0)
     {
@@ -1341,7 +1437,7 @@ public partial class WalkerFigure : TownPiece
                 return;
             }
 
-            if (WalkFrame(art) is { } frame)
+            if (WalkFrame() is { } frame)
             {
                 // M3-02 行走帧：四拍一循环（迈左、过步、迈右、过步），过步即站姿；过步时身体略高，不再整张前倾伸缩。
                 DrawFrame(frame, new Vector2(0, -step * 2));
@@ -1351,12 +1447,12 @@ public partial class WalkerFigure : TownPiece
             if (_skirt is not null)
             {
                 // 长裙人物缺行走帧时不再整张伸缩前倾（裙摆由着色器摆动），只随步上下起伏。
-                DrawFrame(Back && FigureArt.Find($"{ArtId}.back") is { } backStill ? backStill : art, new Vector2(0, -step * 3));
+                DrawFrame(ViewFrame(Shown) ?? art, new Vector2(0, -step * 3));
                 return;
             }
 
-            // 没有行走帧的人物：一张站姿按步频上下起伏、竖向微缩并略向前倾（背面帧有则用背面）。
-            var still = Back && FigureArt.Find($"{ArtId}.back") is { } back ? back : art;
+            // 没有行走帧的人物：一张站姿按步频上下起伏、竖向微缩并略向前倾（有当前视角的站姿则用它）。
+            var still = ViewFrame(Shown) ?? art;
             still.Draw(this, new Vector2(0, -step * 4), Height, Facing, Moving ? 0.035f : 0, (1 - step * 0.018f) * _breath);
             return;
         }
@@ -1413,19 +1509,14 @@ public partial class WalkerFigure : TownPiece
     }
 
     /// <summary>
-    /// 当前该画的行走帧（M3-02）：正面为站姿 + <c>walk_a</c> / <c>walk_b</c>，背面为 <c>back</c> + <c>back_walk_a</c> / <c>back_walk_b</c>。
+    /// 当前该画的行走帧（M3-02，8 向见 <see cref="FigureView"/>）：正面为站姿 + <c>walk_a</c> / <c>walk_b</c>，
+    /// 其他视角为 <c>&lt;前缀&gt;</c> + <c>&lt;前缀&gt;_walk_a</c> / <c>_walk_b</c>（如 <c>side</c>、<c>side_walk_a</c>）。
     /// 步相 Phase 每 π 一步，四分之一步一拍：0 迈左、1 过步、2 迈右、3 过步。所需帧不全时返回 null，退回整张起伏。
     /// </summary>
-    private FigureArt? WalkFrame(FigureArt stand)
+    private FigureArt? WalkFrame()
     {
-        var idle = Back ? FigureArt.Find($"{ArtId}.back") : stand;
-        if (idle is null)
-        {
-            return null;
-        }
-
-        var prefix = Back ? "back_walk" : "walk";
-        if (FigureArt.Find($"{ArtId}.{prefix}_a") is not { } a || FigureArt.Find($"{ArtId}.{prefix}_b") is not { } b)
+        var view = Shown;
+        if (ViewFrame(view) is not { } idle || ViewFrame(view, "walk_a") is not { } a || ViewFrame(view, "walk_b") is not { } b)
         {
             return null;
         }
@@ -1469,11 +1560,11 @@ public partial class WalkerFigure : TownPiece
         frame.DrawPadded(this, feet, Height, Facing, swayPx * 2.5f, _breath);
     }
 
-    /// <summary>当前该画的跑步帧：步相每 π 一步，偶数步 <c>run_a</c>、奇数步 <c>run_b</c>（背面加 <c>back_</c> 前缀）；缺帧时返回 null，退回行走帧。</summary>
+    /// <summary>当前该画的跑步帧：步相每 π 一步，偶数步 <c>run_a</c>、奇数步 <c>run_b</c>（其他视角加前缀）；缺帧时返回 null，退回行走帧。</summary>
     private FigureArt? RunFrame()
     {
-        var prefix = Back ? "back_run" : "run";
-        if (FigureArt.Find($"{ArtId}.{prefix}_a") is not { } a || FigureArt.Find($"{ArtId}.{prefix}_b") is not { } b)
+        var view = Shown;
+        if (ViewFrame(view, "run_a") is not { } a || ViewFrame(view, "run_b") is not { } b)
         {
             return null;
         }

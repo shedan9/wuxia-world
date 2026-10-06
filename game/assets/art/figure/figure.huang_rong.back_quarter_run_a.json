@@ -1,0 +1,11 @@
+{
+  "id": "figure.huang_rong.back_quarter_run_a",
+  "foot": [
+    313.0,
+    831.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.huang_rong.back_quarter_run_a.png",
+  "sha256": "61ead0a63dd35c0e4525794ab6df0bc5b62de89412234d304b4c8be4f4cdaf88",
+  "frame_of": "figure.huang_rong"
+}

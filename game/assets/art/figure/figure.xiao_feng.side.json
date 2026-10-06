@@ -1,0 +1,11 @@
+{
+  "id": "figure.xiao_feng.side",
+  "foot": [
+    142.5,
+    807.7
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.xiao_feng.side.png",
+  "sha256": "5fff8fe0bee68e7fb746c32d83251bb8756b8ed6d460885c918330655eee192b",
+  "frame_of": "figure.xiao_feng"
+}

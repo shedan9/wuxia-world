@@ -1,0 +1,12 @@
+{
+  "id": "figure.lu_qinghe.side_run_a",
+  "foot": [
+    298.4,
+    778.9
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.lu_qinghe.side_run_a.png",
+  "sha256": "c5e7f1e06556ec658798ba8f4d771797d08c643b08332b8840eb3513d1fbf602",
+  "frame_of": "figure.lu_qinghe",
+  "keep_x": 343.0
+}

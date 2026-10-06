@@ -1,0 +1,205 @@
+{
+  "model": "animagine4",
+  "steps": 30,
+  "cfg": 5.0,
+  "control": 0.8,
+  "control_end": 0.8,
+  "threshold": 26,
+  "style": {
+    "figure": "full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe",
+    "negative_seated": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, child, modern clothes, sneakers, kimono, japanese clothes, ink wash, nsfw, blurry, cropped, feet out of frame, scenery, multiple views, chair, stool, bench, table, furniture, kneeling, cast shadow, floor shadow",
+    "negative_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow",
+    "negative_short": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, multiple views, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "negative_sheet": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, long robe, hanfu, skirt, wide sleeves, flowing robe",
+    "sheet": "character sheet, same character in both panels, consistent outfit, full body, ancient china, wuxia, semi-realistic, thick lineart, cel shading, detailed shading, high contrast, grey background, simple background, masterpiece, high score, absurdres",
+    "negative_sheet_robe": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow",
+    "negative_sheet_long": "lowres, bad anatomy, bad hands, extra digits, extra limbs, text, watermark, signature, chibi, loli, child, teenager, denim, jeans, zipper, pockets, modern clothes, sneakers, baseball cap, t-shirt, kimono, japanese clothes, katana, military uniform, epaulettes, ink wash, paper texture, nsfw, cleavage, thigh slit, blurry, cropped, feet out of frame, scenery, drop shadow, cast shadow, floor shadow, skirt, dress"
+  },
+  "set": "m3_turn_cast",
+  "note": "8 向转身视角（令狐冲、萧峰、黄蓉、陆青禾），流程同 m3_turn_hero：先出四分之三正面与正侧站姿，四分之三背面以选定正侧为参照格，再以各视角站姿出走跑帧。",
+  "init": "reference",
+  "strength": 0.95,
+  "seeds": [
+    11,
+    22,
+    33,
+    44
+  ],
+  "jobs": [
+    {
+      "name": "linghu_chong_quarter",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "quarter_stand",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, standing, body turned to the right, three-quarter view, looking to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "linghu_chong_side",
+      "reference": "out/m2_figures/linghu_chong_33__raw.png",
+      "reference_pose": "stand",
+      "pose": "side_stand",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, standing, from side, profile, side view, facing right, looking to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "xiao_feng_quarter",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "quarter_stand",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, standing, body turned to the right, three-quarter view, looking to the right",
+      "negative_style": "negative_sheet",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "xiao_feng_side",
+      "reference": "out/m2_figures/xiao_feng_22__raw.png",
+      "reference_pose": "stand",
+      "pose": "side_stand",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, standing, from side, profile, side view, facing right, looking to the right",
+      "negative_style": "negative_sheet",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "huang_rong_quarter",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "quarter_stand",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, standing, body turned to the right, three-quarter view, looking to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "huang_rong_side",
+      "reference": "out/m2_figures/huang_rong_44__raw.png",
+      "reference_pose": "stand",
+      "pose": "side_stand",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, standing, from side, profile, side view, facing right, looking to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "lu_qinghe_quarter",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "quarter_pole_stand",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, standing, body turned to the right, three-quarter view, looking to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "lu_qinghe_side",
+      "reference": "out/m0_figures/lu_qinghe_33__raw.png",
+      "reference_pose": "stand_pole",
+      "pose": "side_pole_stand",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, standing, from side, profile, side view, facing right, looking to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "linghu_chong_back_quarter",
+      "reference": "out/m3_turn_cast/linghu_chong_side_11__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "back_quarter_stand",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, standing, from behind, back view, facing away, looking to the right, three-quarter back view, cheek visible, body turned to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "xiao_feng_back_quarter",
+      "reference": "out/m3_turn_cast/xiao_feng_side_22__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "back_quarter_stand",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, standing, from behind, back view, facing away, looking to the right, three-quarter back view, cheek visible, body turned to the right",
+      "negative_style": "negative_sheet",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "huang_rong_back_quarter",
+      "reference": "out/m3_turn_cast/huang_rong_side_44__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "back_quarter_stand",
+      "prompt": "1girl, solo, same woman, young adult woman, very beautiful, clever lively eyes, long black hair half-up with a golden hairpin, hanfu, pale green cross-collar long gown with wide sleeves, cream inner skirt, light green waist sash, long flowing pale green skirt, embroidered cloth shoes, standing, from behind, back view, facing away, looking to the right, three-quarter back view, cheek visible, body turned to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "lu_qinghe_back_quarter",
+      "reference": "out/m3_turn_cast/lu_qinghe_side_44__raw.png",
+      "reference_pose": "side_pole_stand",
+      "pose": "back_quarter_pole_stand",
+      "prompt": "1girl, solo, same woman, adult woman, gentle face, black hair in a high bun, teal headband with long ribbon, hanfu, cream long jacket with wide cream sleeves, dark brown collar trim, red inner cuffs, long teal sash hanging from the waist, dark brown waist wrap, cream long skirt with brown hem, cloth shoes, holding a tall green bamboo pole upright, standing, from behind, back view, facing away, looking to the right, three-quarter back view, cheek visible, body turned to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95
+    },
+    {
+      "name": "linghu_chong_back_quarter_v2",
+      "reference": "out/m3_turn_cast/linghu_chong_side_11__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "back_quarter_stand",
+      "prompt": "1boy, solo, same man, young adult man, handsome, carefree smile, black hair in a topknot, dark blue cross-collar robe over white inner collar, white sleeves, black belt, light grey lower robe, black trousers, dried gourd wine flask at the belt, straight chinese jian sword in a dark scabbard at the waist, black cloth shoes, standing, from behind, back view, facing away, looking to the right, three-quarter back view, dark blue robe covering the back and shoulders, face not visible, body turned to the right",
+      "negative_style": "negative_sheet_robe",
+      "style": "sheet",
+      "strength": 0.95,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    },
+    {
+      "name": "xiao_feng_back_quarter_v2",
+      "reference": "out/m3_turn_cast/xiao_feng_side_22__raw.png",
+      "reference_pose": "side_stand",
+      "pose": "back_quarter_stand",
+      "prompt": "1boy, solo, same man, tall burly adult man, very broad shoulders, muscular, rugged square face, thick eyebrows, black stubble beard, black hair tied up in a bun, brown short-sleeved cross-collar short jacket, sleeves rolled up, dark brown waist sash, brown baggy trousers, tall brown boots, standing, from behind, back view, facing away, looking to the right, three-quarter back view, face not visible, back of the head, broad back, body turned to the right",
+      "negative_style": "negative_sheet",
+      "style": "sheet",
+      "strength": 0.95,
+      "seeds": [
+        55,
+        66,
+        77,
+        88
+      ]
+    }
+  ],
+  "picks": {
+    "linghu_chong": {
+      "quarter": "quarter_33",
+      "side": "side_11",
+      "back_quarter": "back_quarter_v2_88"
+    },
+    "xiao_feng": {
+      "quarter": "quarter_11",
+      "side": "side_22",
+      "back_quarter": "back_quarter_v2_88"
+    },
+    "huang_rong": {
+      "quarter": "quarter_11",
+      "side": "side_44",
+      "back_quarter": "back_quarter_33"
+    },
+    "lu_qinghe": {
+      "quarter": "quarter_22",
+      "side": "side_44",
+      "back_quarter": "back_quarter_33"
+    }
+  }
+}
