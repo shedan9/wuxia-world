@@ -1,0 +1,13 @@
+{
+  "id": "figure.escort.side_walk_b",
+  "foot": [
+    285.0,
+    867.5
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.escort.side_walk_b.png",
+  "sha256": "1cfa4d6fccbe30d485125385b8581aa9a83d71d77b608b0a309ce579d874c922",
+  "frame_of": "figure.escort",
+  "rescale": 0.95,
+  "rescale_note": "AI 画得比基础形象高，按头顶对齐基础形象（头顶约 790）整张缩放（2026-10-24）"
+}

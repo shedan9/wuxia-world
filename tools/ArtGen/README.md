@@ -241,3 +241,16 @@ cd tools/ArtGen
 - 迎敌、跪倒用 strength 1.0 从底色起步时，浅色衣服（陆青禾米白长衣）全变成褐色；改回 `init: reference`、strength 0.95、control 0.95 能改动姿势且保住衣色。
 - 跑步骨架能出后脚离地、臂屈肘大摆，但上身前倾仍偏弱；同一人物的 a / b 两帧尽量取同一种子，配色才一致。
 - 双格画布偶尔在右格左缘留一道左格的竖条，入库前挑掉或 `--erase`；跪倒时两腿间的封闭灰底（模型画的地影）用 `--recut 26 --enclosed 60` 去掉。
+
+## 大地图舆图重绘试验（2026-10-24，未采用）
+
+```powershell
+# 1. 导出引导图（只含地形、江河与山峦，4608×2560）
+& $env:GODOT_BIN.Replace('.exe','_console.exe') --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --region=worldmap --out=$PWD/tools/ArtGen/out/guides/worldmap
+# 2. 整图重绘（约 1.5 MP），再以其结果放大回原尺寸分块细化
+cd tools/ArtGen
+.venv/Scripts/python worldmap.py jobs/m3_worldmap.json --stage a
+.venv/Scripts/python worldmap.py jobs/m3_worldmap.json --stage b --from out/m3_worldmap/a_s45_11.png
+```
+
+结论见架构文档 10.3“大地图图生图试验”：SDXL 与 Animagine 在能锁住布局的强度下只会把程序化舆图抹平，强度一高就改布局，未采用。

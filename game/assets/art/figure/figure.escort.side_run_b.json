@@ -1,0 +1,13 @@
+{
+  "id": "figure.escort.side_run_b",
+  "foot": [
+    281.8,
+    877.1
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.escort.side_run_b.png",
+  "sha256": "dfe5a0415e72e382b8b59604b3264b9193a8555f42bfa046f9d28e16d116848b",
+  "frame_of": "figure.escort",
+  "rescale": 0.945,
+  "rescale_note": "AI 画得比基础形象高，按头顶对齐基础形象（头顶约 790）整张缩放（2026-10-24）"
+}

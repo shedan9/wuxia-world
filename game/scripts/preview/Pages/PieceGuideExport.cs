@@ -37,6 +37,12 @@ public partial class PieceGuideExport : Node
         var only = args.GetValueOrDefault("--only", "");
         var region = args.GetValueOrDefault("--region", "town");
         DirAccess.MakeDirRecursiveAbsolute(outDir);
+        if (region == "worldmap")
+        {
+            await ExportWorldMap(outDir);
+            GetTree().Quit(0);
+            return;
+        }
         Cel.Shadows = false;
         PieceArt.Enabled = false;
 
@@ -107,6 +113,42 @@ public partial class PieceGuideExport : Node
         foreach (var node in nodes) holder.RemoveChild(node);
         holder.QueueFree();
         return image;
+    }
+
+    /// <summary>
+    /// 大地图舆图的引导图（架构文档 10.3“大地图单独处理”）：程序化舆图只画地形、江河与平视山峦（不画道路与题字），
+    /// 原尺寸（<see cref="WorldMapSamples.Size"/>）存 <c>worldmap.guide.png</c>，供 tools/ArtGen/worldmap.py 图生图。
+    /// 山体避让展示页样例地标与内容里的地标（第一章芦湾、旧渡等），重绘后的底图对两边都留出空地。
+    /// </summary>
+    private async Task ExportWorldMap(string outDir)
+    {
+        var landmarks = WorldMapSamples.Nodes.Select(n => n.Pos).ToList();
+        using (var file = Godot.FileAccess.Open("res://generated/content/world.json", Godot.FileAccess.ModeFlags.Read))
+        {
+            using var doc = JsonDocument.Parse(file.GetAsText());
+            foreach (var node in doc.RootElement.GetProperty("world_map").GetProperty("nodes").EnumerateArray())
+            {
+                var pos = node.GetProperty("pos");
+                landmarks.Add(new Vector2(pos[0].GetSingle(), pos[1].GetSingle()) * WorldMapSamples.Scale);
+            }
+        }
+
+        var viewport = new SubViewport
+        {
+            Size = (Vector2I)WorldMapSamples.Size, Disable3D = true, TransparentBg = false,
+            RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
+        };
+        viewport.AddChild(new WorldMapCanvas(landmarks, []) { TerrainOnly = true });
+        AddChild(viewport);
+        for (var i = 0; i < 3; i++)
+        {
+            await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+        }
+
+        viewport.GetTexture().GetImage().SavePng($"{outDir}/worldmap.guide.png");
+        var meta = new { size = new[] { (int)WorldMapSamples.Size.X, (int)WorldMapSamples.Size.Y }, scale = WorldMapSamples.Scale, landmarks = landmarks.Count };
+        File.WriteAllText($"{outDir}/worldmap.guide.json", JsonSerializer.Serialize(meta, Json));
+        GD.Print($"已导出舆图引导图：{outDir}/worldmap.guide.png");
     }
 
     private sealed record Part(string Name, CanvasItem Node, Rect2 Box);

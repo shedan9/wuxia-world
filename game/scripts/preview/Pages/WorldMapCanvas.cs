@@ -9,7 +9,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 大地图占位：程序化生成的写实地形舆图。先按海岸线、山脉走向、江河与湖泊在 CPU 上算出一张低分辨率高度图，
 /// 再由 <c>assets/shaders/world_relief.gdshader</c> 叠加岩石与林地细节、做西北光照的山体晕渲、按海拔与坡度着色
 /// （平原田块、林地、高地、裸岩、雪线）并画出由浅到深的海水；江河、道路与地域题字以矢量叠在地形之上。
-/// 正式大地图按架构文档 10.3 制作后替换此类；地标与路线图层不受影响。全部形状只取决于固定种子。
+/// 2026-10-24 以本类导出的引导图试过 AI 整图与分块重绘（tools/ArtGen/worldmap.py），未见改进，未采用。全部形状只取决于固定种子。
 /// 地标位置（山体避让）与道路由构造参数给出：展示页用样例，游戏内大地图用内容数据（<c>WorldMapOverlay</c>）。
 /// </summary>
 public partial class WorldMapCanvas : Control
@@ -30,6 +30,9 @@ public partial class WorldMapCanvas : Control
         _landmarks = landmarks;
         _roads = roads;
     }
+
+    /// <summary>只画地形、江河与山峦（导出 AI 引导图用，PieceGuideExport --region=worldmap），不画道路与题字。</summary>
+    public bool TerrainOnly { get; init; }
 
     /// <summary>高度图每格对应的地图逻辑像素。</summary>
     private const int Cell = 6;
@@ -123,6 +126,12 @@ public partial class WorldMapCanvas : Control
         }
 
         DrawMountains(item);
+
+        if (TerrainOnly)
+        {
+            return;
+        }
+
         DrawRoads(item);
         DrawTitles();
     }

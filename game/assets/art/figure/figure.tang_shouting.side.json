@@ -1,0 +1,11 @@
+{
+  "id": "figure.tang_shouting.side",
+  "foot": [
+    232.9,
+    786.0
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.tang_shouting.side.png",
+  "sha256": "d8b8e77747f506bf4790f54df37442b5cf65ef6f7c6ad317a00df3c6ff0e6710",
+  "frame_of": "figure.tang_shouting"
+}

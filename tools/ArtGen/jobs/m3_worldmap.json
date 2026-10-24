@@ -1,0 +1,27 @@
+{
+  "set": "m3_worldmap",
+  "note": "大地图舆图正式底图：以程序化舆图（用户 2026-09-24 认可的平视山峦 + 俯视地面画风）为引导图重绘，只加手绘笔触与细节，不改布局。",
+  "guide": "out/guides/worldmap/worldmap.guide.png",
+  "model": "sdxl",
+  "steps": 30,
+  "cfg": 6.0,
+  "control_end": 0.8,
+  "prompt": "illustrated fantasy game world map, hand-painted, ancient china landscape, rolling blue-green mountain ranges, green plains, farmland, forests, winding rivers, coastline, deep blue sea, cel shading, clean lineart, fresh soft colors, highly detailed",
+  "negative": "text, letters, labels, compass, frame, border, legend, photo, photorealistic, satellite image, people, watermark, signature, ink wash, monochrome, blurry, lowres",
+  "a": {
+    "name": "s45",
+    "pixels": 1500000,
+    "strength": 0.45,
+    "control": 0.6,
+    "canny": [60, 140],
+    "seeds": [11, 22, 33]
+  },
+  "b": {
+    "tile": 1024,
+    "overlap": 256,
+    "strength": 0.3,
+    "control": 0.5,
+    "canny": [60, 140],
+    "seed": 11
+  }
+}

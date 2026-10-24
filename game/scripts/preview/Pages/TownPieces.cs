@@ -1237,12 +1237,15 @@ public partial class WalkerFigure : TownPiece
         _ => 180,
     };
 
-    /// <summary>缺帧时依次退回的视角：侧身缺帧退四分之三正面再退正面，四分之三背面退正背面。</summary>
+    /// <summary>
+    /// 缺帧时依次退回的视角：侧身缺帧退四分之三正面再退正面；四分之三背面退正背面，再退正侧（只做了正侧的配角斜着往里走时侧身，
+    /// 不转成正脸），最后退正面。
+    /// </summary>
     private static FigureView[] Fallback(FigureView view) => view switch
     {
         FigureView.Quarter => [FigureView.Quarter, FigureView.Front],
         FigureView.Side => [FigureView.Side, FigureView.Quarter, FigureView.Front],
-        FigureView.BackQuarter => [FigureView.BackQuarter, FigureView.Back, FigureView.Front],
+        FigureView.BackQuarter => [FigureView.BackQuarter, FigureView.Back, FigureView.Side, FigureView.Front],
         FigureView.Back => [FigureView.Back, FigureView.Front],
         _ => [FigureView.Front],
     };

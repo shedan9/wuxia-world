@@ -1,0 +1,14 @@
+{
+  "id": "figure.escort.side",
+  "foot": [
+    269.8,
+    858.4
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.escort.side.png",
+  "sha256": "bc37c53dfa0ddbfec029bdfa3ae27fc5be8c377e66ae5c1b7903b2618d65f5ca",
+  "frame_of": "figure.escort",
+  "foot_note": "弓步站姿两脚不在骨架脚踝列上，place.py 量到小腿中段（615.8）；按基础形象的取法（前后脚之间）手改为 885（两脚最低不透明像素 911，2026-10-24）",
+  "rescale": 0.97,
+  "rescale_note": "AI 画得比基础形象高，按头顶对齐基础形象（头顶约 790）整张缩放（2026-10-24）"
+}

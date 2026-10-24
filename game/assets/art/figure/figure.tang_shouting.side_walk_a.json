@@ -1,0 +1,11 @@
+{
+  "id": "figure.tang_shouting.side_walk_a",
+  "foot": [
+    236.5,
+    816.1
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.tang_shouting.side_walk_a.png",
+  "sha256": "7bbf54f02865d8112508b930e1cc917965dbe838f3693050ccb35fa885a7bbd2",
+  "frame_of": "figure.tang_shouting"
+}

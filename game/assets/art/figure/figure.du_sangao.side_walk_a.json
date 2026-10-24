@@ -1,0 +1,11 @@
+{
+  "id": "figure.du_sangao.side_walk_a",
+  "foot": [
+    150.9,
+    861.3
+  ],
+  "stature": 800,
+  "source": "art_source/ai/figure/figure.du_sangao.side_walk_a.png",
+  "sha256": "65ad85431cf24fa1cec2f5430e5acc080c43cd75ad692816fb9870e0c2bc0b92",
+  "frame_of": "figure.du_sangao"
+}
