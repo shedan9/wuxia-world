@@ -204,7 +204,7 @@ def run_piece(pipe, spec: dict, job: dict, out_dir: Path, preview: bool) -> None
             # 引擎贴图：图像左上角对应的投影坐标与每投影单位像素数（引导图 px 按缩放换算）。
             "origin": meta_in["origin"],
             "px": meta_in["px"] * scale,
-            "view": meta_in["view"],
+            "view": meta_in.get("view"),
             "model": MODELS[spec.get("model", "sdxl")],
             "controlnet": CONTROLNET,
             "vae": FP16_VAE,

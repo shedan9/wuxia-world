@@ -61,6 +61,49 @@ def regrade(image: Image.Image, guide: Image.Image, light: float = 0.7, chroma: 
     return result
 
 
+def match_low(image: Image.Image, guide: Image.Image, sigma: float, light: float = 0.8, chroma: float = 1.0) -> Image.Image:
+    """渐变引导图（舆图山峦）用：两图各按 alpha 加权做大半径高斯模糊，把 AI 图的低频色（Lab）平移到引导图的低频色，
+    细节（岩纹、林木、沟壑）原样保留，整体配色与受光面、背光面的明暗分布回到程序化画法。sigma 为模糊半径（像素）。"""
+    import cv2
+
+    alpha = image.getchannel("A")
+    a = np.asarray(alpha, dtype=np.float32) / 255
+    lab = cv2.cvtColor(np.asarray(image.convert("RGB"), dtype=np.float32) / 255, cv2.COLOR_RGB2LAB)
+    g = guide.convert("RGBA").resize(image.size, Image.LANCZOS)
+    ga = np.asarray(g.getchannel("A"), dtype=np.float32) / 255
+    glab = cv2.cvtColor(np.asarray(g.convert("RGB"), dtype=np.float32) / 255, cv2.COLOR_RGB2LAB)
+
+    def low(x, w):
+        return cv2.GaussianBlur(x * w[..., None], (0, 0), sigma) / np.maximum(cv2.GaussianBlur(w, (0, 0), sigma), 1e-3)[..., None]
+
+    shift = (low(glab, ga) - low(lab, a)) * np.array([light, chroma, chroma], dtype=np.float32)
+    out = cv2.cvtColor(lab + shift, cv2.COLOR_LAB2RGB)
+    result = Image.fromarray((np.clip(out, 0, 1) * 255 + 0.5).astype(np.uint8))
+    result.putalpha(alpha)
+    return result
+
+
+def keep_lines(image: Image.Image, guide: Image.Image, line: float = 0.3, snow: float = 0.88, opacity: float = 0.85) -> Image.Image:
+    """把引导图里的墨线与积雪叠回 AI 图（舆图山峦）：引导图本身已按前后山正确遮挡，取其中亮度低于 line 的像素
+    （天际线勾线，墨色 #293D42）与亮度高于 snow 的像素（积雪）作遮罩，按原色叠上。前后山交叠处的轮廓、
+    高峰积雪是程序化画法的辨识点，AI 件和低频调色都会把它们抹淡。"""
+    import cv2
+
+    g = guide.convert("RGBA").resize(image.size, Image.LANCZOS)
+    rgb = np.asarray(g.convert("RGB"), dtype=np.float32) / 255
+    ga = np.asarray(g.getchannel("A"), dtype=np.float32) / 255
+    lum = rgb @ np.array([0.299, 0.587, 0.114], dtype=np.float32)
+    m_line = np.clip((line - lum) / 0.08, 0, 1)
+    m_snow = np.clip((lum - snow) / 0.05, 0, 1)
+    mask = np.maximum(m_line, m_snow) * ga * opacity
+    mask = cv2.GaussianBlur(mask, (0, 0), 0.6)[..., None]
+    base = np.asarray(image.convert("RGB"), dtype=np.float32) / 255
+    out = base * (1 - mask) + rgb * mask
+    result = Image.fromarray((np.clip(out, 0, 1) * 255 + 0.5).astype(np.uint8))
+    result.putalpha(image.getchannel("A"))
+    return result
+
+
 def main() -> int:
     sys.stdout.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser()

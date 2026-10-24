@@ -11,7 +11,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// tools/ArtGen/piece.py 以它为图生图底图、以其线稿为 ControlNet 引导生成正式件，再按它的 alpha 抠出，
 /// 因此 AI 件的视角、尺度与占地天然与布局对齐。一件由多个部件组成时（平桥 = 贴地桥面 + 两道排序栏杆），
 /// 整件合成一张引导图，另为每个部件导出同框的 alpha 遮罩，生成后按遮罩拆回各层。
-/// 运行：<c>Godot --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --out=绝对目录 [--region=town|inn|wild|yard] [--only=前缀] [--px=2]</c>。
+/// 运行：<c>Godot --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --out=绝对目录 [--region=town|inn|wild|yard|worldmap|worldmap-massifs] [--only=前缀] [--px=2]</c>。
 /// 输出 <c>&lt;id&gt;.png</c>、只有面与轮廓的结构图 <c>&lt;id&gt;__shape.png</c>（贴花关闭，供 ControlNet 取边线）、部件遮罩 <c>&lt;id&gt;__&lt;部件&gt;.png</c> 与 <c>&lt;id&gt;.json</c>
 /// （origin 为图像左上角对应的投影坐标，px 为每投影单位的像素数）。只做美术生产，不进展示目录。
 /// </summary>
@@ -39,7 +39,15 @@ public partial class PieceGuideExport : Node
         DirAccess.MakeDirRecursiveAbsolute(outDir);
         if (region == "worldmap")
         {
+            PieceArt.Enabled = args.GetValueOrDefault("--art", "0") == "1";
             await ExportWorldMap(outDir);
+            GetTree().Quit(0);
+            return;
+        }
+
+        if (region == "worldmap-massifs")
+        {
+            await ExportMassifs(outDir, px, only);
             GetTree().Quit(0);
             return;
         }
@@ -149,6 +157,47 @@ public partial class PieceGuideExport : Node
         var meta = new { size = new[] { (int)WorldMapSamples.Size.X, (int)WorldMapSamples.Size.Y }, scale = WorldMapSamples.Scale, landmarks = landmarks.Count };
         File.WriteAllText($"{outDir}/worldmap.guide.json", JsonSerializer.Serialize(meta, Json));
         GD.Print($"已导出舆图引导图：{outDir}/worldmap.guide.png");
+    }
+
+    /// <summary>
+    /// 舆图山峦逐件出图的引导图（2026-10-24，整图重绘未采用后的做法，同布景方案 C）：每组山（主山 + 前叠山梁）
+    /// 单独以程序化画法渲染成透明底 PNG，不画山脚阴影与薄雾（引擎照旧画在 AI 件上下）。山体不避让地标，
+    /// 展示页样例与游戏内容两套地标各自去掉的山都有件可用。输出格式同布景件（id.png / id.json，origin 为地图坐标）。
+    /// </summary>
+    private async Task ExportMassifs(string outDir, float px, string only)
+    {
+        PieceArt.Enabled = false;
+        var canvas = new WorldMapCanvas([], []);
+        var viewport = new SubViewport
+        {
+            TransparentBg = true, Disable3D = true,
+            RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
+        };
+        AddChild(viewport);
+
+        var groups = canvas.PlanMassifs(avoidLandmarks: false).Where(g => g.Id.StartsWith(only, StringComparison.Ordinal)).ToList();
+        foreach (var g in groups)
+        {
+            var origin = g.Bounds.Position - new Vector2(Margin, Margin) / px;
+            viewport.Size = new Vector2I(Mathf.CeilToInt(g.Bounds.Size.X * px) + 2 * Margin, Mathf.CeilToInt(g.Bounds.Size.Y * px) + 2 * Margin);
+            var node = new Node2D();
+            node.Draw += () => WorldMapCanvas.DrawMassifGroup(node.GetCanvasItem(), g);
+            var image = await Render(viewport, [node], origin, px);
+            image.SavePng($"{outDir}/{g.Id}.png");
+            node.QueueFree();
+            var meta = new
+            {
+                id = g.Id,
+                px,
+                origin = new[] { origin.X, origin.Y },
+                size = new[] { viewport.Size.X, viewport.Size.Y },
+                parts = new[] { "massif" },
+            };
+            File.WriteAllText($"{outDir}/{g.Id}.json", JsonSerializer.Serialize(meta, Json));
+        }
+
+        canvas.Free();
+        GD.Print($"已导出 {groups.Count} 组山峦引导图：{outDir}");
     }
 
     private sealed record Part(string Name, CanvasItem Node, Rect2 Box);

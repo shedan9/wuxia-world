@@ -12,6 +12,7 @@
 --soft t0,t1 再按色差软抠图，把模型混进树冠的雾状底色变成半透明枝条。
 --deshadow 比例：清掉图底部一段里树干根部以外的像素（模型自带的地面阴影），树类批量入库用，代替逐张框 --erase。
 --regrade light,chroma：按引导图的平涂色块分区调色（regrade.py），文生图材质好但配色跑偏时用（客栈内墙）。
+--match-low 比例：按引导图的低频色调色（舆图山峦这类渐变引导图）；--keep-lines：叠回引导图的墨线与积雪；--px：缩放到每单位像素数再入库。
 --figure：全身人物（figure.py 的输出，id 形如 figure.hero）：按不透明外框裁边、缩放到身高 --stature 像素（默认 800，
 战斗 1080p 下约 2 倍源图），json 记脚底中点 foot 与身高 stature，引擎按它们对齐地面与缩放（FigureArt.cs）；
 --top 给出头顶的 y（原图像素），长篙、刀尖高出头顶时用它代替外框顶边算身高。
@@ -79,6 +80,9 @@ def main() -> int:
     parser.add_argument("--frame-of", help="--figure：作为该基础形象的一帧入库（沿用其缩放比例与 stature，脚底取两胯中点）")
     parser.add_argument("--prop", action="store_true", help="战斗道具：裁边，记底边中点与整高（FigureArt 格式）")
     parser.add_argument("--backdrop", type=float, metavar="WATERLINE", help="整张布景：原样入库，记远岸水线 y（原图像素）")
+    parser.add_argument("--match-low", type=float, metavar="SIGMA", help="按引导图低频色调色（regrade.match_low），模糊半径为图宽的这一比例（如 0.025）：渐变引导图（舆图山峦）用")
+    parser.add_argument("--keep-lines", action="store_true", help="把引导图的墨线与积雪叠回（regrade.keep_lines）：舆图山峦交叠处的轮廓与雪顶")
+    parser.add_argument("--px", type=float, help="缩放到每单位这么多像素再入库（舆图山峦按游戏最大缩放取 1.25，免得包体过大）")
     parser.add_argument("--regrade", help="按引导图分区调色 light,chroma（如 0.7,1.0）：保留材质细节，把各色块区的平均色拉回布局配色（regrade.py）")
     args = parser.parse_args()
 
@@ -164,6 +168,37 @@ def main() -> int:
         regrade(Image.open(src), Image.open(ROOT / record["guide"]), light, chroma).save(graded)
         record["regrade"] = {"light": light, "chroma": chroma}
         src = graded
+
+    if args.match_low:
+        from PIL import Image
+
+        from regrade import match_low
+
+        image = Image.open(src)
+        matched = src.with_name(src.stem + "__low.png")
+        match_low(image, Image.open(ROOT / record["guide"]), image.width * args.match_low).save(matched)
+        record["match_low"] = args.match_low
+        src = matched
+
+    if args.keep_lines:
+        from PIL import Image
+
+        from regrade import keep_lines
+
+        lined = src.with_name(src.stem + "__lines.png")
+        keep_lines(Image.open(src), Image.open(ROOT / record["guide"])).save(lined)
+        record["keep_lines"] = True
+        src = lined
+
+    if args.px:
+        from PIL import Image
+
+        image = Image.open(src)
+        k = args.px / record["px"]
+        scaled = src.with_name(src.stem + "__px.png")
+        image.resize((max(1, round(image.width * k)), max(1, round(image.height * k))), Image.LANCZOS).save(scaled, optimize=True)
+        record["px_source"], record["px"] = record["px"], args.px
+        src = scaled
 
     if args.figure:
         return place_figure(args, src, record, art_dir, game_dir)

@@ -1,0 +1,1182 @@
+{
+  "set": "m3_worldmap_massifs_anim",
+  "note": "舆图山峦逐件出图（2026-10-24 试做）：每组山以程序化平视山峦为引导图，同布景方案 C；山脚阴影与薄雾由引擎画。",
+  "guides": "out/guides/worldmap_massifs",
+  "tier": "complex",
+  "model": "animagine4",
+  "pixels": 1150000,
+  "background": "#B4CD90",
+  "steps": 30,
+  "cfg": 5.0,
+  "canny": [
+    50,
+    140
+  ],
+  "style": {
+    "map": "illustrated game world map mountain, no humans, simple background, light green background, semi-realistic, cel shading, clean lineart, fresh blue-green palette, soft daylight, detailed",
+    "negative": "text, watermark, signature, people, sky, clouds, sun, buildings, trees in foreground, photo, photorealistic, 3d render, blurry, lowres, ink wash, monochrome, sepia, frame, border",
+    "map2": "illustrated game map mountain, no humans, simple background, plain light green background, semi-realistic, cel shading, thin dark outline, muted slate blue rock, sage green slopes, soft daylight, detailed",
+    "anim": "no humans, mountain, scenery, simple background, light green background, cel shading, lineart, muted blue-green, masterpiece, high score, absurdres",
+    "negative2": "text, watermark, people, sky, clouds, buildings, photo, photorealistic, 3d render, blurry, lowres, ink wash, monochrome, neon, oversaturated, cyan, glowing, frame, border"
+  },
+  "jobs": [
+    {
+      "name": "q_anim_2_0_10",
+      "piece": "worldmap.massif.2.0.10",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22,
+        33
+      ]
+    },
+    {
+      "name": "q_anim_6_1_1",
+      "piece": "worldmap.massif.6.1.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22,
+        33
+      ]
+    },
+    {
+      "name": "q_anim_7_2_8",
+      "piece": "worldmap.massif.7.2.8",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r_anim_10_0_0",
+      "piece": "worldmap.massif.10.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_12_0_0",
+      "piece": "worldmap.massif.12.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_12_1_0",
+      "piece": "worldmap.massif.12.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_12_2_0",
+      "piece": "worldmap.massif.12.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_12_2_1",
+      "piece": "worldmap.massif.12.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_13_0_0",
+      "piece": "worldmap.massif.13.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_13_0_1",
+      "piece": "worldmap.massif.13.0.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_13_1_0",
+      "piece": "worldmap.massif.13.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_13_2_0",
+      "piece": "worldmap.massif.13.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_13_2_1",
+      "piece": "worldmap.massif.13.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_14_1_0",
+      "piece": "worldmap.massif.14.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_14_2_0",
+      "piece": "worldmap.massif.14.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_14_2_1",
+      "piece": "worldmap.massif.14.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_14_2_2",
+      "piece": "worldmap.massif.14.2.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_15_0_0",
+      "piece": "worldmap.massif.15.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_15_1_0",
+      "piece": "worldmap.massif.15.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_15_2_0",
+      "piece": "worldmap.massif.15.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_15_2_1",
+      "piece": "worldmap.massif.15.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_16_0_0",
+      "piece": "worldmap.massif.16.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_16_0_1",
+      "piece": "worldmap.massif.16.0.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_16_1_0",
+      "piece": "worldmap.massif.16.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_16_2_0",
+      "piece": "worldmap.massif.16.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_16_2_1",
+      "piece": "worldmap.massif.16.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_17_0_0",
+      "piece": "worldmap.massif.17.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_17_1_0",
+      "piece": "worldmap.massif.17.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_17_2_0",
+      "piece": "worldmap.massif.17.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_17_2_1",
+      "piece": "worldmap.massif.17.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_17_2_2",
+      "piece": "worldmap.massif.17.2.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_0",
+      "piece": "worldmap.massif.2.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_1",
+      "piece": "worldmap.massif.2.0.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_10",
+      "piece": "worldmap.massif.2.0.10",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_11",
+      "piece": "worldmap.massif.2.0.11",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_12",
+      "piece": "worldmap.massif.2.0.12",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_13",
+      "piece": "worldmap.massif.2.0.13",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_2",
+      "piece": "worldmap.massif.2.0.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_3",
+      "piece": "worldmap.massif.2.0.3",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_4",
+      "piece": "worldmap.massif.2.0.4",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_5",
+      "piece": "worldmap.massif.2.0.5",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_8",
+      "piece": "worldmap.massif.2.0.8",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_0_9",
+      "piece": "worldmap.massif.2.0.9",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_1_0",
+      "piece": "worldmap.massif.2.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_1_1",
+      "piece": "worldmap.massif.2.1.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_1_3",
+      "piece": "worldmap.massif.2.1.3",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_1_4",
+      "piece": "worldmap.massif.2.1.4",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_2_0",
+      "piece": "worldmap.massif.2.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_2_1",
+      "piece": "worldmap.massif.2.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_2_2",
+      "piece": "worldmap.massif.2.2.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_2_3",
+      "piece": "worldmap.massif.2.2.3",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_2_4",
+      "piece": "worldmap.massif.2.2.4",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_3_2",
+      "piece": "worldmap.massif.2.3.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_3_4",
+      "piece": "worldmap.massif.2.3.4",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_3_5",
+      "piece": "worldmap.massif.2.3.5",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_3_7",
+      "piece": "worldmap.massif.2.3.7",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_2_3_8",
+      "piece": "worldmap.massif.2.3.8",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_5_0_0",
+      "piece": "worldmap.massif.5.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_5_0_1",
+      "piece": "worldmap.massif.5.0.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_5_1_1",
+      "piece": "worldmap.massif.5.1.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_6_0_2",
+      "piece": "worldmap.massif.6.0.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_0_10",
+      "piece": "worldmap.massif.7.0.10",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_0_11",
+      "piece": "worldmap.massif.7.0.11",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_0_12",
+      "piece": "worldmap.massif.7.0.12",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_0_13",
+      "piece": "worldmap.massif.7.0.13",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_0_6",
+      "piece": "worldmap.massif.7.0.6",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_0_9",
+      "piece": "worldmap.massif.7.0.9",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_1_10",
+      "piece": "worldmap.massif.7.1.10",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_1_11",
+      "piece": "worldmap.massif.7.1.11",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_1_12",
+      "piece": "worldmap.massif.7.1.12",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_7_1_9",
+      "piece": "worldmap.massif.7.1.9",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_9_0_0",
+      "piece": "worldmap.massif.9.0.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_9_1_0",
+      "piece": "worldmap.massif.9.1.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_9_1_1",
+      "piece": "worldmap.massif.9.1.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_9_2_0",
+      "piece": "worldmap.massif.9.2.0",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_9_2_1",
+      "piece": "worldmap.massif.9.2.1",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    },
+    {
+      "name": "r_anim_9_2_2",
+      "piece": "worldmap.massif.9.2.2",
+      "prompt": "mountain range, rocky peaks, cliffs, forest on lower slopes, side view",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "anim",
+      "negative_style": "negative2",
+      "seeds": [
+        11,
+        22
+      ]
+    }
+  ]
+}

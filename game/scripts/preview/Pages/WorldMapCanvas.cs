@@ -1,5 +1,6 @@
 using Godot;
 using WuxiaWorld.Game.Presentation;
+using WuxiaWorld.Game.Presentation.Art;
 using WuxiaWorld.Game.Presentation.Ui;
 using WuxiaWorld.Game.Preview.Samples;
 
@@ -9,7 +10,8 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// 大地图占位：程序化生成的写实地形舆图。先按海岸线、山脉走向、江河与湖泊在 CPU 上算出一张低分辨率高度图，
 /// 再由 <c>assets/shaders/world_relief.gdshader</c> 叠加岩石与林地细节、做西北光照的山体晕渲、按海拔与坡度着色
 /// （平原田块、林地、高地、裸岩、雪线）并画出由浅到深的海水；江河、道路与地域题字以矢量叠在地形之上。
-/// 2026-10-24 以本类导出的引导图试过 AI 整图与分块重绘（tools/ArtGen/worldmap.py），未见改进，未采用。全部形状只取决于固定种子。
+/// 2026-10-24 以本类导出的引导图试过 AI 整图与分块重绘（tools/ArtGen/worldmap.py），未见改进，未采用；改为山峦逐组出图
+/// （<see cref="PlanMassifs"/>，有 <c>assets/art/worldmap/&lt;id&gt;.png</c> 时贴件，否则程序化画）。全部形状只取决于固定种子。
 /// 地标位置（山体避让）与道路由构造参数给出：展示页用样例，游戏内大地图用内容数据（<c>WorldMapOverlay</c>）。
 /// </summary>
 public partial class WorldMapCanvas : Control
@@ -293,15 +295,28 @@ public partial class WorldMapCanvas : Control
     private static readonly Color MountainLine = new(0.16f, 0.24f, 0.26f, 0.9f);
 
     /// <summary>一座山体。Layer 为 0 的主山带山脚阴影与积雪；1、2 为叠在其前方、更矮更绿的山梁。</summary>
-    private readonly record struct Massif(Vector2 Base, float Width, float Height, float Seed, int Layer = 0);
+    internal readonly record struct Massif(Vector2 Base, float Width, float Height, float Seed, int Layer = 0);
+
+    /// <summary>
+    /// 一组山：主山与叠在其前的矮山梁，AI 逐件出图时作为一件（PieceGuideExport --region=worldmap-massifs）。
+    /// Id 为 <c>worldmap.massif.&lt;山脉&gt;.&lt;排&gt;.&lt;序号&gt;</c>，只取决于山脉数据与固定种子，不随地标避让变化；
+    /// Bounds 为天际线与底边的外框（地图坐标，含勾线余量）。
+    /// </summary>
+    public sealed record MassifGroup(string Id, Rect2 Bounds)
+    {
+        internal Massif Main { get; init; }
+
+        internal Massif[] Spurs { get; init; } = [];
+    }
 
     /// <summary>
     /// 沿每条山脉的走向摆放山体：主脊两三排，间距、大小、前后位置都随机错开，偶有一座特别高的主峰；
-    /// 山脉前沿再撒一排低矮的丘陵。按底边由远到近绘制，前山压住后山；避开地标所在的空地、江河、湖与海岸。
+    /// 山脉前沿再撒一排低矮的丘陵；高大的主山前叠一两道矮山梁。按底边由远到近排序，前山压住后山；
+    /// 避开地标所在的空地（avoidLandmarks 为假时不避，导出引导图用，游戏与展示页两套地标各取所需）、江河、湖与海岸。
     /// </summary>
-    private void DrawMountains(Rid item)
+    public IReadOnlyList<MassifGroup> PlanMassifs(bool avoidLandmarks = true)
     {
-        var massifs = new List<Massif>();
+        var groups = new List<MassifGroup>();
         var r = 0;
         foreach (var (path, peak, width) in Ranges)
         {
@@ -320,9 +335,11 @@ public partial class WorldMapCanvas : Control
                 var scale = foothills ? 0.42f : 1.12f - 0.2f * row;
                 var step = foothills ? 90f : 125f + 30 * row;
                 var d = step * (0.2f + 0.6f * Brushwork.Hash(r * 5.1f + row * 2.7f));
+                var k = 0;
                 while (d < length)
                 {
                     var seed = r * 31.7f + row * 7.3f + d * 0.013f;
+                    var id = $"worldmap.massif.{r}.{row}.{k++}";
                     d += step * (0.55f + 0.9f * Brushwork.Hash(seed + 8));
                     if (foothills && Brushwork.Hash(seed + 9) < 0.35f)
                     {
@@ -337,27 +354,57 @@ public partial class WorldMapCanvas : Control
                     size = 0.35f + 0.65f * size * size + (size > 0.9f ? 0.35f : 0);
                     var h = (50 + 140 * peak * size) * scale;
                     var w = h * (2.3f + 1.6f * Brushwork.Hash(seed + 3));
-                    if (!Blocked(c, w, h))
+                    if (!Blocked(c, w, h, avoidLandmarks))
                     {
-                        massifs.Add(new Massif(c, w, h, seed));
+                        groups.Add(Group(id, new Massif(c, w, h, seed)));
                     }
                 }
             }
         }
 
-        foreach (var m in massifs.OrderBy(m => m.Base.Y))
-        {
-            DrawMassif(item, m);
+        return groups.OrderBy(g => g.Main.Base.Y).ToList();
+    }
 
-            // 叠在主山前的一两道矮山梁，底边略靠前，形成层层叠叠的山势。
-            var spurs = m.Height > 70 ? 1 + (int)(Brushwork.Hash(m.Seed + 21) * 2.2f) : 0;
-            for (var s = 0; s < spurs; s++)
+    /// <summary>主山与其前的一两道矮山梁（底边略靠前，形成层层叠叠的山势）。</summary>
+    private static MassifGroup Group(string id, Massif m)
+    {
+        var spurs = m.Height > 70 ? 1 + (int)(Brushwork.Hash(m.Seed + 21) * 2.2f) : 0;
+        var list = new Massif[spurs];
+        for (var s = 0; s < spurs; s++)
+        {
+            var seed = m.Seed + 40 + s * 13.1f;
+            var offset = (Brushwork.Hash(seed) - 0.5f) * m.Width * 0.6f;
+            list[s] = new Massif(m.Base + new Vector2(offset, 4 + s * 6), m.Width * (0.4f + 0.25f * Brushwork.Hash(seed + 1)),
+                m.Height * (0.4f + 0.2f * Brushwork.Hash(seed + 2)), seed, 1 + s);
+        }
+
+        var bounds = new Rect2(m.Base, Vector2.Zero);
+        foreach (var x in list.Prepend(m))
+        {
+            foreach (var p in Skyline(x).Top)
             {
-                var seed = m.Seed + 40 + s * 13.1f;
-                var offset = (Brushwork.Hash(seed) - 0.5f) * m.Width * 0.6f;
-                var spur = new Massif(m.Base + new Vector2(offset, 4 + s * 6), m.Width * (0.4f + 0.25f * Brushwork.Hash(seed + 1)),
-                    m.Height * (0.4f + 0.2f * Brushwork.Hash(seed + 2)), seed, 1 + s);
-                DrawMassif(item, spur);
+                bounds = bounds.Expand(p);
+            }
+
+            bounds = bounds.Expand(x.Base + new Vector2(0, 1));
+        }
+
+        return new MassifGroup(id, bounds.Grow(4)) { Main = m, Spurs = list };
+    }
+
+    private void DrawMountains(Rid item)
+    {
+        foreach (var g in PlanMassifs())
+        {
+            var m = g.Main;
+            Brushwork.Blot(item, m.Base + new Vector2(m.Width * 0.06f, -m.Height * 0.05f), m.Width * 0.34f, new Color(0.1f, 0.2f, 0.2f, 0.15f), m.Seed);
+            if (PieceArt.Find(g.Id) is { } art)
+            {
+                RenderingServer.CanvasItemAddTextureRect(item, art.Frame, art.Texture.GetRid(), false);
+            }
+            else
+            {
+                DrawMassifGroup(item, g);
             }
 
             // 山脚一抹薄雾，把前后两排山隔开。
@@ -366,14 +413,24 @@ public partial class WorldMapCanvas : Control
         }
     }
 
-    private bool Blocked(Vector2 c, float w, float h)
+    /// <summary>程序化画出一组山（不含山脚阴影与薄雾，那两层由引擎画在 AI 件上下）。</summary>
+    public static void DrawMassifGroup(Rid item, MassifGroup g)
+    {
+        DrawMassif(item, g.Main);
+        foreach (var spur in g.Spurs)
+        {
+            DrawMassif(item, spur);
+        }
+    }
+
+    private bool Blocked(Vector2 c, float w, float h, bool avoidLandmarks)
     {
         if (c.X + w * 0.5f > CoastX(c.Y) - 30 || c.Y > WorldMapSamples.Size.Y + 20 || c.Y - h < -40)
         {
             return true;
         }
 
-        foreach (var pos in _landmarks)
+        foreach (var pos in avoidLandmarks ? _landmarks : [])
         {
             var d = pos - c;
             if (Mathf.Abs(d.X) < w * 0.25f + 16 && d.Y > -h * 0.5f && d.Y < 24)
@@ -391,15 +448,12 @@ public partial class WorldMapCanvas : Control
     private static void Quad(Rid item, Vector2 a, Vector2 b, Vector2 c, Vector2 d, Color ca, Color cb, Color cc, Color cd) =>
         RenderingServer.CanvasItemAddTriangleArray(item, [0, 1, 2, 0, 2, 3], [a, b, c, d], [ca, cb, cc, cd]);
 
-    /// <summary>
-    /// 一座山体（平视）：天际线由三到七座高低不一的峰叠成，每座峰左右坡宽窄不同，峰顶圆肩、山脚内收，
-    /// 山脊上有大小两级岩齿。按天际线每段的坡向分面，朝西的上坡受光、朝东的下坡背光（赛璐璐两阶），
-    /// 上段石青、下段石绿，山脚淡出到地面；受光面切沟壑暗楔，背光面留亮楔，峰顶补脊线，高峰积雪，
-    /// 最后沿天际线勾线。前排山梁（Layer ≥ 1）更绿、更亮、线更细。
-    /// </summary>
-    private static void DrawMassif(Rid item, Massif m)
+    private const int SkylineSteps = 56;
+
+    /// <summary>天际线：三到七座高低不一的峰叠成，每座峰左右坡宽窄不同，峰顶圆肩、山脚内收，山脊上有大小两级岩齿。</summary>
+    private static (Vector2[] Top, float[] Profile) Skyline(Massif m)
     {
-        const int n = 56;
+        const int n = SkylineSteps;
         var (c, w, h) = (m.Base, m.Width, m.Height);
 
         var peaks = 3 + (int)(Brushwork.Hash(m.Seed + 4) * 5);
@@ -435,11 +489,20 @@ public partial class WorldMapCanvas : Control
             top[i] = new Vector2(c.X + (t - 0.5f) * w, c.Y - y * h);
         }
 
+        return (top, profile);
+    }
+
+    /// <summary>
+    /// 一座山体（平视）：按天际线每段的坡向分面，朝西的上坡受光、朝东的下坡背光（赛璐璐两阶），
+    /// 上段石青、下段石绿，山脚淡出到地面；受光面切沟壑暗楔，背光面留亮楔，峰顶补脊线，高峰积雪，
+    /// 最后沿天际线勾线。前排山梁（Layer ≥ 1）更绿、更亮、线更细。
+    /// </summary>
+    private static void DrawMassif(Rid item, Massif m)
+    {
+        const int n = SkylineSteps;
+        var (c, w, h) = (m.Base, m.Width, m.Height);
+        var (top, profile) = Skyline(m);
         var front = m.Layer > 0;
-        if (!front)
-        {
-            Brushwork.Blot(item, c + new Vector2(w * 0.06f, -h * 0.05f), w * 0.34f, new Color(0.1f, 0.2f, 0.2f, 0.15f), m.Seed);
-        }
 
         // 前排山梁偏绿偏亮，远处主山偏石青。
         var green = front ? 0.35f : 0;
