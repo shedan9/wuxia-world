@@ -410,9 +410,9 @@ public partial class MainMenuPreview : Control
     private static Control BuildFooter()
     {
         var note = Ui.Text("开发试玩版　·　第一篇第一章“江南会客”", UiTheme.DarkMutedLabel, 18);
-        var version = Ui.Text("v0.0.2-m2", UiTheme.GiltLabel, 18);
-        var bar = Ui.Row(UiPalette.SpaceXl, note, Ui.Spacer(),
-            Ui.KeyHints(true, ("↑↓", "选择"), ("Enter", "确认"), ("Esc", "返回")), version);
+        var version = Ui.Text("v0.0.3-m3", UiTheme.GiltLabel, 18);
+        // 不放常驻键帽行（界面设计规范第 7 节，2026-10-04 用户决定），按键在“江湖设置 · 按键”查看。
+        var bar = Ui.Row(UiPalette.SpaceXl, note, Ui.Spacer(), version);
         foreach (var child in bar.GetChildren().OfType<Control>())
         {
             child.SizeFlagsVertical = SizeFlags.ShrinkCenter;

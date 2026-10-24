@@ -89,7 +89,7 @@ public static class ChapterEnd
         }
 
         stayButton.CallDeferred(Control.MethodName.GrabFocus);
-        return Ui.Column(UiPalette.SpaceL, head, Ui.Rule(dark: true), Ui.Expand(rows, vertical: true), Ui.Rule(dark: true), next,
+        return Ui.Column(UiPalette.SpaceL, head, Ui.Rule(dark: true), rows, Ui.Rule(dark: true), next,
             Ui.Row(UiPalette.SpaceM, Ui.Spacer(), titleButton, stayButton));
     }
 }

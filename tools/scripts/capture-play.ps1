@@ -25,22 +25,23 @@ if (-not $Exe) { $Exe = Join-Path $root 'build/windows/WuxiaWorld.exe' }
 if (-not (Test-Path $Exe)) { throw "未找到导出包：$Exe（先运行 tools/scripts/export-windows.ps1）" }
 
 # 编号_名称, 参数。探索画面用真实行走（--walk）：瞬移走查把主角与同行者放在同一点，主角会被同行者挡住。
-# 自动走查第 N 步之后停在：1 芦湾河滩、2 芦湾街、3 江南客栈、7 芦湾旧渡、8 主线完成（章终回顾）。
+# 自动走查第 N 步之后停在：1 芦湾河滩、2 芦湾街、3 江南客栈、4–5 客栈后院、9 乘船抵达芦湾旧渡（押运队冲突）、10 水门首领战与主线完成（章终回顾）。
+# 旧渡画面用跳关（--jump=sluice，水门对峙之前）：真实行走抵达旧渡即进入演出与押运队冲突，停不到空场。
 $shots = @(
     @('01_title', @()),
     @('10_shore', @('--newgame', '--walk', '--autoplay=1')),
     @('11_street', @('--newgame', '--walk', '--autoplay=2')),
     @('12_inn', @('--newgame', '--walk', '--autoplay=3')),
-    @('13_old_ferry', @('--newgame', '--walk', '--autoplay=7')),
+    @('13_old_ferry', @('--jump=sluice')),
     @('20_dialogue_choice', @('--newgame', '--autoplay=2', '--hold=choice')),
-    @('30_battle', @('--newgame', '--autoplay=8', '--hold=battle')),
+    @('30_battle', @('--newgame', '--autoplay=10', '--hold=battle')),
     @('40_character', @('--newgame', '--autoplay=3', '--keys=C')),
     @('41_party', @('--newgame', '--autoplay=3', '--keys=P')),
     @('42_inventory', @('--newgame', '--autoplay=3', '--keys=I')),
     @('43_journal', @('--newgame', '--autoplay=3', '--keys=J')),
     @('44_pause', @('--newgame', '--autoplay=3', '--keys=Escape')),
     @('45_world_map', @('--newgame', '--autoplay=3', '--keys=M')),
-    @('50_chapter_end', @('--newgame', '--autoplay=8'))
+    @('50_chapter_end', @('--newgame', '--autoplay=99'))
 )
 
 $suffix = if ($TextSize -gt 0) { "-text$TextSize" } else { '' }

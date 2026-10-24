@@ -640,7 +640,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         if (main is not null && r.Notices.Any(n => n.Kind == "quest_completed" && n.Id == main.Id))
         {
             // 主线完成：章终回顾。
-            ShowModal(ChapterEnd.Build(_play, CloseModal), 1240, 820);
+            ShowModal(ChapterEnd.Build(_play, CloseModal), 1240, 0);
             return;
         }
 
@@ -878,7 +878,9 @@ public partial class ExplorationScreen : Control, IExploreDriver
         layer.AddChild(veil);
         var panel = new PanelContainer { ThemeTypeVariation = UiTheme.DarkPanel };
         panel.AddChild(content);
+        // height 为 0 时按内容定高、以画面中线上下对称伸展（章终回顾的行数随选择与字号变化）。
         layer.AddChild(Ui.Place(panel, 0.5f, 0.5f, -width / 2, -height / 2, width / 2, height / 2));
+        panel.GrowVertical = GrowDirection.Both;
         Motion.Enter(panel, 0, Motion.Normal, rise: 20);
         _overlay.AddChild(layer);
         _modal = layer;
