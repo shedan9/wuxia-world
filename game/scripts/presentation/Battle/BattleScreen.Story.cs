@@ -160,9 +160,12 @@ public sealed partial class BattleScreen
         }
         else
         {
-            // 战斗里用掉的药写成“用去”，不当作交出物品。
-            notes.AddRange(r.Notices.Where(n => n.Kind != "item_lost" || !consumed.ContainsKey(n.Id)).Select(play.Describe).OfType<(string, string)>());
-            notes.AddRange(consumed.Select(c => ("物品", $"用去 {play.Name(c.Key)}{(c.Value > 1 ? $" ×{c.Value}" : "")}")));
+            // 战斗里用掉的药已列在结算页“用去”，只记入“见闻”，不当作交出物品再弹通知。
+            notes.AddRange(play.Notes(r.Notices.Where(n => n.Kind != "item_lost" || !consumed.ContainsKey(n.Id))));
+            foreach (var c in consumed)
+            {
+                play.LogNotice("物品", $"用去 {play.Name(c.Key)}{(c.Value > 1 ? $" ×{c.Value}" : "")}");
+            }
         }
 
         if (end != BattleEnd.Victory && game.World.Battle is not null)
@@ -174,8 +177,7 @@ public sealed partial class BattleScreen
             }
 
             var back = game.GiveUpBattle();
-            notes.AddRange(back.Notices.Select(play.Describe).OfType<(string, string)>());
-            notes.Add(("提示", "暂且退下，回到此地的安全处"));
+            notes.AddRange(play.Notes(back.Notices));
         }
 
         if (r.Travel is { } travel && game.World.Battle is null)

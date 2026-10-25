@@ -677,23 +677,16 @@ public partial class ExplorationScreen : Control, IExploreDriver
 
     private IEnumerable<(string Kind, string Text)> Describe(CommitResult r)
     {
-        foreach (var n in r.Notices)
+        foreach (var n in r.Notices.Where(n => n.Kind == "quest_updated"))
         {
-            if (n.Kind == "quest_updated")
+            // 新目标已写在左侧追踪框里，不再弹通知，只记入“见闻”。
+            if (World.Quests.TryGetValue(n.Id, out var q) && q.Status == QuestStatus.Active && q.Stage is { } stage)
             {
-                if (World.Quests.TryGetValue(n.Id, out var q) && q.Status == QuestStatus.Active && q.Stage is { } stage)
-                {
-                    yield return ("目标", _play.Text($"{n.Id}.stage.{stage}") ?? stage);
-                }
-
-                continue;
-            }
-
-            if (_play.Describe(n) is { } d)
-            {
-                yield return d;
+                _play.LogNotice("目标", _play.Text($"{n.Id}.stage.{stage}") ?? stage);
             }
         }
+
+        return _play.Notes(r.Notices.Where(n => n.Kind != "quest_updated")).ToList();
     }
 
     private void Refresh()
@@ -716,6 +709,7 @@ public partial class ExplorationScreen : Control, IExploreDriver
         _hud?.QueueFree();
         _hud = PlayHud.Build(_play);
         _hudLayer.AddChild(_hud);
+        _view.ClockText = PlaySession.ClockText(World.Clock);
         _hudRevision = World.Revision;
     }
 

@@ -254,7 +254,7 @@ public sealed partial class BattleScreen
                 var after = _story.Game.Rules.LevelOf(_story.Game.World.Experience + exp);
                 if (after > before)
                 {
-                    record.AddChild(Line("升级", $"第 {before} 级 → 第 {after} 级", $"{KeyBindings.Label("open_character")} 人物页分配潜能"));
+                    record.AddChild(Line("升级", $"第 {before} 级 → 第 {after} 级", ""));
                 }
             }
 

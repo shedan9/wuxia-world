@@ -360,7 +360,15 @@ public abstract partial class ExploreStage : Control
     {
         var region = Driver?.Region ?? PlaceInfo.Region;
         _mini = CreateMiniMap(() => (Hero.Ground, _heading), () => CurrentGoal?.Ground);
-        AddHud(ExploreHudKit.MiniMapFrame(_mini, region));
+        if (Driver is null)
+        {
+            AddHud(ExploreHudKit.MiniMapFrame(_mini, region));
+        }
+        else
+        {
+            _clock = Ui.Text(_clockText, UiTheme.GiltLabel, 16);
+            AddHud(ExploreHudKit.MiniMapFrame(_mini, null, _clock));
+        }
         if (Driver is null)
         {
             var (_, name, time) = PlaceInfo;
@@ -390,7 +398,7 @@ public abstract partial class ExploreStage : Control
             AddChild(_pointer);
         }
 
-        _toasts = ToastColumn.Placed(this);
+        _toasts = ToastColumn.Placed(this, corner: Driver is not null);
     }
 
     private void AddHud(Control control)
@@ -407,6 +415,22 @@ public abstract partial class ExploreStage : Control
             foreach (var c in _hud)
             {
                 c.Visible = value;
+            }
+        }
+    }
+
+    private Label? _clock;
+    private string _clockText = "";
+
+    /// <summary>小地图下方的时辰（游戏内，由驱动方在世界状态变化后写入）。</summary>
+    public string ClockText
+    {
+        set
+        {
+            _clockText = value;
+            if (_clock is not null)
+            {
+                _clock.Text = value;
             }
         }
     }
@@ -761,10 +785,11 @@ public abstract partial class ExploreStage : Control
             return;
         }
 
-        _pointer.Label = goal.Label;
+        _pointer.Label = Driver is null ? goal.Label : "";
         var screen = _world.Position + TownView.P(goal.Ground, StepZ(goal.Ground) + goal.Height) * _world.Scale.X;
-        // 内框避开四角 HUD：左侧地点与目标追踪、右上小地图、下方队伍与快捷键。
-        var inner = new Rect2(530, 110, Size.X - 530 - 380, Size.Y - 110 - 180);
+        // 内框避开四角 HUD：左侧地点与目标追踪、右上小地图（游戏内缩小）、下方队伍与快捷键。
+        var right = Driver is null ? 380 : ExploreHudKit.MiniMapSmall + 100;
+        var inner = new Rect2(530, 110, Size.X - 530 - right, Size.Y - 110 - 180);
         if (inner.HasPoint(screen))
         {
             _pointer.Visible = false;

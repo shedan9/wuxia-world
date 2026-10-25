@@ -368,7 +368,10 @@ public sealed partial class BattleScreen : Control
         _popupUnit = null;
         _popup.Visible = false;
         BuildUnits();
-        _sceneTitle.Text = $"{_bundle.Name(setup.EncounterId)}　·　{(_session.State.Spar ? "切磋，点到为止" : _session.State.Locked ? "剧情战" : "普通战")}";
+        // 剧情战只写地点（2026-10-25 精简提示）；切磋写明点到为止，原型页照旧标出战斗类别。
+        _sceneTitle.Text = _session.State.Spar ? $"{_bundle.Name(setup.EncounterId)}　·　切磋，点到为止"
+            : _story is not null ? _bundle.Name(setup.EncounterId)
+            : $"{_bundle.Name(setup.EncounterId)}　·　{(_session.State.Locked ? "剧情战" : "普通战")}";
         _basicButtons["battle_retreat"].Text = _session.State.Spar ? "认输" : "撤退";
         _log.Clear();
         AddLog(logLine);

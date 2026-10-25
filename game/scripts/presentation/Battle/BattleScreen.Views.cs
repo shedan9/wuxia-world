@@ -134,19 +134,17 @@ public sealed partial class BattleScreen
             label.MouseDefaultCursorShape = CursorShape.Help;
         }
 
-        var orderTitle = Ui.Text("本轮行动顺序", UiTheme.DarkMutedLabel, 16);
-        orderTitle.MouseFilter = MouseFilterEnum.Pass;
-        orderTitle.MouseDefaultCursorShape = CursorShape.Help;
-        orderTitle.TooltipText = "每轮开始时按速度从高到低排定，每人每轮行动一次，倒下者跳过。\n"
+        // 不写“本轮行动顺序”标题与倍速 / 跳过 / 自动键帽（2026-10-25 精简提示）：排序规则放在轮次章的悬停说明里，键位在设置里查；
+        // 倍速与自动只在开着时写出状态。
+        round.MouseFilter = MouseFilterEnum.Pass;
+        round.MouseDefaultCursorShape = CursorShape.Help;
+        round.TooltipText = "本轮行动顺序：每轮开始时按速度从高到低排定，每人每轮行动一次，倒下者跳过。\n"
             + "速度 = 30 + 2×身法 + 轻功加成；同速时身法高者先，再同按固定次序。\n"
             + "迟滞等增减速要到下一轮排序时才生效。悬停各人印鉴可看其速度。";
         _speedLabel = Ui.Text("", UiTheme.GiltLabel, 16);
-        var playback = Ui.KeyHints(true, (KeyBindings.Label("battle_speed"), "倍速"), (KeyBindings.Label("battle_skip"), "跳过"), (KeyBindings.Label("battle_auto"), "自动"));
-        playback.SizeFlagsVertical = SizeFlags.ShrinkCenter;
         var strip = Ui.Panel(UiTheme.GlassPanel, Ui.Row(UiPalette.SpaceL, round,
-            Ui.Expand(Ui.Column(4, Ui.Row(UiPalette.SpaceL, orderTitle, Ui.Spacer(), _momentumLabel, _enemyMomentumLabel, _speedLabel), _order)),
-            playback));
-        return Ui.Place(strip, 0.5f, 0, -520, 22, 460, 150);
+            Ui.Expand(Ui.Column(4, Ui.Row(UiPalette.SpaceL, Ui.Spacer(), _momentumLabel, _enemyMomentumLabel, _speedLabel), _order))));
+        return Ui.Place(strip, 0.5f, 0, -420, 22, 420, 150);
     }
 
     private void RefreshTopBar()
@@ -315,13 +313,14 @@ public sealed partial class BattleScreen
 
     // ── 日志与场景签 ─────────────────────────────────────
 
+    /// <summary>右上战斗日志：平时不显示（2026-10-25 精简提示，战况看飘字与喊声），按日志键（默认 L）展开最近 18 条，再按收起。</summary>
     private Control BuildLog()
     {
         _logList = Ui.Column(4);
-        var toggle = Ui.Row(UiPalette.SpaceS, Ui.Text("战斗日志", UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.KeyHint(KeyBindings.Label("battle_log"), "展开"));
-        var panel = Ui.Panel(UiTheme.GlassPanel, Ui.Column(6, toggle, _logList));
+        var panel = Ui.Panel(UiTheme.GlassPanel, Ui.Column(6, Ui.Text("战斗日志", UiTheme.GiltLabel, 18), _logList));
         panel.ClipContents = true;
-        _logPanel = Ui.Place(panel, 1, 0, -440, 22, -40, 150);
+        _logPanel = Ui.Place(panel, 1, 0, -560, 22, -40, 560);
+        _logPanel.Visible = false;
         return _logPanel;
     }
 
@@ -341,7 +340,7 @@ public sealed partial class BattleScreen
     /// <summary>日志行复用标签：新一行到来只改各行文字，不删了重建。</summary>
     private void RefreshLog()
     {
-        var lines = _log.TakeLast(_logExpanded ? 18 : 3).ToList();
+        var lines = _logExpanded ? _log.TakeLast(18).ToList() : [];
         while (_logList.GetChildCount() < lines.Count)
         {
             _logList.AddChild(Ui.Text("", UiTheme.DarkLabel, 16, wrap: true));
@@ -362,8 +361,7 @@ public sealed partial class BattleScreen
     private bool ToggleLog()
     {
         _logExpanded = !_logExpanded;
-        _logPanel.OffsetBottom = _logExpanded ? 560 : 150;
-        _logPanel.OffsetLeft = _logExpanded ? -560 : -440;
+        _logPanel.Visible = _logExpanded;
         RefreshLog();
         return true;
     }

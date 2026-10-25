@@ -27,15 +27,15 @@ public enum MenuSection
 /// </summary>
 public sealed class MenuFrame
 {
-    private sealed record Info(MenuSection Section, string Name, string Seal, string Title, string Note, string? HotKey);
+    private sealed record Info(MenuSection Section, string Name, string Seal, string Title, string? HotKey);
 
     private static readonly Info[] All =
     [
-        new(MenuSection.Character, "人物", "人物", "人物与武学", "属性与潜能、武学装配与修炼、装备", "open_character"),
-        new(MenuSection.Party, "队伍", "队伍", "队伍与同行", "阵位、同行人物与信任", "open_party"),
-        new(MenuSection.Inventory, "行囊", "行囊", "行囊", "随身物品、药品与任务物件", "open_inventory"),
-        new(MenuSection.Journal, "札记", "札记", "江湖札记", "任务、线索、人物、见闻与对话记录", "open_journal"),
-        new(MenuSection.Settings, "设置", "设置", "江湖设置", "声音、显示、文字、辅助与按键；改动立即生效", null),
+        new(MenuSection.Character, "人物", "人物", "人物与武学", "open_character"),
+        new(MenuSection.Party, "队伍", "队伍", "队伍与同行", "open_party"),
+        new(MenuSection.Inventory, "行囊", "行囊", "行囊", "open_inventory"),
+        new(MenuSection.Journal, "札记", "札记", "江湖札记", "open_journal"),
+        new(MenuSection.Settings, "设置", "设置", "江湖设置", null),
     ];
 
     private readonly PlaySession? _play;
@@ -247,11 +247,8 @@ public sealed class MenuFrame
     private void BuildHeader(bool entering)
     {
         Ui.ClearChildren(_header);
-        // 说明与地点超长（字号放大）时以省略号收尾，不把顶栏撑宽、把底栏挤出画面。
-        var note = Ui.Text(_current.Note, UiTheme.DarkMutedLabel);
-        note.TextOverrunBehavior = TextServer.OverrunBehavior.TrimEllipsis;
-        note.TooltipText = _current.Note;
-        var heading = Ui.Expand(Ui.Column(4, Ui.Text(_current.Title, UiTheme.DarkTitleLabel, 38), note));
+        // 页名下原有一行分区说明，2026-10-25 精简提示时删去。地点超长（字号放大）时以省略号收尾，不把顶栏撑宽、把底栏挤出画面。
+        var heading = Ui.Expand(Ui.Text(_current.Title, UiTheme.DarkTitleLabel, 38));
         heading.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
         var left = Ui.Row(UiPalette.SpaceL, Ui.Seal(_current.Seal), heading);
 

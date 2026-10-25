@@ -107,7 +107,6 @@ public partial class DialogueOverlay : Control
         _ui = new Control { MouseFilter = MouseFilterEnum.Ignore };
         _ui.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         AddChild(_ui);
-        _ui.AddChild(BuildToolbar());
         _box = BuildBox();
         _ui.AddChild(_box);
         _ui.AddChild(BuildChoices());
@@ -641,9 +640,6 @@ public partial class DialogueOverlay : Control
     {
         _next.Visible = false;
         Ui.ClearChildren(_choices);
-        var title = Ui.Panel(UiTheme.GlassPanel, Ui.Text("◆　如何回应", UiTheme.GiltLabel, 22));
-        title.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
-        _choices.AddChild(title);
         var number = 0;
         Button? first = null;
         foreach (var view in Runner.Choices)
@@ -678,23 +674,6 @@ public partial class DialogueOverlay : Control
     }
 
     // ── 版面 ─────────────────────────────────────────────
-
-    private Control BuildToolbar()
-    {
-        var log = Ui.Button("记录", UiTheme.DarkButton, OpenLog);
-        log.FocusMode = FocusModeEnum.None;
-        var hide = Ui.Button("隐藏", UiTheme.DarkButton, () => _ui.Visible = false);
-        hide.FocusMode = FocusModeEnum.None;
-        var bar = Ui.Row(UiPalette.SpaceS, log, hide);
-        foreach (var b in bar.GetChildren().OfType<Button>())
-        {
-            b.CustomMinimumSize = new Vector2(96, 48);
-            b.AddThemeFontSizeOverride("font_size", FontScale.Of(20));
-        }
-
-        bar.Alignment = BoxContainer.AlignmentMode.End;
-        return Ui.Place(bar, 1, 0, -470, 40, -48, 88);
-    }
 
     private Control BuildBox()
     {
@@ -768,7 +747,7 @@ public partial class DialogueOverlay : Control
         _plate.GrowHorizontal = GrowDirection.End;
         root.AddChild(_plate);
 
-        // 不放常驻按键提示：继续有右下的◆标记，记录、隐藏在右上有按钮，按键在设置里可查。
+        // 不放常驻按键提示：继续有右下的◆标记；记录、隐藏不设按钮（2026-10-25 用户要求删去右上两枚按钮），按键在设置里可查。
         // 对话框底板（PanelContainer）默认拦鼠标，点在框内会被吃掉、推进不了台词；框内没有按钮，整块放行。
         Ui.IgnoreMouse(root);
         return root;

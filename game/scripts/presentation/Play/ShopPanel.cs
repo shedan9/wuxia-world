@@ -171,10 +171,6 @@ public sealed class ShopPanel
         }, disabled: !enough || !can);
         deal.CustomMinimumSize = new Vector2(200, 56);
         body.AddChild(Ui.Row(UiPalette.SpaceM, deal));
-        if (def.Slot is not null && !_selling)
-        {
-            body.AddChild(Ui.Text("买下的装备放进行囊，到人物页“装备”或行囊页换上（快捷键 C / I）。", UiTheme.MutedLabel, 18, wrap: true));
-        }
 
         return Ui.Panel(UiTheme.InsetPanel, body);
     }

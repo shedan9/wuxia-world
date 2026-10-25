@@ -15,7 +15,7 @@ using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 /// <summary>
 /// 游戏内江湖大地图（开发计划 M2-02，架构文档 6.5，界面规范 5.6）：版式沿用已验收的 M0 大地图页——
 /// 全屏舆图（<see cref="WorldMapCanvas"/>，道路与地标取内容数据）、圆章地标（<see cref="MapLandmark"/>）、右侧黛本交通面板、
-/// 左上所在与时辰、左下图例。地标、到访、可走路线与开放条件都读 <see cref="GameSession.WorldMapNodes"/>；
+/// 左上所在与时辰（左下图例与缩放读数 2026-10-25 精简提示时删去，地标状态在右侧面板写明）。地标、到访、可走路线与开放条件都读 <see cref="GameSession.WorldMapNodes"/>；
 /// 方式、费用与时辰读路线定义。启程先开切换票据（<see cref="GameSession.BeginRoute"/>，校验条件与银两、锁住重复启程），
 /// 行旅标记沿路线走完后交给探索页载入目的地并提交；载入失败时探索页中止票据，不扣费、不推进时辰。
 /// 滚轮缩放、拖动平移、Tab 跳选地标、数字键换方式、Enter 启程；Esc 先关面板再关地图，M 直接关地图。
@@ -44,7 +44,6 @@ public partial class WorldMapOverlay : Control
     private Control _panelHost = null!;
     private Label _where = null!;
     private Label _money = null!;
-    private Label _zoomLabel = null!;
 
     private string _here;
     private string _target;
@@ -97,7 +96,6 @@ public partial class WorldMapOverlay : Control
         SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
         BuildMap();
         AddChild(BuildPlace());
-        AddChild(BuildLegend());
         _panelHost = BuildPanel();
         AddChild(_panelHost);
         CallDeferred(MethodName.InitialView);
@@ -124,7 +122,6 @@ public partial class WorldMapOverlay : Control
 
         _map.Scale = Vector2.One * MapScale;
         Pan(open / 2 - (min + max) / 2 * MapScale);
-        RefreshZoom();
         Select(_target);
     }
 
@@ -222,7 +219,6 @@ public partial class WorldMapOverlay : Control
         _zoom = zoom;
         _map.Scale = Vector2.One * MapScale;
         Pan(anchor - local * MapScale);
-        RefreshZoom();
     }
 
     private float MapScale => BaseScale * _zoom;
@@ -240,8 +236,6 @@ public partial class WorldMapOverlay : Control
             mark.Place(_map.Position + mark.Node.Pos * MapScale);
         }
     }
-
-    private void RefreshZoom() => _zoomLabel.Text = $"缩放 {_zoom:0.00}";
 
     // ── 地图与地标 ───────────────────────────────────────
 
@@ -443,7 +437,8 @@ public partial class WorldMapOverlay : Control
         _route.Show(route is not null && _mode is { } shown ? PathTo(_target, shown) : null, _mode == TravelMode.Ferry);
 
         // 目的地
-        var state = here ? "所在" : !status.Open ? "未开放" : status.Visited ? "已到访" : "未到访";
+        // 所在之处标题已写明，右上不再重复“所在”。
+        var state = here ? "" : !status.Open ? "未开放" : status.Visited ? "已到访" : "未到访";
         var title = Ui.Column(2, Ui.Text(here ? "所在之处" : "目的地", UiTheme.GiltLabel, 18),
             Ui.Text(_play.Name(node.Id), UiTheme.DarkTitleLabel, 40), Ui.Text(_play.Text(node.Id + ".desc") ?? "", UiTheme.DarkMutedLabel, 18));
         var stateLabel = Ui.Text(state, status.Open ? UiTheme.GiltLabel : UiTheme.DarkMutedLabel, 20);
@@ -456,7 +451,6 @@ public partial class WorldMapOverlay : Control
         if (here)
         {
             _panel.AddChild(Ui.Text("◎　你在此处：" + string.Join("、", node.Maps.Select(_play.Name)), UiTheme.DarkLabel, 20, wrap: true));
-            _panel.AddChild(Ui.Text("选别的地标查看路线", UiTheme.DarkMutedLabel, 18));
         }
         else if (route is null)
         {
@@ -638,38 +632,5 @@ public partial class WorldMapOverlay : Control
         Motion.Enter(panel, 0.05f, Motion.Normal, rise: -10);
         SetClock(World.Clock);
         return Ui.IgnoreMouse(Ui.Place(panel, 0, 0, 40, 32, 560, 200));
-    }
-
-    // ── 左下：图例与按键 ─────────────────────────────────
-
-    private Control BuildLegend()
-    {
-        var marks = Ui.Row(UiPalette.SpaceL,
-            LegendBadge(MapLandmark.Look.Visited, "已到访"), LegendBadge(MapLandmark.Look.Known, "未到访"),
-            LegendBadge(MapLandmark.Look.Locked, "未开放"), LegendText("◆", UiPalette.Gilt, "有事件"),
-            LegendText("◎", UiPalette.Accent.Lightened(0.35f), "所在"));
-        var lines = Ui.Row(UiPalette.SpaceL,
-            LegendText("‒ ‒ ‒", UiPalette.Ochre.Lightened(0.35f), "陆路"), LegendText("·  ·  ·", UiPalette.Accent.Lightened(0.4f), "水路"),
-            LegendText("━━", UiPalette.Cinnabar.Lightened(0.2f), "所选路线"));
-        _zoomLabel = Ui.Text("", UiTheme.GiltLabel, 17);
-        lines.AddChild(Ui.Spacer());
-        lines.AddChild(_zoomLabel);
-        // 图例下方原有一行按键提示（滚轮、拖动、Tab、数字、Enter、M / Esc），2026-10-04 用户要求删去。
-        var panel = Ui.Panel(UiTheme.GlassPanel, Ui.Column(UiPalette.SpaceS, marks, lines));
-        return Ui.IgnoreMouse(Ui.Place(panel, 0, 1, 40, -170, 900, -40));
-    }
-
-    private static Control LegendBadge(MapLandmark.Look look, string text)
-    {
-        var chip = new Control { CustomMinimumSize = new Vector2(28, 28), SizeFlagsVertical = SizeFlags.ShrinkCenter };
-        chip.Draw += () => MapLandmark.DrawBadge(chip, new Vector2(14, 13), 12, look, MapIcon.Inn);
-        return Ui.Row(UiPalette.SpaceS, chip, Ui.Text(text, UiTheme.DarkLabel, 17));
-    }
-
-    private static Control LegendText(string symbol, Color color, string text)
-    {
-        var mark = Ui.Text(symbol, size: 18);
-        mark.AddThemeColorOverride("font_color", color);
-        return Ui.Row(UiPalette.SpaceS, mark, Ui.Text(text, UiTheme.DarkLabel, 17));
     }
 }

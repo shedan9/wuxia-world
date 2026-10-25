@@ -23,23 +23,44 @@ public static class ExploreHudKit
         return Ui.Place(panel, 0, 0, 40, 32, 480, 180);
     }
 
-    /// <summary>右上：泥金卷云角框小地图，下方地区名与大地图键（默认 M，随按键设置）（<paramref name="mapKey"/> 为 false 时不写按键；游戏内 M 打开江湖大地图）。</summary>
-    public static Control MiniMapFrame(Control map, string region, bool mapKey = true)
+    /// <summary>
+    /// 右上：泥金卷云角框小地图。展示页 280 见方、下方写地区名与大地图键（M0 已验收版式）。
+    /// <paramref name="region"/> 为 null 时为游戏内版式（2026-10-25 用户要求）：去掉左上地点栏，地图缩成原来的四分之一（140 见方），
+    /// 下方只写 <paramref name="clock"/>（时辰）；大地图键在设置里查。
+    /// </summary>
+    public static Control MiniMapFrame(Control map, string? region, Label? clock = null)
     {
-        map.CustomMinimumSize = new Vector2(280, 280);
+        map.CustomMinimumSize = region is null ? new Vector2(MiniMapSmall, MiniMapSmall) : new Vector2(280, 280);
         var frame = new PanelContainer();
         frame.AddThemeStyleboxOverride("panel", new OrnateBox
         {
             FillA = UiPalette.PanelDark with { A = 0.85f }, FillB = UiPalette.Abyss with { A = 0.85f }, Ragged = 1.8f, Seed = 63,
             Grain = Colors.White with { A = 0.04f }, Border = UiPalette.Gilt with { A = 0.6f }, BorderWidth = 1.4f, Brush = true,
-            Corners = CornerStyle.Cloud, CornerSize = 34, CornerWidth = 2,
+            Corners = CornerStyle.Cloud, CornerSize = region is null ? 18 : 34, CornerWidth = 2,
         }.Margins(8, 8));
-        var caption = mapKey
-            ? Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.BoundKeyHint("open_map", "大地图"))
-            : Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18));
+        if (region is null)
+        {
+            Control body = map;
+            if (clock is not null)
+            {
+                clock.HorizontalAlignment = HorizontalAlignment.Center;
+                body = Ui.Column(4, map, clock);
+            }
+
+            frame.AddChild(body);
+            return Ui.Place(frame, 1, 0, -40 - MiniMapSmall - 16, 32, -40, 32 + MiniMapSmall + 16);
+        }
+
+        var caption = Ui.Row(UiPalette.SpaceS, Ui.Text(region, UiTheme.GiltLabel, 18), Ui.Spacer(), Ui.BoundKeyHint("open_map", "大地图"));
         frame.AddChild(Ui.Column(UiPalette.SpaceS, map, caption));
         return Ui.Place(frame, 1, 0, -336, 32, -40, 380);
     }
+
+    /// <summary>游戏内小地图的边长（展示页 280 的一半，面积四分之一）。</summary>
+    public const int MiniMapSmall = 140;
+
+    /// <summary>小地图上主角箭头、目标菱形与“北”字的缩放：按 280 见方为 1，缩小的游戏内小地图不低于 0.6，免得标记压满地图。</summary>
+    public static float MarkScale(float size) => Mathf.Clamp(size / 280f, 0.6f, 1f);
 
     /// <summary>左侧：主线阶段与一条支线的目标追踪（默认为第一章样例）。</summary>
     public static Control Tracker() => Tracker(JournalSamples.Quests[0], JournalSamples.Quests[1]);
@@ -105,7 +126,7 @@ public static class ExploreHudKit
     }
 }
 
-/// <summary>画面边缘的目标方向：泥金圆章内一枚朝向目标的箭头，下写目标名；目标进入画面后隐去。</summary>
+/// <summary>画面边缘的目标方向：泥金圆章内一枚朝向目标的箭头，展示页下写目标名（游戏内不写，目标见左侧追踪框）；目标进入画面后隐去。</summary>
 public partial class GoalPointer : Control
 {
     public string Label { get; set; } = "";
@@ -128,6 +149,11 @@ public partial class GoalPointer : Control
         var side = new Vector2(-f.Y, f.X);
         Vector2[] arrow = [f * r * 0.72f, -f * r * 0.42f + side * r * 0.5f, -f * r * 0.18f, -f * r * 0.42f - side * r * 0.5f];
         DrawColoredPolygon(arrow, UiPalette.Gilt.Lightened(0.15f));
+        if (Label.Length == 0)
+        {
+            return;
+        }
+
         // 名称写在圆章朝画面内的一侧，不出屏。
         var text = f.Y > 0.5f ? new Vector2(0, -r - 14) : new Vector2(0, r + 26);
         var width = UiFonts.Title.GetStringSize(Label, HorizontalAlignment.Left, -1, 20).X;
@@ -188,7 +214,7 @@ public partial class InteractPrompt : PanelContainer
     public override void _Ready() => Motion.Pulse(this, 0.75f, 2.2f);
 }
 
-/// <summary>上中通知：朱砂竖笔 + 类别、内容、去处；最多 3 条，新条目上浮淡入，停留 <see cref="Hold"/> 秒后淡出移除。</summary>
+/// <summary>通知（展示页上中、游戏内右下角缩小）：朱砂竖笔 + 类别、内容、去处（游戏内不写去处）；最多 3 条，新条目上浮淡入，停留 <see cref="Hold"/> 秒后淡出移除。</summary>
 public partial class ToastColumn : VBoxContainer
 {
     /// <summary>每条通知停留的秒数（2026-10-02 用户要求通知自动消失）。</summary>
@@ -229,12 +255,28 @@ public partial class ToastColumn : VBoxContainer
         }
     }
 
-    public static ToastColumn Placed(Control parent)
+    /// <summary>
+    /// 展示页：上中一列（M0 已验收版式）。<paramref name="corner"/> 为真时为游戏内版式（2026-10-25 用户要求“放在正中间太碍眼”）：
+    /// 收到右下角、字号缩小，每条按内容宽度靠右，新的在下、旧的往上让。
+    /// </summary>
+    public static ToastColumn Placed(Control parent, bool corner = false)
     {
-        var stack = new ToastColumn();
-        parent.AddChild(Ui.Place(stack, 0.5f, 0, -300, 150, 300, 400));
+        var stack = new ToastColumn { _corner = corner };
+        if (corner)
+        {
+            stack.Alignment = AlignmentMode.End;
+            stack.AddThemeConstantOverride("separation", 6);
+            parent.AddChild(Ui.Place(stack, 1, 1, -560, -260, -40, -40));
+        }
+        else
+        {
+            parent.AddChild(Ui.Place(stack, 0.5f, 0, -300, 150, 300, 400));
+        }
+
         return stack;
     }
+
+    private bool _corner;
 
     public void Push(string kind, string text, string where)
     {
@@ -243,11 +285,20 @@ public partial class ToastColumn : VBoxContainer
         {
             FillA = UiPalette.Abyss with { A = 0.9f }, FillB = UiPalette.Abyss with { A = 0.5f }, Horizontal = true,
             Ragged = 1.4f, Seed = 67, Marker = UiPalette.Cinnabar.Lightened(0.1f), MarkerWidth = 4,
-        }.Margins(22, 10));
-        toast.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Text(kind, UiTheme.GiltLabel, 18), Ui.Text(text, UiTheme.DarkLabel, 22),
-            Ui.Spacer(), Ui.Text(where, UiTheme.DarkMutedLabel, 16)));
+        }.Margins(_corner ? 14 : 22, _corner ? 5 : 10));
+        if (_corner)
+        {
+            toast.SizeFlagsHorizontal = SizeFlags.ShrinkEnd;
+            toast.AddChild(Ui.Row(UiPalette.SpaceS, Ui.Text(kind, UiTheme.GiltLabel, 14), Ui.Text(text, UiTheme.DarkLabel, 16)));
+        }
+        else
+        {
+            toast.AddChild(Ui.Row(UiPalette.SpaceM, Ui.Text(kind, UiTheme.GiltLabel, 18), Ui.Text(text, UiTheme.DarkLabel, 22),
+                Ui.Spacer(), Ui.Text(where, UiTheme.DarkMutedLabel, 16)));
+        }
+
         AddChild(toast);
-        Motion.Enter(toast, 0, Motion.Normal, rise: -12);
+        Motion.Enter(toast, 0, Motion.Normal, rise: _corner ? 0 : -12, fromX: _corner ? 24 : 0);
 
         // 停留后淡出移除；同一批的几条依次错开一点，不一齐消失。
         var expire = toast.CreateTween();

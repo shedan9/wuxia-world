@@ -144,9 +144,12 @@ public sealed class CharacterPage
         var unspent = Growth.Unspent(World, _who);
         var basics = GrowthText.Values(Growth.AttributesOf(World, _who));
         var left = unspent - _pending.Sum();
-        var rows = Ui.Column(UiPalette.SpaceS,
-            Ui.Text(unspent > 0 ? $"可分配潜能 {left} / {unspent}（每升一级得 {StatFormula.PotentialPerLevel} 点）" : "暂无可分配潜能：升级后再来",
-                unspent > 0 ? UiTheme.AccentLabel : UiTheme.MutedLabel));
+        var rows = Ui.Column(UiPalette.SpaceS);
+        if (unspent > 0)
+        {
+            rows.AddChild(Ui.Text($"可分配潜能 {left} / {unspent}", UiTheme.AccentLabel));
+        }
+
         for (var i = 0; i < 5; i++)
         {
             var index = i;
@@ -154,8 +157,12 @@ public sealed class CharacterPage
             value.HorizontalAlignment = HorizontalAlignment.Center;
             var minus = Ui.MinSize(Ui.Button("－", onPressed: () => Pend(index, -1), disabled: !Editable || _pending[i] == 0), 52, 44);
             var plus = Ui.MinSize(Ui.Button("＋", onPressed: () => Pend(index, 1), disabled: !Editable || left <= 0), 52, 44);
-            rows.AddChild(Ui.Row(UiPalette.SpaceM, Ui.MinSize(Ui.Text(GrowthText.AttributeNames[i]), 72), minus, value, plus,
-                Ui.Text(GrowthText.AttributeHint(i), UiTheme.MutedLabel, 18, wrap: true)));
+            // 各项影响什么放在属性名的悬停说明里，不在每行常驻一列小字。
+            var name = Ui.MinSize(Ui.Text(GrowthText.AttributeNames[i]), 72);
+            name.MouseFilter = Control.MouseFilterEnum.Pass;
+            name.MouseDefaultCursorShape = Control.CursorShape.Help;
+            name.TooltipText = GrowthText.AttributeHint(i);
+            rows.AddChild(Ui.Row(UiPalette.SpaceM, name, minus, value, plus));
         }
 
         // 讨教定下流派之前没有推荐比例，按五项平均分。
@@ -220,13 +227,18 @@ public sealed class CharacterPage
 
         var refund = Growth.RespecRefund(World, _who, RespecKind.Potential);
         var cost = Growth.RespecCost(World);
+        // 置灰的原因照写（手柄、键盘看不到悬停）；能洗时的说明放进按钮的悬停说明。
         var hint = !Growth.CanRespecHere(World) ? $"洗点只在城镇进行（{string.Join("、", Towns())}）。"
-            : refund == 0 ? "分配后的潜能要收回，可在城镇洗点。"
-            : World.Silver < cost ? $"银两不足：洗点要 {cost} 两。"
-            : $"收回全部 {refund} 点已分配潜能；等级越高花费越多，剧情选择与已学武学不变。";
+            : refund > 0 && World.Silver < cost ? $"银两不足：洗点要 {cost} 两。"
+            : null;
         var button = RespecButton(null, $"洗点（银 {cost} 两）");
         button.CustomMinimumSize = new Vector2(220, 52);
-        return Ui.Row(UiPalette.SpaceM, button, Ui.Expand(Ui.Text(hint, UiTheme.MutedLabel, 18, wrap: true)));
+        if (refund > 0)
+        {
+            button.TooltipText = $"收回全部 {refund} 点已分配潜能；等级越高花费越多，剧情选择与已学武学不变。";
+        }
+
+        return hint is null ? Ui.Row(UiPalette.SpaceM, button) : Ui.Row(UiPalette.SpaceM, button, Ui.Expand(Ui.Text(hint, UiTheme.MutedLabel, 18, wrap: true)));
     }
 
     private const string PotentialKey = "potential";

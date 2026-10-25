@@ -114,9 +114,9 @@ public sealed class SettingsPanel
 
         return Form(
             Volume("总音量", () => GameSettings.Master, v => GameSettings.Master = v, "notify.item"),
-            Volume("配乐", () => GameSettings.Music, v => GameSettings.Music = v, hint: "只在主要场景与剧情转折处响起"),
-            Volume("环境声", () => GameSettings.Ambience, v => GameSettings.Ambience = v, hint: "河水、风声、街巷与客栈的声景"),
-            Volume("角色配音", () => GameSettings.Voice, v => GameSettings.Voice = v, hint: "对白配音；说话时配乐与环境声自动压低"),
+            Volume("配乐", () => GameSettings.Music, v => GameSettings.Music = v),
+            Volume("环境声", () => GameSettings.Ambience, v => GameSettings.Ambience = v),
+            Volume("角色配音", () => GameSettings.Voice, v => GameSettings.Voice = v),
             Volume("音效", () => GameSettings.Sfx, v => GameSettings.Sfx = v, "battle.hit.blade", "界面、脚步、交互与战斗的声音"));
     }
 
@@ -294,9 +294,7 @@ public sealed class SettingsPanel
             Ui.Section("固定键"),
             Ui.Text("Esc 取消与菜单；Enter、空格确认与继续对话；方向键行走与移动选择；Tab 切换目标；数字键选对话选项与招式；PgUp / PgDn 切换页签；F12 开发信息；Alt+Enter 全屏。", UiTheme.MutedLabel, 18, wrap: true),
             Ui.Row(UiPalette.SpaceM, reset));
-        return Ui.Column(UiPalette.SpaceM,
-            Ui.Text("选中一项按 Enter 或点击，再按想用的键；Esc 取消。同一场合里撞上别的操作时两者互换，不同场合可以共用一键。", UiTheme.MutedLabel, 20, wrap: true),
-            Ui.Row(UiPalette.SpaceXxl, Ui.Expand(left), Ui.Expand(right)));
+        return Ui.Row(UiPalette.SpaceXxl, Ui.Expand(left), Ui.Expand(right));
 
         // 改键后重画本页（键名、“默认 X”注记与恢复按钮），焦点回到刚改的那一项。
         void Refresh()

@@ -215,6 +215,33 @@ public sealed class PlaySession
         };
     }
 
+    /// <summary>
+    /// 只记入札记“见闻”、不弹通知的提示（2026-10-25 精简提示）：经验与修为在战斗结算页已列出、升级另有通知；
+    /// 信任与好感是隐性关系，在札记“人物”页查看，不在画面上逐次播报。
+    /// </summary>
+    public static bool Quiet(WorldNotice n) => n.Kind is "experience" or "cultivation" or "trust" or "affection";
+
+    /// <summary>一批世界提示中要弹通知的部分（类别、内容）；<see cref="Quiet"/> 的几类直接记入“见闻”。</summary>
+    public IEnumerable<(string Kind, string Text)> Notes(IEnumerable<WorldNotice> notices)
+    {
+        foreach (var n in notices)
+        {
+            if (Describe(n) is not { } d)
+            {
+                continue;
+            }
+
+            if (Quiet(n))
+            {
+                LogNotice(d.Kind, d.Text);
+            }
+            else
+            {
+                yield return d;
+            }
+        }
+    }
+
     /// <summary>世界提示的显示文字（类别、内容）；不需要提示的返回 null。</summary>
     public (string Kind, string Text)? Describe(WorldNotice n) => n.Kind switch
     {
@@ -230,7 +257,7 @@ public sealed class PlaySession
         "skill" => ("武学", $"习得 {Combat.Name(n.Id)}"),
         "experience" => ("成长", $"经验 +{n.Amount}"),
         "cultivation" => ("成长", $"修为 +{n.Amount}"),
-        "level_up" => ("成长", $"升到第 {n.Amount} 级：得 {StatFormula.PotentialPerLevel} 点潜能（{KeyBindings.Label("open_character")} 人物页分配）"),
+        "level_up" => ("成长", $"升到第 {n.Amount} 级：得 {StatFormula.PotentialPerLevel} 点潜能"),
         "mastery" => ("武学", $"{Combat.Name(n.Id)} 熟练度提升"),
         "respec.potential" => ("成长", $"洗点：收回 {n.Amount} 点潜能，可重新分配"),
         "respec.mastery" => ("武学", n.Id.StartsWith("skill.", StringComparison.Ordinal)

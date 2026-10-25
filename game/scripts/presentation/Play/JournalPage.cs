@@ -105,8 +105,9 @@ public sealed class JournalPage
             foreach (var q in items)
             {
                 var quest = q;
+                // 状态已写在分组标题上，行尾不再重复。
                 list.AddChild(Ui.ListRow(group, () => ShowQuest(detail, quest), _play.Name(q.Id), q.Kind == QuestKind.Main ? "主线" : "支线",
-                    StatusText(World.QuestStatusOf(q.Id)), selected: first));
+                    selected: first));
                 if (first)
                 {
                     ShowQuest(detail, quest);
@@ -261,8 +262,6 @@ public sealed class JournalPage
             }
         }
 
-        body.AddChild(Ui.Rule());
-        body.AddChild(Ui.Text("信任与好感随共同经历变化；立场与承诺按事件记录，不换算成分数。", UiTheme.MutedLabel, wrap: true));
         host.AddChild(Ui.Panel(UiTheme.InsetPanel, KeyScroll.Of(body)));
     }
 
@@ -302,9 +301,7 @@ public sealed class JournalPage
         }
 
         Fill();
-        return Ui.Column(UiPalette.SpaceM, filters,
-            Ui.Text("通知几秒后就会淡出，漏看的都记在这里，新的在上。只记本次游玩，不随存档保存。", UiTheme.MutedLabel, 18, wrap: true),
-            KeyScroll.Of(list));
+        return Ui.Column(UiPalette.SpaceM, filters, KeyScroll.Of(list));
     }
 
     // ── 对话记录 ─────────────────────────────────────────
@@ -328,8 +325,6 @@ public sealed class JournalPage
 
         var scroll = KeyScroll.Of(list);
         scroll.ScrollToEnd();
-        return Ui.Column(UiPalette.SpaceM,
-            Ui.Text($"本次游玩说过的话与你的选择，旧的在上、新的在下（最多 300 句）。对话中按 {App.KeyBindings.Label("dialogue_log")} 可随时翻看。", UiTheme.MutedLabel, 18, wrap: true),
-            scroll);
+        return scroll;
     }
 }

@@ -424,6 +424,7 @@ public partial class TownMiniMap : Control
     {
         var (hero, heading) = Hero();
         var k = Size.X / Window;
+        var u = ExploreHudKit.MarkScale(Size.X);
         var b = TownSamples.Bounds;
         var origin = new Vector2(Mathf.Clamp(hero.X - Window / 2, b.Position.X, b.End.X - Window), Mathf.Clamp(hero.Y - Window / 2, b.Position.Y, b.End.Y - Window));
         DrawRect(new Rect2(Vector2.Zero, Size), Color.FromHtml("#6E9C74"));
@@ -442,20 +443,20 @@ public partial class TownMiniMap : Control
 
         DrawRect(TownSamples.Corridor, UiPalette.TextMuted with { A = 0.45f });
 
-        var r = 9 / k;
+        var r = 9 * u / k;
         if (Goal() is { } g)
         {
             DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
         }
 
-        var a = 11 / k;
+        var a = 11 * u / k;
         var f = heading.Normalized();
         var side = new Vector2(-f.Y, f.X);
         DrawColoredPolygon([hero + f * a * 1.2f, hero - f * a * 0.8f + side * a * 0.8f, hero - f * a * 0.3f, hero - f * a * 0.8f - side * a * 0.8f], UiPalette.Accent);
-        DrawArc(hero, 18 / k, 0, Mathf.Tau, 32, UiPalette.Accent with { A = 0.5f }, 1.5f / k, true);
+        DrawArc(hero, 18 * u / k, 0, Mathf.Tau, 32, UiPalette.Accent with { A = 0.5f }, 1.5f / k, true);
 
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
-        DrawString(UiFonts.Title, new Vector2(Size.X - 30, 28), "北", HorizontalAlignment.Left, -1, 20, UiPalette.Text);
+        DrawString(UiFonts.Title, new Vector2(Size.X - 30 * u, 28 * u), "北", HorizontalAlignment.Left, -1, Mathf.RoundToInt(20 * u), UiPalette.Text);
     }
 }
 

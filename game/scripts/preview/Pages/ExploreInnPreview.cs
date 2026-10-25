@@ -181,6 +181,7 @@ public partial class InnMiniMap : Control
     {
         var (hero, heading) = Hero();
         var k = Size.X / Window;
+        var u = ExploreHudKit.MarkScale(Size.X);
         var origin = InnSamples.Room.GetCenter() - new Vector2(Window, Window) / 2;
         DrawRect(new Rect2(Vector2.Zero, Size), UiPalette.Abyss);
         DrawSetTransform(-origin * k, 0, new Vector2(k, k));
@@ -196,19 +197,19 @@ public partial class InnMiniMap : Control
         foreach (var t in InnSamples.Tables) DrawRect(new Rect2(t.Center - new Vector2(46, 46), new Vector2(92, 92)), furniture);
         foreach (var p in InnSamples.Pillars) DrawCircle(p, 22, furniture);
 
-        var r = 9 / k;
+        var r = 9 * u / k;
         if (Goal() is { } g)
         {
             DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
         }
 
-        var a = 11 / k;
+        var a = 11 * u / k;
         var f = heading.Normalized();
         var side = new Vector2(-f.Y, f.X);
         DrawColoredPolygon([hero + f * a * 1.2f, hero - f * a * 0.8f + side * a * 0.8f, hero - f * a * 0.3f, hero - f * a * 0.8f - side * a * 0.8f], UiPalette.Accent);
-        DrawArc(hero, 18 / k, 0, Mathf.Tau, 32, UiPalette.Accent with { A = 0.5f }, 1.5f / k, true);
+        DrawArc(hero, 18 * u / k, 0, Mathf.Tau, 32, UiPalette.Accent with { A = 0.5f }, 1.5f / k, true);
 
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
-        DrawString(UiFonts.Title, new Vector2(Size.X - 30, 28), "北", HorizontalAlignment.Left, -1, 20, UiPalette.Text);
+        DrawString(UiFonts.Title, new Vector2(Size.X - 30 * u, 28 * u), "北", HorizontalAlignment.Left, -1, Mathf.RoundToInt(20 * u), UiPalette.Text);
     }
 }

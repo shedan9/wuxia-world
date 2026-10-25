@@ -24,7 +24,7 @@ public sealed partial class BattleScreen
     private bool ToggleAuto()
     {
         _auto = !_auto;
-        Toast(_auto ? $"自动战斗：开（{KeyBindings.Label("battle_auto")} 关闭）" : "自动战斗：关");
+        Toast(_auto ? "自动战斗：开" : "自动战斗：关");
         RefreshTopBar();
         return true;
     }

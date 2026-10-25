@@ -109,9 +109,9 @@ public sealed class GameMenu
         margin.AddThemeConstantOverride("margin_bottom", 36);
         margin.AddChild(body);
 
-        body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("暂歇"), Ui.Column(4,
-            Ui.Text("江湖暂歇", UiTheme.DarkTitleLabel, 40),
-            Ui.Text("游戏已暂停", UiTheme.DarkMutedLabel, 18))));
+        var heading = Ui.Text("江湖暂歇", UiTheme.DarkTitleLabel, 40);
+        heading.SizeFlagsVertical = Control.SizeFlags.ShrinkCenter;
+        body.AddChild(Ui.Row(UiPalette.SpaceL, Ui.Seal("暂歇"), heading));
         body.AddChild(Ui.Rule(dark: true));
         body.AddChild(_items);
 
@@ -131,7 +131,7 @@ public sealed class GameMenu
         if (!canSave)
         {
             // 置灰的原因直接写出来，不藏在悬停提示里（手柄、键盘都看得到）。
-            _items.AddChild(Ui.Text("对话、换图或战斗进行中不能保存，告一段落后再存；换图时也会自动存档。", UiTheme.DarkMutedLabel, 16, wrap: true));
+            _items.AddChild(Ui.Text("此刻不能保存，告一段落后再存。", UiTheme.DarkMutedLabel, 16, wrap: true));
         }
 
         Item("读取进度", () => ShowSlots(save: false));
@@ -218,7 +218,7 @@ public sealed class GameMenu
 
             var r = _play.Save(slot, _play.MenuFrame);
             return r.Ok ? $"已保存到{SlotName(slot)}" : $"保存失败：{r.Error}";
-        }, save ? "只能保存到手动槽；快速槽由 F5 写入，自动槽在换图后轮换写入。" : "正式存档损坏时会读取上一份备份并提示。删除不影响当前进度。");
+        }, "");
         _slots = list;
 
         // 底栏正在确认删除或覆盖时，Esc 先取消确认，再按一次才收起存档卡。
@@ -319,7 +319,6 @@ public sealed class GameMenu
             return;
         }
 
-        play.PendingToasts.Add(("存档", $"已读取{SlotName(slot)}"));
         play.PendingToasts.AddRange(notes.Select(n => ("提示", n)));
         AppHost.Instance.Menu.Close();
         AppHost.Instance.Play = play;

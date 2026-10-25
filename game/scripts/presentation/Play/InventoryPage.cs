@@ -146,20 +146,12 @@ public sealed class InventoryPage
             act.CustomMinimumSize = new Vector2(220, 56);
             body.AddChild(Ui.Row(UiPalette.SpaceM, act));
             var current = World.Builds.GetValueOrDefault(hero)?.Equipped.GetValueOrDefault(slot);
-            body.AddChild(Ui.Text(worn ? $"{GrowthText.SlotName(slot)}栏" : $"{GrowthText.SlotName(slot)}栏现为：{(current is null ? "空" : _play.Name(current))}，换下的放回行囊。",
+            body.AddChild(Ui.Text(worn ? $"{GrowthText.SlotName(slot)}栏" : $"{GrowthText.SlotName(slot)}栏现为：{(current is null ? "空" : _play.Name(current))}",
                 UiTheme.MutedLabel, 18, wrap: true));
             if (!canManage)
             {
-                body.AddChild(Ui.Text("对话、换图或战斗进行中，告一段落后再换。", UiTheme.MutedLabel, 18));
+                body.AddChild(Ui.Text("此刻不能换，告一段落后再换。", UiTheme.MutedLabel, 18));
             }
-        }
-        else if (def.Category == ItemCategory.Medicine)
-        {
-            body.AddChild(Ui.Text("药品在战斗中由人物使用；探索中不会受伤，无需服用。", UiTheme.MutedLabel, 18, wrap: true));
-        }
-        else if (def.Key)
-        {
-            body.AddChild(Ui.Text("主线必要物品：不能出售或丢弃。", UiTheme.MutedLabel, 18));
         }
 
         return Ui.Panel(UiTheme.InsetPanel, body);

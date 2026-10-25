@@ -1005,6 +1005,7 @@ public partial class RiverMiniMap : Control
         var s = Site;
         var (hero, heading) = Hero();
         var k = Size.X / Window;
+        var u = ExploreHudKit.MarkScale(Size.X);
         var origin = hero - new Vector2(Window, Window) / 2;
         DrawRect(new Rect2(Vector2.Zero, Size), Color.FromHtml("#3F7F8A"));
         DrawSetTransform(-origin * k, 0, new Vector2(k, k));
@@ -1042,18 +1043,18 @@ public partial class RiverMiniMap : Control
             DrawColoredPolygon(Cel.Ellipse(RiverSamples.W(bed.A, bed.D), bed.Width * 0.4f, bed.Width * 0.4f, 12), Color.FromHtml("#5E8A62") with { A = 0.8f });
         }
 
-        var r = 9 / k;
+        var r = 9 * u / k;
         if (Goal() is { } g)
         {
             DrawColoredPolygon([g + new Vector2(0, -r), g + new Vector2(r, 0), g + new Vector2(0, r), g + new Vector2(-r, 0)], UiPalette.Gilt.Darkened(0.1f));
         }
 
-        var arrow = 11 / k;
+        var arrow = 11 * u / k;
         var f = heading.Normalized();
         var side = new Vector2(-f.Y, f.X);
         DrawColoredPolygon([hero + f * arrow * 1.2f, hero - f * arrow * 0.8f + side * arrow * 0.8f, hero - f * arrow * 0.3f, hero - f * arrow * 0.8f - side * arrow * 0.8f], UiPalette.Accent);
-        DrawArc(hero, 18 / k, 0, Mathf.Tau, 32, UiPalette.Accent with { A = 0.5f }, 1.5f / k, true);
+        DrawArc(hero, 18 * u / k, 0, Mathf.Tau, 32, UiPalette.Accent with { A = 0.5f }, 1.5f / k, true);
         DrawSetTransform(Vector2.Zero, 0, Vector2.One);
-        DrawString(UiFonts.Title, new Vector2(Size.X - 30, 28), "北", HorizontalAlignment.Left, -1, 20, UiPalette.Text);
+        DrawString(UiFonts.Title, new Vector2(Size.X - 30 * u, 28 * u), "北", HorizontalAlignment.Left, -1, Mathf.RoundToInt(20 * u), UiPalette.Text);
     }
 }

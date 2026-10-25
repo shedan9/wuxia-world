@@ -55,22 +55,30 @@ public sealed class PartyPage
     {
         Ui.ClearChildren(_root);
 
-        // 阵位规则写在右栏底部：放在阵位图下面时，正文字号放大后整页比绢本高，底部的操作提示被挤出可视范围。
-        var board = Ui.Column(UiPalette.SpaceM, Ui.Text("阵位", UiTheme.SectionLabel), Board());
-        var roster = Ui.Column(UiPalette.SpaceM, Ui.Text("同行人物", UiTheme.SectionLabel), Roster(), Ui.Expand(Detail(), vertical: true),
-            Ui.Text("前排护住后排：对方前排有人时，近身单体招只能打前排；远程与穿透一列的招式不受此限。", UiTheme.MutedLabel, 18, wrap: true));
+        // 换位操作与阵位规则放在“阵位”标题的悬停说明里（2026-10-25 精简提示，原先常驻在右栏与绢本底部）。
+        var boardTitle = Ui.Text("阵位", UiTheme.SectionLabel);
+        boardTitle.MouseFilter = Control.MouseFilterEnum.Pass;
+        boardTitle.MouseDefaultCursorShape = Control.CursorShape.Help;
+        boardTitle.TooltipText = "点一位队员，再点要去的格子；格上有人则互换。下一场战斗按此站位。\n"
+            + "前排护住后排：对方前排有人时，近身单体招只能打前排；远程与穿透一列的招式不受此限。";
+        var board = Ui.Column(UiPalette.SpaceM, boardTitle, Board());
+        var roster = Ui.Column(UiPalette.SpaceM, Ui.Text("同行人物", UiTheme.SectionLabel), Roster(), Ui.Expand(Detail(), vertical: true));
         var body = Ui.Row(UiPalette.SpaceXl, CharacterPage.Portrait(_play, _who), Ui.MinSize(board, 660), Ui.Expand(roster));
 
+        // 底行只写操作结果、选中状态与不能调整的原因；平时留空。
         var hint = _picked is { } p
             ? $"已选中{_play.Name(p)}（{CellName(PartyRules.CellOf(World, p))}）：点另一格换位，再点一次取消。"
-            : Game.CanManage ? "点一位队员，再点要去的格子；格上有人则互换。下一场战斗按此站位。" : "对话、换图或战斗进行中，只能查看；告一段落后再调整。";
+            : Game.CanManage ? "" : "此刻只能查看，告一段落后再调整。";
         var status = Ui.Text(message ?? hint, UiTheme.AccentLabel, 20, wrap: true);
 
         // 提示行缩进一点，不压在绢本左下角的卷云角饰上。
         var statusRow = new MarginContainer();
         statusRow.AddThemeConstantOverride("margin_left", 28);
         statusRow.AddChild(status);
-        var sheet = Ui.Panel(UiTheme.SheetPanel, Ui.Column(UiPalette.SpaceM, Ui.Expand(body, vertical: true), Ui.Rule(), statusRow));
+        // 底行空着时分隔线也隐去，但仍占位，选中队员、底行出字时上面的版面不跳动。
+        var rule = Ui.Rule();
+        rule.Modulate = status.Text.Length == 0 ? Colors.Transparent : Colors.White;
+        var sheet = Ui.Panel(UiTheme.SheetPanel, Ui.Column(UiPalette.SpaceM, Ui.Expand(body, vertical: true), rule, statusRow));
         _root.AddChild(Ui.Expand(sheet, vertical: true));
     }
 
@@ -258,7 +266,7 @@ public sealed class PartyPage
         var column = Ui.Column(UiPalette.SpaceS, Ui.Text(_play.Name(_who), UiTheme.TitleLabel, 30));
         if (_who == World.Hero)
         {
-            column.AddChild(Ui.Text($"队伍的核心，不会离队。属性、武学与装备见人物分区（{KeyBindings.Label("open_character")}）。", UiTheme.MutedLabel, 18, wrap: true));
+            column.AddChild(Ui.Text("队伍的核心，不会离队。", UiTheme.MutedLabel, 18, wrap: true));
             return Ui.Panel(UiTheme.InsetPanel, column);
         }
 
