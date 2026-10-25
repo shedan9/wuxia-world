@@ -22,12 +22,12 @@ using Ui = WuxiaWorld.Game.Presentation.Ui.Ui;
 /// </summary>
 public partial class WorldMapOverlay : Control
 {
-    private const float MaxZoom = 1.15f;
+    private const float MaxZoom = 1.8f;
+
+    /// <summary>打开时的最大缩放：地标挨得近也不一下贴到最近，留出周边的山川城池。</summary>
+    private const float InitialZoom = 1.1f;
     private const float PanelWidth = 540;
     private const float BaseScale = 0.8f;
-
-    /// <summary>烘焙好的舆图按道路组合缓存：同一局里反复打开不再重画。</summary>
-    private static readonly Dictionary<string, ImageTexture> Baked = [];
 
     private readonly PlaySession _play;
     private readonly Action _close;
@@ -105,7 +105,7 @@ public partial class WorldMapOverlay : Control
 
     private void InitialView()
     {
-        // 把所在之处与所选地标（或全部可见地标）放进未被面板遮住的区域，缩放在 1 到最大之间取能装下的那一档。
+        // 把所在之处与所选地标（或全部可见地标）放进未被面板遮住的区域，缩放在 1 到 InitialZoom 之间取能装下的那一档。
         var focus = _nodes.Values.Select(n => Pos(n.Node)).ToList();
         if (_target != _here)
         {
@@ -116,7 +116,12 @@ public partial class WorldMapOverlay : Control
         var min = focus.Aggregate((a, b) => a.Min(b));
         var max = focus.Aggregate((a, b) => a.Max(b));
         var span = (max - min) * BaseScale + new Vector2(480, 360);
-        _zoom = Mathf.Clamp(Mathf.Min(open.X / span.X, open.Y / span.Y), 1, MaxZoom);
+        _zoom = Mathf.Clamp(Mathf.Min(open.X / span.X, open.Y / span.Y), 1, InitialZoom);
+        if (DevCapture.MapZoom is { } devZoom)
+        {
+            _zoom = Mathf.Clamp(devZoom, MinZoom, MaxZoom);
+        }
+
         _map.Scale = Vector2.One * MapScale;
         Pan(open / 2 - (min + max) / 2 * MapScale);
         RefreshZoom();
@@ -253,13 +258,9 @@ public partial class WorldMapOverlay : Control
 
         _map = new Control { MouseFilter = MouseFilterEnum.Ignore, Size = WorldMapSamples.Size };
         _view.AddChild(_map);
-        var baked = new TextureRect
-        {
-            MouseFilter = MouseFilterEnum.Ignore, Size = WorldMapSamples.Size, StretchMode = TextureRect.StretchModeEnum.Scale,
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, TextureFilter = TextureFilterEnum.LinearWithMipmaps,
-        };
-        _map.AddChild(baked);
-        Bake(baked);
+        _map.AddChild(new WorldMapCanvas(
+            [.. _nodes.Values.Select(n => Pos(n.Node))],
+            [.. _roads.Select(r => new MapRoad(r.Path, r.Road.Kind == RoadKind.Water))]));
         _route = new RouteLayer();
         _map.AddChild(_route);
         var pins = new Control { MouseFilter = MouseFilterEnum.Ignore };
@@ -326,46 +327,6 @@ public partial class WorldMapOverlay : Control
                 yield return isMain ? $"◆ 主线　{name}" : $"○ {name}";
             }
         }
-    }
-
-    /// <summary>
-    /// 舆图烘焙：地形着色器与矢量山峦、江河、道路只在离屏视口里画一次，读回后生成多级纹理；
-    /// 同一组道路的结果缓存起来，再打开大地图直接取用。
-    /// </summary>
-    private async void Bake(TextureRect target)
-    {
-        var key = string.Join("|", _nodes.Keys) + "#" + string.Join("|", _roads.Select(r => $"{r.Road.From}>{r.Road.To}:{r.Road.Kind}"));
-        if (Baked.TryGetValue(key, out var cached))
-        {
-            target.Texture = cached;
-            return;
-        }
-
-        var baker = new SubViewport
-        {
-            Size = (Vector2I)WorldMapSamples.Size, Disable3D = true, TransparentBg = false,
-            RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
-        };
-        baker.AddChild(new WorldMapCanvas(
-            [.. _nodes.Values.Select(n => Pos(n.Node))],
-            [.. _roads.Select(r => new MapRoad(r.Path, r.Road.Kind == RoadKind.Water))]));
-        AddChild(baker);
-        for (var i = 0; i < 2; i++)
-        {
-            await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
-        }
-
-        if (!IsInstanceValid(this))
-        {
-            return;
-        }
-
-        var image = baker.GetTexture().GetImage();
-        baker.QueueFree();
-        image.GenerateMipmaps();
-        var texture = ImageTexture.CreateFromImage(image);
-        Baked[key] = texture;
-        target.Texture = texture;
     }
 
     private void ClosePanel()

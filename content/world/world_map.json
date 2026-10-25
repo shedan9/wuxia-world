@@ -1,25 +1,25 @@
 {
-  "frame": [2880, 1600],
+  "frame": [8400, 5600],
   "nodes": [
     {
       "id": "node.jiangnan.luwan",
       "region": "region.jiangnan",
       "icon": "inn",
-      "pos": [1786, 904],
+      "pos": [6735, 3250],
       "maps": ["map.jiangnan.luwan_street", "map.jiangnan.inn", "map.jiangnan.inn_yard", "map.jiangnan.luwan_shore"]
     },
     {
       "id": "node.jiangnan.old_ferry",
       "region": "region.jiangnan",
       "icon": "ferry",
-      "pos": [1934, 884],
+      "pos": [6843, 3218],
       "maps": ["map.jiangnan.old_ferry"]
     },
     {
       "id": "node.jiangnan.granary",
       "region": "region.jiangnan",
       "icon": "granary",
-      "pos": [1640, 1090],
+      "pos": [6473, 3110],
       "when": { "type": "clue_known", "id": "clue.ch01.next_leads" },
       "locked_hint": "node.jiangnan.granary.locked"
     },
@@ -27,15 +27,15 @@
       "id": "node.jiangnan.mountain_pass",
       "region": "region.jiangnan",
       "icon": "gate",
-      "pos": [1330, 690],
+      "pos": [6190, 3360],
       "when": { "type": "clue_known", "id": "clue.ch01.next_leads" },
       "locked_hint": "node.jiangnan.mountain_pass.locked"
     }
   ],
   "roads": [
-    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.old_ferry", "kind": "water", "via": [[1820, 887], [1880, 878]] },
-    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.old_ferry", "kind": "land", "via": [[1840, 932], [1905, 918]] },
-    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.granary", "kind": "land", "via": [[1730, 1000], [1690, 1060]] },
-    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.mountain_pass", "kind": "land", "via": [[1700, 918], [1560, 862], [1450, 790]] }
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.old_ferry", "kind": "water", "via": [[6771, 3242], [6811, 3232]] },
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.old_ferry", "kind": "land", "via": [[6771, 3260], [6816, 3238]] },
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.granary", "kind": "land", "via": [[6649, 3190], [6554, 3140]] },
+    { "from": "node.jiangnan.luwan", "to": "node.jiangnan.mountain_pass", "kind": "land", "via": [[6622, 3280], [6460, 3326], [6325, 3350]] }
   ]
 }

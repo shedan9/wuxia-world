@@ -19,6 +19,9 @@ public static class DevCapture
     private static bool _keepMotion;
     private static Vector2I _size = new(1920, 1080);
 
+    /// <summary>开发运行：江湖大地图打开时的缩放（--map-zoom=0.3 看全图，截图与性能核对用）；为 null 时按地标自动取景。</summary>
+    public static float? MapZoom { get; private set; }
+
     public static string? Scene { get; private set; }
     public static int Tab { get; private set; }
     public static string? Output { get; private set; }
@@ -256,6 +259,9 @@ public static class DevCapture
                     break;
                 case "--walk":
                     Walk = true;
+                    break;
+                case "--map-zoom":
+                    MapZoom = float.Parse(value, System.Globalization.CultureInfo.InvariantCulture);
                     break;
                 case "--zoom":
                     WuxiaWorld.Game.Preview.Pages.ExploreStage.DevZoom = float.Parse(value, System.Globalization.CultureInfo.InvariantCulture);

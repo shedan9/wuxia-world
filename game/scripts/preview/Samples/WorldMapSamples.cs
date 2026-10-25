@@ -62,13 +62,12 @@ public sealed record MapEdge(string From, string To, bool Water, Vector2[] Via);
 public static class WorldMapSamples
 {
     /// <summary>
-    /// 世界尺度：下方坐标按 2880×1600 的设计稿书写，运行时整体放大这个倍数。山体、河宽与地名章不随之放大，
-    /// 因此倍数越大，世界越辽阔、地点间距越远。
+    /// 旧版舆图的世界尺度（2026-10-25 起地图按地形数据的经纬度投影，坐标已是地图像素，此值只用于样例行程的每时辰路程）。
     /// </summary>
-    public const float Scale = 1.6f;
+    public const float Scale = 1f;
 
-    /// <summary>地图画布的逻辑尺寸（最小缩放下仍铺满 1920×1080）。</summary>
-    public static readonly Vector2 Size = new Vector2(2880, 1600) * Scale;
+    /// <summary>地图画布的逻辑尺寸（地形数据的 frame）。</summary>
+    public static Vector2 Size => WuxiaWorld.Game.Preview.Pages.WorldMapCanvas.MapSize;
 
     public const string Start = "sample.jiangnan_inn";
 
@@ -81,53 +80,55 @@ public static class WorldMapSamples
 
     private static readonly MapNode[] DesignNodes =
     [
-        new(Start, "江南客栈", "芦湾　·　第一篇核心地域", new(1818, 1010), MapIcon.Inn, NodeState.Visited,
+        new(Start, "江南客栈", "芦湾　·　第一篇核心地域", G(120.95f, 30.97f), MapIcon.Inn, NodeState.Visited,
             ["○ 乔红绡：失踪信使的去向"]),
-        new("sample.luwan_ferry", "芦湾旧渡", "芦湾　·　第一篇核心地域", new(1930, 905), MapIcon.Ferry, NodeState.Visited,
+        new("sample.luwan_ferry", "芦湾旧渡", "芦湾　·　第一篇核心地域", G(121.3f, 31.1f), MapIcon.Ferry, NodeState.Visited,
             ["✓ 旧渡解围（已结算）", "○ 陆青禾：船牌与水位"]),
-        new("sample.granary", "江南粮仓", "江南　·　第二章调查段", new(1640, 1090), MapIcon.Granary, NodeState.Known,
+        new("sample.granary", "江南粮仓", "江南　·　第二章调查段", G(120.05f, 31.7f), MapIcon.Granary, NodeState.Known,
             ["◆ 主线　核对两封真章信", "○ 收粮人口中的换马线索"]),
-        new("sample.river_wharf", "河埠", "江南　·　第二章调查段", new(1560, 880), MapIcon.Wharf, NodeState.Known,
+        new("sample.river_wharf", "河埠", "江南　·　第二章调查段", G(120.5f, 31.45f), MapIcon.Wharf, NodeState.Known,
             ["◆ 主线　河埠记录中的换马线索"]),
-        new("sample.mountain_pass", "山门路", "山门路　·　第三章调查段", new(1330, 690), MapIcon.Gate, NodeState.Known,
+        new("sample.mountain_pass", "山门路", "山门路　·　第三章调查段", G(119.0f, 30.45f), MapIcon.Gate, NodeState.Known,
             ["◆ 主线　沈槐留下的底账", "○ 地区事件　药庐救援"]),
-        new("sample.beiling", "北岭驿", "北岭　·　第四章", new(1360, 300), MapIcon.Relay, NodeState.Locked,
+        new("sample.beiling", "北岭驿", "北岭　·　第四章", G(114.95f, 41.05f), MapIcon.Relay, NodeState.Locked,
             [], "取得第二、三章两份核心证据后开放"),
-        new("sample.guichao", "归潮渡", "江口　·　第五章", new(2080, 800), MapIcon.Ferry, NodeState.Locked,
+        new("sample.guichao", "归潮渡", "江口　·　第五章", G(121.08f, 30.48f), MapIcon.Ferry, NodeState.Locked,
             [], "北岭驿之后开放"),
-        new("map.faction.shaolin", "少林外道", "少林　·　药棚", new(1080, 520), MapIcon.Pagoda, NodeState.Known,
+        new("map.faction.shaolin", "少林外道", "少林　·　药棚", G(113.0f, 34.42f), MapIcon.Pagoda, NodeState.Known,
             ["○ 地区事件　被冒用的救济名册"]),
-        new("map.faction.wudang", "武当山驿", "武当　·　山下集市", new(900, 830), MapIcon.Hall, NodeState.Known,
+        new("map.faction.wudang", "武当山驿", "武当　·　山下集市", G(111.0f, 32.3f), MapIcon.Hall, NodeState.Known,
             ["○ 地区事件　行程名册与自管信使"]),
-        new("map.faction.emei", "峨眉山路", "峨眉　·　歇脚处", new(420, 1010), MapIcon.Peak, NodeState.Known,
+        new("map.faction.emei", "峨眉山路", "峨眉　·　歇脚处", G(103.32f, 29.45f), MapIcon.Peak, NodeState.Known,
             ["○ 地区事件　失窃名册"]),
-        new("map.faction.beggars", "丐帮歇脚点", "丐帮　·　沿线歇脚点", new(1500, 560), MapIcon.Beggars, NodeState.Known,
+        new("map.faction.beggars", "丐帮歇脚点", "丐帮　·　沿线歇脚点", G(113.05f, 29.42f), MapIcon.Beggars, NodeState.Known,
             ["○ 地区事件　真假求救记号"]),
     ];
 
     private static readonly MapEdge[] DesignEdges =
     [
-        new(Start, "sample.luwan_ferry", false, [new(1880, 960)]),
-        new(Start, "sample.granary", false, [new(1730, 1070)]),
-        new(Start, "sample.river_wharf", false, [new(1700, 960)]),
-        new("sample.river_wharf", "sample.mountain_pass", false, [new(1450, 800)]),
-        new("sample.mountain_pass", "map.faction.beggars", false, [new(1420, 610)]),
-        new("sample.mountain_pass", "map.faction.shaolin", false, [new(1200, 620)]),
-        new("sample.mountain_pass", "map.faction.wudang", false, [new(1110, 780)]),
-        new("map.faction.beggars", "sample.beiling", false, [new(1470, 420)]),
-        new("map.faction.shaolin", "sample.beiling", false, [new(1230, 380)]),
-        new("map.faction.wudang", "map.faction.emei", false, [new(700, 900), new(540, 990)]),
-        new("sample.granary", "sample.river_wharf", false, [new(1570, 990)]),
+        new(Start, "sample.luwan_ferry", false, []),
+        new(Start, "sample.granary", false, [G(120.6f, 31.35f)]),
+        new(Start, "sample.river_wharf", false, []),
+        new("sample.river_wharf", "sample.mountain_pass", false, [G(119.9f, 31.0f)]),
+        new("sample.mountain_pass", "map.faction.beggars", false, [G(117.0f, 30.0f), G(115.0f, 29.6f)]),
+        new("sample.mountain_pass", "map.faction.shaolin", false, [G(117.5f, 32.4f), G(115.0f, 33.6f)]),
+        new("sample.mountain_pass", "map.faction.wudang", false, [G(116.0f, 31.6f), G(113.5f, 31.9f)]),
+        new("map.faction.beggars", "sample.beiling", false, [G(114.3f, 33.0f), G(115.2f, 37.5f)]),
+        new("map.faction.shaolin", "sample.beiling", false, [G(114.0f, 37.0f)]),
+        new("map.faction.wudang", "map.faction.emei", false, [G(108.0f, 31.6f), G(105.5f, 30.4f)]),
+        new("sample.granary", "sample.river_wharf", false, []),
         // 大江水路：沿江而行，各段途经点贴着江心。
-        new("sample.luwan_ferry", "sample.river_wharf", true, [new(1840, 880), new(1700, 900), new(1620, 870)]),
-        new("sample.luwan_ferry", "sample.guichao", true, [new(2010, 850)]),
-        new("sample.river_wharf", "map.faction.wudang", true, [new(1400, 900), new(1180, 880), new(1000, 860)]),
+        new("sample.luwan_ferry", "sample.river_wharf", true, [G(121.6f, 31.3f), G(121.0f, 31.8f), G(120.6f, 31.75f)]),
+        new("sample.luwan_ferry", "sample.guichao", true, [G(121.4f, 30.8f)]),
+        new("sample.river_wharf", "map.faction.wudang", true, [G(119.4f, 32.2f), G(117.0f, 30.5f), G(114.3f, 30.6f), G(112.6f, 31.0f), G(111.7f, 32.0f)]),
     ];
 
-    public static readonly IReadOnlyList<MapNode> Nodes = DesignNodes.Select(n => n with { Pos = n.Pos * Scale }).ToArray();
+    private static Vector2 G(float lon, float lat) => WuxiaWorld.Game.Preview.Pages.WorldTerrain.Current.Project(lon, lat);
+
+    public static readonly IReadOnlyList<MapNode> Nodes = DesignNodes;
 
     public static readonly IReadOnlyList<MapEdge> Edges =
-        DesignEdges.Select(e => e with { Via = e.Via.Select(v => v * Scale).ToArray() }).ToArray();
+        DesignEdges;
 
     public static MapNode Node(string id) => Nodes.First(n => n.Id == id);
 

@@ -175,7 +175,7 @@ public sealed class WorldMapTests : IDisposable
                     {
                         // 河滩不再属于芦湾；旧渡多挂一张客栈（已属芦湾）与不存在的图，坐标出界。
                         Luwan => n with { Maps = [.. n.Maps.Where(m => m != "map.jiangnan.luwan_shore")] },
-                        OldFerry => n with { Maps = [.. n.Maps, "map.jiangnan.inn", "map.none"], Pos = [3000, 10] },
+                        OldFerry => n with { Maps = [.. n.Maps, "map.jiangnan.inn", "map.none"], Pos = [9000, 10] },
                         Granary => n with { LockedHint = null },
                         _ => n,
                     }),

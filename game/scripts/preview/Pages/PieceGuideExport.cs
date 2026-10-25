@@ -40,7 +40,14 @@ public partial class PieceGuideExport : Node
         if (region == "worldmap")
         {
             PieceArt.Enabled = args.GetValueOrDefault("--art", "0") == "1";
-            await ExportWorldMap(outDir);
+            await ExportWorldMap(outDir, args.GetValueOrDefault("--labels", "0") == "1");
+            GetTree().Quit(0);
+            return;
+        }
+
+        if (region == "worldmap-bake")
+        {
+            WorldTerrainBake.Run();
             GetTree().Quit(0);
             return;
         }
@@ -127,8 +134,9 @@ public partial class PieceGuideExport : Node
     /// 大地图舆图的引导图（架构文档 10.3“大地图单独处理”）：程序化舆图只画地形、江河与平视山峦（不画道路与题字），
     /// 原尺寸（<see cref="WorldMapSamples.Size"/>）存 <c>worldmap.guide.png</c>，供 tools/ArtGen/worldmap.py 图生图。
     /// 山体避让展示页样例地标与内容里的地标（第一章芦湾、旧渡等），重绘后的底图对两边都留出空地。
+    /// <c>--labels=1</c> 时连地名一起画（整图审看用）。
     /// </summary>
-    private async Task ExportWorldMap(string outDir)
+    private async Task ExportWorldMap(string outDir, bool labels)
     {
         var landmarks = WorldMapSamples.Nodes.Select(n => n.Pos).ToList();
         using (var file = Godot.FileAccess.Open("res://generated/content/world.json", Godot.FileAccess.ModeFlags.Read))
@@ -146,7 +154,7 @@ public partial class PieceGuideExport : Node
             Size = (Vector2I)WorldMapSamples.Size, Disable3D = true, TransparentBg = false,
             RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
         };
-        viewport.AddChild(new WorldMapCanvas(landmarks, []) { TerrainOnly = true });
+        viewport.AddChild(new WorldMapCanvas(landmarks, []) { TerrainOnly = !labels });
         AddChild(viewport);
         for (var i = 0; i < 3; i++)
         {

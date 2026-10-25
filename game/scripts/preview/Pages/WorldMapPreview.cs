@@ -19,7 +19,7 @@ namespace WuxiaWorld.Game.Preview.Pages;
 /// </summary>
 public partial class WorldMapPreview : Control
 {
-    private const float MaxZoom = 1.15f;
+    private const float MaxZoom = 1.8f;
     private const float PanelWidth = 540;
 
     /// <summary>舆图底图的基准缩放：缩放 1.00 时一屏约见江南到中原；地标印不随缩放变大变小。</summary>
@@ -245,13 +245,7 @@ public partial class WorldMapPreview : Control
 
         _map = new Control { MouseFilter = MouseFilterEnum.Ignore, Size = WorldMapSamples.Size };
         _view.AddChild(_map);
-        var baked = new TextureRect
-        {
-            MouseFilter = MouseFilterEnum.Ignore, Size = WorldMapSamples.Size, StretchMode = TextureRect.StretchModeEnum.Scale,
-            ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, TextureFilter = TextureFilterEnum.LinearWithMipmaps,
-        };
-        _map.AddChild(baked);
-        BakeMap(baked);
+        _map.AddChild(new WorldMapCanvas());
         _route = new RouteLayer();
         _map.AddChild(_route);
         _pins = new Control { MouseFilter = MouseFilterEnum.Ignore };
@@ -308,37 +302,6 @@ public partial class WorldMapPreview : Control
         {
             mark.SetState(_visited.Contains(id), id == _here);
         }
-    }
-
-    /// <summary>
-    /// 舆图烘焙：地形着色器与上万个矢量三角形只在离屏视口里画一次，读回后生成多级纹理，
-    /// 之后缩放平移只是移动一张贴图（缩小时靠多级纹理保持清晰、不闪烁）。
-    /// </summary>
-    private async void BakeMap(TextureRect target)
-    {
-        var baker = new SubViewport
-        {
-            Size = (Vector2I)WorldMapSamples.Size, Disable3D = true, TransparentBg = false,
-            RenderTargetUpdateMode = SubViewport.UpdateMode.Always,
-        };
-        baker.AddChild(new WorldMapCanvas());
-        AddChild(baker);
-
-        // 多等一帧，确保着色器与矢量绘制都已提交。
-        for (var i = 0; i < 2; i++)
-        {
-            await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
-        }
-
-        if (!IsInstanceValid(this))
-        {
-            return;
-        }
-
-        var image = baker.GetTexture().GetImage();
-        baker.QueueFree();
-        image.GenerateMipmaps();
-        target.Texture = ImageTexture.CreateFromImage(image);
     }
 
     private void Select(string id)
