@@ -12,6 +12,9 @@ index.html 可在浏览器里逐句对照文本试听。
 
 档案 voices 的键可写成“人物ID@候选名”，同一说话人的每个候选都会把选中的句子各生成一遍，便于比较。
 
+专名与多音字按 voice_source/lexicon/zh-Hans.json 交给供应商（只给台词里出现的词条），并记进清单；
+词典改过的句子视为过期、会重新合成。
+
 档案里标了 "designed": true 的是音色设计得到的音色，每次合成都要用户事先确认（首次使用扣 9.9 元）：
 不在 --confirm-designed 里逐个列出的设计音色，脚本拒绝运行。
     python tools/VoiceBuilder/sample.py --profile voice_source/profiles/minimax_cast.json --per-speaker 999         --confirm-designed char.hero char.huang_rong
@@ -28,6 +31,7 @@ import sys
 import time
 
 sys.path.insert(0, os.path.dirname(__file__))
+import lexicon  # noqa: E402
 import minimax  # noqa: E402
 
 ROOT = minimax.ROOT
@@ -109,6 +113,7 @@ def main() -> int:
         with open(old_path, encoding="utf-8") as f:
             old = {m["line_id"] + (f"@{m['variant']}" if m.get("variant") else ""): m for m in json.load(f)["lines"]}
 
+    entries = lexicon.load()
     jobs = []
     for n in picked:
         for key in variants[n["speaker"]]:
@@ -120,11 +125,13 @@ def main() -> int:
             modify = v.get("modify") or None
             uid = f"{n['line_id']}@{variant}" if variant else n["line_id"]
             sha = hashlib.sha256(n["text"].encode("utf-8")).hexdigest()
+            pron = lexicon.tone_list(n["text"], entries)
             prev = old.get(uid)
             reuse = bool(prev and prev["text_sha256"] == sha and prev["voice_setting"] == setting and prev["model"] == profile["model"]
                          and prev["audio_setting"] == audio and prev.get("voice_modify") == modify
+                         and prev.get("pronunciation", []) == pron
                          and os.path.exists(os.path.join(out_dir, prev["file"])))
-            jobs.append({"n": n, "key": key, "variant": variant, "uid": uid, "sha": sha, "setting": setting, "modify": modify,
+            jobs.append({"n": n, "key": key, "variant": variant, "uid": uid, "sha": sha, "setting": setting, "modify": modify, "pron": pron,
                          "file": f"{uid}.{ext}", "prev": prev if reuse else None})
 
     todo = [j for j in jobs if j["prev"] is None]
@@ -140,7 +147,7 @@ def main() -> int:
         return 1
     if args.dry_run:
         for j in todo:
-            print(f"  {j['uid']}  {j['key']}  {j['n']['text']}")
+            print(f"  {j['uid']}  {j['key']}  {j['n']['text']}" + (f"  〔{'；'.join(j['pron'])}〕" if j["pron"] else ""))
         return 0
 
     os.makedirs(out_dir, exist_ok=True)
@@ -152,13 +159,14 @@ def main() -> int:
     manifest = []
     billed = 0
     for j in jobs:
-        n, key, variant, uid, sha, setting, modify, file = (j[k] for k in ("n", "key", "variant", "uid", "sha", "setting", "modify", "file"))
+        n, key, variant, uid, sha, setting, modify, pron, file = (
+            j[k] for k in ("n", "key", "variant", "uid", "sha", "setting", "modify", "pron", "file"))
         if j["prev"]:
             manifest.append(j["prev"])
             continue
         for attempt in range(6):
             try:
-                data, extra = client.synthesize(n["text"], setting, profile["model"], audio, modify=modify)
+                data, extra = client.synthesize(n["text"], setting, profile["model"], audio, pronunciation=pron or None, modify=modify)
                 break
             except minimax.MiniMaxError as e:
                 # 1002 为限流（每分钟请求数），等一会儿再试；其他错误直接停下。
@@ -183,6 +191,7 @@ def main() -> int:
             "model": profile["model"],
             "voice_setting": setting,
             "voice_modify": modify,
+            "pronunciation": pron,
             "audio_setting": audio,
             "audio_length_ms": extra.get("audio_length"),
             "usage_characters": used,

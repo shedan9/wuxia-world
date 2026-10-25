@@ -3,6 +3,7 @@
 读 build/voice/samples/<档案>/manifest.json 与当前章节对白，只安装“生成时的文字哈希与当前台词一致”的句子，
 复制到 game/assets/audio/voice/<line_id>.mp3，并写出游戏读取的清单 voice_manifest.json。
 文字已改动（音频过期）的句子不安装、列出来等增量重生成；不再需要的旧文件一并删除。
+发音词典（voice_source/lexicon/zh-Hans.json）改过、音频仍按旧读音生成的句子照常安装，另列为“读音待重生成”。
 不调用任何接口、不计费。
 
 用法：python tools/VoiceBuilder/install.py [--samples build/voice/samples/minimax_cast] [--status trial]
@@ -12,7 +13,11 @@ import argparse
 import hashlib
 import json
 import shutil
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import lexicon  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 DEST = ROOT / "game" / "assets" / "audio" / "voice"
@@ -46,8 +51,9 @@ def main() -> int:
         lines.update(voiced_lines(c))
 
     generated = {e["line_id"]: e for e in manifest["lines"] if not e.get("variant")}
+    entries = lexicon.load()
     DEST.mkdir(parents=True, exist_ok=True)
-    installed, stale, missing = {}, [], []
+    installed, stale, missing, reread = {}, [], [], []
     for line_id, node in lines.items():
         entry = generated.get(line_id)
         if entry is None or not (samples / entry["file"]).exists():
@@ -58,6 +64,9 @@ def main() -> int:
         if entry["text_sha256"] != sha:
             stale.append(line_id)
             continue
+
+        if entry.get("pronunciation", []) != lexicon.tone_list(node["text"], entries):
+            reread.append(line_id)
 
         target = DEST / f"{line_id}.mp3"
         if not target.exists() or target.read_bytes() != (samples / entry["file"]).read_bytes():
@@ -86,7 +95,10 @@ def main() -> int:
     }
     (DEST / "voice_manifest.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    print(f"需配音 {len(lines)} 句：已安装 {len(installed)}，文字已改需重生成 {len(stale)}，缺音频 {len(missing)}，删除旧文件 {removed}")
+    print(f"需配音 {len(lines)} 句：已安装 {len(installed)}（其中读音待重生成 {len(reread)}），文字已改需重生成 {len(stale)}，"
+          f"缺音频 {len(missing)}，删除旧文件 {removed}")
+    for line_id in reread:
+        print(f"  读音 {line_id}")
     for line_id in stale:
         print(f"  过期 {line_id}")
     for line_id in missing:
