@@ -43,7 +43,7 @@
     { "term": "引字诀", "pinyin": "yin3 zi4 jue2", "kind": "art" },
     { "term": "降龙十八掌", "pinyin": "xiang2 long2 shi2 ba1 zhang3", "kind": "art", "note": "“降”读 xiáng（降伏）" },
     { "term": "亢龙有悔", "pinyin": "kang4 long2 you3 hui3", "kind": "art", "note": "典出《周易·乾卦》上九" },
-    { "term": "见龙在田", "pinyin": "xian4 long2 zai4 tian2", "kind": "art", "note": "典出《周易·乾卦》九二，“见”通“现”读 xiàn；若用户偏好通俗读法 jiàn，改此条并重生成受影响句" },
+    { "term": "见龙在田", "pinyin": "xian4 long2 zai4 tian2", "kind": "art", "note": "典出《周易·乾卦》九二，“见”通“现”读 xiàn；2026-10-25 用户确认读 xiàn" },
 
     { "term": "撑篙", "pinyin": "cheng1 gao1", "kind": "word" },
     { "term": "押运", "pinyin": "ya1 yun4", "kind": "word" },
