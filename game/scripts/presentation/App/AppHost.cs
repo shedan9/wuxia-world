@@ -59,9 +59,9 @@ public partial class AppHost : Node
             GameSettings.ApplyText();
         }
 
-        if (!Mathf.IsEqualApprox(FontScale.Factor, 1))
+        if (!Mathf.IsEqualApprox(FontScale.Factor, 1) || UiPalette.ColorAssist)
         {
-            // 主题在读设置之前已按默认字号建好：字号改过的，按设置重建一次。
+            // 主题在读设置之前已按默认字号与配色建好：字号或色觉辅助改过的，按设置重建一次。
             RebuildTheme();
         }
 

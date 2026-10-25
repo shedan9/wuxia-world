@@ -258,7 +258,7 @@ public sealed partial class BattleScreen
     private Control OrderCell(string id, bool current, bool dim, bool crowded, string tip)
     {
         var ally = _session!.State.TryUnit(id)?.Side == Side.Ally;
-        var tone = ally ? UiPalette.Trim : UiPalette.Warm.Lightened(0.15f);
+        var tone = ally ? UiPalette.Ally : UiPalette.Warm.Lightened(0.15f);
         var name = _views.TryGetValue(id, out var v) ? v.Name : id;
         var glyph = Ui.Glyph(name[..1], tone, current ? (crowded ? 50 : 64) : (crowded ? 38 : 48));
         glyph.SizeFlagsVertical = SizeFlags.ShrinkEnd;

@@ -272,10 +272,10 @@ public sealed class UnitView
         _hp.Value = Hp;
         if (_stance is not null)
         {
-            // 破绽时架势线整条转朱红，提示此刻打它伤害 +50%。
+            // 破绽时架势线整条转朱红（色觉辅助时转橙），提示此刻打它伤害 +50%。
             var broken = HasStatus(CoreIds.Broken);
             _stance.Value = broken ? MaxStance : Stance;
-            _stance.Modulate = broken ? new Color(1.6f, 0.45f, 0.35f) : Colors.White;
+            _stance.Modulate = broken ? (UiPalette.ColorAssist ? new Color(2.1f, 1.05f, 0.25f) : new Color(1.6f, 0.45f, 0.35f)) : Colors.White;
         }
 
         if (Down && !_gone)

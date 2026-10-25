@@ -73,7 +73,22 @@ public sealed class SettingsPanel
         if (_restoreFocus is { } name && _named.TryGetValue(name, out var target))
         {
             _restoreFocus = null;
-            target.CallDeferred(Control.MethodName.GrabFocus);
+            FocusWhenReady(target);
+        }
+    }
+
+    /// <summary>重建的页面要等外框挂回场景树后才能取焦点：最多等两帧，控件已不在就作罢。</summary>
+    private static async void FocusWhenReady(Control target)
+    {
+        var tree = (SceneTree)Engine.GetMainLoop();
+        for (var i = 0; i < 2 && GodotObject.IsInstanceValid(target) && !target.IsInsideTree(); i++)
+        {
+            await target.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+        }
+
+        if (GodotObject.IsInstanceValid(target) && target.IsInsideTree())
+        {
+            target.GrabFocus();
         }
     }
 
@@ -182,7 +197,7 @@ public sealed class SettingsPanel
         }
     }
 
-    private static Control Assist()
+    private Control Assist()
     {
         var reduce = Ui.Switch(GameSettings.ReduceMotion);
         reduce.Toggled += on =>
@@ -197,6 +212,24 @@ public sealed class SettingsPanel
             GameSettings.HitShake = on;
             GameSettings.Save();
         };
+        // 色觉辅助：配色改动要重建主题（气血条）与整框，焦点回到这个开关。
+        var color = Ui.Switch(GameSettings.ColorAssist);
+        _named["color_assist"] = color;
+        color.Toggled += on =>
+        {
+            GameSettings.ColorAssist = on;
+            GameSettings.Save();
+            if (GameSettings.ApplyText())
+            {
+                _restoreFocus = "color_assist";
+                AppHost.Instance.RebuildTheme();
+                _rebuildFrame();
+            }
+        };
+        var swatch = Ui.Row(UiPalette.SpaceS, Ui.Glyph("我", UiPalette.Ally, 40), Ui.Glyph("敌", UiPalette.Warm.Lightened(0.15f), 40),
+            Ui.Text("▲ 提升", size: 20), Ui.Text("▼ 下降", size: 20));
+        swatch.GetChild<Label>(2).AddThemeColorOverride("font_color", UiPalette.Boost);
+        swatch.GetChild<Label>(3).AddThemeColorOverride("font_color", UiPalette.Warm);
         var speeds = Ui.Row(UiPalette.SpaceS);
         var group = new ButtonGroup();
         foreach (var (speed, label) in new[] { (1, "1 倍"), (2, "2 倍") })
@@ -214,6 +247,7 @@ public sealed class SettingsPanel
         return Form(
             Setting("减少动效", "页面与面板直接出现，不做淡入上浮；提示不再呼吸闪动。战斗演出另用倍速与跳过。", reduce),
             Setting("受击抖动", "关闭后受击只留闪白与音效。", shake),
+            Setting("色觉辅助", "战斗里敌我、增益减益与数值升降的配色由石绿 / 杏红换成天青 / 赭橙，红绿色弱也分得清；气血条随之转橙。", Ui.Row(UiPalette.SpaceL, color, swatch)),
             Setting("战斗速度", $"开战时的演出倍速；战斗中按 {KeyBindings.Label("battle_speed")} 随时切换，倍速与跳过都不改变结果。", speeds));
     }
 

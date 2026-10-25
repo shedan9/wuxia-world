@@ -42,10 +42,31 @@ public static class UiPalette
     public static readonly Color Cinnabar = Color.FromHtml("#B3382A");
     /// <summary>赭石：绢面的笔线与小标题、木轴与山脚；对绢约 4.6:1，可作短标签。</summary>
     public static readonly Color Ochre = Color.FromHtml("#8E5A2E");
-    /// <summary>竹青：数值提升、增益；须配合 ▲ 等符号，不单靠颜色。</summary>
-    public static readonly Color Boost = Color.FromHtml("#2E6E45");
-    /// <summary>杏红：气血、数值下降、敌方意图与警示，唯一表达状态的红色；对绢约 4.7:1。</summary>
-    public static readonly Color Warm = Color.FromHtml("#A9432F");
+    /// <summary>竹青：数值提升、增益；须配合 ▲ 等符号，不单靠颜色。色觉辅助时换成深石青。</summary>
+    public static Color Boost => ColorAssist ? AssistBoost : BaseBoost;
+    /// <summary>
+    /// 杏红：气血、数值下降、敌方意图与警示，唯一表达状态的红色；对绢约 4.7:1。色觉辅助时换成赭橙（对绢约 5.0:1）。
+    /// 布景里取这一色画物件的用 <see cref="BaseWarm"/>，不随辅助设置变。
+    /// </summary>
+    public static Color Warm => ColorAssist ? AssistWarm : BaseWarm;
+    /// <summary>
+    /// 我方：战斗里区分敌我的那一色（行动顺序、喊声印、增益飘字、对己方出手的描边），与 <see cref="Warm"/> 成对。
+    /// 平时同石绿；色觉辅助时换成天青，与赭橙在红绿色盲、蓝黄色盲下都分得开。
+    /// </summary>
+    public static Color Ally => ColorAssist ? AssistAlly : Trim;
+
+    /// <summary>
+    /// 色觉辅助（设置“辅助”页，<see cref="App.GameSettings.ColorAssist"/>）：石绿 / 杏红与竹青 / 杏红两对在红绿色盲下
+    /// 色差只有 8–31（CIELAB，按 Machado 2009 模拟），改用蓝 / 橙一对后三种色盲下都在 78 以上。
+    /// 切换后须重建主题（气血条取 <see cref="Warm"/>）。
+    /// </summary>
+    public static bool ColorAssist { get; set; }
+
+    public static readonly Color BaseBoost = Color.FromHtml("#2E6E45");
+    public static readonly Color BaseWarm = Color.FromHtml("#A9432F");
+    private static readonly Color AssistBoost = Color.FromHtml("#1D5F9A");
+    private static readonly Color AssistWarm = Color.FromHtml("#9A4A12");
+    private static readonly Color AssistAlly = Color.FromHtml("#5AA0D8");
 
     public const int FontBody = 24;
     public const int FontSecondary = 20;

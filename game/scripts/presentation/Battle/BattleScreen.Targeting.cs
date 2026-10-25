@@ -72,7 +72,7 @@ public sealed partial class BattleScreen
         }
 
         var side = focus.Side;
-        var tone = side == actor.Side ? UiPalette.Trim.Lightened(0.35f) : UiPalette.Gilt;
+        var tone = side == actor.Side ? UiPalette.Ally.Lightened(0.35f) : UiPalette.Gilt;
         foreach (var unit in affected)
         {
             _views[unit.Id].Standee.Outline = tone;
@@ -362,10 +362,10 @@ public sealed partial class BattleScreen
             var other = _session!.State.Units.Find(u => u.Side == Side.Ally && u.Position == cell);
             foreach (var view in _views.Values)
             {
-                view.Standee.Outline = view.Id == other?.Id || view.Id == actor.Id ? UiPalette.Trim.Lightened(0.35f) : null;
+                view.Standee.Outline = view.Id == other?.Id || view.Id == actor.Id ? UiPalette.Ally.Lightened(0.35f) : null;
             }
 
-            _range.Show(actor.Side, [(cell, true)], UiPalette.Trim.Lightened(0.35f));
+            _range.Show(actor.Side, [(cell, true)], UiPalette.Ally.Lightened(0.35f));
             lines.Add(($"{(cell.Row == 0 ? "前排" : "后排")}{"远中近"[cell.Slot]}位　" + (other is null ? "空位" : $"与{DisplayName(other.Id)}互换"), UiTheme.DarkLabel, 18));
             lines.Add((cell.Row == 0 ? "前排：护住后排，先挨近身攻击" : "后排：前排有人时近身攻击够不着", UiTheme.DarkMutedLabel, 15));
             anchor = other is not null ? _views[other.Id].HeadAnchor : UnitView.Feet(actor.Side, cell) - new Vector2(0, 320);

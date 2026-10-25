@@ -91,7 +91,7 @@ public sealed partial class BattleScreen
         // 说话签：固定在左上战斗名之下（远空处，不压人物头顶的血条、招式名、首领蓄力横幅与日志）；
         // 印鉴取说话人名首字，我方石绿、敌方杏红，与行动顺序条的印鉴一致。
         var enemy = _session?.State.TryUnit(bark.UnitId)?.Side == Side.Enemy;
-        var seal = Ui.Glyph(name[..1], enemy ? UiPalette.Warm : UiPalette.Trim, 48);
+        var seal = Ui.Glyph(name[..1], enemy ? UiPalette.Warm : UiPalette.Ally, 48);
         var nameLabel = Ui.Text(name, UiTheme.GiltLabel, FontScale.Of(UiPalette.FontSecondary));
         var text = Ui.Text(bark.Text, UiTheme.DarkLabel, FontScale.Of(UiPalette.FontBody));
         var bubble = Ui.Panel(UiTheme.GlassPanel, Ui.Row(UiPalette.SpaceM, seal, Ui.Column(0, nameLabel, text)));

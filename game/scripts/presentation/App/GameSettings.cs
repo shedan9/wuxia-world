@@ -48,6 +48,9 @@ public static class GameSettings
     /// <summary>战斗受击时人物横向抖动；关闭后只留闪白与音效。</summary>
     public static bool HitShake { get; set; } = true;
 
+    /// <summary>色觉辅助：敌我与增减的配色由石绿 / 杏红换成天青 / 赭橙（<see cref="UiPalette.ColorAssist"/>）。</summary>
+    public static bool ColorAssist { get; set; }
+
     /// <summary>战斗演出的默认倍速（1 或 2）；战斗中仍可随时切换，不影响结果。</summary>
     public static int BattleSpeed { get; set; } = 1;
 
@@ -79,6 +82,7 @@ public static class GameSettings
             AutoAdvance = (bool)cfg.GetValue("text", "auto_advance", AutoAdvance);
             ReduceMotion = (bool)cfg.GetValue("assist", "reduce_motion", ReduceMotion);
             HitShake = (bool)cfg.GetValue("assist", "hit_shake", HitShake);
+            ColorAssist = (bool)cfg.GetValue("assist", "color_assist", ColorAssist);
             BattleSpeed = (int)cfg.GetValue("assist", "battle_speed", BattleSpeed) >= 2 ? 2 : 1;
             KeyBindings.Load(cfg);
         }
@@ -87,12 +91,13 @@ public static class GameSettings
         ApplyText();
     }
 
-    /// <summary>套用字号与减少动效；字号变了返回 true（调用方须重建主题与已打开的页面）。</summary>
+    /// <summary>套用字号、减少动效与色觉辅助；字号或配色变了返回 true（调用方须重建主题与已打开的页面）。</summary>
     public static bool ApplyText()
     {
         var factor = TextSize / (float)FontScale.BaseBody;
-        var changed = !Mathf.IsEqualApprox(factor, FontScale.Factor);
+        var changed = !Mathf.IsEqualApprox(factor, FontScale.Factor) || ColorAssist != UiPalette.ColorAssist;
         FontScale.Factor = factor;
+        UiPalette.ColorAssist = ColorAssist;
         Motion.Reduced = ReduceMotion;
         return changed;
     }
@@ -111,6 +116,7 @@ public static class GameSettings
         cfg.SetValue("text", "auto_advance", AutoAdvance);
         cfg.SetValue("assist", "reduce_motion", ReduceMotion);
         cfg.SetValue("assist", "hit_shake", HitShake);
+        cfg.SetValue("assist", "color_assist", ColorAssist);
         cfg.SetValue("assist", "battle_speed", BattleSpeed);
         KeyBindings.Save(cfg);
         if (DevCapture.SaveDirectory is { } dir)

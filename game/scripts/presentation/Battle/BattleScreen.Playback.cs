@@ -252,7 +252,7 @@ public sealed partial class BattleScreen
                 AddLog($"{DisplayName(h.Target)}恢复 {h.Amount} 点气血。");
                 if (animate)
                 {
-                    Float(_views[h.Target], $"+{h.Amount}", UiPalette.Trim.Lightened(0.3f), 48, 0);
+                    Float(_views[h.Target], $"+{h.Amount}", UiPalette.Ally.Lightened(0.3f), 48, 0);
                 }
 
                 return animate ? 0.3f : 0;
@@ -283,7 +283,7 @@ public sealed partial class BattleScreen
                     AddLog($"{DisplayName(a.Target)}{(harmful ? "陷入" : "获得")}“{_bundle.Name(a.StatusId)}”。");
                     if (animate)
                     {
-                        Float(view, _bundle.Name(a.StatusId), harmful ? UiPalette.Warm.Lightened(0.4f) : UiPalette.Trim.Lightened(0.3f), 26, 0.2f);
+                        Float(view, _bundle.Name(a.StatusId), harmful ? UiPalette.Warm.Lightened(0.4f) : UiPalette.Ally.Lightened(0.3f), 26, 0.2f);
                     }
                 }
 
@@ -354,7 +354,7 @@ public sealed partial class BattleScreen
                 AddLog($"{DisplayName(g.Guardian)}挡在{DisplayName(g.Protected)}身前。");
                 if (animate)
                 {
-                    Float(_views[g.Guardian], "护援", UiPalette.Trim.Lightened(0.3f), 34, 0);
+                    Float(_views[g.Guardian], "护援", UiPalette.Ally.Lightened(0.3f), 34, 0);
                     Glow(_views[g.Guardian]);
                 }
 
@@ -375,7 +375,7 @@ public sealed partial class BattleScreen
                 AddLog($"{DisplayName(d.Actor)}摆出防御。");
                 if (animate)
                 {
-                    Float(_views[d.Actor], "防御", UiPalette.Trim.Lightened(0.3f), 30, 0, above: true);
+                    Float(_views[d.Actor], "防御", UiPalette.Ally.Lightened(0.3f), 30, 0, above: true);
                 }
 
                 return animate ? 0.3f : 0;
@@ -394,7 +394,7 @@ public sealed partial class BattleScreen
                 AddLog($"{DisplayName(i.Actor)}使用{_bundle.Name(i.ItemId)}（余 {i.Remaining}）。");
                 if (animate)
                 {
-                    Float(_views[i.Actor], _bundle.Name(i.ItemId), UiPalette.Trim.Lightened(0.3f), 28, 0, above: true);
+                    Float(_views[i.Actor], _bundle.Name(i.ItemId), UiPalette.Ally.Lightened(0.3f), 28, 0, above: true);
                 }
 
                 return animate ? 0.3f : 0;

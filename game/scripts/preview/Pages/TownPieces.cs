@@ -963,7 +963,7 @@ public partial class TownPropNode : TownPiece
         }
 
         Faces.AddRange(Solid.Box(new Vector3(p.X - 100, p.Y - 40, 0), new Vector3(p.X + 100, p.Y + 40, 80), Cel.WoodLight, 1.8f));
-        foreach (var (dx, tone) in new[] { (-60f, UiPalette.Ochre), (-5f, Cel.Leaf), (50f, UiPalette.Warm) })
+        foreach (var (dx, tone) in new[] { (-60f, UiPalette.Ochre), (-5f, Cel.Leaf), (50f, UiPalette.BaseWarm) })
         {
             _goods.Add((new Vector3(p.X + dx, p.Y, 80), tone));
         }
