@@ -1,0 +1,10 @@
+{
+  "id": "worldmap.massif.2.2.0",
+  "origin": [
+    166.112,
+    872.4042
+  ],
+  "px": 1.25,
+  "source": "art_source/ai/worldmap/worldmap.massif.2.2.0.png",
+  "sha256": "6539133ae1250ebcd8d942f03084dfa1945b28c687e52d0e983cf83eb6d3a8ad"
+}

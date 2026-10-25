@@ -1,6 +1,6 @@
 {
   "set": "m3_worldmap_massifs",
-  "note": "舆图山峦逐件出图（2026-10-24 试做）：每组山以程序化平视山峦为引导图，同布景方案 C；山脚阴影与薄雾由引擎画。",
+  "note": "舆图山峦逐件出图（2026-10-24 试做）：每组山以程序化平视山峦为引导图，同布景方案 C；山脚阴影与薄雾由引擎画。 2026-10-25 用户选定 SDXL 文生图（r_t70 设置）：r2_t70_ 为其余各组的整批任务。2026-10-25 整批 273 组按种子 22 / 33 两张挑一入库（picks：组 id → 种子），均 --match-low 0.025 --keep-lines --px 1.25。",
   "guides": "out/guides/worldmap_massifs",
   "tier": "complex",
   "model": "sdxl",
@@ -1417,6 +1417,3266 @@
         22,
         33
       ]
+    },
+    {
+      "name": "r2_t70_1_0_0",
+      "piece": "worldmap.massif.1.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_1",
+      "piece": "worldmap.massif.1.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_2",
+      "piece": "worldmap.massif.1.0.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_3",
+      "piece": "worldmap.massif.1.0.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_4",
+      "piece": "worldmap.massif.1.0.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_5",
+      "piece": "worldmap.massif.1.0.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_6",
+      "piece": "worldmap.massif.1.0.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_0_7",
+      "piece": "worldmap.massif.1.0.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_1_0",
+      "piece": "worldmap.massif.1.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_1_1",
+      "piece": "worldmap.massif.1.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_1_2",
+      "piece": "worldmap.massif.1.1.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_1_3",
+      "piece": "worldmap.massif.1.1.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_1_4",
+      "piece": "worldmap.massif.1.1.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_2_0",
+      "piece": "worldmap.massif.1.2.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_2_1",
+      "piece": "worldmap.massif.1.2.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_2_5",
+      "piece": "worldmap.massif.1.2.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_2_7",
+      "piece": "worldmap.massif.1.2.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_1_2_9",
+      "piece": "worldmap.massif.1.2.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_10_0_1",
+      "piece": "worldmap.massif.10.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_10_1_0",
+      "piece": "worldmap.massif.10.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_10_1_1",
+      "piece": "worldmap.massif.10.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_10_1_2",
+      "piece": "worldmap.massif.10.1.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_10_2_0",
+      "piece": "worldmap.massif.10.2.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_10_2_1",
+      "piece": "worldmap.massif.10.2.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_11_0_0",
+      "piece": "worldmap.massif.11.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_11_0_1",
+      "piece": "worldmap.massif.11.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_11_1_0",
+      "piece": "worldmap.massif.11.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_11_1_1",
+      "piece": "worldmap.massif.11.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_11_2_0",
+      "piece": "worldmap.massif.11.2.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_14_0_0",
+      "piece": "worldmap.massif.14.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_0_14",
+      "piece": "worldmap.massif.2.0.14",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_0_15",
+      "piece": "worldmap.massif.2.0.15",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_1_6",
+      "piece": "worldmap.massif.2.1.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_1_7",
+      "piece": "worldmap.massif.2.1.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_1_8",
+      "piece": "worldmap.massif.2.1.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_1_9",
+      "piece": "worldmap.massif.2.1.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_2_6",
+      "piece": "worldmap.massif.2.2.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_2_7",
+      "piece": "worldmap.massif.2.2.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_2_8",
+      "piece": "worldmap.massif.2.2.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_2_9",
+      "piece": "worldmap.massif.2.2.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_3_11",
+      "piece": "worldmap.massif.2.3.11",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_3_13",
+      "piece": "worldmap.massif.2.3.13",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_3_15",
+      "piece": "worldmap.massif.2.3.15",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_2_3_16",
+      "piece": "worldmap.massif.2.3.16",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_0",
+      "piece": "worldmap.massif.3.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_1",
+      "piece": "worldmap.massif.3.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_10",
+      "piece": "worldmap.massif.3.0.10",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_11",
+      "piece": "worldmap.massif.3.0.11",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_12",
+      "piece": "worldmap.massif.3.0.12",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_13",
+      "piece": "worldmap.massif.3.0.13",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_2",
+      "piece": "worldmap.massif.3.0.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_3",
+      "piece": "worldmap.massif.3.0.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_4",
+      "piece": "worldmap.massif.3.0.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_5",
+      "piece": "worldmap.massif.3.0.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_6",
+      "piece": "worldmap.massif.3.0.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_7",
+      "piece": "worldmap.massif.3.0.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_8",
+      "piece": "worldmap.massif.3.0.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_0_9",
+      "piece": "worldmap.massif.3.0.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_0",
+      "piece": "worldmap.massif.3.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_1",
+      "piece": "worldmap.massif.3.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_2",
+      "piece": "worldmap.massif.3.1.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_3",
+      "piece": "worldmap.massif.3.1.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_4",
+      "piece": "worldmap.massif.3.1.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_5",
+      "piece": "worldmap.massif.3.1.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_6",
+      "piece": "worldmap.massif.3.1.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_7",
+      "piece": "worldmap.massif.3.1.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_8",
+      "piece": "worldmap.massif.3.1.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_1_9",
+      "piece": "worldmap.massif.3.1.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_0",
+      "piece": "worldmap.massif.3.2.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_1",
+      "piece": "worldmap.massif.3.2.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_2",
+      "piece": "worldmap.massif.3.2.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_3",
+      "piece": "worldmap.massif.3.2.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_4",
+      "piece": "worldmap.massif.3.2.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_5",
+      "piece": "worldmap.massif.3.2.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_6",
+      "piece": "worldmap.massif.3.2.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_7",
+      "piece": "worldmap.massif.3.2.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_2_8",
+      "piece": "worldmap.massif.3.2.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_0",
+      "piece": "worldmap.massif.3.3.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_1",
+      "piece": "worldmap.massif.3.3.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_14",
+      "piece": "worldmap.massif.3.3.14",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_3",
+      "piece": "worldmap.massif.3.3.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_5",
+      "piece": "worldmap.massif.3.3.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_6",
+      "piece": "worldmap.massif.3.3.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_7",
+      "piece": "worldmap.massif.3.3.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_3_3_9",
+      "piece": "worldmap.massif.3.3.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_4_0_0",
+      "piece": "worldmap.massif.4.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_4_0_1",
+      "piece": "worldmap.massif.4.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_4_1_1",
+      "piece": "worldmap.massif.4.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_5_1_0",
+      "piece": "worldmap.massif.5.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_5_2_1",
+      "piece": "worldmap.massif.5.2.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_5_2_3",
+      "piece": "worldmap.massif.5.2.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_6_0_0",
+      "piece": "worldmap.massif.6.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_6_0_1",
+      "piece": "worldmap.massif.6.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_6_1_0",
+      "piece": "worldmap.massif.6.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_6_1_1",
+      "piece": "worldmap.massif.6.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_6_2_0",
+      "piece": "worldmap.massif.6.2.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_0_0",
+      "piece": "worldmap.massif.7.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_0_1",
+      "piece": "worldmap.massif.7.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_0_2",
+      "piece": "worldmap.massif.7.0.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_0_3",
+      "piece": "worldmap.massif.7.0.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_0_4",
+      "piece": "worldmap.massif.7.0.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_0_5",
+      "piece": "worldmap.massif.7.0.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_0",
+      "piece": "worldmap.massif.7.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_1",
+      "piece": "worldmap.massif.7.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_2",
+      "piece": "worldmap.massif.7.1.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_3",
+      "piece": "worldmap.massif.7.1.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_4",
+      "piece": "worldmap.massif.7.1.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_5",
+      "piece": "worldmap.massif.7.1.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_6",
+      "piece": "worldmap.massif.7.1.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_7",
+      "piece": "worldmap.massif.7.1.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_1_8",
+      "piece": "worldmap.massif.7.1.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_0",
+      "piece": "worldmap.massif.7.2.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_1",
+      "piece": "worldmap.massif.7.2.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_2",
+      "piece": "worldmap.massif.7.2.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_3",
+      "piece": "worldmap.massif.7.2.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_4",
+      "piece": "worldmap.massif.7.2.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_5",
+      "piece": "worldmap.massif.7.2.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_6",
+      "piece": "worldmap.massif.7.2.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_7",
+      "piece": "worldmap.massif.7.2.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_8",
+      "piece": "worldmap.massif.7.2.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_2_9",
+      "piece": "worldmap.massif.7.2.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_0",
+      "piece": "worldmap.massif.7.3.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_1",
+      "piece": "worldmap.massif.7.3.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_10",
+      "piece": "worldmap.massif.7.3.10",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_11",
+      "piece": "worldmap.massif.7.3.11",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_12",
+      "piece": "worldmap.massif.7.3.12",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_13",
+      "piece": "worldmap.massif.7.3.13",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_14",
+      "piece": "worldmap.massif.7.3.14",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_15",
+      "piece": "worldmap.massif.7.3.15",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_16",
+      "piece": "worldmap.massif.7.3.16",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_17",
+      "piece": "worldmap.massif.7.3.17",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_2",
+      "piece": "worldmap.massif.7.3.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_3",
+      "piece": "worldmap.massif.7.3.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_4",
+      "piece": "worldmap.massif.7.3.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_6",
+      "piece": "worldmap.massif.7.3.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_7",
+      "piece": "worldmap.massif.7.3.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_8",
+      "piece": "worldmap.massif.7.3.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_7_3_9",
+      "piece": "worldmap.massif.7.3.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_0",
+      "piece": "worldmap.massif.8.0.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_1",
+      "piece": "worldmap.massif.8.0.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_10",
+      "piece": "worldmap.massif.8.0.10",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_11",
+      "piece": "worldmap.massif.8.0.11",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_12",
+      "piece": "worldmap.massif.8.0.12",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_13",
+      "piece": "worldmap.massif.8.0.13",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_14",
+      "piece": "worldmap.massif.8.0.14",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_15",
+      "piece": "worldmap.massif.8.0.15",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_16",
+      "piece": "worldmap.massif.8.0.16",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_17",
+      "piece": "worldmap.massif.8.0.17",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_18",
+      "piece": "worldmap.massif.8.0.18",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_19",
+      "piece": "worldmap.massif.8.0.19",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_2",
+      "piece": "worldmap.massif.8.0.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_20",
+      "piece": "worldmap.massif.8.0.20",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_21",
+      "piece": "worldmap.massif.8.0.21",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_22",
+      "piece": "worldmap.massif.8.0.22",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_23",
+      "piece": "worldmap.massif.8.0.23",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_3",
+      "piece": "worldmap.massif.8.0.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_4",
+      "piece": "worldmap.massif.8.0.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_5",
+      "piece": "worldmap.massif.8.0.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_6",
+      "piece": "worldmap.massif.8.0.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_7",
+      "piece": "worldmap.massif.8.0.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_8",
+      "piece": "worldmap.massif.8.0.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_0_9",
+      "piece": "worldmap.massif.8.0.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_0",
+      "piece": "worldmap.massif.8.1.0",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_1",
+      "piece": "worldmap.massif.8.1.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_10",
+      "piece": "worldmap.massif.8.1.10",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_11",
+      "piece": "worldmap.massif.8.1.11",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_12",
+      "piece": "worldmap.massif.8.1.12",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_13",
+      "piece": "worldmap.massif.8.1.13",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_14",
+      "piece": "worldmap.massif.8.1.14",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_15",
+      "piece": "worldmap.massif.8.1.15",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_16",
+      "piece": "worldmap.massif.8.1.16",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_17",
+      "piece": "worldmap.massif.8.1.17",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_18",
+      "piece": "worldmap.massif.8.1.18",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_2",
+      "piece": "worldmap.massif.8.1.2",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_3",
+      "piece": "worldmap.massif.8.1.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_4",
+      "piece": "worldmap.massif.8.1.4",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_5",
+      "piece": "worldmap.massif.8.1.5",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_6",
+      "piece": "worldmap.massif.8.1.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_7",
+      "piece": "worldmap.massif.8.1.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_8",
+      "piece": "worldmap.massif.8.1.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_1_9",
+      "piece": "worldmap.massif.8.1.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_1",
+      "piece": "worldmap.massif.8.2.1",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_10",
+      "piece": "worldmap.massif.8.2.10",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_11",
+      "piece": "worldmap.massif.8.2.11",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_13",
+      "piece": "worldmap.massif.8.2.13",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_14",
+      "piece": "worldmap.massif.8.2.14",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_15",
+      "piece": "worldmap.massif.8.2.15",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_17",
+      "piece": "worldmap.massif.8.2.17",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_23",
+      "piece": "worldmap.massif.8.2.23",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_24",
+      "piece": "worldmap.massif.8.2.24",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_28",
+      "piece": "worldmap.massif.8.2.28",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_3",
+      "piece": "worldmap.massif.8.2.3",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_30",
+      "piece": "worldmap.massif.8.2.30",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_33",
+      "piece": "worldmap.massif.8.2.33",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_34",
+      "piece": "worldmap.massif.8.2.34",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_6",
+      "piece": "worldmap.massif.8.2.6",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_7",
+      "piece": "worldmap.massif.8.2.7",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_8",
+      "piece": "worldmap.massif.8.2.8",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
+    },
+    {
+      "name": "r2_t70_8_2_9",
+      "piece": "worldmap.massif.8.2.9",
+      "prompt": "chinese mountain range, side view, layered peaks, rocky cliffs, gullies, pine forest on lower slopes",
+      "control_from": "guide",
+      "mode": "txt2img",
+      "control": 0.7,
+      "control_end": 0.6,
+      "style": "map2",
+      "negative_style": "negative2",
+      "seeds": [
+        22,
+        33
+      ]
     }
-  ]
+  ],
+  "picks": {
+    "worldmap.massif.2.0.2": 22,
+    "worldmap.massif.2.0.3": 33,
+    "worldmap.massif.2.0.4": 22,
+    "worldmap.massif.2.0.5": 22,
+    "worldmap.massif.2.0.8": 22,
+    "worldmap.massif.2.0.9": 33,
+    "worldmap.massif.2.0.10": 33,
+    "worldmap.massif.2.0.11": 33,
+    "worldmap.massif.2.0.12": 22,
+    "worldmap.massif.2.0.13": 22,
+    "worldmap.massif.1.0.0": 22,
+    "worldmap.massif.1.0.1": 22,
+    "worldmap.massif.1.0.2": 22,
+    "worldmap.massif.1.0.3": 22,
+    "worldmap.massif.1.0.4": 22,
+    "worldmap.massif.1.0.5": 22,
+    "worldmap.massif.1.0.6": 22,
+    "worldmap.massif.1.0.7": 33,
+    "worldmap.massif.1.1.0": 22,
+    "worldmap.massif.1.1.1": 22,
+    "worldmap.massif.1.1.2": 33,
+    "worldmap.massif.1.1.3": 33,
+    "worldmap.massif.1.1.4": 33,
+    "worldmap.massif.1.2.0": 22,
+    "worldmap.massif.1.2.1": 22,
+    "worldmap.massif.1.2.5": 22,
+    "worldmap.massif.1.2.7": 33,
+    "worldmap.massif.1.2.9": 33,
+    "worldmap.massif.2.0.0": 22,
+    "worldmap.massif.2.0.1": 33,
+    "worldmap.massif.2.0.14": 22,
+    "worldmap.massif.2.0.15": 33,
+    "worldmap.massif.2.1.0": 22,
+    "worldmap.massif.2.1.1": 22,
+    "worldmap.massif.2.1.3": 22,
+    "worldmap.massif.2.1.4": 33,
+    "worldmap.massif.2.1.6": 22,
+    "worldmap.massif.2.1.7": 22,
+    "worldmap.massif.2.1.8": 22,
+    "worldmap.massif.2.1.9": 22,
+    "worldmap.massif.2.2.0": 22,
+    "worldmap.massif.2.2.1": 22,
+    "worldmap.massif.2.2.2": 33,
+    "worldmap.massif.2.2.3": 22,
+    "worldmap.massif.2.2.4": 22,
+    "worldmap.massif.2.2.6": 33,
+    "worldmap.massif.2.2.7": 22,
+    "worldmap.massif.2.2.8": 22,
+    "worldmap.massif.2.2.9": 22,
+    "worldmap.massif.2.3.2": 22,
+    "worldmap.massif.2.3.4": 22,
+    "worldmap.massif.2.3.5": 33,
+    "worldmap.massif.2.3.7": 22,
+    "worldmap.massif.2.3.8": 33,
+    "worldmap.massif.2.3.11": 33,
+    "worldmap.massif.2.3.13": 22,
+    "worldmap.massif.2.3.15": 33,
+    "worldmap.massif.2.3.16": 33,
+    "worldmap.massif.3.0.0": 22,
+    "worldmap.massif.3.0.1": 22,
+    "worldmap.massif.3.0.2": 22,
+    "worldmap.massif.3.0.3": 22,
+    "worldmap.massif.3.0.4": 22,
+    "worldmap.massif.3.0.5": 22,
+    "worldmap.massif.3.0.6": 22,
+    "worldmap.massif.3.0.7": 22,
+    "worldmap.massif.3.0.8": 22,
+    "worldmap.massif.3.0.9": 33,
+    "worldmap.massif.3.0.10": 22,
+    "worldmap.massif.3.0.11": 22,
+    "worldmap.massif.3.0.12": 22,
+    "worldmap.massif.3.0.13": 33,
+    "worldmap.massif.3.1.0": 22,
+    "worldmap.massif.3.1.1": 33,
+    "worldmap.massif.3.1.2": 22,
+    "worldmap.massif.3.1.3": 22,
+    "worldmap.massif.3.1.4": 33,
+    "worldmap.massif.3.1.5": 33,
+    "worldmap.massif.3.1.6": 22,
+    "worldmap.massif.3.1.7": 33,
+    "worldmap.massif.3.1.8": 22,
+    "worldmap.massif.3.1.9": 33,
+    "worldmap.massif.3.2.0": 33,
+    "worldmap.massif.3.2.1": 33,
+    "worldmap.massif.3.2.2": 33,
+    "worldmap.massif.3.2.3": 22,
+    "worldmap.massif.3.2.4": 22,
+    "worldmap.massif.3.2.5": 33,
+    "worldmap.massif.3.2.6": 33,
+    "worldmap.massif.3.2.7": 33,
+    "worldmap.massif.3.2.8": 33,
+    "worldmap.massif.3.3.0": 22,
+    "worldmap.massif.3.3.1": 22,
+    "worldmap.massif.3.3.3": 22,
+    "worldmap.massif.3.3.5": 22,
+    "worldmap.massif.3.3.6": 22,
+    "worldmap.massif.3.3.7": 22,
+    "worldmap.massif.3.3.9": 22,
+    "worldmap.massif.3.3.14": 33,
+    "worldmap.massif.4.0.0": 22,
+    "worldmap.massif.4.0.1": 33,
+    "worldmap.massif.4.1.1": 22,
+    "worldmap.massif.5.0.0": 22,
+    "worldmap.massif.5.0.1": 33,
+    "worldmap.massif.5.1.0": 33,
+    "worldmap.massif.5.1.1": 22,
+    "worldmap.massif.5.2.1": 22,
+    "worldmap.massif.5.2.3": 22,
+    "worldmap.massif.6.0.0": 22,
+    "worldmap.massif.6.0.1": 22,
+    "worldmap.massif.6.0.2": 33,
+    "worldmap.massif.6.1.0": 33,
+    "worldmap.massif.6.1.1": 33,
+    "worldmap.massif.6.2.0": 22,
+    "worldmap.massif.7.0.0": 22,
+    "worldmap.massif.7.0.1": 22,
+    "worldmap.massif.7.0.2": 33,
+    "worldmap.massif.7.0.3": 33,
+    "worldmap.massif.7.0.4": 22,
+    "worldmap.massif.7.0.5": 33,
+    "worldmap.massif.7.0.6": 33,
+    "worldmap.massif.7.0.9": 22,
+    "worldmap.massif.7.0.10": 22,
+    "worldmap.massif.7.0.11": 33,
+    "worldmap.massif.7.0.12": 22,
+    "worldmap.massif.7.0.13": 33,
+    "worldmap.massif.7.1.0": 22,
+    "worldmap.massif.7.1.1": 22,
+    "worldmap.massif.7.1.2": 22,
+    "worldmap.massif.7.1.3": 22,
+    "worldmap.massif.7.1.4": 22,
+    "worldmap.massif.7.1.5": 22,
+    "worldmap.massif.7.1.6": 22,
+    "worldmap.massif.7.1.7": 33,
+    "worldmap.massif.7.1.8": 33,
+    "worldmap.massif.7.1.9": 22,
+    "worldmap.massif.7.1.10": 22,
+    "worldmap.massif.7.1.11": 33,
+    "worldmap.massif.7.1.12": 33,
+    "worldmap.massif.7.2.0": 22,
+    "worldmap.massif.7.2.1": 33,
+    "worldmap.massif.7.2.2": 33,
+    "worldmap.massif.7.2.3": 22,
+    "worldmap.massif.7.2.4": 22,
+    "worldmap.massif.7.2.5": 22,
+    "worldmap.massif.7.2.6": 33,
+    "worldmap.massif.7.2.7": 33,
+    "worldmap.massif.7.2.8": 22,
+    "worldmap.massif.7.2.9": 33,
+    "worldmap.massif.7.3.0": 22,
+    "worldmap.massif.7.3.1": 22,
+    "worldmap.massif.7.3.2": 22,
+    "worldmap.massif.7.3.3": 22,
+    "worldmap.massif.7.3.4": 22,
+    "worldmap.massif.7.3.6": 22,
+    "worldmap.massif.7.3.7": 22,
+    "worldmap.massif.7.3.8": 22,
+    "worldmap.massif.7.3.9": 22,
+    "worldmap.massif.7.3.10": 22,
+    "worldmap.massif.7.3.11": 22,
+    "worldmap.massif.7.3.12": 22,
+    "worldmap.massif.7.3.13": 22,
+    "worldmap.massif.7.3.14": 33,
+    "worldmap.massif.7.3.15": 33,
+    "worldmap.massif.7.3.16": 22,
+    "worldmap.massif.7.3.17": 33,
+    "worldmap.massif.8.0.0": 33,
+    "worldmap.massif.8.0.1": 22,
+    "worldmap.massif.8.0.2": 22,
+    "worldmap.massif.8.0.3": 22,
+    "worldmap.massif.8.0.4": 33,
+    "worldmap.massif.8.0.5": 33,
+    "worldmap.massif.8.0.6": 33,
+    "worldmap.massif.8.0.7": 22,
+    "worldmap.massif.8.0.8": 33,
+    "worldmap.massif.8.0.9": 33,
+    "worldmap.massif.8.0.10": 22,
+    "worldmap.massif.8.0.11": 22,
+    "worldmap.massif.8.0.12": 33,
+    "worldmap.massif.8.0.13": 22,
+    "worldmap.massif.8.0.14": 22,
+    "worldmap.massif.8.0.15": 33,
+    "worldmap.massif.8.0.16": 22,
+    "worldmap.massif.8.0.17": 22,
+    "worldmap.massif.8.0.18": 33,
+    "worldmap.massif.8.0.19": 22,
+    "worldmap.massif.8.0.20": 22,
+    "worldmap.massif.8.0.21": 33,
+    "worldmap.massif.8.0.22": 22,
+    "worldmap.massif.8.0.23": 22,
+    "worldmap.massif.8.1.0": 22,
+    "worldmap.massif.8.1.1": 22,
+    "worldmap.massif.8.1.2": 22,
+    "worldmap.massif.8.1.3": 33,
+    "worldmap.massif.8.1.4": 33,
+    "worldmap.massif.8.1.5": 22,
+    "worldmap.massif.8.1.6": 22,
+    "worldmap.massif.8.1.7": 33,
+    "worldmap.massif.8.1.8": 33,
+    "worldmap.massif.8.1.9": 22,
+    "worldmap.massif.8.1.10": 22,
+    "worldmap.massif.8.1.11": 33,
+    "worldmap.massif.8.1.12": 33,
+    "worldmap.massif.8.1.13": 22,
+    "worldmap.massif.8.1.14": 33,
+    "worldmap.massif.8.1.15": 33,
+    "worldmap.massif.8.1.16": 22,
+    "worldmap.massif.8.1.17": 22,
+    "worldmap.massif.8.1.18": 22,
+    "worldmap.massif.8.2.1": 22,
+    "worldmap.massif.8.2.3": 33,
+    "worldmap.massif.8.2.6": 22,
+    "worldmap.massif.8.2.7": 22,
+    "worldmap.massif.8.2.8": 33,
+    "worldmap.massif.8.2.9": 22,
+    "worldmap.massif.8.2.10": 22,
+    "worldmap.massif.8.2.11": 22,
+    "worldmap.massif.8.2.13": 33,
+    "worldmap.massif.8.2.14": 22,
+    "worldmap.massif.8.2.15": 22,
+    "worldmap.massif.8.2.17": 22,
+    "worldmap.massif.8.2.23": 33,
+    "worldmap.massif.8.2.24": 22,
+    "worldmap.massif.8.2.28": 22,
+    "worldmap.massif.8.2.30": 22,
+    "worldmap.massif.8.2.33": 22,
+    "worldmap.massif.8.2.34": 22,
+    "worldmap.massif.9.0.0": 33,
+    "worldmap.massif.9.1.0": 33,
+    "worldmap.massif.9.1.1": 22,
+    "worldmap.massif.9.2.0": 22,
+    "worldmap.massif.9.2.1": 22,
+    "worldmap.massif.9.2.2": 33,
+    "worldmap.massif.10.0.0": 22,
+    "worldmap.massif.10.0.1": 22,
+    "worldmap.massif.10.1.0": 22,
+    "worldmap.massif.10.1.1": 22,
+    "worldmap.massif.10.1.2": 33,
+    "worldmap.massif.10.2.0": 22,
+    "worldmap.massif.10.2.1": 22,
+    "worldmap.massif.11.0.0": 22,
+    "worldmap.massif.11.0.1": 33,
+    "worldmap.massif.11.1.0": 22,
+    "worldmap.massif.11.1.1": 22,
+    "worldmap.massif.11.2.0": 33,
+    "worldmap.massif.12.0.0": 33,
+    "worldmap.massif.12.1.0": 33,
+    "worldmap.massif.12.2.0": 22,
+    "worldmap.massif.12.2.1": 22,
+    "worldmap.massif.13.0.0": 22,
+    "worldmap.massif.13.0.1": 22,
+    "worldmap.massif.13.1.0": 33,
+    "worldmap.massif.13.2.0": 22,
+    "worldmap.massif.13.2.1": 22,
+    "worldmap.massif.14.0.0": 22,
+    "worldmap.massif.14.1.0": 22,
+    "worldmap.massif.14.2.0": 22,
+    "worldmap.massif.14.2.1": 22,
+    "worldmap.massif.14.2.2": 22,
+    "worldmap.massif.15.0.0": 22,
+    "worldmap.massif.15.1.0": 33,
+    "worldmap.massif.15.2.0": 33,
+    "worldmap.massif.15.2.1": 22,
+    "worldmap.massif.16.0.0": 22,
+    "worldmap.massif.16.0.1": 22,
+    "worldmap.massif.16.1.0": 33,
+    "worldmap.massif.16.2.0": 22,
+    "worldmap.massif.16.2.1": 22,
+    "worldmap.massif.17.0.0": 22,
+    "worldmap.massif.17.1.0": 33,
+    "worldmap.massif.17.2.0": 33,
+    "worldmap.massif.17.2.1": 33,
+    "worldmap.massif.17.2.2": 22
+  }
 }

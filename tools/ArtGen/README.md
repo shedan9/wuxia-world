@@ -255,17 +255,21 @@ cd tools/ArtGen
 
 结论见架构文档 10.3“大地图图生图试验”：SDXL 与 Animagine 在能锁住布局的强度下只会把程序化舆图抹平，强度一高就改布局，未采用。
 
-## 舆图山峦逐件出图（2026-10-24 试做，暂缓，对比图见 docs/art/review/）
+## 舆图山峦逐件出图（2026-10-24 试做，2026-10-25 整批入库，整图见 docs/art/review/）
 
 整图重绘未采用后改为逐组出图（架构文档 10.3）：
 
 ```powershell
 & $env:GODOT_BIN.Replace('.exe','_console.exe') --path game -- --scene=res://scenes/preview/PieceGuideExport.tscn --region=worldmap-massifs --out=$PWD/tools/ArtGen/out/guides/worldmap_massifs
 cd tools/ArtGen
-.venv/Scripts/python piece.py jobs/m3_worldmap_massifs.json --only r_t70_
+.venv/Scripts/python piece.py jobs/m3_worldmap_massifs.json --only r_t70_    # 试做的 74 组
+.venv/Scripts/python piece.py jobs/m3_worldmap_massifs.json --only r2_t70_   # 其余 199 组（约 75 分钟）
 .venv/Scripts/python place.py out/m3_worldmap_massifs/r_t70_2_0_10_33.png worldmap.massif.2.0.10 --match-low 0.025 --keep-lines --px 1.25
 # 入库后 Godot --headless --path game --import；--region=worldmap --art=1 导出贴件后的整图对比
 ```
+
+- 整批 273 组用的是 SDXL 文生图这一种（用户 2026-10-25 选定），每组种子 22、33 各一张；挑中的种子记在任务文件 `picks`（组 id → 种子），按它逐组重跑上面的 `place.py` 即可复现入库。挑法：并排看两张做过回调与叠线后的样子，避开大块亮绿斑、横纹和白色竖条，取岩脊沟壑清楚的一张。
+- 改了山脉数据后组 id 与外框会变，受影响的组要重导引导图、重出、重挑；没有件的组引擎自动退回程序化画法。
 
 - 图生图 0.6–0.75 只照描程序化山体；0.9 偏灰蓝平涂。文生图 + 引导图边线（control 0.7、control_end 0.6）岩纹最好，但 SDXL 配色跑成卡其 / 橄榄、Animagine 偶成米白或深蓝。
 - `--match-low`：低频配色回调，细节保留、配色与明暗分布回到程序化画法；`--keep-lines`：叠回引导图的墨线与积雪，前后山交叠处的轮廓和雪顶才不会被抹淡。
